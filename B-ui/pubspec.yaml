@@ -1,0 +1,61 @@
+name: b_ui
+description: B-UI Phase 02
+version: 1.0.0
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+
+  flutter_riverpod: ^2.4.9
+  design_system_shims:
+    version: any
+  design_system_foundation:
+    version: any
+  design_system_components:
+    version: any
+  foundation_shims:
+    version: any
+  accounts_shims:
+    version: any
+  notifications_shims:
+    version: any
+  auth_shims:
+    version: any
+  auth_http_impl:
+    version: any
+  http: ^1.1.0
+  shared_preferences: ^2.2.2
+  uuid: ^4.5.1
+
+dependency_overrides:
+  design_system_shims:
+    path: ../packages/design_system_shims
+  design_system_foundation:
+    path: ../packages/design_system_foundation
+  design_system_components:
+    path: ../packages/design_system_components
+  foundation_shims:
+    path: ../packages/foundation_shims
+  accounts_shims:
+    path: ../packages/accounts_shims
+  notifications_shims:
+    path: ../packages/notifications_shims
+  auth_shims:
+    path: ../packages/auth_shims
+  auth_http_impl:
+    path: ../packages/auth_http_impl
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  generate: true

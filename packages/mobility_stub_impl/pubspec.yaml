@@ -1,0 +1,9 @@
+name: mobility_stub_impl
+description: Stub implementations for mobility shims (compile-ready fallbacks)
+version: 0.1.0
+publish_to: none
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+dependencies:
+  mobility_shims:
+    path: ../mobility_shims

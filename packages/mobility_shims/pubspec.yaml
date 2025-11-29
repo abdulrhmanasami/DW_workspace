@@ -1,0 +1,19 @@
+name: mobility_shims
+publish_to: none
+environment:
+  sdk: '^3.9.2'
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  foundation_shims:
+    path: ../foundation_shims
+  maps_shims:
+    path: ../maps_shims
+  geolocator: ^11.1.0
+  workmanager: ^0.9.0+3
+  meta: any
+dev_dependencies:
+  lints: any
+  flutter_test:
+    sdk: flutter

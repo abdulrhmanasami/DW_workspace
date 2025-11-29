@@ -1,0 +1,1348 @@
+{
+  "@@locale": "en",
+  "@@last_modified": "2025-11-28",
+
+  "appTitle": "Delivery Ways",
+
+  "authPhoneTitle": "Sign in",
+  "@authPhoneTitle": {
+    "description": "Title for phone sign-in screen (Ticket #36)"
+  },
+  "authPhoneSubtitle": "Enter your mobile number to sign in to Delivery Ways.",
+  "@authPhoneSubtitle": {
+    "description": "Subtitle for phone sign-in screen"
+  },
+  "authPhoneFieldHint": "Mobile number",
+  "@authPhoneFieldHint": {
+    "description": "Hint text for phone number field"
+  },
+  "authPhoneContinueCta": "Continue",
+  "@authPhoneContinueCta": {
+    "description": "Continue button on phone sign-in screen"
+  },
+  "authOtpTitle": "Enter code",
+  "@authOtpTitle": {
+    "description": "Title for OTP verification screen (Ticket #36)"
+  },
+  "authOtpSubtitle": "We've sent a verification code to your phone.",
+  "@authOtpSubtitle": {
+    "description": "Subtitle for OTP verification screen"
+  },
+  "authOtpFieldHint": "Verification code",
+  "@authOtpFieldHint": {
+    "description": "Hint text for OTP code field"
+  },
+  "authOtpVerifyCta": "Verify and continue",
+  "@authOtpVerifyCta": {
+    "description": "Verify button on OTP screen"
+  },
+  "accountSheetTitle": "Account",
+  "@accountSheetTitle": {
+    "description": "Title for account bottom sheet (Ticket #37)"
+  },
+  "accountSheetSignedOutSubtitle": "You are not signed in. Sign in to sync your rides and deliveries.",
+  "@accountSheetSignedOutSubtitle": {
+    "description": "Subtitle when user is not signed in"
+  },
+  "accountSheetSignInCta": "Sign in with phone",
+  "@accountSheetSignInCta": {
+    "description": "Sign in button in account sheet"
+  },
+  "accountSheetSignedInTitle": "Signed in",
+  "@accountSheetSignedInTitle": {
+    "description": "Title when user is signed in"
+  },
+  "accountSheetSignOutCta": "Sign out",
+  "@accountSheetSignOutCta": {
+    "description": "Sign out button in account sheet"
+  },
+  "accountSheetFooterText": "More account options coming soon.",
+  "@accountSheetFooterText": {
+    "description": "Footer text in account sheet"
+  },
+  "@appTitle": {
+    "description": "Application title"
+  },
+  "initializing": "Initializing...",
+
+  "back": "Back",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "save": "Save",
+  "confirm": "Confirm",
+  "ok": "OK",
+  "close": "Close",
+  "error": "Error",
+  "loading": "Loading...",
+  "comingSoon": "Coming soon",
+
+  "authPhoneLoginTitle": "Sign In",
+  "authPhoneLoginSubtitle": "Enter your phone number to sign in or create a new account.",
+  "authPhoneFieldLabel": "Phone Number",
+  "authPhoneFieldHint": "+9665xxxxxxxx",
+  "authPhoneContinueButton": "Continue",
+  "authPhoneRequiredError": "Please enter your phone number.",
+  "authPhoneInvalidFormatError": "Please enter a valid phone number.",
+  "authPhoneSubmitError": "Unable to send verification code. Please try again.",
+
+  "authOtpFieldLabel": "Verification Code",
+  "authOtpConfirmButton": "Verify",
+  "authOtpRequiredError": "Please enter the verification code.",
+  "authOtpInvalidFormatError": "Please enter a valid 4-6 digit code.",
+  "authOtpSubmitError": "Invalid or expired verification code.",
+  "authOtpResendButton": "Resend Code",
+  "authOtpResendCountdown": "Resend code in {seconds} seconds",
+  "@authOtpResendCountdown": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+
+  "authBiometricButtonLabel": "Use biometrics",
+  "authBiometricReason": "Authenticate to continue.",
+  "authBiometricUnlockError": "Unable to unlock with biometrics. Please request a new code.",
+  "authCooldownMessage": "Please wait {seconds}s before trying again.",
+  "@authCooldownMessage": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "authCooldownReady": "You can resend now.",
+  "authAttemptsRemaining": "{count} attempts remaining",
+  "@authAttemptsRemaining": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "authNoAttemptsRemaining": "No attempts remaining.",
+
+  "auth2faTitle": "Two-Factor Authentication",
+  "auth2faSubtitle": "An additional verification step is required for your security.",
+  "auth2faSelectMethod": "Select verification method",
+  "auth2faMethodSms": "Text Message (SMS)",
+  "auth2faMethodSmsDescription": "Receive a code via SMS to {destination}",
+  "@auth2faMethodSmsDescription": {
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "auth2faMethodTotp": "Authenticator App",
+  "auth2faMethodTotpDescription": "Use your authenticator app to generate a code",
+  "auth2faMethodEmail": "Email",
+  "auth2faMethodEmailDescription": "Receive a code via email to {destination}",
+  "@auth2faMethodEmailDescription": {
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "auth2faMethodPush": "Push Notification",
+  "auth2faMethodPushDescription": "Approve the request on your registered device",
+  "auth2faEnterCode": "Enter verification code",
+  "auth2faCodeHint": "Enter the 6-digit code",
+  "auth2faVerifyButton": "Verify",
+  "auth2faCancelButton": "Cancel",
+  "auth2faResendCode": "Resend code",
+  "auth2faCodeExpired": "Code expired. Please request a new one.",
+  "auth2faInvalidCode": "Invalid code. Please try again.",
+  "auth2faAccountLocked": "Too many attempts. Account temporarily locked.",
+  "auth2faLockoutMessage": "Please try again after {minutes} minutes.",
+  "@auth2faLockoutMessage": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+
+  "notificationsSettingsTitle": "Notification Settings",
+  "notificationsSettingsOrderStatusTitle": "Order Status Notifications",
+  "notificationsSettingsOrderStatusSubtitle": "Receive real-time updates about your active orders.",
+  "notificationsSettingsPromotionsTitle": "Promotional Offers",
+  "notificationsSettingsPromotionsSubtitle": "Receive personalized offers and discounts.",
+  "notificationsSettingsSystemTitle": "System Notifications",
+  "notificationsSettingsSystemSubtitle": "Important alerts about your account and system.",
+  "notificationsSettingsConsentRequired": "Grant notification permission to enable these settings.",
+  "notificationsSettingsErrorGeneric": "Unable to load notification settings. Please try again.",
+  "notificationsSettingsErrorLoading": "Error loading notification settings",
+  "notificationsSettingsSystemSettingsButton": "Open System Settings",
+  "notificationsSettingsSystemSettingsPlaceholder": "System settings will open soon",
+  "notificationsSettingsQuietHoursTitle": "Quiet Hours",
+  "notificationsSettingsQuietHoursNotEnabled": "Do Not Disturb mode not enabled",
+  "settingsSectionNotifications": "Notification Settings",
+
+  "notificationsInboxTitle": "Notifications",
+  "notificationsInboxErrorGeneric": "Unable to load notifications. Please try again.",
+  "notificationsInboxRetryButtonLabel": "Retry",
+  "notificationsInboxEmptyTitle": "No notifications yet",
+  "notificationsInboxEmptySubtitle": "Important alerts about your orders and offers will appear here.",
+  "notificationsInboxEmptyCtaBackToHomeLabel": "Back to Home",
+  "notificationsInboxMarkAsReadTooltip": "Mark as read",
+  "notificationsInboxMarkAllAsReadTooltip": "Mark all as read",
+  "notificationsInboxClearAllTooltip": "Clear all",
+  "notificationsInboxClearAllDialogTitle": "Clear All Notifications",
+  "notificationsInboxClearAllDialogMessage": "Are you sure you want to delete all notifications? This action cannot be undone.",
+  "notificationsInboxClearAllConfirm": "Clear All",
+  "notificationsInboxTappedGeneric": "Notification opened",
+  "notificationsInboxTimeNow": "now",
+  "notificationsInboxTimeMinutes": "{minutes}m ago",
+  "@notificationsInboxTimeMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsInboxTimeHours": "{hours}h ago",
+  "@notificationsInboxTimeHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsInboxTimeDays": "{days}d ago",
+  "@notificationsInboxTimeDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+
+  "privacyConsentTitle": "Privacy & Consent",
+  "privacyConsentHeadline": "Control your privacy",
+  "privacyConsentDescription": "Choose what to share with us to improve your experience",
+  "privacyConsentAnalyticsTitle": "Usage Analytics",
+  "privacyConsentAnalyticsDescription": "Helps us understand how the app is used to improve performance and features",
+  "privacyConsentCrashReportsTitle": "Crash Reports",
+  "privacyConsentCrashReportsDescription": "Automatically sends crash reports to help us fix issues",
+  "privacyConsentBackgroundLocationTitle": "Background Location",
+  "privacyConsentBackgroundLocationDescription": "Allows location tracking even when the app is closed to improve delivery services",
+  "privacyConsentSaveSuccess": "Privacy settings saved",
+  "privacyConsentErrorPrefix": "Error: {message}",
+  "@privacyConsentErrorPrefix": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+
+  "dsrExportTitle": "Export Data",
+  "dsrExportHeadline": "Export your personal data",
+  "dsrExportDescription": "You will receive a secure link to download all your data. The link is valid for 7 days only.",
+  "dsrExportIncludePaymentsTitle": "Include payment history",
+  "dsrExportIncludePaymentsDescription": "Payment history may contain sensitive information. Please review the file carefully.",
+  "dsrExportStartButton": "Start Export",
+  "dsrExportRequestStatus": "Request Status",
+  "dsrExportRequestDate": "Request date: {date}",
+  "@dsrExportRequestDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "dsrExportDownloadLink": "Download Link",
+  "dsrExportLinkExpires": "Expires: {date}",
+  "@dsrExportLinkExpires": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "dsrExportCopyLink": "Copy Link",
+  "dsrExportLinkCopied": "Link copied",
+  "dsrExportPreparingFile": "Preparing your file…",
+  "dsrExportSendingRequest": "Sending export request…",
+  "dsrExportRequestFailed": "Failed to send request",
+
+  "dsrErasureTitle": "Delete Account",
+  "dsrErasureHeadline": "Permanently delete your account",
+  "dsrErasureDescription": "This action cannot be undone. All your data and account information will be deleted.",
+  "dsrErasureRequestButton": "Request Account Deletion",
+  "dsrErasureWarningTitle": "Important Warning",
+  "dsrErasureWarningPoint1": "All your personal data will be permanently deleted",
+  "dsrErasureWarningPoint2": "You will not be able to recover your account or data",
+  "dsrErasureWarningPoint3": "All active orders and reservations will be cancelled",
+  "dsrErasureWarningPoint4": "Your payment and transaction history will be deleted",
+  "dsrErasureWarningPoint5": "The request may take several days to process",
+  "dsrErasureLegalNotice": "Account deletion is subject to the General Data Protection Regulation (GDPR). We will send you confirmation before executing the final deletion.",
+  "dsrErasureRequestStatus": "Request Status",
+  "dsrErasureStatusPending": "Pending review",
+  "dsrErasureStatusInProgress": "Processing",
+  "dsrErasureStatusReady": "Ready for confirmation",
+  "dsrErasureStatusCompleted": "Completed",
+  "dsrErasureStatusFailed": "Processing failed",
+  "dsrErasureStatusCanceled": "Canceled",
+  "dsrErasureReviewingRequest": "Reviewing your request…",
+  "dsrErasureSendingRequest": "Sending deletion request…",
+  "dsrErasureRequestFailed": "Failed to send request",
+  "dsrErasureNewRequest": "Request New Deletion",
+  "dsrErasureConfirmTitle": "Confirm Final Deletion",
+  "dsrErasureConfirmMessage": "This is the final step. After confirmation, your account will be permanently deleted within 30 days and this decision cannot be reversed.",
+  "dsrErasureConfirmButton": "Confirm Deletion",
+
+  "legalPrivacyPolicyTitle": "Privacy Policy",
+  "legalPrivacyPolicyUnavailable": "Privacy policy is not available at this time.",
+  "legalTermsOfServiceTitle": "Terms of Service",
+  "legalTermsOfServiceUnavailable": "Terms of service are not available at this time.",
+  "legalAboutTitle": "Legal Information",
+  "legalPrivacyButton": "Privacy Policy",
+  "legalTermsButton": "Terms of Service",
+  "legalOpenSourceLicenses": "Open Source Licenses",
+
+  "ordersTitle": "Orders",
+  "ordersOrderLabel": "Order: {orderId}",
+  "@ordersOrderLabel": {
+    "placeholders": {
+      "orderId": {
+        "type": "String"
+      }
+    }
+  },
+
+  "cartTitle": "Cart",
+  "cartItemsLabel": "Items: {count}",
+  "@cartItemsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "checkoutTitle": "Checkout",
+
+  "paymentTitle": "Payment",
+  "paymentInitializing": "Initializing payment system...",
+  "paymentDebugTitle": "Payments Debug",
+  "paymentEnabled": "Payments enabled: {enabled}",
+  "@paymentEnabled": {
+    "placeholders": {
+      "enabled": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentMissingKeys": "Missing config keys: {keys}",
+  "@paymentMissingKeys": {
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentGatewayStatus": "Gateway status: {status}",
+  "@paymentGatewayStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentGateway": "Gateway: {type}",
+  "@paymentGateway": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentSheetStatus": "Sheet status: {status}",
+  "@paymentSheetStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentSheet": "Sheet: {type}",
+  "@paymentSheet": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentApplePay": "Pay with Apple Pay",
+  "paymentGooglePay": "Pay with Google Pay",
+  "paymentDigitalWallet": "Pay with Digital Wallet",
+  "paymentCash": "Pay with Cash",
+
+  "trackingTitle": "Tracking",
+  "trackingLocationTitle": "Location Tracking",
+  "trackingCurrentLocation": "Current Location",
+  "trackingTripRoute": "Trip Route",
+  "trackingRealtimeUnavailableTitle": "Live Tracking Unavailable",
+  "trackingRealtimeUnavailableBody": "Real-time tracking is currently unavailable. Your order status will be updated automatically.",
+  "trackingOrderStatus": "Order Status",
+  "trackingNoActiveTrip": "No active trip",
+
+  "mapTitle": "Map",
+  "mapSmokeTestTitle": "Maps Smoke Test",
+  "mapTestLocation": "Test Location",
+
+  "mobilityBgTestsTitle": "Mobility Background Tests (Phase-3)",
+  "mobilityTestBackgroundTracking": "Test Background Tracking",
+  "mobilityTestGeofence": "Test Geofence",
+  "mobilityTestTripRecording": "Test Trip Recording",
+
+  "adminPanelTitle": "Admin Panel",
+  "adminUserInfo": "User Information",
+  "adminUserLabel": "User: {userId}",
+  "@adminUserLabel": {
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRoleLabel": "Role: {role}",
+  "@adminRoleLabel": {
+    "placeholders": {
+      "role": {
+        "type": "String"
+      }
+    }
+  },
+  "adminUserManagement": "User Management",
+  "adminAnalyticsReports": "Analytics & Reports",
+  "adminAnalyticsAccess": "You have access to analytics",
+  "adminSystemMonitoring": "System Monitoring",
+  "adminRbacStats": "RBAC Statistics",
+  "adminRbacEnabled": "Status: {status}",
+  "@adminRbacEnabled": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "adminRbacStatusEnabled": "Enabled",
+  "adminRbacStatusDisabled": "Disabled",
+  "adminCanaryPercentage": "Canary percentage: {percentage}%",
+  "@adminCanaryPercentage": {
+    "placeholders": {
+      "percentage": {
+        "type": "int"
+      }
+    }
+  },
+  "adminRolesCount": "Roles count: {count}",
+  "@adminRolesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "adminTotalPermissions": "Total permissions: {count}",
+  "@adminTotalPermissions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "trackingCheckingAvailability": "Checking tracking availability...",
+  "trackingLoadingRoute": "Loading route...",
+
+  "ordersHistoryTitle": "My Orders",
+  "@ordersHistoryTitle": {
+    "description": "AppBar title for the orders history screen (Track C - Ticket #51)"
+  },
+  "ordersHistoryEmptyTitle": "No orders yet",
+  "@ordersHistoryEmptyTitle": {
+    "description": "Empty state title when no orders exist"
+  },
+  "ordersHistoryEmptySubtitle": "You don't have any orders yet. Start by creating a new shipment.",
+  "@ordersHistoryEmptySubtitle": {
+    "description": "Empty state subtitle when no orders exist"
+  },
+  "ordersHistoryUnavailableTitle": "Orders Unavailable",
+  "ordersHistoryLoadError": "Unable to load order history",
+  "ordersFilterAll": "All",
+  "@ordersFilterAll": {
+    "description": "Filter label for all orders (Track C - Ticket #51)"
+  },
+  "ordersFilterParcels": "Parcels",
+  "@ordersFilterParcels": {
+    "description": "Filter label for parcels only (Track C - Ticket #51)"
+  },
+
+  "paymentMethodsTitle": "Payment Methods",
+  "paymentMethodsEmptyTitle": "No payment methods",
+  "paymentMethodsEmptySubtitle": "Add a payment method to get started",
+  "paymentMethodsAddButton": "Add payment method",
+  "paymentMethodsLoadError": "Unable to load payment methods",
+  "paymentMethodsSaving": "Saving...",
+
+  "authVerifying": "Verifying...",
+  "authSendingCode": "Sending code...",
+
+  "featureUnavailableTitle": "Feature Unavailable",
+  "featureUnavailableGeneric": "This feature is currently unavailable. Please try again later.",
+
+  "onbWelcomeTitle": "Welcome to Delivery Ways",
+  "onbWelcomeBody": "Your reliable delivery partner. Order what you need and track your delivery in real-time.",
+  "onbAppIntroTitle": "How It Works",
+  "onbAppIntroBody": "Browse products, place your order, and we'll deliver it to your door. Simple and fast.",
+  "onbOrderingTitle": "Easy Ordering",
+  "onbOrderingBody": "Find what you need, add to cart, and checkout in seconds. Multiple payment options available where supported.",
+  "onbTrackingTitle": "Track Your Order",
+  "onbTrackingBody": "Follow your delivery in real-time when tracking is available in your area. You'll see updates at every step.",
+  "onbSecurityTitle": "Your Security Matters",
+  "onbSecurityBody": "Your data is protected with industry-standard security. We never share your personal information without consent.",
+  "onbNotificationsTitle": "Stay Updated",
+  "onbNotificationsBody": "Enable notifications to receive order updates, delivery alerts, and exclusive offers.",
+  "onbReadyTitle": "You're All Set!",
+  "onbReadyBody": "Start exploring and place your first order. We're here to help whenever you need us.",
+
+  "onbRideTitle": "Get a Ride, Instantly.",
+  "onbRideBody": "Tap, ride, and arrive. Fast, reliable, and affordable transport at your fingertips.",
+  "onbParcelsTitle": "Deliver Anything, Effortlessly.",
+  "onbParcelsBody": "Send packages across town or across the country. Track every step of the journey.",
+  "onbFoodTitle": "Your Favorite Food, Delivered.",
+  "onbFoodBody": "Craving something delicious? Order from top restaurants and enjoy fast delivery to your door.",
+
+  "onbRiderWelcomeTitle": "Welcome, Rider!",
+  "onbRiderWelcomeBody": "Join our delivery network and start earning. Flexible hours, fair compensation.",
+  "onbRiderHowItWorksTitle": "Your Journey Starts Here",
+  "onbRiderHowItWorksBody": "Accept deliveries, navigate to pickup, deliver to customers. Track your earnings in the app.",
+  "onbRiderLocationTitle": "Enable Location",
+  "onbRiderLocationBody": "We use your location to match you with nearby deliveries and provide navigation. Your location is only shared during active deliveries.",
+  "onbRiderSecurityTitle": "Safe & Secure",
+  "onbRiderSecurityBody": "Your earnings and personal data are protected. Multi-factor authentication keeps your account safe.",
+  "onbRiderNotificationsTitle": "Never Miss a Delivery",
+  "onbRiderNotificationsBody": "Get instant alerts for new delivery requests and important updates.",
+  "onbRiderReadyTitle": "Ready to Deliver!",
+  "onbRiderReadyBody": "You're set up and ready to go. Start accepting deliveries now.",
+
+  "onbCtaGetStarted": "Get Started",
+  "onbCtaNext": "Next",
+  "onbCtaSkip": "Skip",
+  "onbCtaEnableNotifications": "Enable Notifications",
+  "onbCtaEnableLocation": "Enable Location",
+  "onbCtaStartOrdering": "Start Ordering",
+  "onbCtaStartDelivering": "Start Delivering",
+  "onbCtaMaybeLater": "Maybe Later",
+  "onbCtaDone": "Done",
+  "onbCtaBack": "Back",
+
+  "hintAuthPhoneTitle": "Secure Sign-In",
+  "hintAuthPhoneBody": "We'll send a verification code to this number. Your phone number helps us keep your account secure.",
+  "hintAuthOtpTitle": "Check Your Messages",
+  "hintAuthOtpBody": "Enter the code we sent to your phone. This verifies that it's really you.",
+  "hintAuth2faTitle": "Extra Protection",
+  "hintAuth2faBody": "Two-factor authentication adds an extra layer of security to your account.",
+  "hintAuthBiometricTitle": "Quick Access",
+  "hintAuthBiometricBody": "Use your fingerprint or face to sign in faster while keeping your account secure.",
+
+  "hintPaymentsMethodsTitle": "Payment Options",
+  "hintPaymentsMethodsBody": "Add a payment method to speed up checkout. Your payment information is securely encrypted.",
+  "hintPaymentsSecurityTitle": "Secure Payment",
+  "hintPaymentsSecurityBody": "Your card details are encrypted and never stored on our servers. Payments are processed by trusted providers.",
+  "hintPaymentsLimitedTitle": "Limited Payment Options",
+  "hintPaymentsLimitedBody": "Some payment methods may not be available in your region. Cash on delivery is available where supported.",
+
+  "hintTrackingExplanationTitle": "Live Tracking",
+  "hintTrackingExplanationBody": "Watch your order's journey from pickup to delivery on the map.",
+  "hintTrackingUnavailableTitle": "Tracking Not Available",
+  "hintTrackingUnavailableBody": "Real-time tracking is not available for this order. You'll receive status updates via notifications.",
+  "hintTrackingRealtimeTitle": "Real-Time Updates",
+  "hintTrackingRealtimeBody": "The map updates automatically as your delivery progresses.",
+
+  "hintNotificationsImportanceTitle": "Why Notifications Matter",
+  "hintNotificationsImportanceBody": "Get instant updates about your order status, delivery arrival, and special offers.",
+  "hintNotificationsPermissionTitle": "Enable Notifications",
+  "hintNotificationsPermissionBody": "To receive order updates and delivery alerts, please enable notifications.",
+  "hintNotificationsPermissionCta": "Enable Now",
+
+  "hintOrdersFirstTitle": "Your First Order",
+  "hintOrdersFirstBody": "Congratulations on your first order! Track its progress here.",
+  "hintOrdersEmptyTitle": "No Orders Yet",
+  "hintOrdersEmptyBody": "Start browsing and place your first order. Your order history will appear here.",
+  "hintOrdersEmptyCta": "Browse Now",
+
+  "settingsReplayOnboarding": "View App Introduction",
+  "settingsReplayOnboardingDescription": "See the welcome guide again",
+
+  "rideBookingTitle": "Book a Ride",
+  "rideBookingMapStubLabel": "Map preview (stub – Ride Booking)",
+  "rideBookingSheetTitle": "Where do you want to go?",
+  "rideBookingSheetSubtitle": "Choose your pickup point and destination to see options and pricing.",
+  "rideBookingPickupLabel": "Pickup",
+  "rideBookingPickupCurrentLocation": "Current location",
+  "rideBookingDestinationLabel": "Destination",
+  "rideBookingDestinationHint": "Where to?",
+  "rideBookingRecentTitle": "Recent places",
+  "rideBookingRecentHome": "Home",
+  "rideBookingRecentHomeSubtitle": "Saved home address",
+  "rideBookingRecentWork": "Work",
+  "rideBookingRecentWorkSubtitle": "Saved work address",
+  "rideBookingRecentAddNew": "Add new place",
+  "rideBookingRecentAddNewSubtitle": "Save a new frequent destination",
+  "rideBookingSeeOptionsCta": "See options",
+
+  "rideConfirmTitle": "Confirm your ride",
+  "rideConfirmMapStubLabel": "Route preview (stub – the actual map will show your driver and destination).",
+  "rideConfirmSheetTitle": "Choose your ride",
+  "rideConfirmSheetSubtitle": "Select a ride option, review pricing, and confirm your trip.",
+
+  "rideConfirmOptionEconomyTitle": "Economy",
+  "rideConfirmOptionEconomySubtitle": "Affordable everyday rides for up to 4 people.",
+  "rideConfirmOptionXlTitle": "XL",
+  "rideConfirmOptionXlSubtitle": "Extra space for groups and larger items.",
+  "rideConfirmOptionPremiumTitle": "Premium",
+  "rideConfirmOptionPremiumSubtitle": "High-comfort rides with top-rated drivers.",
+
+  "rideConfirmOptionEtaFormat": "{minutes} min away",
+  "@rideConfirmOptionEtaFormat": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "rideConfirmOptionPriceApprox": "≈ {amount} SAR",
+  "@rideConfirmOptionPriceApprox": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+
+  "rideConfirmPaymentLabel": "Payment method",
+  "rideConfirmPaymentStubValue": "Visa •• 4242 (stub)",
+
+  "rideConfirmPrimaryCta": "Request Ride",
+  "rideConfirmRequestedStubMessage": "Ride request stub – backend integration coming soon.",
+
+  "profileTitle": "Profile",
+  "@profileTitle": {
+    "description": "Profile tab title in the bottom navigation / header"
+  },
+  "profileSectionSettingsTitle": "Settings",
+  "@profileSectionSettingsTitle": {
+    "description": "Title for the Settings section in the Profile tab"
+  },
+  "profileSectionPrivacyTitle": "Privacy & Data",
+  "@profileSectionPrivacyTitle": {
+    "description": "Title for the Privacy & Data section (DSR entry points)"
+  },
+  "profileUserFallbackName": "User",
+  "@profileUserFallbackName": {
+    "description": "Fallback display name when user has no name set"
+  },
+  "profileUserPhoneLabel": "Phone number",
+  "@profileUserPhoneLabel": {
+    "description": "Label for the phone number in the user info card"
+  },
+  "profileSettingsPersonalInfoTitle": "Personal info",
+  "@profileSettingsPersonalInfoTitle": {
+    "description": "Settings item - personal information"
+  },
+  "profileSettingsPersonalInfoSubtitle": "Manage your name and details.",
+  "@profileSettingsPersonalInfoSubtitle": {
+    "description": "Subtitle for personal info settings item"
+  },
+  "profileSettingsRidePrefsTitle": "Ride preferences",
+  "@profileSettingsRidePrefsTitle": {
+    "description": "Settings item - ride preferences"
+  },
+  "profileSettingsRidePrefsSubtitle": "Coming soon.",
+  "@profileSettingsRidePrefsSubtitle": {
+    "description": "Subtitle for ride preferences (placeholder)"
+  },
+  "profileSettingsNotificationsTitle": "Notifications",
+  "@profileSettingsNotificationsTitle": {
+    "description": "Settings item - notifications"
+  },
+  "profileSettingsNotificationsSubtitle": "Control alerts and offers.",
+  "@profileSettingsNotificationsSubtitle": {
+    "description": "Subtitle for notifications settings item"
+  },
+  "profileSettingsHelpTitle": "Help & support",
+  "@profileSettingsHelpTitle": {
+    "description": "Settings item - help and support"
+  },
+  "profileSettingsHelpSubtitle": "Get help with your trips and orders.",
+  "@profileSettingsHelpSubtitle": {
+    "description": "Subtitle for help & support settings item"
+  },
+  "profilePrivacyExportTitle": "Export my data",
+  "@profilePrivacyExportTitle": {
+    "description": "DSR item - export my data"
+  },
+  "profilePrivacyExportSubtitle": "Request a copy of your personal data.",
+  "@profilePrivacyExportSubtitle": {
+    "description": "Subtitle for export my data item"
+  },
+  "profilePrivacyErasureTitle": "Erase my data",
+  "@profilePrivacyErasureTitle": {
+    "description": "DSR item - erase my data"
+  },
+  "profilePrivacyErasureSubtitle": "Request deletion of your personal data.",
+  "@profilePrivacyErasureSubtitle": {
+    "description": "Subtitle for erase my data item"
+  },
+  "profileLogoutTitle": "Logout",
+  "@profileLogoutTitle": {
+    "description": "Logout item title"
+  },
+  "profileLogoutSubtitle": "Sign out of your account",
+  "@profileLogoutSubtitle": {
+    "description": "Subtitle for logout item"
+  },
+  "profileLogoutDialogTitle": "Logout",
+  "@profileLogoutDialogTitle": {
+    "description": "Title of the logout confirmation dialog"
+  },
+  "profileLogoutDialogBody": "Are you sure you want to sign out?",
+  "@profileLogoutDialogBody": {
+    "description": "Body text of the logout confirmation dialog"
+  },
+  "profileLogoutDialogCancel": "Cancel",
+  "@profileLogoutDialogCancel": {
+    "description": "Cancel button label in logout dialog"
+  },
+  "profileLogoutDialogConfirm": "Logout",
+  "@profileLogoutDialogConfirm": {
+    "description": "Confirm button label in logout dialog"
+  },
+
+  "ridePhaseDraftLabel": "Draft",
+  "ridePhaseQuotingLabel": "Getting quote…",
+  "ridePhaseRequestingLabel": "Requesting…",
+  "ridePhaseFindingDriverLabel": "Finding driver…",
+  "ridePhaseDriverAcceptedLabel": "Driver accepted",
+  "ridePhaseDriverArrivedLabel": "Driver arrived",
+  "ridePhaseInProgressLabel": "Trip in progress",
+  "ridePhasePaymentLabel": "Payment",
+  "ridePhaseCompletedLabel": "Completed",
+  "ridePhaseCancelledLabel": "Cancelled",
+  "ridePhaseFailedLabel": "Failed",
+
+  "rideErrorOptionsLoadFailed": "Failed to load ride options. Please try again.",
+  "rideErrorRetryCta": "Retry",
+
+  "rideActiveNoTripTitle": "No active trip",
+  "rideActiveNoTripBody": "You do not have an active trip right now.",
+  "rideActiveAppBarTitle": "Your trip",
+  "rideActiveEtaFormat": "ETA ~ {minutes} min",
+  "@rideActiveEtaFormat": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+
+  "rideActiveContactDriverCta": "Contact driver",
+  "rideActiveShareTripCta": "Share trip",
+  "rideActiveCancelTripCta": "Cancel ride",
+
+  "rideActiveContactDriverNotImplemented": "Contact driver is not implemented yet.",
+  "rideActiveShareTripNotImplemented": "Share trip is not implemented yet.",
+  "rideActiveCancelTripNotImplemented": "Cancel ride is not implemented yet.",
+  "rideActiveCancelErrorGeneric": "Could not cancel the ride. Please try again.",
+  "@rideActiveCancelErrorGeneric": {
+    "description": "Generic error message when ride cancellation fails (Track B - Ticket #22)"
+  },
+
+  "rideActiveHeadlineFindingDriver": "Finding a driver…",
+  "rideActiveHeadlineDriverEta": "Driver is {minutes} min away",
+  "@rideActiveHeadlineDriverEta": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActiveHeadlineDriverOnTheWay": "Driver on the way",
+  "rideActiveHeadlineDriverArrived": "Driver has arrived",
+  "rideActiveHeadlineInProgress": "Trip in progress",
+  "rideActiveHeadlinePayment": "Completing payment",
+  "rideActiveHeadlineCompleted": "Trip completed",
+  "rideActiveHeadlineCancelled": "Trip cancelled",
+  "rideActiveHeadlineFailed": "Trip failed",
+  "rideActiveHeadlinePreparing": "Preparing your trip",
+
+  "rideActiveGoBackCta": "Go back",
+
+  "rideActiveDestinationLabel": "To {destination}",
+  "@rideActiveDestinationLabel": {
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+
+  "homeActiveRideViewTripCta": "View trip",
+  "@homeActiveRideViewTripCta": {
+    "description": "CTA button on Home Hub active ride card to open the active trip screen."
+  },
+
+  "rideDestinationTitle": "Where to?",
+  "@rideDestinationTitle": {
+    "description": "Title for the ride destination input screen (Screen 8)"
+  },
+  "rideDestinationPickupLabel": "Pick-up",
+  "@rideDestinationPickupLabel": {
+    "description": "Label for the pickup location field"
+  },
+  "rideDestinationPickupCurrentLocation": "Current location",
+  "@rideDestinationPickupCurrentLocation": {
+    "description": "Default text for pickup when using current GPS location"
+  },
+  "rideDestinationRecentLocationsSection": "Recent locations",
+  "@rideDestinationRecentLocationsSection": {
+    "description": "Section header for the list of recent/saved locations"
+  },
+
+  "rideTripConfirmationTitle": "Confirm your trip",
+  "@rideTripConfirmationTitle": {
+    "description": "Title for the trip confirmation screen (Screen 9)"
+  },
+  "rideTripConfirmationRequestRideCta": "Request ride",
+  "@rideTripConfirmationRequestRideCta": {
+    "description": "CTA button to request the ride"
+  },
+  "rideTripConfirmationPaymentSectionTitle": "Payment",
+  "@rideTripConfirmationPaymentSectionTitle": {
+    "description": "Section title for payment method"
+  },
+  "rideTripConfirmationPaymentMethodCash": "Cash",
+  "@rideTripConfirmationPaymentMethodCash": {
+    "description": "Cash payment method label"
+  },
+
+  "rideTripSummaryTitle": "Trip summary",
+  "@rideTripSummaryTitle": {
+    "description": "Title for the trip summary screen (Track B - Ticket #23)"
+  },
+  "rideTripSummaryCompletedTitle": "Trip completed",
+  "@rideTripSummaryCompletedTitle": {
+    "description": "Header title when trip is completed"
+  },
+  "rideTripSummaryCompletedSubtitle": "Thanks for riding with Delivery Ways",
+  "@rideTripSummaryCompletedSubtitle": {
+    "description": "Subtitle shown after trip completion"
+  },
+  "rideTripSummaryRouteSectionTitle": "Route",
+  "@rideTripSummaryRouteSectionTitle": {
+    "description": "Section title for route summary"
+  },
+  "rideTripSummaryFareSectionTitle": "Fare",
+  "@rideTripSummaryFareSectionTitle": {
+    "description": "Section title for fare/receipt"
+  },
+  "rideTripSummaryTotalLabel": "Total",
+  "@rideTripSummaryTotalLabel": {
+    "description": "Label for total fare amount"
+  },
+  "rideTripSummaryDriverSectionTitle": "Your driver",
+  "@rideTripSummaryDriverSectionTitle": {
+    "description": "Section title for driver info"
+  },
+  "rideTripSummaryRatingLabel": "Rate your driver",
+  "@rideTripSummaryRatingLabel": {
+    "description": "Label prompting user to rate the driver"
+  },
+  "rideTripSummaryDoneCta": "Done",
+  "@rideTripSummaryDoneCta": {
+    "description": "CTA button to finish and return home"
+  },
+
+  "rideConfirmLoadingTitle": "Fetching ride options...",
+  "@rideConfirmLoadingTitle": {
+    "description": "Title shown while loading ride options (Ticket #26)"
+  },
+  "rideConfirmLoadingSubtitle": "Please wait while we find the best rides for you.",
+  "@rideConfirmLoadingSubtitle": {
+    "description": "Subtitle shown while loading ride options"
+  },
+  "rideConfirmErrorTitle": "We couldn't load ride options",
+  "@rideConfirmErrorTitle": {
+    "description": "Title shown when quote loading fails"
+  },
+  "rideConfirmErrorSubtitle": "Please check your connection and try again.",
+  "@rideConfirmErrorSubtitle": {
+    "description": "Subtitle shown when quote loading fails"
+  },
+  "rideConfirmEmptyTitle": "No rides available",
+  "@rideConfirmEmptyTitle": {
+    "description": "Title shown when no ride options are available"
+  },
+  "rideConfirmEmptySubtitle": "Please try again in a few minutes.",
+  "@rideConfirmEmptySubtitle": {
+    "description": "Subtitle shown when no ride options are available"
+  },
+  "rideConfirmRetryCta": "Retry",
+  "@rideConfirmRetryCta": {
+    "description": "CTA button to retry loading ride options"
+  },
+
+  "onboardingWelcomeTitle": "Welcome to Delivery Ways",
+  "@onboardingWelcomeTitle": {
+    "description": "Title for the welcome onboarding screen"
+  },
+  "onboardingWelcomeSubtitle": "All your rides, parcels, and deliveries in one place.",
+  "@onboardingWelcomeSubtitle": {
+    "description": "Subtitle for the welcome onboarding screen"
+  },
+  "onboardingWelcomeGetStartedCta": "Get started",
+  "@onboardingWelcomeGetStartedCta": {
+    "description": "CTA button to start onboarding flow"
+  },
+
+  "onboardingPermissionsTitle": "Allow permissions",
+  "@onboardingPermissionsTitle": {
+    "description": "Title for the permissions onboarding screen"
+  },
+  "onboardingPermissionsLocation": "Location access",
+  "@onboardingPermissionsLocation": {
+    "description": "Location permission title"
+  },
+  "onboardingPermissionsLocationSubtitle": "We use your location to find nearby drivers.",
+  "@onboardingPermissionsLocationSubtitle": {
+    "description": "Location permission description"
+  },
+  "onboardingPermissionsNotifications": "Notifications",
+  "@onboardingPermissionsNotifications": {
+    "description": "Notifications permission title"
+  },
+  "onboardingPermissionsNotificationsSubtitle": "Stay updated about your rides and deliveries.",
+  "@onboardingPermissionsNotificationsSubtitle": {
+    "description": "Notifications permission description"
+  },
+  "onboardingPermissionsContinueCta": "Continue",
+  "@onboardingPermissionsContinueCta": {
+    "description": "Continue button on permissions screen"
+  },
+  "onboardingPermissionsSkipCta": "Skip for now",
+  "@onboardingPermissionsSkipCta": {
+    "description": "Skip button on permissions screen"
+  },
+
+  "onboardingPreferencesTitle": "Set your preferences",
+  "@onboardingPreferencesTitle": {
+    "description": "Title for the preferences onboarding screen"
+  },
+  "onboardingPreferencesSubtitle": "You can change these later in Settings.",
+  "@onboardingPreferencesSubtitle": {
+    "description": "Subtitle for the preferences onboarding screen"
+  },
+  "onboardingPreferencesPrimaryServiceTitle": "What do you use most?",
+  "@onboardingPreferencesPrimaryServiceTitle": {
+    "description": "Section title for service selection"
+  },
+  "onboardingPreferencesServiceRides": "Rides",
+  "@onboardingPreferencesServiceRides": {
+    "description": "Rides service option title"
+  },
+  "onboardingPreferencesServiceRidesDesc": "Get picked up and dropped off",
+  "@onboardingPreferencesServiceRidesDesc": {
+    "description": "Rides service option description"
+  },
+  "onboardingPreferencesServiceParcels": "Parcels",
+  "@onboardingPreferencesServiceParcels": {
+    "description": "Parcels service option title"
+  },
+  "onboardingPreferencesServiceParcelsDesc": "Send and receive packages",
+  "@onboardingPreferencesServiceParcelsDesc": {
+    "description": "Parcels service option description"
+  },
+  "onboardingPreferencesServiceFood": "Food",
+  "@onboardingPreferencesServiceFood": {
+    "description": "Food service option title"
+  },
+  "onboardingPreferencesServiceFoodDesc": "Order from restaurants",
+  "@onboardingPreferencesServiceFoodDesc": {
+    "description": "Food service option description"
+  },
+  "onboardingPreferencesDoneCta": "Start using Delivery Ways",
+  "@onboardingPreferencesDoneCta": {
+    "description": "Done button to complete onboarding"
+  },
+
+  "parcelsEntryTitle": "Parcels",
+  "@parcelsEntryTitle": {
+    "description": "Title for Parcels entry screen (Track C - Ticket #40)"
+  },
+  "parcelsEntrySubtitle": "Ship and track your parcels in one place.",
+  "@parcelsEntrySubtitle": {
+    "description": "Subtitle for Parcels entry screen"
+  },
+  "parcelsEntryCreateShipmentCta": "Create shipment",
+  "@parcelsEntryCreateShipmentCta": {
+    "description": "Primary CTA button to create a new shipment"
+  },
+  "parcelsEntryViewShipmentsCta": "View shipments list",
+  "@parcelsEntryViewShipmentsCta": {
+    "description": "Secondary CTA button to view shipments list"
+  },
+  "parcelsEntryComingSoonMessage": "Parcels flows are coming soon.",
+  "@parcelsEntryComingSoonMessage": {
+    "description": "Snackbar message when parcels flows are not yet implemented"
+  },
+  "parcelsEntryFooterNote": "Parcels MVP is under active development.",
+  "@parcelsEntryFooterNote": {
+    "description": "Footer note on Parcels entry screen"
+  },
+  "parcelsComingSoonMessage": "Parcels is coming soon.",
+  "@parcelsComingSoonMessage": {
+    "description": "Snackbar message when Parcels feature is disabled"
+  },
+
+  "parcelsDestinationTitle": "Create shipment",
+  "@parcelsDestinationTitle": {
+    "description": "Title for Parcel Destination screen (Track C - Ticket #41)"
+  },
+  "parcelsDestinationSubtitle": "Enter where to pick up and where to deliver your parcel.",
+  "@parcelsDestinationSubtitle": {
+    "description": "Subtitle for Parcel Destination screen"
+  },
+  "parcelsDestinationPickupLabel": "Pickup address",
+  "@parcelsDestinationPickupLabel": {
+    "description": "Label for pickup address field"
+  },
+  "parcelsDestinationPickupHint": "Enter pickup address",
+  "@parcelsDestinationPickupHint": {
+    "description": "Hint text for pickup address field"
+  },
+  "parcelsDestinationDropoffLabel": "Delivery address",
+  "@parcelsDestinationDropoffLabel": {
+    "description": "Label for delivery address field"
+  },
+  "parcelsDestinationDropoffHint": "Enter delivery address",
+  "@parcelsDestinationDropoffHint": {
+    "description": "Hint text for delivery address field"
+  },
+  "parcelsDestinationContinueCta": "Continue",
+  "@parcelsDestinationContinueCta": {
+    "description": "Continue button on Parcel Destination screen"
+  },
+
+  "parcelsDetailsTitle": "Parcel details",
+  "@parcelsDetailsTitle": {
+    "description": "Title for Parcel Details screen (Track C - Ticket #42)"
+  },
+  "parcelsDetailsSubtitle": "Tell us more about your parcel to get accurate pricing.",
+  "@parcelsDetailsSubtitle": {
+    "description": "Subtitle for Parcel Details screen"
+  },
+  "parcelsDetailsSizeLabel": "Size",
+  "@parcelsDetailsSizeLabel": {
+    "description": "Label for size selection"
+  },
+  "parcelsDetailsWeightLabel": "Weight",
+  "@parcelsDetailsWeightLabel": {
+    "description": "Label for weight field"
+  },
+  "parcelsDetailsWeightHint": "e.g. 2.5 kg",
+  "@parcelsDetailsWeightHint": {
+    "description": "Hint text for weight field"
+  },
+  "parcelsDetailsContentsLabel": "What are you sending?",
+  "@parcelsDetailsContentsLabel": {
+    "description": "Label for contents description field"
+  },
+  "parcelsDetailsContentsHint": "Briefly describe the contents",
+  "@parcelsDetailsContentsHint": {
+    "description": "Hint text for contents description field"
+  },
+  "parcelsDetailsFragileLabel": "This parcel is fragile",
+  "@parcelsDetailsFragileLabel": {
+    "description": "Label for fragile toggle"
+  },
+  "parcelsDetailsContinueCta": "Continue to pricing",
+  "@parcelsDetailsContinueCta": {
+    "description": "Continue button on Parcel Details screen"
+  },
+
+  "parcelsQuoteTitle": "Shipment pricing",
+  "@parcelsQuoteTitle": {
+    "description": "Title for Parcel Quote screen (Track C - Ticket #43)"
+  },
+  "parcelsQuoteSubtitle": "Choose how fast you want it delivered and how much you want to pay.",
+  "@parcelsQuoteSubtitle": {
+    "description": "Subtitle for Parcel Quote screen"
+  },
+  "parcelsQuoteLoadingTitle": "Fetching price options...",
+  "@parcelsQuoteLoadingTitle": {
+    "description": "Loading text while fetching price options"
+  },
+  "parcelsQuoteErrorTitle": "We couldn't load price options",
+  "@parcelsQuoteErrorTitle": {
+    "description": "Error title when pricing fails"
+  },
+  "parcelsQuoteErrorSubtitle": "Please check your connection and try again.",
+  "@parcelsQuoteErrorSubtitle": {
+    "description": "Error subtitle when pricing fails"
+  },
+  "parcelsQuoteEmptyTitle": "No options available",
+  "@parcelsQuoteEmptyTitle": {
+    "description": "Empty state title when no pricing options"
+  },
+  "parcelsQuoteEmptySubtitle": "Please adjust the parcel details and try again.",
+  "@parcelsQuoteEmptySubtitle": {
+    "description": "Empty state subtitle when no pricing options"
+  },
+  "parcelsQuoteRetryCta": "Retry",
+  "@parcelsQuoteRetryCta": {
+    "description": "Retry button on error state"
+  },
+  "parcelsQuoteConfirmCta": "Confirm shipment",
+  "@parcelsQuoteConfirmCta": {
+    "description": "Confirm button on Parcel Quote screen"
+  },
+
+  "parcelsListSectionTitle": "My shipments",
+  "@parcelsListSectionTitle": {
+    "description": "Section title for the shipments list (Track C - Ticket #45)"
+  },
+  "parcelsListEmptyTitle": "No shipments yet",
+  "@parcelsListEmptyTitle": {
+    "description": "Title shown when no parcels exist"
+  },
+  "parcelsListEmptySubtitle": "When you create a shipment, it will appear here.",
+  "@parcelsListEmptySubtitle": {
+    "description": "Subtitle shown when no parcels exist"
+  },
+  "parcelsFilterAllLabel": "All",
+  "@parcelsFilterAllLabel": {
+    "description": "Filter label for all parcels"
+  },
+  "parcelsFilterInProgressLabel": "In progress",
+  "@parcelsFilterInProgressLabel": {
+    "description": "Filter label for in-progress parcels"
+  },
+  "parcelsFilterDeliveredLabel": "Delivered",
+  "@parcelsFilterDeliveredLabel": {
+    "description": "Filter label for delivered parcels"
+  },
+  "parcelsFilterCancelledLabel": "Cancelled",
+  "@parcelsFilterCancelledLabel": {
+    "description": "Filter label for cancelled parcels"
+  },
+  "parcelsStatusScheduled": "Scheduled",
+  "@parcelsStatusScheduled": {
+    "description": "Parcel status: scheduled for pickup"
+  },
+  "parcelsStatusPickupPending": "Pickup pending",
+  "@parcelsStatusPickupPending": {
+    "description": "Parcel status: waiting for pickup"
+  },
+  "parcelsStatusPickedUp": "Picked up",
+  "@parcelsStatusPickedUp": {
+    "description": "Parcel status: picked up by courier"
+  },
+  "parcelsStatusInTransit": "In transit",
+  "@parcelsStatusInTransit": {
+    "description": "Parcel status: on the way"
+  },
+  "parcelsStatusDelivered": "Delivered",
+  "@parcelsStatusDelivered": {
+    "description": "Parcel status: delivered to recipient"
+  },
+  "parcelsStatusCancelled": "Cancelled",
+  "@parcelsStatusCancelled": {
+    "description": "Parcel status: cancelled by user or system"
+  },
+  "parcelsStatusFailed": "Failed",
+  "@parcelsStatusFailed": {
+    "description": "Parcel status: delivery failed"
+  },
+
+  "parcelsCreateShipmentTitle": "New Shipment",
+  "@parcelsCreateShipmentTitle": {
+    "description": "Title for Create Shipment screen (Track C - Ticket #46)"
+  },
+  "parcelsCreateSenderSectionTitle": "Sender",
+  "@parcelsCreateSenderSectionTitle": {
+    "description": "Section title for sender information"
+  },
+  "parcelsCreateReceiverSectionTitle": "Receiver",
+  "@parcelsCreateReceiverSectionTitle": {
+    "description": "Section title for receiver information"
+  },
+  "parcelsCreateDetailsSectionTitle": "Parcel details",
+  "@parcelsCreateDetailsSectionTitle": {
+    "description": "Section title for parcel details"
+  },
+  "parcelsCreateServiceSectionTitle": "Service type",
+  "@parcelsCreateServiceSectionTitle": {
+    "description": "Section title for service type selection"
+  },
+  "parcelsCreateSenderNameLabel": "Sender name",
+  "@parcelsCreateSenderNameLabel": {
+    "description": "Label for sender name field"
+  },
+  "parcelsCreateSenderPhoneLabel": "Sender phone",
+  "@parcelsCreateSenderPhoneLabel": {
+    "description": "Label for sender phone field"
+  },
+  "parcelsCreateSenderAddressLabel": "Sender address",
+  "@parcelsCreateSenderAddressLabel": {
+    "description": "Label for sender address field"
+  },
+  "parcelsCreateReceiverNameLabel": "Receiver name",
+  "@parcelsCreateReceiverNameLabel": {
+    "description": "Label for receiver name field"
+  },
+  "parcelsCreateReceiverPhoneLabel": "Receiver phone",
+  "@parcelsCreateReceiverPhoneLabel": {
+    "description": "Label for receiver phone field"
+  },
+  "parcelsCreateReceiverAddressLabel": "Receiver address",
+  "@parcelsCreateReceiverAddressLabel": {
+    "description": "Label for receiver address field"
+  },
+  "parcelsCreateWeightLabel": "Weight (kg)",
+  "@parcelsCreateWeightLabel": {
+    "description": "Label for weight input field"
+  },
+  "parcelsCreateSizeLabel": "Size",
+  "@parcelsCreateSizeLabel": {
+    "description": "Label for size selection"
+  },
+  "parcelsCreateNotesLabel": "Notes (optional)",
+  "@parcelsCreateNotesLabel": {
+    "description": "Label for notes input field"
+  },
+  "parcelsCreateServiceExpress": "Express",
+  "@parcelsCreateServiceExpress": {
+    "description": "Express service type option"
+  },
+  "parcelsCreateServiceStandard": "Standard",
+  "@parcelsCreateServiceStandard": {
+    "description": "Standard service type option"
+  },
+  "parcelsCreateShipmentCtaGetEstimate": "Get estimate",
+  "@parcelsCreateShipmentCtaGetEstimate": {
+    "description": "CTA button to submit and get shipment estimate"
+  },
+  "parcelsCreateErrorRequired": "This field is required",
+  "@parcelsCreateErrorRequired": {
+    "description": "Validation error for required fields"
+  },
+  "parcelsCreateErrorInvalidNumber": "Please enter a valid number",
+  "@parcelsCreateErrorInvalidNumber": {
+    "description": "Validation error for invalid numeric input"
+  },
+  "parcelsCreateErrorInvalidPhone": "Please enter a valid phone number",
+  "@parcelsCreateErrorInvalidPhone": {
+    "description": "Validation error for invalid phone number"
+  },
+
+  "parcelsShipmentDetailsTitle": "Shipment details",
+  "@parcelsShipmentDetailsTitle": {
+    "description": "Title for Shipment Details screen (Track C - Ticket #47)"
+  },
+  "parcelsShipmentDetailsCreatedAt": "Created on {date}",
+  "@parcelsShipmentDetailsCreatedAt": {
+    "description": "Label showing creation date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "parcelsShipmentDetailsRouteSectionTitle": "Route",
+  "@parcelsShipmentDetailsRouteSectionTitle": {
+    "description": "Section title for route information"
+  },
+  "parcelsShipmentDetailsPickupLabel": "Pickup",
+  "@parcelsShipmentDetailsPickupLabel": {
+    "description": "Label for pickup address"
+  },
+  "parcelsShipmentDetailsDropoffLabel": "Drop-off",
+  "@parcelsShipmentDetailsDropoffLabel": {
+    "description": "Label for drop-off address"
+  },
+  "parcelsShipmentDetailsAddressSectionTitle": "Addresses",
+  "@parcelsShipmentDetailsAddressSectionTitle": {
+    "description": "Section title for sender/receiver addresses"
+  },
+  "parcelsShipmentDetailsSenderLabel": "From (Sender)",
+  "@parcelsShipmentDetailsSenderLabel": {
+    "description": "Label for sender address"
+  },
+  "parcelsShipmentDetailsReceiverLabel": "To (Receiver)",
+  "@parcelsShipmentDetailsReceiverLabel": {
+    "description": "Label for receiver address"
+  },
+  "parcelsShipmentDetailsMetaSectionTitle": "Parcel details",
+  "@parcelsShipmentDetailsMetaSectionTitle": {
+    "description": "Section title for parcel meta information"
+  },
+  "parcelsShipmentDetailsWeightLabel": "Weight",
+  "@parcelsShipmentDetailsWeightLabel": {
+    "description": "Label for weight"
+  },
+  "parcelsShipmentDetailsSizeLabel": "Size",
+  "@parcelsShipmentDetailsSizeLabel": {
+    "description": "Label for size"
+  },
+  "parcelsShipmentDetailsNotesLabel": "Notes",
+  "@parcelsShipmentDetailsNotesLabel": {
+    "description": "Label for notes"
+  },
+  "parcelsShipmentDetailsNotAvailable": "N/A",
+  "@parcelsShipmentDetailsNotAvailable": {
+    "description": "Placeholder for unavailable data"
+  },
+  "parcelsShipmentDetailsSizeSmall": "Small",
+  "@parcelsShipmentDetailsSizeSmall": {
+    "description": "Size label for small parcels"
+  },
+  "parcelsShipmentDetailsSizeMedium": "Medium",
+  "@parcelsShipmentDetailsSizeMedium": {
+    "description": "Size label for medium parcels"
+  },
+  "parcelsShipmentDetailsSizeLarge": "Large",
+  "@parcelsShipmentDetailsSizeLarge": {
+    "description": "Size label for large parcels"
+  },
+  "parcelsShipmentDetailsSizeOversize": "Oversize",
+  "@parcelsShipmentDetailsSizeOversize": {
+    "description": "Size label for oversize parcels"
+  },
+  "parcelsDetailsPriceLabel": "Price",
+  "@parcelsDetailsPriceLabel": {
+    "description": "Label for parcel price in shipment details (Track C - Ticket #50)"
+  },
+
+  "foodComingSoonAppBarTitle": "Food delivery",
+  "@foodComingSoonAppBarTitle": {
+    "description": "AppBar title for Food Coming Soon screen (Track C - Ticket #48)"
+  },
+  "foodComingSoonTitle": "Food delivery is coming soon",
+  "@foodComingSoonTitle": {
+    "description": "Main title on Food Coming Soon screen"
+  },
+  "foodComingSoonSubtitle": "We're working hard to bring food delivery to your area. Stay tuned!",
+  "@foodComingSoonSubtitle": {
+    "description": "Subtitle on Food Coming Soon screen"
+  },
+  "foodComingSoonPrimaryCta": "Back to home",
+  "@foodComingSoonPrimaryCta": {
+    "description": "CTA button on Food Coming Soon screen to return to home"
+  }
+}

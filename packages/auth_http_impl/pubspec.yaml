@@ -1,0 +1,23 @@
+name: auth_http_impl
+description: HTTP implementation of authentication services for phone/OTP authentication
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_secure_storage: ^9.0.0
+  auth_shims:
+    path: ../auth_shims
+  foundation_shims:
+    path: ../foundation_shims
+  meta: ^1.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0

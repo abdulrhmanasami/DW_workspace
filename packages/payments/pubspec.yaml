@@ -1,0 +1,24 @@
+name: payments
+description: Payment models and interfaces for Delivery Ways
+version: 1.0.0
+publish_to: none
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  json_annotation: ^4.9.0
+  foundation_shims:
+    path: ../foundation_shims
+  payments_shims:
+    path: ../payments_shims
+  payments_adapter_stripe:
+    path: ../payments_adapter_stripe
+  payments_stub_impl:
+    path: ../payments_stub_impl
+dev_dependencies:
+  build_runner: ^2.4.7
+  json_serializable: ^6.7.1
+flutter:
+  uses-material-design: false

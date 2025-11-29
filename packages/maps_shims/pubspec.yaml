@@ -1,0 +1,10 @@
+name: maps_shims
+publish_to: none
+environment:
+  sdk: '^3.9.2'
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: any
+dev_dependencies:
+  lints: any

@@ -1,0 +1,6 @@
+# melos_managed_dependency_overrides: foundation_shims,mobility_shims
+dependency_overrides:
+  foundation_shims:
+    path: ../foundation_shims
+  mobility_shims:
+    path: ../mobility_shims

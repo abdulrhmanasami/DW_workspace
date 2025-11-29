@@ -1,0 +1,10 @@
+name: design_system_shims
+publish_to: none
+description: Platform-agnostic design system contracts
+version: 1.0.0
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1

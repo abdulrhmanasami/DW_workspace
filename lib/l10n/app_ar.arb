@@ -1,0 +1,1163 @@
+{
+  "@@locale": "ar",
+  "@@last_modified": "2025-11-28",
+
+  "appTitle": "Delivery Ways",
+
+  "authPhoneTitle": "تسجيل الدخول",
+  "@authPhoneTitle": {
+    "description": "عنوان شاشة تسجيل الدخول بالهاتف (Ticket #36)"
+  },
+  "authPhoneSubtitle": "أدخل رقم جوالك لتسجيل الدخول إلى Delivery Ways.",
+  "@authPhoneSubtitle": {
+    "description": "النص الفرعي لشاشة تسجيل الدخول"
+  },
+  "authPhoneFieldHint": "رقم الجوال",
+  "@authPhoneFieldHint": {
+    "description": "نص التلميح لحقل رقم الجوال"
+  },
+  "authPhoneContinueCta": "متابعة",
+  "@authPhoneContinueCta": {
+    "description": "زر المتابعة في شاشة تسجيل الدخول"
+  },
+  "authOtpTitle": "إدخال الرمز",
+  "@authOtpTitle": {
+    "description": "عنوان شاشة التحقق من الرمز (Ticket #36)"
+  },
+  "authOtpSubtitle": "قمنا بإرسال رمز تحقق إلى جوالك.",
+  "@authOtpSubtitle": {
+    "description": "النص الفرعي لشاشة التحقق"
+  },
+  "authOtpFieldHint": "رمز التحقق",
+  "@authOtpFieldHint": {
+    "description": "نص التلميح لحقل رمز التحقق"
+  },
+  "authOtpVerifyCta": "تأكيد ومتابعة",
+  "@authOtpVerifyCta": {
+    "description": "زر التأكيد في شاشة الرمز"
+  },
+  "accountSheetTitle": "الحساب",
+  "@accountSheetTitle": {
+    "description": "عنوان شاشة الحساب السفلية (Ticket #37)"
+  },
+  "accountSheetSignedOutSubtitle": "أنت غير مسجل الدخول. سجّل دخولك لمزامنة الرحلات والتوصيل.",
+  "@accountSheetSignedOutSubtitle": {
+    "description": "النص الفرعي عندما يكون المستخدم غير مسجل"
+  },
+  "accountSheetSignInCta": "تسجيل الدخول برقم الجوال",
+  "@accountSheetSignInCta": {
+    "description": "زر تسجيل الدخول في شاشة الحساب"
+  },
+  "accountSheetSignedInTitle": "تم تسجيل الدخول",
+  "@accountSheetSignedInTitle": {
+    "description": "العنوان عندما يكون المستخدم مسجل"
+  },
+  "accountSheetSignOutCta": "تسجيل الخروج",
+  "@accountSheetSignOutCta": {
+    "description": "زر تسجيل الخروج في شاشة الحساب"
+  },
+  "accountSheetFooterText": "المزيد من خيارات الحساب قريبًا.",
+  "@accountSheetFooterText": {
+    "description": "نص التذييل في شاشة الحساب"
+  },
+  "initializing": "جارٍ التهيئة...",
+
+  "back": "العودة",
+  "retry": "إعادة المحاولة",
+  "cancel": "إلغاء",
+  "save": "حفظ",
+  "confirm": "تأكيد",
+  "ok": "موافق",
+  "close": "إغلاق",
+  "error": "خطأ",
+  "loading": "جارٍ التحميل...",
+  "comingSoon": "قريباً",
+
+  "authPhoneLoginTitle": "تسجيل الدخول",
+  "authPhoneLoginSubtitle": "أدخل رقم جوالك لتسجيل الدخول أو إنشاء حساب جديد.",
+  "authPhoneFieldLabel": "رقم الجوال",
+  "authPhoneFieldHint": "+9665xxxxxxxx",
+  "authPhoneContinueButton": "متابعة",
+  "authPhoneRequiredError": "يرجى إدخال رقم الجوال.",
+  "authPhoneInvalidFormatError": "يرجى إدخال رقم جوال صحيح.",
+  "authPhoneSubmitError": "تعذّر إرسال رمز التحقق. حاول مرة أخرى.",
+
+  "authOtpFieldLabel": "رمز التحقق",
+  "authOtpConfirmButton": "تأكيد",
+  "authOtpRequiredError": "يرجى إدخال رمز التحقق.",
+  "authOtpInvalidFormatError": "يرجى إدخال رمز مكون من 4-6 أرقام.",
+  "authOtpSubmitError": "رمز التحقق غير صحيح أو منتهي الصلاحية.",
+  "authOtpResendButton": "إعادة إرسال الرمز",
+  "authOtpResendCountdown": "يمكنك إعادة إرسال الرمز بعد {seconds} ثانية",
+
+  "authBiometricButtonLabel": "استخدام البصمة",
+  "authBiometricReason": "قم بالمصادقة للمتابعة.",
+  "authBiometricUnlockError": "تعذّر الفتح بالبصمة. يرجى طلب رمز جديد.",
+  "authCooldownMessage": "يرجى الانتظار {seconds} ثانية قبل المحاولة مجدداً.",
+  "authCooldownReady": "يمكنك إعادة الإرسال الآن.",
+  "authAttemptsRemaining": "{count} محاولات متبقية",
+  "authNoAttemptsRemaining": "لا توجد محاولات متبقية.",
+
+  "auth2faTitle": "التحقق الثنائي",
+  "auth2faSubtitle": "مطلوب خطوة تحقق إضافية لأمانك.",
+  "auth2faSelectMethod": "اختر طريقة التحقق",
+  "auth2faMethodSms": "رسالة نصية (SMS)",
+  "auth2faMethodSmsDescription": "استلام رمز عبر SMS إلى {destination}",
+  "auth2faMethodTotp": "تطبيق المصادقة",
+  "auth2faMethodTotpDescription": "استخدم تطبيق المصادقة لتوليد رمز",
+  "auth2faMethodEmail": "البريد الإلكتروني",
+  "auth2faMethodEmailDescription": "استلام رمز عبر البريد الإلكتروني إلى {destination}",
+  "auth2faMethodPush": "إشعار فوري",
+  "auth2faMethodPushDescription": "الموافقة على الطلب من جهازك المسجّل",
+  "auth2faEnterCode": "أدخل رمز التحقق",
+  "auth2faCodeHint": "أدخل الرمز المكون من 6 أرقام",
+  "auth2faVerifyButton": "تأكيد",
+  "auth2faCancelButton": "إلغاء",
+  "auth2faResendCode": "إعادة إرسال الرمز",
+  "auth2faCodeExpired": "انتهت صلاحية الرمز. اطلب رمزاً جديداً.",
+  "auth2faInvalidCode": "رمز غير صحيح. حاول مرة أخرى.",
+  "auth2faAccountLocked": "محاولات كثيرة. تم قفل الحساب مؤقتاً.",
+  "auth2faLockoutMessage": "يرجى المحاولة بعد {minutes} دقيقة.",
+
+  "notificationsSettingsTitle": "إعدادات الإشعارات",
+  "notificationsSettingsOrderStatusTitle": "إشعارات حالة الطلب",
+  "notificationsSettingsOrderStatusSubtitle": "استلام تحديثات مباشرة عن حالة طلباتك النشطة.",
+  "notificationsSettingsPromotionsTitle": "العروض الترويجية",
+  "notificationsSettingsPromotionsSubtitle": "استلام عروض وخصومات مخصصة لك.",
+  "notificationsSettingsSystemTitle": "إشعارات النظام",
+  "notificationsSettingsSystemSubtitle": "تنبيهات مهمة حول حسابك والنظام.",
+  "notificationsSettingsConsentRequired": "يجب منح إذن الإشعارات لتفعيل هذه الإعدادات.",
+  "notificationsSettingsErrorGeneric": "تعذّر تحميل إعدادات الإشعارات. حاول مرة أخرى.",
+  "notificationsSettingsErrorLoading": "حدث خطأ في تحميل إعدادات الإشعارات",
+  "notificationsSettingsSystemSettingsButton": "فتح إعدادات النظام",
+  "notificationsSettingsSystemSettingsPlaceholder": "سيتم فتح إعدادات النظام قريباً",
+  "notificationsSettingsQuietHoursTitle": "ساعات الهدوء",
+  "notificationsSettingsQuietHoursNotEnabled": "لم يتم تفعيل وضع عدم الإزعاج",
+  "settingsSectionNotifications": "إعدادات الإشعارات",
+
+  "notificationsInboxTitle": "الإشعارات",
+  "notificationsInboxErrorGeneric": "تعذّر تحميل الإشعارات. حاول مرة أخرى.",
+  "notificationsInboxRetryButtonLabel": "إعادة المحاولة",
+  "notificationsInboxEmptyTitle": "لا توجد إشعارات بعد",
+  "notificationsInboxEmptySubtitle": "ستظهر هنا التنبيهات المهمة عن طلباتك والعروض.",
+  "notificationsInboxEmptyCtaBackToHomeLabel": "العودة للرئيسية",
+  "notificationsInboxMarkAsReadTooltip": "وضع كمقروء",
+  "notificationsInboxMarkAllAsReadTooltip": "وضع الكل كمقروء",
+  "notificationsInboxClearAllTooltip": "مسح الكل",
+  "notificationsInboxClearAllDialogTitle": "مسح جميع الإشعارات",
+  "notificationsInboxClearAllDialogMessage": "هل أنت متأكد من حذف جميع الإشعارات؟ لا يمكن التراجع عن هذا الإجراء.",
+  "notificationsInboxClearAllConfirm": "مسح الكل",
+  "notificationsInboxTappedGeneric": "تم فتح الإشعار",
+  "notificationsInboxTimeNow": "الآن",
+  "notificationsInboxTimeMinutes": "منذ {minutes} دقيقة",
+  "notificationsInboxTimeHours": "منذ {hours} ساعة",
+  "notificationsInboxTimeDays": "منذ {days} يوم",
+
+  "privacyConsentTitle": "الخصوصية والموافقة",
+  "privacyConsentHeadline": "تحكم في خصوصيتك",
+  "privacyConsentDescription": "اختر ما تريد مشاركته معنا لتحسين تجربتك",
+  "privacyConsentAnalyticsTitle": "تحليلات الاستخدام",
+  "privacyConsentAnalyticsDescription": "يساعدنا في فهم كيفية استخدام التطبيق لتحسين الأداء والميزات",
+  "privacyConsentCrashReportsTitle": "تقارير الأعطال",
+  "privacyConsentCrashReportsDescription": "يرسل تقارير تلقائية عند حدوث أعطال لمساعدتنا في إصلاح المشاكل",
+  "privacyConsentBackgroundLocationTitle": "الموقع في الخلفية",
+  "privacyConsentBackgroundLocationDescription": "يسمح بتتبع الموقع حتى عندما يكون التطبيق مغلقاً لتحسين خدمات التوصيل",
+  "privacyConsentSaveSuccess": "تم حفظ إعدادات الخصوصية",
+  "privacyConsentErrorPrefix": "خطأ: {message}",
+
+  "dsrExportTitle": "تصدير البيانات",
+  "dsrExportHeadline": "تصدير بياناتك الشخصية",
+  "dsrExportDescription": "ستحصل على رابط آمن لتنزيل جميع بياناتك. الرابط صالح لمدة 7 أيام فقط.",
+  "dsrExportIncludePaymentsTitle": "تضمين سجل المدفوعات",
+  "dsrExportIncludePaymentsDescription": "قد يحتوي سجل المدفوعات على معلومات حساسة. تأكد من مراجعة الملف بعناية.",
+  "dsrExportStartButton": "ابدأ التصدير",
+  "dsrExportRequestStatus": "حالة الطلب",
+  "dsrExportRequestDate": "تاريخ الطلب: {date}",
+  "dsrExportDownloadLink": "رابط التنزيل",
+  "dsrExportLinkExpires": "ينتهي في: {date}",
+  "dsrExportCopyLink": "نسخ الرابط",
+  "dsrExportLinkCopied": "تم نسخ الرابط",
+  "dsrExportPreparingFile": "جارٍ تجهيز ملفك…",
+  "dsrExportSendingRequest": "جارٍ إرسال طلب التصدير…",
+  "dsrExportRequestFailed": "فشل في إرسال الطلب",
+
+  "dsrErasureTitle": "حذف الحساب",
+  "dsrErasureHeadline": "حذف حسابك نهائياً",
+  "dsrErasureDescription": "هذا الإجراء لا رجعة فيه. سيتم حذف جميع بياناتك وبيانات حسابك.",
+  "dsrErasureRequestButton": "طلب حذف الحساب",
+  "dsrErasureWarningTitle": "تحذير مهم",
+  "dsrErasureWarningPoint1": "سيتم حذف جميع بياناتك الشخصية نهائياً",
+  "dsrErasureWarningPoint2": "لن تتمكن من استرجاع حسابك أو بياناتك",
+  "dsrErasureWarningPoint3": "سيتم إلغاء جميع الطلبات والحجوزات النشطة",
+  "dsrErasureWarningPoint4": "سيتم حذف سجل المدفوعات والمعاملات",
+  "dsrErasureWarningPoint5": "قد يستغرق تنفيذ الطلب عدة أيام",
+  "dsrErasureLegalNotice": "حذف الحساب يخضع للائحة حماية البيانات العامة (GDPR). سنرسل لك تأكيداً قبل تنفيذ الحذف النهائي.",
+  "dsrErasureRequestStatus": "حالة الطلب",
+  "dsrErasureStatusPending": "في انتظار المراجعة",
+  "dsrErasureStatusInProgress": "قيد المعالجة",
+  "dsrErasureStatusReady": "جاهز للتأكيد",
+  "dsrErasureStatusCompleted": "مكتمل",
+  "dsrErasureStatusFailed": "فشل في المعالجة",
+  "dsrErasureStatusCanceled": "ملغي",
+  "dsrErasureReviewingRequest": "جارٍ مراجعة طلبك…",
+  "dsrErasureSendingRequest": "جارٍ إرسال طلب الحذف…",
+  "dsrErasureRequestFailed": "فشل في إرسال الطلب",
+  "dsrErasureNewRequest": "طلب حذف جديد",
+  "dsrErasureConfirmTitle": "تأكيد الحذف النهائي",
+  "dsrErasureConfirmMessage": "هذا هو الخطوة الأخيرة. بعد التأكيد، سيتم حذف حسابك نهائياً خلال 30 يوماً ولن يمكن التراجع عن هذا القرار.",
+  "dsrErasureConfirmButton": "تأكيد الحذف",
+
+  "legalPrivacyPolicyTitle": "سياسة الخصوصية",
+  "legalPrivacyPolicyUnavailable": "سياسة الخصوصية غير متاحة حالياً.",
+  "legalTermsOfServiceTitle": "شروط الاستخدام",
+  "legalTermsOfServiceUnavailable": "شروط الاستخدام غير متاحة حالياً.",
+  "legalAboutTitle": "المعلومات القانونية",
+  "legalPrivacyButton": "سياسة الخصوصية",
+  "legalTermsButton": "شروط الاستخدام",
+  "legalOpenSourceLicenses": "التراخيص المفتوحة المصدر",
+
+  "ordersTitle": "الطلبات",
+  "ordersOrderLabel": "الطلب: {orderId}",
+
+  "cartTitle": "السلة",
+  "cartItemsLabel": "العناصر: {count}",
+
+  "checkoutTitle": "الدفع",
+
+  "paymentTitle": "الدفع",
+  "paymentInitializing": "جارٍ تهيئة نظام الدفع...",
+  "paymentDebugTitle": "تصحيح المدفوعات",
+  "paymentEnabled": "المدفوعات مفعلة: {enabled}",
+  "paymentMissingKeys": "مفاتيح الإعداد المفقودة: {keys}",
+  "paymentGatewayStatus": "حالة البوابة: {status}",
+  "paymentGateway": "البوابة: {type}",
+  "paymentSheetStatus": "حالة الشاشة: {status}",
+  "paymentSheet": "الشاشة: {type}",
+  "paymentApplePay": "الدفع بـ Apple Pay",
+  "paymentGooglePay": "الدفع بـ Google Pay",
+  "paymentDigitalWallet": "الدفع بالمحفظة الرقمية",
+  "paymentCash": "الدفع نقداً",
+
+  "trackingTitle": "التتبع",
+  "trackingLocationTitle": "تتبع الموقع",
+  "trackingCurrentLocation": "موقعك الحالي",
+  "trackingTripRoute": "مسار الرحلة",
+  "trackingRealtimeUnavailableTitle": "التتبع اللحظي غير متاح",
+  "trackingRealtimeUnavailableBody": "التتبّع اللحظي غير متاح حاليًا، سيتم تحديث حالة الطلب تلقائيًا.",
+  "trackingOrderStatus": "حالة الطلب",
+  "trackingNoActiveTrip": "لا توجد رحلة نشطة",
+
+  "mapTitle": "الخريطة",
+  "mapSmokeTestTitle": "اختبار الخرائط",
+  "mapTestLocation": "موقع الاختبار",
+
+  "mobilityBgTestsTitle": "اختبارات التنقل في الخلفية (المرحلة 3)",
+  "mobilityTestBackgroundTracking": "اختبار التتبع في الخلفية",
+  "mobilityTestGeofence": "اختبار السياج الجغرافي",
+  "mobilityTestTripRecording": "اختبار تسجيل الرحلة",
+
+  "adminPanelTitle": "لوحة التحكم",
+  "adminUserInfo": "معلومات المستخدم",
+  "adminUserLabel": "المستخدم: {userId}",
+  "adminRoleLabel": "الدور: {role}",
+  "adminUserManagement": "إدارة المستخدمين",
+  "adminAnalyticsReports": "التحليلات والتقارير",
+  "adminAnalyticsAccess": "لديك صلاحية الوصول للتحليلات",
+  "adminSystemMonitoring": "مراقبة النظام",
+  "adminRbacStats": "إحصائيات RBAC",
+  "adminRbacEnabled": "الحالة: {status}",
+  "adminRbacStatusEnabled": "مفعّل",
+  "adminRbacStatusDisabled": "معطّل",
+  "adminCanaryPercentage": "نسبة الـ Canary: {percentage}%",
+  "adminRolesCount": "عدد الأدوار: {count}",
+  "adminTotalPermissions": "إجمالي الصلاحيات: {count}",
+
+  "trackingCheckingAvailability": "جارٍ التحقق من توفر التتبع...",
+  "trackingLoadingRoute": "جارٍ تحميل المسار...",
+
+  "ordersHistoryTitle": "طلباتي",
+  "@ordersHistoryTitle": {
+    "description": "عنوان شريط التطبيق لشاشة سجل الطلبات (Track C - Ticket #51)"
+  },
+  "ordersHistoryEmptyTitle": "لا توجد طلبات بعد",
+  "@ordersHistoryEmptyTitle": {
+    "description": "عنوان الحالة الفارغة عند عدم وجود طلبات"
+  },
+  "ordersHistoryEmptySubtitle": "لا يوجد لديك أي طلبات حتى الآن. ابدأ بإنشاء شحنة جديدة.",
+  "@ordersHistoryEmptySubtitle": {
+    "description": "النص الفرعي للحالة الفارغة عند عدم وجود طلبات"
+  },
+  "ordersHistoryUnavailableTitle": "الطلبات غير متاحة",
+  "ordersHistoryLoadError": "تعذّر تحميل سجل الطلبات",
+  "ordersFilterAll": "الكل",
+  "@ordersFilterAll": {
+    "description": "عنوان فلتر جميع الطلبات (Track C - Ticket #51)"
+  },
+  "ordersFilterParcels": "الطرود",
+  "@ordersFilterParcels": {
+    "description": "عنوان فلتر الطرود فقط (Track C - Ticket #51)"
+  },
+
+  "paymentMethodsTitle": "وسائل الدفع",
+  "paymentMethodsEmptyTitle": "لا توجد وسائل دفع",
+  "paymentMethodsEmptySubtitle": "أضف وسيلة دفع للبدء",
+  "paymentMethodsAddButton": "إضافة وسيلة دفع",
+  "paymentMethodsLoadError": "تعذّر تحميل وسائل الدفع",
+  "paymentMethodsSaving": "جارٍ الحفظ...",
+
+  "authVerifying": "جارٍ التحقق...",
+  "authSendingCode": "جارٍ إرسال الرمز...",
+
+  "featureUnavailableTitle": "الميزة غير متاحة",
+  "featureUnavailableGeneric": "هذه الميزة غير متاحة حالياً. حاول مرة أخرى لاحقاً.",
+
+  "onbWelcomeTitle": "أهلاً بك في ديليفري ويز",
+  "onbWelcomeBody": "شريكك الموثوق للتوصيل. اطلب ما تحتاجه وتتبع توصيلتك بالوقت الفعلي.",
+  "onbAppIntroTitle": "كيف يعمل",
+  "onbAppIntroBody": "تصفح المنتجات، قدم طلبك، ونوصله لباب بيتك. بسيط وسريع.",
+  "onbOrderingTitle": "طلب سهل",
+  "onbOrderingBody": "اعثر على ما تحتاجه، أضفه للسلة، وادفع في ثوانٍ. خيارات دفع متعددة متوفرة حيث يُدعم ذلك.",
+  "onbTrackingTitle": "تتبع طلبك",
+  "onbTrackingBody": "تابع توصيلتك بالوقت الفعلي عندما يكون التتبع متاحاً في منطقتك. ستتلقى تحديثات في كل خطوة.",
+  "onbSecurityTitle": "أمانك يهمنا",
+  "onbSecurityBody": "بياناتك محمية بمعايير أمان عالمية. لن نشارك معلوماتك الشخصية أبداً بدون موافقتك.",
+  "onbNotificationsTitle": "ابق على اطلاع",
+  "onbNotificationsBody": "فعّل الإشعارات لتلقي تحديثات الطلبات وتنبيهات التوصيل والعروض الحصرية.",
+  "onbReadyTitle": "أنت جاهز!",
+  "onbReadyBody": "ابدأ الاستكشاف وقدم طلبك الأول. نحن هنا لمساعدتك متى احتجت.",
+
+  "onbRideTitle": "احصل على توصيلة فوراً.",
+  "onbRideBody": "اضغط، اركب، وصل. نقل سريع وموثوق وبأسعار مناسبة في متناول يدك.",
+  "onbParcelsTitle": "وصّل أي شيء بسهولة.",
+  "onbParcelsBody": "أرسل طرودك عبر المدينة أو عبر البلاد. تتبع كل خطوة في الرحلة.",
+  "onbFoodTitle": "طعامك المفضل يصلك.",
+  "onbFoodBody": "تشتهي شيئاً لذيذاً؟ اطلب من أفضل المطاعم واستمتع بتوصيل سريع لباب بيتك.",
+
+  "onbRiderWelcomeTitle": "أهلاً بك أيها السائق!",
+  "onbRiderWelcomeBody": "انضم لشبكة التوصيل وابدأ بالكسب. ساعات مرنة وأجر عادل.",
+  "onbRiderHowItWorksTitle": "رحلتك تبدأ هنا",
+  "onbRiderHowItWorksBody": "اقبل التوصيلات، توجه للاستلام، وصّل للعملاء. تتبع أرباحك في التطبيق.",
+  "onbRiderLocationTitle": "تفعيل الموقع",
+  "onbRiderLocationBody": "نستخدم موقعك لربطك بالتوصيلات القريبة وتوفير التنقل. يُشارك موقعك فقط أثناء التوصيلات النشطة.",
+  "onbRiderSecurityTitle": "آمن ومحمي",
+  "onbRiderSecurityBody": "أرباحك وبياناتك الشخصية محمية. المصادقة متعددة العوامل تحافظ على أمان حسابك.",
+  "onbRiderNotificationsTitle": "لا تفوت أي توصيلة",
+  "onbRiderNotificationsBody": "احصل على تنبيهات فورية لطلبات التوصيل الجديدة والتحديثات المهمة.",
+  "onbRiderReadyTitle": "جاهز للتوصيل!",
+  "onbRiderReadyBody": "أنت مُعدّ وجاهز للانطلاق. ابدأ بقبول التوصيلات الآن.",
+
+  "onbCtaGetStarted": "ابدأ الآن",
+  "onbCtaNext": "التالي",
+  "onbCtaSkip": "تخطي",
+  "onbCtaEnableNotifications": "تفعيل الإشعارات",
+  "onbCtaEnableLocation": "تفعيل الموقع",
+  "onbCtaStartOrdering": "ابدأ الطلب",
+  "onbCtaStartDelivering": "ابدأ التوصيل",
+  "onbCtaMaybeLater": "ربما لاحقاً",
+  "onbCtaDone": "تم",
+  "onbCtaBack": "رجوع",
+
+  "hintAuthPhoneTitle": "تسجيل دخول آمن",
+  "hintAuthPhoneBody": "سنرسل رمز تحقق لهذا الرقم. رقم هاتفك يساعدنا على حماية حسابك.",
+  "hintAuthOtpTitle": "تحقق من رسائلك",
+  "hintAuthOtpBody": "أدخل الرمز الذي أرسلناه لهاتفك. هذا يؤكد أنك أنت حقاً.",
+  "hintAuth2faTitle": "حماية إضافية",
+  "hintAuth2faBody": "المصادقة الثنائية تضيف طبقة أمان إضافية لحسابك.",
+  "hintAuthBiometricTitle": "دخول سريع",
+  "hintAuthBiometricBody": "استخدم بصمتك أو وجهك لتسجيل الدخول بسرعة مع الحفاظ على أمان حسابك.",
+
+  "hintPaymentsMethodsTitle": "خيارات الدفع",
+  "hintPaymentsMethodsBody": "أضف طريقة دفع لتسريع عملية الشراء. معلومات الدفع الخاصة بك مشفرة بشكل آمن.",
+  "hintPaymentsSecurityTitle": "دفع آمن",
+  "hintPaymentsSecurityBody": "تفاصيل بطاقتك مشفرة ولا تُخزن على خوادمنا أبداً. المدفوعات تُعالج من قبل مزودين موثوقين.",
+  "hintPaymentsLimitedTitle": "خيارات دفع محدودة",
+  "hintPaymentsLimitedBody": "بعض طرق الدفع قد لا تكون متوفرة في منطقتك. الدفع عند الاستلام متاح حيث يُدعم.",
+
+  "hintTrackingExplanationTitle": "تتبع مباشر",
+  "hintTrackingExplanationBody": "شاهد رحلة طلبك من الاستلام حتى التوصيل على الخريطة.",
+  "hintTrackingUnavailableTitle": "التتبع غير متاح",
+  "hintTrackingUnavailableBody": "التتبع بالوقت الفعلي غير متاح لهذا الطلب. ستتلقى تحديثات الحالة عبر الإشعارات.",
+  "hintTrackingRealtimeTitle": "تحديثات بالوقت الفعلي",
+  "hintTrackingRealtimeBody": "الخريطة تُحدّث تلقائياً مع تقدم توصيلتك.",
+
+  "hintNotificationsImportanceTitle": "لماذا الإشعارات مهمة",
+  "hintNotificationsImportanceBody": "احصل على تحديثات فورية حول حالة طلبك ووصول التوصيلة والعروض الخاصة.",
+  "hintNotificationsPermissionTitle": "تفعيل الإشعارات",
+  "hintNotificationsPermissionBody": "لتلقي تحديثات الطلبات وتنبيهات التوصيل، يرجى تفعيل الإشعارات.",
+  "hintNotificationsPermissionCta": "فعّل الآن",
+
+  "hintOrdersFirstTitle": "طلبك الأول",
+  "hintOrdersFirstBody": "تهانينا على طلبك الأول! تتبع تقدمه هنا.",
+  "hintOrdersEmptyTitle": "لا توجد طلبات بعد",
+  "hintOrdersEmptyBody": "ابدأ بالتصفح وقدم طلبك الأول. سيظهر سجل طلباتك هنا.",
+  "hintOrdersEmptyCta": "تصفح الآن",
+
+  "settingsReplayOnboarding": "عرض مقدمة التطبيق",
+  "settingsReplayOnboardingDescription": "شاهد دليل الترحيب مرة أخرى",
+
+  "rideBookingTitle": "اطلب رحلة",
+  "rideBookingMapStubLabel": "معاينة خريطة (وضع تجريبي لعرض الرحلة)",
+  "rideBookingSheetTitle": "إلى أين تريد الذهاب؟",
+  "rideBookingSheetSubtitle": "اختر نقطة الانطلاق والوجهة لعرض الخيارات والتسعير.",
+  "rideBookingPickupLabel": "نقطة الانطلاق",
+  "rideBookingPickupCurrentLocation": "موقعك الحالي",
+  "rideBookingDestinationLabel": "الوجهة",
+  "rideBookingDestinationHint": "إلى أين؟",
+  "rideBookingRecentTitle": "أماكنك الأخيرة",
+  "rideBookingRecentHome": "المنزل",
+  "rideBookingRecentHomeSubtitle": "عنوان المنزل المحفوظ",
+  "rideBookingRecentWork": "العمل",
+  "rideBookingRecentWorkSubtitle": "عنوان العمل المحفوظ",
+  "rideBookingRecentAddNew": "إضافة مكان جديد",
+  "rideBookingRecentAddNewSubtitle": "احفظ وجهة متكررة جديدة",
+  "rideBookingSeeOptionsCta": "عرض الخيارات",
+
+  "rideConfirmTitle": "تأكيد الرحلة",
+  "rideConfirmMapStubLabel": "معاينة المسار (وضع تجريبي – سيتم عرض السائق والوجهة لاحقًا).",
+  "rideConfirmSheetTitle": "اختر نوع الرحلة",
+  "rideConfirmSheetSubtitle": "اختر الخيار المناسب، راجع التسعير، ثم أكّد رحلتك.",
+
+  "rideConfirmOptionEconomyTitle": "اقتصادي",
+  "rideConfirmOptionEconomySubtitle": "رحلات يومية ميسورة التكلفة لما يصل إلى ٤ أشخاص.",
+  "rideConfirmOptionXlTitle": "XL",
+  "rideConfirmOptionXlSubtitle": "مساحة إضافية للمجموعات والأغراض الكبيرة.",
+  "rideConfirmOptionPremiumTitle": "مميزة",
+  "rideConfirmOptionPremiumSubtitle": "رحلات مريحة مع أفضل السائقين تقييمًا.",
+
+  "rideConfirmOptionEtaFormat": "{minutes} دقيقة تقريبًا",
+  "@rideConfirmOptionEtaFormat": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "rideConfirmOptionPriceApprox": "≈ {amount} ريال",
+  "@rideConfirmOptionPriceApprox": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+
+  "rideConfirmPaymentLabel": "طريقة الدفع",
+  "rideConfirmPaymentStubValue": "فيزا •• 4242 (تجريبية)",
+
+  "rideConfirmPrimaryCta": "اطلب الرحلة",
+  "rideConfirmRequestedStubMessage": "طلب الرحلة هنا تجريبي – سيتم ربطه بالخلفية لاحقًا.",
+
+  "profileTitle": "الملف الشخصي",
+  "@profileTitle": {
+    "description": "عنوان تبويب الملف الشخصي في الشريط السفلي / الرأس"
+  },
+  "profileSectionSettingsTitle": "الإعدادات",
+  "@profileSectionSettingsTitle": {
+    "description": "عنوان قسم الإعدادات في تبويب الملف الشخصي"
+  },
+  "profileSectionPrivacyTitle": "الخصوصية والبيانات",
+  "@profileSectionPrivacyTitle": {
+    "description": "عنوان قسم الخصوصية والبيانات (نقطة دخول DSR)"
+  },
+  "profileUserFallbackName": "مستخدم",
+  "@profileUserFallbackName": {
+    "description": "اسم افتراضي يظهر عندما لا يكون للمستخدم اسم"
+  },
+  "profileUserPhoneLabel": "رقم الجوال",
+  "@profileUserPhoneLabel": {
+    "description": "العنوان النصي لرقم الجوال في بطاقة معلومات المستخدم"
+  },
+  "profileSettingsPersonalInfoTitle": "المعلومات الشخصية",
+  "@profileSettingsPersonalInfoTitle": {
+    "description": "عنصر إعدادات - المعلومات الشخصية"
+  },
+  "profileSettingsPersonalInfoSubtitle": "إدارة اسمك وبياناتك الأساسية.",
+  "@profileSettingsPersonalInfoSubtitle": {
+    "description": "الوصف الفرعي لعنصر المعلومات الشخصية"
+  },
+  "profileSettingsRidePrefsTitle": "تفضيلات الرحلات",
+  "@profileSettingsRidePrefsTitle": {
+    "description": "عنصر إعدادات - تفضيلات الرحلات"
+  },
+  "profileSettingsRidePrefsSubtitle": "قريبًا.",
+  "@profileSettingsRidePrefsSubtitle": {
+    "description": "الوصف الفرعي لتفضيلات الرحلات (Placeholder)"
+  },
+  "profileSettingsNotificationsTitle": "الإشعارات",
+  "@profileSettingsNotificationsTitle": {
+    "description": "عنصر إعدادات - الإشعارات"
+  },
+  "profileSettingsNotificationsSubtitle": "تحكم في التنبيهات والعروض.",
+  "@profileSettingsNotificationsSubtitle": {
+    "description": "الوصف الفرعي لعنصر الإشعارات"
+  },
+  "profileSettingsHelpTitle": "المساعدة والدعم",
+  "@profileSettingsHelpTitle": {
+    "description": "عنصر إعدادات - المساعدة والدعم"
+  },
+  "profileSettingsHelpSubtitle": "احصل على مساعدة في رحلاتك وطلباتك.",
+  "@profileSettingsHelpSubtitle": {
+    "description": "الوصف الفرعي لعنصر المساعدة والدعم"
+  },
+  "profilePrivacyExportTitle": "تصدير بياناتي",
+  "@profilePrivacyExportTitle": {
+    "description": "عنصر DSR - تصدير بياناتي"
+  },
+  "profilePrivacyExportSubtitle": "اطلب نسخة من بياناتك الشخصية.",
+  "@profilePrivacyExportSubtitle": {
+    "description": "الوصف الفرعي لعنصر تصدير البيانات"
+  },
+  "profilePrivacyErasureTitle": "حذف بياناتي",
+  "@profilePrivacyErasureTitle": {
+    "description": "عنصر DSR - حذف بياناتي"
+  },
+  "profilePrivacyErasureSubtitle": "اطلب حذف بياناتك الشخصية من النظام.",
+  "@profilePrivacyErasureSubtitle": {
+    "description": "الوصف الفرعي لعنصر حذف البيانات"
+  },
+  "profileLogoutTitle": "تسجيل الخروج",
+  "@profileLogoutTitle": {
+    "description": "عنوان عنصر تسجيل الخروج"
+  },
+  "profileLogoutSubtitle": "تسجيل الخروج من حسابك",
+  "@profileLogoutSubtitle": {
+    "description": "الوصف الفرعي لعنصر تسجيل الخروج"
+  },
+  "profileLogoutDialogTitle": "تأكيد تسجيل الخروج",
+  "@profileLogoutDialogTitle": {
+    "description": "عنوان مربع حوار تأكيد تسجيل الخروج"
+  },
+  "profileLogoutDialogBody": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "@profileLogoutDialogBody": {
+    "description": "النص داخل مربع حوار تأكيد تسجيل الخروج"
+  },
+  "profileLogoutDialogCancel": "إلغاء",
+  "@profileLogoutDialogCancel": {
+    "description": "زر الإلغاء في مربع حوار تسجيل الخروج"
+  },
+  "profileLogoutDialogConfirm": "تسجيل الخروج",
+  "@profileLogoutDialogConfirm": {
+    "description": "زر التأكيد في مربع حوار تسجيل الخروج"
+  },
+
+  "ridePhaseDraftLabel": "مسودة",
+  "ridePhaseQuotingLabel": "جارٍ حساب السعر…",
+  "ridePhaseRequestingLabel": "جارٍ إرسال الطلب…",
+  "ridePhaseFindingDriverLabel": "جارٍ البحث عن سائق…",
+  "ridePhaseDriverAcceptedLabel": "تم قبول السائق",
+  "ridePhaseDriverArrivedLabel": "السائق وصل",
+  "ridePhaseInProgressLabel": "الرحلة جارية",
+  "ridePhasePaymentLabel": "إتمام الدفع",
+  "ridePhaseCompletedLabel": "تم إنهاء الرحلة",
+  "ridePhaseCancelledLabel": "تم إلغاء الرحلة",
+  "ridePhaseFailedLabel": "فشل في الرحلة",
+
+  "rideErrorOptionsLoadFailed": "تعذر تحميل خيارات الرحلة. حاول مرة أخرى.",
+  "rideErrorRetryCta": "إعادة المحاولة",
+
+  "rideActiveNoTripTitle": "لا توجد رحلة نشطة",
+  "rideActiveNoTripBody": "لا توجد لديك رحلة جارية في الوقت الحالي.",
+  "rideActiveAppBarTitle": "رحلتك",
+  "rideActiveEtaFormat": "الوقت المتوقع للوصول ~ {minutes} دقيقة",
+  "@rideActiveEtaFormat": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+
+  "rideActiveContactDriverCta": "التواصل مع السائق",
+  "rideActiveShareTripCta": "مشاركة الرحلة",
+  "rideActiveCancelTripCta": "إلغاء الرحلة",
+
+  "rideActiveContactDriverNotImplemented": "التواصل مع السائق غير متوفر بعد.",
+  "rideActiveShareTripNotImplemented": "مشاركة الرحلة غير متوفرة بعد.",
+  "rideActiveCancelTripNotImplemented": "إلغاء الرحلة غير متوفر بعد.",
+  "rideActiveCancelErrorGeneric": "تعذر إلغاء الرحلة. يرجى المحاولة مرة أخرى.",
+  "@rideActiveCancelErrorGeneric": {
+    "description": "رسالة خطأ عامة عند فشل إلغاء الرحلة (Track B - Ticket #22)"
+  },
+
+  "rideActiveHeadlineFindingDriver": "جارٍ البحث عن سائق…",
+  "rideActiveHeadlineDriverEta": "السائق يبعد {minutes} دقيقة",
+  "@rideActiveHeadlineDriverEta": {
+    "placeholders": {
+      "minutes": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActiveHeadlineDriverOnTheWay": "السائق في الطريق إليك",
+  "rideActiveHeadlineDriverArrived": "السائق وصل إلى موقعك",
+  "rideActiveHeadlineInProgress": "الرحلة جارية الآن",
+  "rideActiveHeadlinePayment": "جارٍ إتمام الدفع",
+  "rideActiveHeadlineCompleted": "تم إنهاء الرحلة بنجاح",
+  "rideActiveHeadlineCancelled": "تم إلغاء الرحلة",
+  "rideActiveHeadlineFailed": "حدث خطأ في الرحلة",
+  "rideActiveHeadlinePreparing": "جارٍ تجهيز رحلتك",
+
+  "rideActiveGoBackCta": "العودة",
+
+  "rideActiveDestinationLabel": "إلى {destination}",
+  "@rideActiveDestinationLabel": {
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+
+  "homeActiveRideViewTripCta": "عرض الرحلة",
+  "@homeActiveRideViewTripCta": {
+    "description": "زر في كرت الرحلة النشطة في الشاشة الرئيسية لفتح شاشة الرحلة."
+  },
+
+  "rideDestinationTitle": "إلى أين؟",
+  "@rideDestinationTitle": {
+    "description": "عنوان شاشة إدخال الوجهة للرحلة (Screen 8)"
+  },
+  "rideDestinationPickupLabel": "نقطة الالتقاط",
+  "@rideDestinationPickupLabel": {
+    "description": "عنوان حقل موقع الالتقاط"
+  },
+  "rideDestinationPickupCurrentLocation": "الموقع الحالي",
+  "@rideDestinationPickupCurrentLocation": {
+    "description": "النص الافتراضي لموقع الالتقاط عند استخدام GPS"
+  },
+  "rideDestinationRecentLocationsSection": "المواقع الأخيرة",
+  "@rideDestinationRecentLocationsSection": {
+    "description": "عنوان قسم قائمة المواقع الأخيرة/المحفوظة"
+  },
+
+  "rideTripConfirmationTitle": "تأكيد الرحلة",
+  "@rideTripConfirmationTitle": {
+    "description": "عنوان شاشة تأكيد الرحلة (Screen 9)"
+  },
+  "rideTripConfirmationRequestRideCta": "طلب الرحلة",
+  "@rideTripConfirmationRequestRideCta": {
+    "description": "زر طلب الرحلة"
+  },
+  "rideTripConfirmationPaymentSectionTitle": "الدفع",
+  "@rideTripConfirmationPaymentSectionTitle": {
+    "description": "عنوان قسم طريقة الدفع"
+  },
+  "rideTripConfirmationPaymentMethodCash": "نقدًا",
+  "@rideTripConfirmationPaymentMethodCash": {
+    "description": "عنوان طريقة الدفع النقدي"
+  },
+
+  "rideTripSummaryTitle": "ملخص الرحلة",
+  "@rideTripSummaryTitle": {
+    "description": "عنوان شاشة ملخص الرحلة (Track B - Ticket #23)"
+  },
+  "rideTripSummaryCompletedTitle": "تم إنهاء الرحلة",
+  "@rideTripSummaryCompletedTitle": {
+    "description": "عنوان الرأس عند اكتمال الرحلة"
+  },
+  "rideTripSummaryCompletedSubtitle": "شكرًا لاستخدامك Delivery Ways",
+  "@rideTripSummaryCompletedSubtitle": {
+    "description": "نص فرعي يظهر بعد اكتمال الرحلة"
+  },
+  "rideTripSummaryRouteSectionTitle": "المسار",
+  "@rideTripSummaryRouteSectionTitle": {
+    "description": "عنوان قسم ملخص المسار"
+  },
+  "rideTripSummaryFareSectionTitle": "الأجرة",
+  "@rideTripSummaryFareSectionTitle": {
+    "description": "عنوان قسم الأجرة/الإيصال"
+  },
+  "rideTripSummaryTotalLabel": "الإجمالي",
+  "@rideTripSummaryTotalLabel": {
+    "description": "عنوان إجمالي الأجرة"
+  },
+  "rideTripSummaryDriverSectionTitle": "السائق",
+  "@rideTripSummaryDriverSectionTitle": {
+    "description": "عنوان قسم معلومات السائق"
+  },
+  "rideTripSummaryRatingLabel": "قيّم السائق",
+  "@rideTripSummaryRatingLabel": {
+    "description": "نص يطلب من المستخدم تقييم السائق"
+  },
+  "rideTripSummaryDoneCta": "إنهاء",
+  "@rideTripSummaryDoneCta": {
+    "description": "زر للإنهاء والعودة للرئيسية"
+  },
+
+  "rideConfirmLoadingTitle": "جاري جلب خيارات الرحلة...",
+  "@rideConfirmLoadingTitle": {
+    "description": "العنوان أثناء تحميل خيارات الرحلة (Ticket #26)"
+  },
+  "rideConfirmLoadingSubtitle": "يرجى الانتظار بينما نبحث عن أفضل الخيارات لك.",
+  "@rideConfirmLoadingSubtitle": {
+    "description": "النص الفرعي أثناء تحميل خيارات الرحلة"
+  },
+  "rideConfirmErrorTitle": "تعذر تحميل خيارات الرحلة",
+  "@rideConfirmErrorTitle": {
+    "description": "العنوان عند فشل تحميل الخيارات"
+  },
+  "rideConfirmErrorSubtitle": "يرجى التحقق من الاتصال بالإنترنت ثم المحاولة مرة أخرى.",
+  "@rideConfirmErrorSubtitle": {
+    "description": "النص الفرعي عند فشل تحميل الخيارات"
+  },
+  "rideConfirmEmptyTitle": "لا توجد رحلات متاحة",
+  "@rideConfirmEmptyTitle": {
+    "description": "العنوان عند عدم توفر خيارات الرحلة"
+  },
+  "rideConfirmEmptySubtitle": "يرجى المحاولة مرة أخرى بعد قليل.",
+  "@rideConfirmEmptySubtitle": {
+    "description": "النص الفرعي عند عدم توفر خيارات الرحلة"
+  },
+  "rideConfirmRetryCta": "إعادة المحاولة",
+  "@rideConfirmRetryCta": {
+    "description": "زر إعادة محاولة تحميل خيارات الرحلة"
+  },
+
+  "onboardingWelcomeTitle": "مرحبًا في Delivery Ways",
+  "@onboardingWelcomeTitle": {
+    "description": "عنوان شاشة الترحيب في الإعداد الأولي"
+  },
+  "onboardingWelcomeSubtitle": "كل الرحلات والطرود والتوصيل في مكان واحد.",
+  "@onboardingWelcomeSubtitle": {
+    "description": "النص الفرعي لشاشة الترحيب"
+  },
+  "onboardingWelcomeGetStartedCta": "ابدأ الآن",
+  "@onboardingWelcomeGetStartedCta": {
+    "description": "زر بدء الإعداد الأولي"
+  },
+
+  "onboardingPermissionsTitle": "الصلاحيات المطلوبة",
+  "@onboardingPermissionsTitle": {
+    "description": "عنوان شاشة الصلاحيات"
+  },
+  "onboardingPermissionsLocation": "الوصول إلى الموقع",
+  "@onboardingPermissionsLocation": {
+    "description": "عنوان صلاحية الموقع"
+  },
+  "onboardingPermissionsLocationSubtitle": "نستخدم موقعك للعثور على أقرب السائقين.",
+  "@onboardingPermissionsLocationSubtitle": {
+    "description": "وصف صلاحية الموقع"
+  },
+  "onboardingPermissionsNotifications": "الإشعارات",
+  "@onboardingPermissionsNotifications": {
+    "description": "عنوان صلاحية الإشعارات"
+  },
+  "onboardingPermissionsNotificationsSubtitle": "لإبقائك على اطلاع بحالة رحلاتك وطرودك.",
+  "@onboardingPermissionsNotificationsSubtitle": {
+    "description": "وصف صلاحية الإشعارات"
+  },
+  "onboardingPermissionsContinueCta": "متابعة",
+  "@onboardingPermissionsContinueCta": {
+    "description": "زر المتابعة في شاشة الصلاحيات"
+  },
+  "onboardingPermissionsSkipCta": "تخطي الآن",
+  "@onboardingPermissionsSkipCta": {
+    "description": "زر التخطي في شاشة الصلاحيات"
+  },
+
+  "onboardingPreferencesTitle": "تهيئة التفضيلات",
+  "@onboardingPreferencesTitle": {
+    "description": "عنوان شاشة التفضيلات"
+  },
+  "onboardingPreferencesSubtitle": "يمكنك تغيير هذه التفضيلات لاحقًا من الإعدادات.",
+  "@onboardingPreferencesSubtitle": {
+    "description": "النص الفرعي لشاشة التفضيلات"
+  },
+  "onboardingPreferencesPrimaryServiceTitle": "ما الخدمة التي تستخدمها أكثر؟",
+  "@onboardingPreferencesPrimaryServiceTitle": {
+    "description": "عنوان قسم اختيار الخدمة"
+  },
+  "onboardingPreferencesServiceRides": "الرحلات",
+  "@onboardingPreferencesServiceRides": {
+    "description": "عنوان خيار الرحلات"
+  },
+  "onboardingPreferencesServiceRidesDesc": "احصل على توصيلة من وإلى وجهتك",
+  "@onboardingPreferencesServiceRidesDesc": {
+    "description": "وصف خيار الرحلات"
+  },
+  "onboardingPreferencesServiceParcels": "الطرود",
+  "@onboardingPreferencesServiceParcels": {
+    "description": "عنوان خيار الطرود"
+  },
+  "onboardingPreferencesServiceParcelsDesc": "أرسل واستلم الطرود",
+  "@onboardingPreferencesServiceParcelsDesc": {
+    "description": "وصف خيار الطرود"
+  },
+  "onboardingPreferencesServiceFood": "الطعام",
+  "@onboardingPreferencesServiceFood": {
+    "description": "عنوان خيار الطعام"
+  },
+  "onboardingPreferencesServiceFoodDesc": "اطلب من المطاعم",
+  "@onboardingPreferencesServiceFoodDesc": {
+    "description": "وصف خيار الطعام"
+  },
+  "onboardingPreferencesDoneCta": "ابدأ استخدام Delivery Ways",
+  "@onboardingPreferencesDoneCta": {
+    "description": "زر إنهاء الإعداد الأولي"
+  },
+
+  "parcelsEntryTitle": "الطرود",
+  "@parcelsEntryTitle": {
+    "description": "عنوان شاشة الطرود (Track C - Ticket #40)"
+  },
+  "parcelsEntrySubtitle": "اشحن وتابع طرودك من مكان واحد.",
+  "@parcelsEntrySubtitle": {
+    "description": "النص الفرعي لشاشة الطرود"
+  },
+  "parcelsEntryCreateShipmentCta": "إنشاء شحنة",
+  "@parcelsEntryCreateShipmentCta": {
+    "description": "زر إنشاء شحنة جديدة"
+  },
+  "parcelsEntryViewShipmentsCta": "عرض الشحنات",
+  "@parcelsEntryViewShipmentsCta": {
+    "description": "زر عرض قائمة الشحنات"
+  },
+  "parcelsEntryComingSoonMessage": "مسارات الطرود قيد التطوير.",
+  "@parcelsEntryComingSoonMessage": {
+    "description": "رسالة Snackbar عند عدم تنفيذ المسارات بعد"
+  },
+  "parcelsEntryFooterNote": "إصدار Parcels MVP قيد التطوير النشط.",
+  "@parcelsEntryFooterNote": {
+    "description": "ملاحظة تذييل شاشة الطرود"
+  },
+  "parcelsComingSoonMessage": "خدمة الطرود قادمة قريبًا.",
+  "@parcelsComingSoonMessage": {
+    "description": "رسالة Snackbar عند تعطيل خدمة الطرود"
+  },
+
+  "parcelsDestinationTitle": "إنشاء شحنة",
+  "@parcelsDestinationTitle": {
+    "description": "عنوان شاشة وجهة الشحنة (Track C - Ticket #41)"
+  },
+  "parcelsDestinationSubtitle": "أدخل عنوان الاستلام وعنوان التسليم لشحنتك.",
+  "@parcelsDestinationSubtitle": {
+    "description": "النص الفرعي لشاشة وجهة الشحنة"
+  },
+  "parcelsDestinationPickupLabel": "عنوان الاستلام",
+  "@parcelsDestinationPickupLabel": {
+    "description": "عنوان حقل الاستلام"
+  },
+  "parcelsDestinationPickupHint": "أدخل عنوان الاستلام",
+  "@parcelsDestinationPickupHint": {
+    "description": "نص تلميح حقل الاستلام"
+  },
+  "parcelsDestinationDropoffLabel": "عنوان التسليم",
+  "@parcelsDestinationDropoffLabel": {
+    "description": "عنوان حقل التسليم"
+  },
+  "parcelsDestinationDropoffHint": "أدخل عنوان التسليم",
+  "@parcelsDestinationDropoffHint": {
+    "description": "نص تلميح حقل التسليم"
+  },
+  "parcelsDestinationContinueCta": "متابعة",
+  "@parcelsDestinationContinueCta": {
+    "description": "زر المتابعة في شاشة وجهة الشحنة"
+  },
+
+  "parcelsDetailsTitle": "تفاصيل الشحنة",
+  "@parcelsDetailsTitle": {
+    "description": "عنوان شاشة تفاصيل الشحنة (Track C - Ticket #42)"
+  },
+  "parcelsDetailsSubtitle": "أدخل تفاصيل الشحنة للحصول على تسعير أدق.",
+  "@parcelsDetailsSubtitle": {
+    "description": "النص الفرعي لشاشة تفاصيل الشحنة"
+  },
+  "parcelsDetailsSizeLabel": "الحجم",
+  "@parcelsDetailsSizeLabel": {
+    "description": "عنوان قسم اختيار الحجم"
+  },
+  "parcelsDetailsWeightLabel": "الوزن",
+  "@parcelsDetailsWeightLabel": {
+    "description": "عنوان حقل الوزن"
+  },
+  "parcelsDetailsWeightHint": "مثال: ٢٫٥ كجم",
+  "@parcelsDetailsWeightHint": {
+    "description": "نص تلميح حقل الوزن"
+  },
+  "parcelsDetailsContentsLabel": "ما الذي تريد إرساله؟",
+  "@parcelsDetailsContentsLabel": {
+    "description": "عنوان حقل وصف المحتوى"
+  },
+  "parcelsDetailsContentsHint": "وصف مختصر لمحتوى الشحنة",
+  "@parcelsDetailsContentsHint": {
+    "description": "نص تلميح حقل وصف المحتوى"
+  },
+  "parcelsDetailsFragileLabel": "هذه الشحنة قابلة للكسر",
+  "@parcelsDetailsFragileLabel": {
+    "description": "عنوان مفتاح القابلية للكسر"
+  },
+  "parcelsDetailsContinueCta": "متابعة إلى التسعير",
+  "@parcelsDetailsContinueCta": {
+    "description": "زر المتابعة في شاشة تفاصيل الشحنة"
+  },
+
+  "parcelsQuoteTitle": "تسعير الشحنة",
+  "@parcelsQuoteTitle": {
+    "description": "عنوان شاشة تسعير الشحنة (Track C - Ticket #43)"
+  },
+  "parcelsQuoteSubtitle": "اختر سرعة التوصيل والتكلفة المناسبة لك.",
+  "@parcelsQuoteSubtitle": {
+    "description": "النص الفرعي لشاشة تسعير الشحنة"
+  },
+  "parcelsQuoteLoadingTitle": "جاري جلب خيارات التسعير...",
+  "@parcelsQuoteLoadingTitle": {
+    "description": "نص التحميل أثناء جلب خيارات التسعير"
+  },
+  "parcelsQuoteErrorTitle": "تعذر تحميل خيارات التسعير",
+  "@parcelsQuoteErrorTitle": {
+    "description": "عنوان الخطأ عند فشل التسعير"
+  },
+  "parcelsQuoteErrorSubtitle": "يرجى التحقق من الاتصال بالإنترنت ثم المحاولة مرة أخرى.",
+  "@parcelsQuoteErrorSubtitle": {
+    "description": "النص الفرعي عند فشل التسعير"
+  },
+  "parcelsQuoteEmptyTitle": "لا توجد خيارات متاحة",
+  "@parcelsQuoteEmptyTitle": {
+    "description": "عنوان الحالة الفارغة عند عدم وجود خيارات تسعير"
+  },
+  "parcelsQuoteEmptySubtitle": "يرجى تعديل تفاصيل الشحنة ثم المحاولة مرة أخرى.",
+  "@parcelsQuoteEmptySubtitle": {
+    "description": "النص الفرعي للحالة الفارغة عند عدم وجود خيارات تسعير"
+  },
+  "parcelsQuoteRetryCta": "إعادة المحاولة",
+  "@parcelsQuoteRetryCta": {
+    "description": "زر إعادة المحاولة في حالة الخطأ"
+  },
+  "parcelsQuoteConfirmCta": "تأكيد الشحنة",
+  "@parcelsQuoteConfirmCta": {
+    "description": "زر التأكيد في شاشة تسعير الشحنة"
+  },
+
+  "parcelsListSectionTitle": "شحناتي",
+  "@parcelsListSectionTitle": {
+    "description": "عنوان قسم قائمة الشحنات (Track C - Ticket #45)"
+  },
+  "parcelsListEmptyTitle": "لا توجد شحنات حتى الآن",
+  "@parcelsListEmptyTitle": {
+    "description": "العنوان عند عدم وجود شحنات"
+  },
+  "parcelsListEmptySubtitle": "عند إنشاء شحنة جديدة ستظهر هنا.",
+  "@parcelsListEmptySubtitle": {
+    "description": "النص الفرعي عند عدم وجود شحنات"
+  },
+  "parcelsFilterAllLabel": "الكل",
+  "@parcelsFilterAllLabel": {
+    "description": "عنوان فلتر جميع الشحنات"
+  },
+  "parcelsFilterInProgressLabel": "قيد التنفيذ",
+  "@parcelsFilterInProgressLabel": {
+    "description": "عنوان فلتر الشحنات قيد التنفيذ"
+  },
+  "parcelsFilterDeliveredLabel": "تم التسليم",
+  "@parcelsFilterDeliveredLabel": {
+    "description": "عنوان فلتر الشحنات المسلّمة"
+  },
+  "parcelsFilterCancelledLabel": "ملغاة",
+  "@parcelsFilterCancelledLabel": {
+    "description": "عنوان فلتر الشحنات الملغاة"
+  },
+  "parcelsStatusScheduled": "مجدولة",
+  "@parcelsStatusScheduled": {
+    "description": "حالة الشحنة: مجدولة للاستلام"
+  },
+  "parcelsStatusPickupPending": "في انتظار الاستلام",
+  "@parcelsStatusPickupPending": {
+    "description": "حالة الشحنة: في انتظار الاستلام"
+  },
+  "parcelsStatusPickedUp": "تم الاستلام",
+  "@parcelsStatusPickedUp": {
+    "description": "حالة الشحنة: تم الاستلام من قبل المندوب"
+  },
+  "parcelsStatusInTransit": "في الطريق",
+  "@parcelsStatusInTransit": {
+    "description": "حالة الشحنة: في الطريق"
+  },
+  "parcelsStatusDelivered": "تم التسليم",
+  "@parcelsStatusDelivered": {
+    "description": "حالة الشحنة: تم التسليم للمستلم"
+  },
+  "parcelsStatusCancelled": "ملغاة",
+  "@parcelsStatusCancelled": {
+    "description": "حالة الشحنة: تم الإلغاء"
+  },
+  "parcelsStatusFailed": "فشل في التسليم",
+  "@parcelsStatusFailed": {
+    "description": "حالة الشحنة: فشل التسليم"
+  },
+
+  "parcelsCreateShipmentTitle": "شحنة جديدة",
+  "@parcelsCreateShipmentTitle": {
+    "description": "عنوان شاشة إنشاء شحنة (Track C - Ticket #46)"
+  },
+  "parcelsCreateSenderSectionTitle": "المرسل",
+  "@parcelsCreateSenderSectionTitle": {
+    "description": "عنوان قسم معلومات المرسل"
+  },
+  "parcelsCreateReceiverSectionTitle": "المستلم",
+  "@parcelsCreateReceiverSectionTitle": {
+    "description": "عنوان قسم معلومات المستلم"
+  },
+  "parcelsCreateDetailsSectionTitle": "تفاصيل الشحنة",
+  "@parcelsCreateDetailsSectionTitle": {
+    "description": "عنوان قسم تفاصيل الشحنة"
+  },
+  "parcelsCreateServiceSectionTitle": "نوع الخدمة",
+  "@parcelsCreateServiceSectionTitle": {
+    "description": "عنوان قسم اختيار نوع الخدمة"
+  },
+  "parcelsCreateSenderNameLabel": "اسم المرسل",
+  "@parcelsCreateSenderNameLabel": {
+    "description": "عنوان حقل اسم المرسل"
+  },
+  "parcelsCreateSenderPhoneLabel": "هاتف المرسل",
+  "@parcelsCreateSenderPhoneLabel": {
+    "description": "عنوان حقل هاتف المرسل"
+  },
+  "parcelsCreateSenderAddressLabel": "عنوان المرسل",
+  "@parcelsCreateSenderAddressLabel": {
+    "description": "عنوان حقل عنوان المرسل"
+  },
+  "parcelsCreateReceiverNameLabel": "اسم المستلم",
+  "@parcelsCreateReceiverNameLabel": {
+    "description": "عنوان حقل اسم المستلم"
+  },
+  "parcelsCreateReceiverPhoneLabel": "هاتف المستلم",
+  "@parcelsCreateReceiverPhoneLabel": {
+    "description": "عنوان حقل هاتف المستلم"
+  },
+  "parcelsCreateReceiverAddressLabel": "عنوان المستلم",
+  "@parcelsCreateReceiverAddressLabel": {
+    "description": "عنوان حقل عنوان المستلم"
+  },
+  "parcelsCreateWeightLabel": "الوزن (كجم)",
+  "@parcelsCreateWeightLabel": {
+    "description": "عنوان حقل الوزن"
+  },
+  "parcelsCreateSizeLabel": "الحجم",
+  "@parcelsCreateSizeLabel": {
+    "description": "عنوان اختيار الحجم"
+  },
+  "parcelsCreateNotesLabel": "ملاحظات (اختياري)",
+  "@parcelsCreateNotesLabel": {
+    "description": "عنوان حقل الملاحظات"
+  },
+  "parcelsCreateServiceExpress": "سريع",
+  "@parcelsCreateServiceExpress": {
+    "description": "خيار الخدمة السريعة"
+  },
+  "parcelsCreateServiceStandard": "عادي",
+  "@parcelsCreateServiceStandard": {
+    "description": "خيار الخدمة العادية"
+  },
+  "parcelsCreateShipmentCtaGetEstimate": "احصل على التقدير",
+  "@parcelsCreateShipmentCtaGetEstimate": {
+    "description": "زر الإرسال للحصول على تقدير الشحنة"
+  },
+  "parcelsCreateErrorRequired": "هذا الحقل مطلوب",
+  "@parcelsCreateErrorRequired": {
+    "description": "رسالة خطأ للحقول المطلوبة"
+  },
+  "parcelsCreateErrorInvalidNumber": "يرجى إدخال رقم صحيح",
+  "@parcelsCreateErrorInvalidNumber": {
+    "description": "رسالة خطأ للأرقام غير الصحيحة"
+  },
+  "parcelsCreateErrorInvalidPhone": "يرجى إدخال رقم هاتف صحيح",
+  "@parcelsCreateErrorInvalidPhone": {
+    "description": "رسالة خطأ لأرقام الهاتف غير الصحيحة"
+  },
+
+  "parcelsShipmentDetailsTitle": "تفاصيل الشحنة",
+  "@parcelsShipmentDetailsTitle": {
+    "description": "عنوان شاشة تفاصيل الشحنة (Track C - Ticket #47)"
+  },
+  "parcelsShipmentDetailsCreatedAt": "أُنشئت في {date}",
+  "@parcelsShipmentDetailsCreatedAt": {
+    "description": "عنوان يعرض تاريخ الإنشاء",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "parcelsShipmentDetailsRouteSectionTitle": "المسار",
+  "@parcelsShipmentDetailsRouteSectionTitle": {
+    "description": "عنوان قسم معلومات المسار"
+  },
+  "parcelsShipmentDetailsPickupLabel": "الاستلام",
+  "@parcelsShipmentDetailsPickupLabel": {
+    "description": "عنوان عنوان الاستلام"
+  },
+  "parcelsShipmentDetailsDropoffLabel": "التسليم",
+  "@parcelsShipmentDetailsDropoffLabel": {
+    "description": "عنوان عنوان التسليم"
+  },
+  "parcelsShipmentDetailsAddressSectionTitle": "العناوين",
+  "@parcelsShipmentDetailsAddressSectionTitle": {
+    "description": "عنوان قسم عناوين المرسل/المستلم"
+  },
+  "parcelsShipmentDetailsSenderLabel": "من (المرسل)",
+  "@parcelsShipmentDetailsSenderLabel": {
+    "description": "عنوان عنوان المرسل"
+  },
+  "parcelsShipmentDetailsReceiverLabel": "إلى (المستلم)",
+  "@parcelsShipmentDetailsReceiverLabel": {
+    "description": "عنوان عنوان المستلم"
+  },
+  "parcelsShipmentDetailsMetaSectionTitle": "تفاصيل الطرد",
+  "@parcelsShipmentDetailsMetaSectionTitle": {
+    "description": "عنوان قسم معلومات الطرد"
+  },
+  "parcelsShipmentDetailsWeightLabel": "الوزن",
+  "@parcelsShipmentDetailsWeightLabel": {
+    "description": "عنوان الوزن"
+  },
+  "parcelsShipmentDetailsSizeLabel": "الحجم",
+  "@parcelsShipmentDetailsSizeLabel": {
+    "description": "عنوان الحجم"
+  },
+  "parcelsShipmentDetailsNotesLabel": "ملاحظات",
+  "@parcelsShipmentDetailsNotesLabel": {
+    "description": "عنوان الملاحظات"
+  },
+  "parcelsShipmentDetailsNotAvailable": "غير متوفر",
+  "@parcelsShipmentDetailsNotAvailable": {
+    "description": "نص بديل للبيانات غير المتوفرة"
+  },
+  "parcelsShipmentDetailsSizeSmall": "صغير",
+  "@parcelsShipmentDetailsSizeSmall": {
+    "description": "عنوان حجم الطرود الصغيرة"
+  },
+  "parcelsShipmentDetailsSizeMedium": "متوسط",
+  "@parcelsShipmentDetailsSizeMedium": {
+    "description": "عنوان حجم الطرود المتوسطة"
+  },
+  "parcelsShipmentDetailsSizeLarge": "كبير",
+  "@parcelsShipmentDetailsSizeLarge": {
+    "description": "عنوان حجم الطرود الكبيرة"
+  },
+  "parcelsShipmentDetailsSizeOversize": "ضخم",
+  "@parcelsShipmentDetailsSizeOversize": {
+    "description": "عنوان حجم الطرود الضخمة"
+  },
+  "parcelsDetailsPriceLabel": "السعر",
+  "@parcelsDetailsPriceLabel": {
+    "description": "عنوان سعر الشحنة في تفاصيل الشحنة (Track C - Ticket #50)"
+  },
+
+  "foodComingSoonAppBarTitle": "توصيل الطعام",
+  "@foodComingSoonAppBarTitle": {
+    "description": "عنوان شريط التطبيق لشاشة توصيل الطعام قريباً (Track C - Ticket #48)"
+  },
+  "foodComingSoonTitle": "خدمة توصيل الطعام قادمة قريباً",
+  "@foodComingSoonTitle": {
+    "description": "العنوان الرئيسي في شاشة توصيل الطعام قريباً"
+  },
+  "foodComingSoonSubtitle": "نعمل حالياً على إطلاق خدمة توصيل الطعام في منطقتك. ترقّب التحديث القادم!",
+  "@foodComingSoonSubtitle": {
+    "description": "النص الفرعي في شاشة توصيل الطعام قريباً"
+  },
+  "foodComingSoonPrimaryCta": "العودة إلى الرئيسية",
+  "@foodComingSoonPrimaryCta": {
+    "description": "زر العودة في شاشة توصيل الطعام قريباً"
+  }
+}

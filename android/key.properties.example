@@ -1,0 +1,21 @@
+# Android Signing Configuration
+# Copy this file to android/key.properties and fill in your actual values
+# DO NOT commit the actual key.properties file to version control
+
+# Path to your keystore file (absolute path recommended)
+storeFile=/absolute/path/to/your/delivery-ways.keystore
+
+# Password for the keystore
+storePassword=your_keystore_password_here
+
+# Password for the key
+keyPassword=your_key_password_here
+
+# Alias of the key in the keystore
+keyAlias=delivery
+
+# Instructions:
+# 1. Generate keystore: keytool -genkeypair -v -keystore delivery-ways.keystore -alias delivery -keyalg RSA -keysize 2048 -validity 10000
+# 2. Copy this file to android/key.properties
+# 3. Fill in the actual values above
+# 4. Add *.keystore and key.properties to .gitignore

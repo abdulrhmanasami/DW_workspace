@@ -1,0 +1,33 @@
+{
+  "window_days": 1,
+  "thresholds": {
+    "crash_free_sessions_pct_min": 99.5,
+    "anr_rate_pct_max": 0.30,
+    "fatal_rate_pct_max": 0.30,
+    "cold_start_regression_pct_max": 15.0
+  },
+  "comparison_baseline": "last_rc",
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Production quality gates for Delivery Ways app",
+    "last_updated": "2025-11-12T09:00:00Z",
+    "contact": "quality@delivery-ways.com"
+  },
+  "rollout_phases": {
+    "10_to_50_percent": {
+      "monitoring_window_hours": 24,
+      "auto_block_on_failure": false,
+      "require_manual_approval": true
+    },
+    "50_to_100_percent": {
+      "monitoring_window_hours": 48,
+      "auto_block_on_failure": true,
+      "require_manual_approval": true
+    },
+    "post_rollout_monitoring": {
+      "monitoring_window_hours": 72,
+      "auto_rollback_on_failure": true,
+      "alert_stakeholders": true
+    }
+  }
+}

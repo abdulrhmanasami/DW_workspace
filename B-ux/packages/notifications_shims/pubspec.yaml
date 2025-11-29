@@ -1,0 +1,15 @@
+name: notifications_shims
+description: Notification models, contracts and availability status for Delivery Ways
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: '^3.9.2'
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.4.9
+

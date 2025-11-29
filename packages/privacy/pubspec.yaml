@@ -1,0 +1,19 @@
+name: privacy
+description: PrivacyCenter and DSAR tooling for Delivery Ways
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  json_annotation: ^4.9.0
+  meta: ^1.16.0
+  network_shims:
+    path: ../network_shims
+
+dev_dependencies:
+  build_runner: ^2.4.11
+  json_serializable: ^6.7.1
+  test: ^1.25.0
+

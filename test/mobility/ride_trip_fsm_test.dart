@@ -1,0 +1,202 @@
+import 'package:mobility_shims/mobility_shims.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  group('RideTrip FSM', () {
+    test('draft → quoting → requesting → findingDriver → driverAccepted → '
+        'driverArrived → inProgress → payment → completed', () {
+      var state = RideTripState(
+        tripId: 'trip-1',
+        phase: RideTripPhase.draft,
+      );
+
+      state = applyRideTripEvent(state, RideTripEvent.requestQuote);
+      expect(state.phase, RideTripPhase.quoting);
+
+      state = applyRideTripEvent(state, RideTripEvent.quoteReceived);
+      expect(state.phase, RideTripPhase.requesting);
+
+      state = applyRideTripEvent(state, RideTripEvent.submitRequest);
+      expect(state.phase, RideTripPhase.findingDriver);
+
+      state = applyRideTripEvent(state, RideTripEvent.driverAccepted);
+      expect(state.phase, RideTripPhase.driverAccepted);
+
+      state = applyRideTripEvent(state, RideTripEvent.driverArrived);
+      expect(state.phase, RideTripPhase.driverArrived);
+
+      state = applyRideTripEvent(state, RideTripEvent.startTrip);
+      expect(state.phase, RideTripPhase.inProgress);
+
+      state = applyRideTripEvent(state, RideTripEvent.startPayment);
+      expect(state.phase, RideTripPhase.payment);
+
+      state = applyRideTripEvent(state, RideTripEvent.complete);
+      expect(state.phase, RideTripPhase.completed);
+    });
+
+    test('cancel from draft leads to cancelled', () {
+      final initial = RideTripState(
+        tripId: 'trip-2',
+        phase: RideTripPhase.draft,
+      );
+
+      final cancelled = applyRideTripEvent(initial, RideTripEvent.cancel);
+
+      expect(cancelled.phase, RideTripPhase.cancelled);
+      expect(cancelled.tripId, initial.tripId);
+    });
+
+    test('fail from quoting leads to failed', () {
+      final initial = RideTripState(
+        tripId: 'trip-3',
+        phase: RideTripPhase.quoting,
+      );
+
+      final failed = applyRideTripEvent(initial, RideTripEvent.fail);
+
+      expect(failed.phase, RideTripPhase.failed);
+    });
+
+    test('terminal states do not accept further events', () {
+      final completed = RideTripState(
+        tripId: 'trip-4',
+        phase: RideTripPhase.completed,
+      );
+
+      expect(
+        () => applyRideTripEvent(completed, RideTripEvent.requestQuote),
+        throwsA(isA<InvalidRideTransitionException>()),
+      );
+    });
+
+    test('invalid transition throws InvalidRideTransitionException', () {
+      final state = RideTripState(
+        tripId: 'trip-5',
+        phase: RideTripPhase.draft,
+      );
+
+      expect(
+        () => applyRideTripEvent(state, RideTripEvent.submitRequest),
+        throwsA(isA<InvalidRideTransitionException>()),
+      );
+    });
+
+    group('cancel transitions', () {
+      test('cancel from quoting', () {
+        final state = RideTripState(tripId: 't', phase: RideTripPhase.quoting);
+        final result = applyRideTripEvent(state, RideTripEvent.cancel);
+        expect(result.phase, RideTripPhase.cancelled);
+      });
+
+      test('cancel from requesting', () {
+        final state =
+            RideTripState(tripId: 't', phase: RideTripPhase.requesting);
+        final result = applyRideTripEvent(state, RideTripEvent.cancel);
+        expect(result.phase, RideTripPhase.cancelled);
+      });
+
+      test('cancel from findingDriver', () {
+        final state =
+            RideTripState(tripId: 't', phase: RideTripPhase.findingDriver);
+        final result = applyRideTripEvent(state, RideTripEvent.cancel);
+        expect(result.phase, RideTripPhase.cancelled);
+      });
+
+      test('cancel from driverAccepted', () {
+        final state =
+            RideTripState(tripId: 't', phase: RideTripPhase.driverAccepted);
+        final result = applyRideTripEvent(state, RideTripEvent.cancel);
+        expect(result.phase, RideTripPhase.cancelled);
+      });
+
+      test('cancel from driverArrived', () {
+        final state =
+            RideTripState(tripId: 't', phase: RideTripPhase.driverArrived);
+        final result = applyRideTripEvent(state, RideTripEvent.cancel);
+        expect(result.phase, RideTripPhase.cancelled);
+      });
+
+      test('cannot cancel from inProgress', () {
+        final state =
+            RideTripState(tripId: 't', phase: RideTripPhase.inProgress);
+        expect(
+          () => applyRideTripEvent(state, RideTripEvent.cancel),
+          throwsA(isA<InvalidRideTransitionException>()),
+        );
+      });
+    });
+
+    group('fail transitions', () {
+      test('fail from any non-terminal state', () {
+        final nonTerminalPhases = [
+          RideTripPhase.draft,
+          RideTripPhase.quoting,
+          RideTripPhase.requesting,
+          RideTripPhase.findingDriver,
+          RideTripPhase.driverAccepted,
+          RideTripPhase.driverArrived,
+          RideTripPhase.inProgress,
+          RideTripPhase.payment,
+        ];
+
+        for (final phase in nonTerminalPhases) {
+          final state = RideTripState(tripId: 't', phase: phase);
+          final result = applyRideTripEvent(state, RideTripEvent.fail);
+          expect(result.phase, RideTripPhase.failed,
+              reason: 'fail from $phase should lead to failed');
+        }
+      });
+    });
+
+    group('RideTripState', () {
+      test('copyWith preserves unchanged values', () {
+        const original = RideTripState(
+          tripId: 'original-id',
+          phase: RideTripPhase.draft,
+        );
+
+        final copied = original.copyWith(phase: RideTripPhase.quoting);
+
+        expect(copied.tripId, 'original-id');
+        expect(copied.phase, RideTripPhase.quoting);
+      });
+
+      test('copyWith can update tripId', () {
+        const original = RideTripState(
+          tripId: 'old-id',
+          phase: RideTripPhase.draft,
+        );
+
+        final copied = original.copyWith(tripId: 'new-id');
+
+        expect(copied.tripId, 'new-id');
+        expect(copied.phase, RideTripPhase.draft);
+      });
+    });
+
+    group('InvalidRideTransitionException', () {
+      test('toString contains useful information', () {
+        final exception = InvalidRideTransitionException(
+          RideTripPhase.draft,
+          RideTripEvent.complete,
+        );
+
+        expect(exception.toString(), contains('draft'));
+        expect(exception.toString(), contains('complete'));
+        expect(exception.toString(), contains('InvalidRideTransitionException'));
+      });
+
+      test('exposes from and event fields', () {
+        final exception = InvalidRideTransitionException(
+          RideTripPhase.quoting,
+          RideTripEvent.startTrip,
+        );
+
+        expect(exception.from, RideTripPhase.quoting);
+        expect(exception.event, RideTripEvent.startTrip);
+      });
+    });
+  });
+}
+

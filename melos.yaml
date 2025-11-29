@@ -1,0 +1,67 @@
+name: delivery_ways_workspace
+repository: https://github.com/your-org/delivery-ways
+
+packages:
+  # Canonical packages live under /packages (top-level only).
+  - packages/*
+
+ignore:
+  # Exclude legacy snapshots under app/packages/** from this workspace.
+  - app/packages/**
+
+command:
+  bootstrap:
+    environment:
+      sdk: ">=3.3.0 <4.0.0"
+      flutter: ">=3.0.0"
+    dependencies:
+      # Shared dev dependencies for all packages
+      test: any
+      flutter_lints: ^2.0.0
+      build_runner: ^2.4.11
+      dart_code_metrics: ^5.7.6
+
+scripts:
+  analyze:
+    description: Run B-STYLE analysis (Analyzer + DCM) across workspace
+    run: |
+      melos exec -- "flutter analyze --no-pub --fatal-infos lib"
+
+      if [ -f "tools/bin/run_dcm.sh" ]; then
+        echo "Running DCM for app/lib scope..."
+        "./tools/bin/run_dcm.sh" analyze lib
+
+        echo "Running DCM for notifications packages..."
+        melos exec --scope="notifications_*" -- "\"\\$MELOS_ROOT_PATH/tools/bin/run_dcm.sh\" analyze lib"
+      fi
+
+  test:
+    description: Run tests for all packages that have a test/ directory (Flutter or Dart)
+    run: |
+      melos exec --dir-exists="test" -- "../../tools/bin/run_tests.sh"
+
+  format:
+    description: Format all Dart code
+    run: melos exec -- "dart format --fix ."
+
+  build:
+    description: Build all packages
+    run: melos exec -- "flutter pub run build_runner build --delete-conflicting-outputs"
+
+  clean:
+    description: Clean all packages
+    run: melos exec -- "flutter clean"
+
+  bootstrap:all:
+    description: Bootstrap entire workspace
+    run: |
+      melos clean
+      melos bootstrap
+      melos build
+
+  ci:check:
+    description: Full CI check (analyze + test + build)
+    run: |
+      melos analyze
+      melos test
+      melos build

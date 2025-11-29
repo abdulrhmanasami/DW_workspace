@@ -1,0 +1,10 @@
+name: core
+description: Core utilities and models for Delivery Ways clean version
+publish_to: none
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  foundation_shims:
+    path: ../foundation_shims

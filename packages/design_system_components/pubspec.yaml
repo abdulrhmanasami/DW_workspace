@@ -1,0 +1,11 @@
+name: design_system_components
+publish_to: none
+description: Design System Components - Atoms V1
+version: 1.0.0
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  design_system_foundation:
+    path: ../design_system_foundation

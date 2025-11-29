@@ -1,0 +1,73 @@
+{
+  "ui_routes": {
+    "legal": [
+      {
+        "route": "/settings/about",
+        "screen": "AboutLegalScreen",
+        "file": "lib/screens/legal/about_legal_screen.dart",
+        "feature_gated": false
+      },
+      {
+        "route": "/settings/licenses",
+        "screen": "LicensesBrowserScreen",
+        "file": "lib/screens/legal/licenses_browser_screen.dart",
+        "feature_gated": false
+      },
+      {
+        "route": "/settings/legal/privacy",
+        "screen": "PrivacyMarkdownScreen",
+        "file": "lib/screens/legal/privacy_markdown_screen.dart",
+        "feature_gated": false
+      },
+      {
+        "route": "/settings/legal/terms",
+        "screen": "TermsMarkdownScreen",
+        "file": "lib/screens/legal/terms_markdown_screen.dart",
+        "feature_gated": false
+      }
+    ],
+    "dsr": [
+      {
+        "route": "/settings/dsr/export",
+        "screen": "DsrExportScreen",
+        "file": "lib/screens/settings/dsr_export_screen.dart",
+        "feature_gated": true,
+        "gate_condition": "trackingEnabled"
+      },
+      {
+        "route": "/settings/dsr/erasure",
+        "screen": "DsrErasureScreen",
+        "file": "lib/screens/settings/dsr_erasure_screen.dart",
+        "feature_gated": true,
+        "gate_condition": "trackingEnabled"
+      }
+    ]
+  },
+  "ui_components": [
+    {
+      "component": "LoadingView",
+      "file": "lib/ui/components/loading_view.dart",
+      "description": "Standard loading interface with Design System tokens"
+    },
+    {
+      "component": "ErrorView",
+      "file": "lib/ui/components/error_view.dart",
+      "description": "Consistent error display across UI layer"
+    },
+    {
+      "component": "EmptyState",
+      "file": "lib/ui/components/empty_state.dart",
+      "description": "Standard empty state display across UI layer"
+    }
+  ],
+  "barrel": {
+    "file": "lib/ui/ui.dart",
+    "exports": [
+      "design_system_shims (barrel)",
+      "foundation_shims as fnd (barrel)",
+      "flutter/widgets.dart (selective)",
+      "flutter_riverpod.dart (selective)",
+      "Local UI components"
+    ]
+  }
+}

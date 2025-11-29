@@ -1,0 +1,11 @@
+name: maps_stub_impl
+description: Stub implementations for maps shims (compile-ready fallbacks)
+version: 0.1.0
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  maps_shims:
+    path: ../maps_shims

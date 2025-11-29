@@ -1,0 +1,21 @@
+name: payments_stripe_impl
+description: Stripe implementation of PaymentGateway with PaymentSheet and 3DS support
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_stripe: ^10.2.0
+  http: ^1.2.0
+  payments:
+    path: ../payments
+  foundation_shims:
+    path: ../foundation_shims
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

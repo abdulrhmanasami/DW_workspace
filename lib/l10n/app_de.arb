@@ -1,0 +1,713 @@
+{
+  "@@locale": "de",
+  "@@last_modified": "2025-11-25",
+
+  "appTitle": "Delivery Ways",
+  "initializing": "Initialisierung...",
+
+  "back": "Zurück",
+  "retry": "Erneut versuchen",
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "confirm": "Bestätigen",
+  "ok": "OK",
+  "close": "Schließen",
+  "error": "Fehler",
+  "loading": "Laden...",
+  "comingSoon": "Demnächst verfügbar",
+
+  "authPhoneLoginTitle": "Anmelden",
+  "authPhoneLoginSubtitle": "Geben Sie Ihre Telefonnummer ein, um sich anzumelden oder ein neues Konto zu erstellen.",
+  "authPhoneFieldLabel": "Telefonnummer",
+  "authPhoneFieldHint": "+49xxxxxxxxxx",
+  "authPhoneContinueButton": "Weiter",
+  "authPhoneRequiredError": "Bitte geben Sie Ihre Telefonnummer ein.",
+  "authPhoneInvalidFormatError": "Bitte geben Sie eine gültige Telefonnummer ein.",
+  "authPhoneSubmitError": "Verifizierungscode konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+
+  "authPhoneTitle": "Anmelden",
+  "authPhoneSubtitle": "Geben Sie Ihre Handynummer ein, um sich bei Delivery Ways anzumelden.",
+  "authPhoneFieldHint": "Handynummer",
+  "authPhoneContinueCta": "Weiter",
+  "authOtpTitle": "Code eingeben",
+  "authOtpSubtitle": "Wir haben einen Verifizierungscode an Ihr Telefon gesendet.",
+  "authOtpFieldLabel": "Verifizierungscode",
+  "authOtpFieldHint": "Verifizierungscode",
+  "authOtpVerifyCta": "Verifizieren und fortfahren",
+  "accountSheetTitle": "Konto",
+  "accountSheetSignedOutSubtitle": "Sie sind nicht angemeldet. Melden Sie sich an, um Ihre Fahrten und Lieferungen zu synchronisieren.",
+  "accountSheetSignInCta": "Mit Telefon anmelden",
+  "accountSheetSignedInTitle": "Angemeldet",
+  "accountSheetSignOutCta": "Abmelden",
+  "accountSheetFooterText": "Weitere Kontooptionen demnächst verfügbar.",
+  "authOtpConfirmButton": "Verifizieren",
+  "authOtpRequiredError": "Bitte geben Sie den Verifizierungscode ein.",
+  "authOtpInvalidFormatError": "Bitte geben Sie einen gültigen 4-6-stelligen Code ein.",
+  "authOtpSubmitError": "Ungültiger oder abgelaufener Verifizierungscode.",
+  "authOtpResendButton": "Code erneut senden",
+  "authOtpResendCountdown": "Code erneut senden in {seconds} Sekunden",
+
+  "authBiometricButtonLabel": "Biometrie verwenden",
+  "authBiometricReason": "Authentifizieren Sie sich, um fortzufahren.",
+  "authBiometricUnlockError": "Entsperren mit Biometrie nicht möglich. Bitte fordern Sie einen neuen Code an.",
+  "authCooldownMessage": "Bitte warten Sie {seconds}s, bevor Sie es erneut versuchen.",
+  "authCooldownReady": "Sie können jetzt erneut senden.",
+  "authAttemptsRemaining": "{count} Versuche übrig",
+  "authNoAttemptsRemaining": "Keine Versuche mehr übrig.",
+
+  "auth2faTitle": "Zwei-Faktor-Authentifizierung",
+  "auth2faSubtitle": "Ein zusätzlicher Verifizierungsschritt ist für Ihre Sicherheit erforderlich.",
+  "auth2faSelectMethod": "Verifizierungsmethode auswählen",
+  "auth2faMethodSms": "SMS",
+  "auth2faMethodSmsDescription": "Code per SMS an {destination} erhalten",
+  "auth2faMethodTotp": "Authenticator-App",
+  "auth2faMethodTotpDescription": "Verwenden Sie Ihre Authenticator-App, um einen Code zu generieren",
+  "auth2faMethodEmail": "E-Mail",
+  "auth2faMethodEmailDescription": "Code per E-Mail an {destination} erhalten",
+  "auth2faMethodPush": "Push-Benachrichtigung",
+  "auth2faMethodPushDescription": "Bestätigen Sie die Anfrage auf Ihrem registrierten Gerät",
+  "auth2faEnterCode": "Verifizierungscode eingeben",
+  "auth2faCodeHint": "6-stelligen Code eingeben",
+  "auth2faVerifyButton": "Verifizieren",
+  "auth2faCancelButton": "Abbrechen",
+  "auth2faResendCode": "Code erneut senden",
+  "auth2faCodeExpired": "Code abgelaufen. Bitte fordern Sie einen neuen an.",
+  "auth2faInvalidCode": "Ungültiger Code. Bitte versuchen Sie es erneut.",
+  "auth2faAccountLocked": "Zu viele Versuche. Konto vorübergehend gesperrt.",
+  "auth2faLockoutMessage": "Bitte versuchen Sie es nach {minutes} Minuten erneut.",
+
+  "notificationsSettingsTitle": "Benachrichtigungseinstellungen",
+  "notificationsSettingsOrderStatusTitle": "Bestellstatus-Benachrichtigungen",
+  "notificationsSettingsOrderStatusSubtitle": "Erhalten Sie Echtzeit-Updates zu Ihren aktiven Bestellungen.",
+  "notificationsSettingsPromotionsTitle": "Werbeaktionen",
+  "notificationsSettingsPromotionsSubtitle": "Erhalten Sie personalisierte Angebote und Rabatte.",
+  "notificationsSettingsSystemTitle": "Systembenachrichtigungen",
+  "notificationsSettingsSystemSubtitle": "Wichtige Hinweise zu Ihrem Konto und System.",
+  "notificationsSettingsConsentRequired": "Erteilen Sie die Benachrichtigungsberechtigung, um diese Einstellungen zu aktivieren.",
+  "notificationsSettingsErrorGeneric": "Benachrichtigungseinstellungen konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "notificationsSettingsErrorLoading": "Fehler beim Laden der Benachrichtigungseinstellungen",
+  "notificationsSettingsSystemSettingsButton": "Systemeinstellungen öffnen",
+  "notificationsSettingsSystemSettingsPlaceholder": "Systemeinstellungen werden bald geöffnet",
+  "notificationsSettingsQuietHoursTitle": "Ruhezeiten",
+  "notificationsSettingsQuietHoursNotEnabled": "Bitte-nicht-stören-Modus nicht aktiviert",
+  "settingsSectionNotifications": "Benachrichtigungseinstellungen",
+
+  "notificationsInboxTitle": "Benachrichtigungen",
+  "notificationsInboxErrorGeneric": "Benachrichtigungen konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+  "notificationsInboxRetryButtonLabel": "Erneut versuchen",
+  "notificationsInboxEmptyTitle": "Noch keine Benachrichtigungen",
+  "notificationsInboxEmptySubtitle": "Wichtige Hinweise zu Ihren Bestellungen und Angeboten werden hier angezeigt.",
+  "notificationsInboxEmptyCtaBackToHomeLabel": "Zurück zur Startseite",
+  "notificationsInboxMarkAsReadTooltip": "Als gelesen markieren",
+  "notificationsInboxMarkAllAsReadTooltip": "Alle als gelesen markieren",
+  "notificationsInboxClearAllTooltip": "Alle löschen",
+  "notificationsInboxClearAllDialogTitle": "Alle Benachrichtigungen löschen",
+  "notificationsInboxClearAllDialogMessage": "Möchten Sie wirklich alle Benachrichtigungen löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "notificationsInboxClearAllConfirm": "Alle löschen",
+  "notificationsInboxTappedGeneric": "Benachrichtigung geöffnet",
+  "notificationsInboxTimeNow": "jetzt",
+  "notificationsInboxTimeMinutes": "vor {minutes}min",
+  "notificationsInboxTimeHours": "vor {hours}h",
+  "notificationsInboxTimeDays": "vor {days}T",
+
+  "privacyConsentTitle": "Datenschutz & Einwilligung",
+  "privacyConsentHeadline": "Kontrollieren Sie Ihre Privatsphäre",
+  "privacyConsentDescription": "Wählen Sie, was Sie mit uns teilen möchten, um Ihre Erfahrung zu verbessern",
+  "privacyConsentAnalyticsTitle": "Nutzungsanalysen",
+  "privacyConsentAnalyticsDescription": "Hilft uns zu verstehen, wie die App genutzt wird, um Leistung und Funktionen zu verbessern",
+  "privacyConsentCrashReportsTitle": "Absturzberichte",
+  "privacyConsentCrashReportsDescription": "Sendet automatisch Absturzberichte, um uns bei der Behebung von Problemen zu helfen",
+  "privacyConsentBackgroundLocationTitle": "Standort im Hintergrund",
+  "privacyConsentBackgroundLocationDescription": "Ermöglicht Standortverfolgung auch bei geschlossener App zur Verbesserung der Lieferservices",
+  "privacyConsentSaveSuccess": "Datenschutzeinstellungen gespeichert",
+  "privacyConsentErrorPrefix": "Fehler: {message}",
+
+  "dsrExportTitle": "Daten exportieren",
+  "dsrExportHeadline": "Exportieren Sie Ihre persönlichen Daten",
+  "dsrExportDescription": "Sie erhalten einen sicheren Link zum Herunterladen aller Ihrer Daten. Der Link ist nur 7 Tage gültig.",
+  "dsrExportIncludePaymentsTitle": "Zahlungsverlauf einschließen",
+  "dsrExportIncludePaymentsDescription": "Der Zahlungsverlauf kann sensible Informationen enthalten. Bitte überprüfen Sie die Datei sorgfältig.",
+  "dsrExportStartButton": "Export starten",
+  "dsrExportRequestStatus": "Anfragestatus",
+  "dsrExportRequestDate": "Antragsdatum: {date}",
+  "dsrExportDownloadLink": "Download-Link",
+  "dsrExportLinkExpires": "Läuft ab: {date}",
+  "dsrExportCopyLink": "Link kopieren",
+  "dsrExportLinkCopied": "Link kopiert",
+  "dsrExportPreparingFile": "Ihre Datei wird vorbereitet…",
+  "dsrExportSendingRequest": "Exportanfrage wird gesendet…",
+  "dsrExportRequestFailed": "Anfrage konnte nicht gesendet werden",
+
+  "dsrErasureTitle": "Konto löschen",
+  "dsrErasureHeadline": "Konto dauerhaft löschen",
+  "dsrErasureDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Alle Ihre Daten und Kontoinformationen werden gelöscht.",
+  "dsrErasureRequestButton": "Kontolöschung beantragen",
+  "dsrErasureWarningTitle": "Wichtige Warnung",
+  "dsrErasureWarningPoint1": "Alle Ihre persönlichen Daten werden dauerhaft gelöscht",
+  "dsrErasureWarningPoint2": "Sie können Ihr Konto oder Ihre Daten nicht wiederherstellen",
+  "dsrErasureWarningPoint3": "Alle aktiven Bestellungen und Reservierungen werden storniert",
+  "dsrErasureWarningPoint4": "Ihr Zahlungs- und Transaktionsverlauf wird gelöscht",
+  "dsrErasureWarningPoint5": "Die Bearbeitung der Anfrage kann mehrere Tage dauern",
+  "dsrErasureLegalNotice": "Die Kontolöschung unterliegt der Datenschutz-Grundverordnung (DSGVO). Wir senden Ihnen vor der endgültigen Löschung eine Bestätigung.",
+  "dsrErasureRequestStatus": "Anfragestatus",
+  "dsrErasureStatusPending": "Wartet auf Überprüfung",
+  "dsrErasureStatusInProgress": "In Bearbeitung",
+  "dsrErasureStatusReady": "Bereit zur Bestätigung",
+  "dsrErasureStatusCompleted": "Abgeschlossen",
+  "dsrErasureStatusFailed": "Verarbeitung fehlgeschlagen",
+  "dsrErasureStatusCanceled": "Abgebrochen",
+  "dsrErasureReviewingRequest": "Ihre Anfrage wird überprüft…",
+  "dsrErasureSendingRequest": "Löschanfrage wird gesendet…",
+  "dsrErasureRequestFailed": "Anfrage konnte nicht gesendet werden",
+  "dsrErasureNewRequest": "Neue Löschung beantragen",
+  "dsrErasureConfirmTitle": "Endgültige Löschung bestätigen",
+  "dsrErasureConfirmMessage": "Dies ist der letzte Schritt. Nach der Bestätigung wird Ihr Konto innerhalb von 30 Tagen dauerhaft gelöscht und diese Entscheidung kann nicht rückgängig gemacht werden.",
+  "dsrErasureConfirmButton": "Löschung bestätigen",
+
+  "legalPrivacyPolicyTitle": "Datenschutzrichtlinie",
+  "legalPrivacyPolicyUnavailable": "Die Datenschutzrichtlinie ist derzeit nicht verfügbar.",
+  "legalTermsOfServiceTitle": "Nutzungsbedingungen",
+  "legalTermsOfServiceUnavailable": "Die Nutzungsbedingungen sind derzeit nicht verfügbar.",
+  "legalAboutTitle": "Rechtliche Informationen",
+  "legalPrivacyButton": "Datenschutzrichtlinie",
+  "legalTermsButton": "Nutzungsbedingungen",
+  "legalOpenSourceLicenses": "Open-Source-Lizenzen",
+
+  "ordersTitle": "Bestellungen",
+  "ordersOrderLabel": "Bestellung: {orderId}",
+
+  "cartTitle": "Warenkorb",
+  "cartItemsLabel": "Artikel: {count}",
+
+  "checkoutTitle": "Zur Kasse",
+
+  "paymentTitle": "Zahlung",
+  "paymentInitializing": "Zahlungssystem wird initialisiert...",
+  "paymentDebugTitle": "Zahlungs-Debug",
+  "paymentEnabled": "Zahlungen aktiviert: {enabled}",
+  "paymentMissingKeys": "Fehlende Konfigurationsschlüssel: {keys}",
+  "paymentGatewayStatus": "Gateway-Status: {status}",
+  "paymentGateway": "Gateway: {type}",
+  "paymentSheetStatus": "Sheet-Status: {status}",
+  "paymentSheet": "Sheet: {type}",
+  "paymentApplePay": "Mit Apple Pay bezahlen",
+  "paymentGooglePay": "Mit Google Pay bezahlen",
+  "paymentDigitalWallet": "Mit Digital Wallet bezahlen",
+  "paymentCash": "Bar bezahlen",
+
+  "trackingTitle": "Sendungsverfolgung",
+  "trackingLocationTitle": "Standortverfolgung",
+  "trackingCurrentLocation": "Aktueller Standort",
+  "trackingTripRoute": "Fahrtroute",
+  "trackingRealtimeUnavailableTitle": "Live-Tracking nicht verfügbar",
+  "trackingRealtimeUnavailableBody": "Die Echtzeit-Sendungsverfolgung ist derzeit nicht verfügbar. Ihr Bestellstatus wird automatisch aktualisiert.",
+  "trackingOrderStatus": "Bestellstatus",
+  "trackingNoActiveTrip": "Keine aktive Fahrt",
+
+  "mapTitle": "Karte",
+  "mapSmokeTestTitle": "Karten-Smoke-Test",
+  "mapTestLocation": "Teststandort",
+
+  "mobilityBgTestsTitle": "Mobilitäts-Hintergrundtests (Phase-3)",
+  "mobilityTestBackgroundTracking": "Hintergrundverfolgung testen",
+  "mobilityTestGeofence": "Geofence testen",
+  "mobilityTestTripRecording": "Fahrtaufzeichnung testen",
+
+  "adminPanelTitle": "Admin-Panel",
+  "adminUserInfo": "Benutzerinformationen",
+  "adminUserLabel": "Benutzer: {userId}",
+  "adminRoleLabel": "Rolle: {role}",
+  "adminUserManagement": "Benutzerverwaltung",
+  "adminAnalyticsReports": "Analysen & Berichte",
+  "adminAnalyticsAccess": "Sie haben Zugriff auf Analysen",
+  "adminSystemMonitoring": "Systemüberwachung",
+  "adminRbacStats": "RBAC-Statistiken",
+  "adminRbacEnabled": "Status: {status}",
+  "adminRbacStatusEnabled": "Aktiviert",
+  "adminRbacStatusDisabled": "Deaktiviert",
+  "adminCanaryPercentage": "Canary-Prozentsatz: {percentage}%",
+  "adminRolesCount": "Anzahl der Rollen: {count}",
+  "adminTotalPermissions": "Gesamtberechtigungen: {count}",
+
+  "trackingCheckingAvailability": "Prüfe Verfügbarkeit der Sendungsverfolgung...",
+  "trackingLoadingRoute": "Route wird geladen...",
+
+  "ordersHistoryTitle": "Meine Bestellungen",
+  "@ordersHistoryTitle": {
+    "description": "AppBar-Titel für den Bestellverlauf-Bildschirm (Track C - Ticket #51)"
+  },
+  "ordersHistoryEmptyTitle": "Noch keine Bestellungen",
+  "@ordersHistoryEmptyTitle": {
+    "description": "Leerzustandstitel wenn keine Bestellungen vorhanden"
+  },
+  "ordersHistoryEmptySubtitle": "Sie haben noch keine Bestellungen. Erstellen Sie zuerst eine neue Sendung.",
+  "@ordersHistoryEmptySubtitle": {
+    "description": "Leerzustandsuntertitel wenn keine Bestellungen vorhanden"
+  },
+  "ordersHistoryUnavailableTitle": "Bestellungen nicht verfügbar",
+  "ordersHistoryLoadError": "Bestellverlauf konnte nicht geladen werden",
+  "ordersFilterAll": "Alle",
+  "@ordersFilterAll": {
+    "description": "Filterlabel für alle Bestellungen (Track C - Ticket #51)"
+  },
+  "ordersFilterParcels": "Pakete",
+  "@ordersFilterParcels": {
+    "description": "Filterlabel nur für Pakete (Track C - Ticket #51)"
+  },
+
+  "paymentMethodsTitle": "Zahlungsmethoden",
+  "paymentMethodsEmptyTitle": "Keine Zahlungsmethoden",
+  "paymentMethodsEmptySubtitle": "Fügen Sie eine Zahlungsmethode hinzu, um zu beginnen",
+  "paymentMethodsAddButton": "Zahlungsmethode hinzufügen",
+  "paymentMethodsLoadError": "Zahlungsmethoden konnten nicht geladen werden",
+  "paymentMethodsSaving": "Wird gespeichert...",
+
+  "authVerifying": "Wird verifiziert...",
+  "authSendingCode": "Code wird gesendet...",
+
+  "featureUnavailableTitle": "Funktion nicht verfügbar",
+  "featureUnavailableGeneric": "Diese Funktion ist derzeit nicht verfügbar. Bitte versuchen Sie es später erneut.",
+
+  "onbWelcomeTitle": "Willkommen bei Delivery Ways",
+  "onbWelcomeBody": "Ihr zuverlässiger Lieferpartner. Bestellen Sie, was Sie brauchen, und verfolgen Sie Ihre Lieferung in Echtzeit.",
+  "onbAppIntroTitle": "So funktioniert's",
+  "onbAppIntroBody": "Produkte durchsuchen, bestellen und wir liefern an Ihre Tür. Einfach und schnell.",
+  "onbOrderingTitle": "Einfach Bestellen",
+  "onbOrderingBody": "Finden Sie, was Sie brauchen, legen Sie es in den Warenkorb und bezahlen Sie in Sekunden. Mehrere Zahlungsoptionen wo unterstützt.",
+  "onbTrackingTitle": "Bestellung Verfolgen",
+  "onbTrackingBody": "Verfolgen Sie Ihre Lieferung in Echtzeit, wenn Tracking in Ihrer Region verfügbar ist. Sie erhalten Updates bei jedem Schritt.",
+  "onbSecurityTitle": "Ihre Sicherheit ist wichtig",
+  "onbSecurityBody": "Ihre Daten sind mit branchenüblicher Sicherheit geschützt. Wir geben Ihre persönlichen Daten niemals ohne Zustimmung weiter.",
+  "onbNotificationsTitle": "Bleiben Sie informiert",
+  "onbNotificationsBody": "Aktivieren Sie Benachrichtigungen, um Bestellupdates, Lieferbenachrichtigungen und exklusive Angebote zu erhalten.",
+  "onbReadyTitle": "Alles bereit!",
+  "onbReadyBody": "Starten Sie und geben Sie Ihre erste Bestellung auf. Wir sind hier, um Ihnen zu helfen.",
+
+  "onbRiderWelcomeTitle": "Willkommen, Fahrer!",
+  "onbRiderWelcomeBody": "Werden Sie Teil unseres Liefernetzwerks und verdienen Sie. Flexible Arbeitszeiten, faire Vergütung.",
+  "onbRiderHowItWorksTitle": "Ihre Reise beginnt hier",
+  "onbRiderHowItWorksBody": "Lieferungen annehmen, zur Abholung navigieren, an Kunden liefern. Verfolgen Sie Ihre Einnahmen in der App.",
+  "onbRiderLocationTitle": "Standort aktivieren",
+  "onbRiderLocationBody": "Wir verwenden Ihren Standort, um Sie mit Lieferungen in der Nähe zu verbinden. Ihr Standort wird nur während aktiver Lieferungen geteilt.",
+  "onbRiderSecurityTitle": "Sicher & Geschützt",
+  "onbRiderSecurityBody": "Ihre Einnahmen und persönlichen Daten sind geschützt. Multi-Faktor-Authentifizierung hält Ihr Konto sicher.",
+  "onbRiderNotificationsTitle": "Keine Lieferung verpassen",
+  "onbRiderNotificationsBody": "Erhalten Sie sofortige Benachrichtigungen für neue Lieferanfragen und wichtige Updates.",
+  "onbRiderReadyTitle": "Bereit zum Liefern!",
+  "onbRiderReadyBody": "Sie sind eingerichtet und startklar. Beginnen Sie jetzt mit der Annahme von Lieferungen.",
+
+  "onbCtaGetStarted": "Los geht's",
+  "onbCtaNext": "Weiter",
+  "onbCtaSkip": "Überspringen",
+  "onbCtaEnableNotifications": "Benachrichtigungen aktivieren",
+  "onbCtaEnableLocation": "Standort aktivieren",
+  "onbCtaStartOrdering": "Jetzt bestellen",
+  "onbCtaStartDelivering": "Jetzt liefern",
+  "onbCtaMaybeLater": "Vielleicht später",
+  "onbCtaDone": "Fertig",
+  "onbCtaBack": "Zurück",
+
+  "hintAuthPhoneTitle": "Sichere Anmeldung",
+  "hintAuthPhoneBody": "Wir senden einen Bestätigungscode an diese Nummer. Ihre Telefonnummer hilft uns, Ihr Konto zu schützen.",
+  "hintAuthOtpTitle": "Prüfen Sie Ihre Nachrichten",
+  "hintAuthOtpBody": "Geben Sie den Code ein, den wir an Ihr Telefon gesendet haben. Dies bestätigt, dass Sie es wirklich sind.",
+  "hintAuth2faTitle": "Zusätzlicher Schutz",
+  "hintAuth2faBody": "Zwei-Faktor-Authentifizierung fügt eine zusätzliche Sicherheitsebene zu Ihrem Konto hinzu.",
+  "hintAuthBiometricTitle": "Schneller Zugriff",
+  "hintAuthBiometricBody": "Verwenden Sie Ihren Fingerabdruck oder Ihr Gesicht, um sich schneller anzumelden und Ihr Konto sicher zu halten.",
+
+  "hintPaymentsMethodsTitle": "Zahlungsoptionen",
+  "hintPaymentsMethodsBody": "Fügen Sie eine Zahlungsmethode hinzu, um den Checkout zu beschleunigen. Ihre Zahlungsinformationen sind sicher verschlüsselt.",
+  "hintPaymentsSecurityTitle": "Sichere Zahlung",
+  "hintPaymentsSecurityBody": "Ihre Kartendaten werden verschlüsselt und nie auf unseren Servern gespeichert. Zahlungen werden von vertrauenswürdigen Anbietern verarbeitet.",
+  "hintPaymentsLimitedTitle": "Begrenzte Zahlungsoptionen",
+  "hintPaymentsLimitedBody": "Einige Zahlungsmethoden sind möglicherweise nicht in Ihrer Region verfügbar. Nachnahme ist verfügbar, wo unterstützt.",
+
+  "hintTrackingExplanationTitle": "Live-Tracking",
+  "hintTrackingExplanationBody": "Beobachten Sie die Reise Ihrer Bestellung von der Abholung bis zur Lieferung auf der Karte.",
+  "hintTrackingUnavailableTitle": "Tracking nicht verfügbar",
+  "hintTrackingUnavailableBody": "Echtzeit-Tracking ist für diese Bestellung nicht verfügbar. Sie erhalten Statusaktualisierungen per Benachrichtigung.",
+  "hintTrackingRealtimeTitle": "Echtzeit-Updates",
+  "hintTrackingRealtimeBody": "Die Karte wird automatisch aktualisiert, während Ihre Lieferung fortschreitet.",
+
+  "hintNotificationsImportanceTitle": "Warum Benachrichtigungen wichtig sind",
+  "hintNotificationsImportanceBody": "Erhalten Sie sofortige Updates über Ihren Bestellstatus, die Ankunft der Lieferung und Sonderangebote.",
+  "hintNotificationsPermissionTitle": "Benachrichtigungen aktivieren",
+  "hintNotificationsPermissionBody": "Um Bestellupdates und Lieferbenachrichtigungen zu erhalten, aktivieren Sie bitte Benachrichtigungen.",
+  "hintNotificationsPermissionCta": "Jetzt aktivieren",
+
+  "hintOrdersFirstTitle": "Ihre erste Bestellung",
+  "hintOrdersFirstBody": "Herzlichen Glückwunsch zu Ihrer ersten Bestellung! Verfolgen Sie den Fortschritt hier.",
+  "hintOrdersEmptyTitle": "Noch keine Bestellungen",
+  "hintOrdersEmptyBody": "Beginnen Sie zu stöbern und geben Sie Ihre erste Bestellung auf. Ihr Bestellverlauf erscheint hier.",
+  "hintOrdersEmptyCta": "Jetzt stöbern",
+
+  "settingsReplayOnboarding": "App-Einführung anzeigen",
+  "settingsReplayOnboardingDescription": "Die Willkommensanleitung erneut ansehen",
+
+  "parcelsEntryTitle": "Pakete",
+  "@parcelsEntryTitle": {
+    "description": "Titel für den Pakete-Einstiegsbildschirm (Track C - Ticket #40)"
+  },
+  "parcelsEntrySubtitle": "Versenden und verfolgen Sie Ihre Pakete an einem Ort.",
+  "@parcelsEntrySubtitle": {
+    "description": "Untertitel für den Pakete-Einstiegsbildschirm"
+  },
+  "parcelsEntryCreateShipmentCta": "Sendung erstellen",
+  "@parcelsEntryCreateShipmentCta": {
+    "description": "Primäre CTA-Schaltfläche zum Erstellen einer neuen Sendung"
+  },
+  "parcelsEntryViewShipmentsCta": "Sendungen anzeigen",
+  "@parcelsEntryViewShipmentsCta": {
+    "description": "Sekundäre CTA-Schaltfläche zum Anzeigen der Sendungsliste"
+  },
+  "parcelsEntryComingSoonMessage": "Paketfunktionen werden bald verfügbar sein.",
+  "@parcelsEntryComingSoonMessage": {
+    "description": "Snackbar-Nachricht, wenn Paketfunktionen noch nicht implementiert sind"
+  },
+  "parcelsEntryFooterNote": "Parcels MVP befindet sich in aktiver Entwicklung.",
+  "@parcelsEntryFooterNote": {
+    "description": "Fußnote auf dem Pakete-Einstiegsbildschirm"
+  },
+  "parcelsComingSoonMessage": "Pakete sind bald verfügbar.",
+  "@parcelsComingSoonMessage": {
+    "description": "Snackbar-Nachricht, wenn die Paketfunktion deaktiviert ist"
+  },
+
+  "parcelsDestinationTitle": "Sendung erstellen",
+  "@parcelsDestinationTitle": {
+    "description": "Titel für den Paketziel-Bildschirm (Track C - Ticket #41)"
+  },
+  "parcelsDestinationSubtitle": "Geben Sie Abhol- und Lieferadresse für Ihre Sendung ein.",
+  "@parcelsDestinationSubtitle": {
+    "description": "Untertitel für den Paketziel-Bildschirm"
+  },
+  "parcelsDestinationPickupLabel": "Abholadresse",
+  "@parcelsDestinationPickupLabel": {
+    "description": "Label für das Abholadressfeld"
+  },
+  "parcelsDestinationPickupHint": "Abholadresse eingeben",
+  "@parcelsDestinationPickupHint": {
+    "description": "Hinweistext für das Abholadressfeld"
+  },
+  "parcelsDestinationDropoffLabel": "Lieferadresse",
+  "@parcelsDestinationDropoffLabel": {
+    "description": "Label für das Lieferadressfeld"
+  },
+  "parcelsDestinationDropoffHint": "Lieferadresse eingeben",
+  "@parcelsDestinationDropoffHint": {
+    "description": "Hinweistext für das Lieferadressfeld"
+  },
+  "parcelsDestinationContinueCta": "Weiter",
+  "@parcelsDestinationContinueCta": {
+    "description": "Weiter-Schaltfläche auf dem Paketziel-Bildschirm"
+  },
+
+  "parcelsDetailsTitle": "Sendungsdetails",
+  "@parcelsDetailsTitle": {
+    "description": "Titel für den Sendungsdetails-Bildschirm (Track C - Ticket #42)"
+  },
+  "parcelsDetailsSubtitle": "Geben Sie Details zu Ihrer Sendung für eine genaue Preisberechnung ein.",
+  "@parcelsDetailsSubtitle": {
+    "description": "Untertitel für den Sendungsdetails-Bildschirm"
+  },
+  "parcelsDetailsSizeLabel": "Größe",
+  "@parcelsDetailsSizeLabel": {
+    "description": "Label für die Größenauswahl"
+  },
+  "parcelsDetailsWeightLabel": "Gewicht",
+  "@parcelsDetailsWeightLabel": {
+    "description": "Label für das Gewichtsfeld"
+  },
+  "parcelsDetailsWeightHint": "z.B. 2,5 kg",
+  "@parcelsDetailsWeightHint": {
+    "description": "Hinweistext für das Gewichtsfeld"
+  },
+  "parcelsDetailsContentsLabel": "Was senden Sie?",
+  "@parcelsDetailsContentsLabel": {
+    "description": "Label für das Inhaltsbeschreibungsfeld"
+  },
+  "parcelsDetailsContentsHint": "Kurz den Inhalt beschreiben",
+  "@parcelsDetailsContentsHint": {
+    "description": "Hinweistext für das Inhaltsbeschreibungsfeld"
+  },
+  "parcelsDetailsFragileLabel": "Dieses Paket ist zerbrechlich",
+  "@parcelsDetailsFragileLabel": {
+    "description": "Label für den Zerbrechlich-Schalter"
+  },
+  "parcelsDetailsContinueCta": "Weiter zur Preisberechnung",
+  "@parcelsDetailsContinueCta": {
+    "description": "Weiter-Schaltfläche auf dem Sendungsdetails-Bildschirm"
+  },
+
+  "parcelsQuoteTitle": "Sendungspreise",
+  "@parcelsQuoteTitle": {
+    "description": "Titel für den Sendungspreise-Bildschirm (Track C - Ticket #43)"
+  },
+  "parcelsQuoteSubtitle": "Wählen Sie, wie schnell und zu welchem Preis Sie liefern möchten.",
+  "@parcelsQuoteSubtitle": {
+    "description": "Untertitel für den Sendungspreise-Bildschirm"
+  },
+  "parcelsQuoteLoadingTitle": "Preise werden geladen...",
+  "@parcelsQuoteLoadingTitle": {
+    "description": "Ladetext beim Abrufen der Preisoptionen"
+  },
+  "parcelsQuoteErrorTitle": "Preise konnten nicht geladen werden",
+  "@parcelsQuoteErrorTitle": {
+    "description": "Fehlertitel bei fehlgeschlagener Preisberechnung"
+  },
+  "parcelsQuoteErrorSubtitle": "Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.",
+  "@parcelsQuoteErrorSubtitle": {
+    "description": "Fehleruntertitel bei fehlgeschlagener Preisberechnung"
+  },
+  "parcelsQuoteEmptyTitle": "Keine Optionen verfügbar",
+  "@parcelsQuoteEmptyTitle": {
+    "description": "Leerzustandstitel wenn keine Preisoptionen vorhanden"
+  },
+  "parcelsQuoteEmptySubtitle": "Bitte passen Sie die Sendungsdetails an und versuchen Sie es erneut.",
+  "@parcelsQuoteEmptySubtitle": {
+    "description": "Leerzustandsuntertitel wenn keine Preisoptionen vorhanden"
+  },
+  "parcelsQuoteRetryCta": "Erneut versuchen",
+  "@parcelsQuoteRetryCta": {
+    "description": "Wiederholen-Schaltfläche im Fehlerzustand"
+  },
+  "parcelsQuoteConfirmCta": "Sendung bestätigen",
+  "@parcelsQuoteConfirmCta": {
+    "description": "Bestätigen-Schaltfläche auf dem Sendungspreise-Bildschirm"
+  },
+
+  "parcelsListSectionTitle": "Meine Sendungen",
+  "@parcelsListSectionTitle": {
+    "description": "Abschnittstitel für die Sendungsliste (Track C - Ticket #45)"
+  },
+  "parcelsListEmptyTitle": "Noch keine Sendungen",
+  "@parcelsListEmptyTitle": {
+    "description": "Titel bei fehlenden Sendungen"
+  },
+  "parcelsListEmptySubtitle": "Wenn Sie eine Sendung erstellen, erscheint sie hier.",
+  "@parcelsListEmptySubtitle": {
+    "description": "Untertitel bei fehlenden Sendungen"
+  },
+  "parcelsFilterAllLabel": "Alle",
+  "@parcelsFilterAllLabel": {
+    "description": "Filterlabel für alle Sendungen"
+  },
+  "parcelsFilterInProgressLabel": "In Bearbeitung",
+  "@parcelsFilterInProgressLabel": {
+    "description": "Filterlabel für laufende Sendungen"
+  },
+  "parcelsFilterDeliveredLabel": "Zugestellt",
+  "@parcelsFilterDeliveredLabel": {
+    "description": "Filterlabel für zugestellte Sendungen"
+  },
+  "parcelsFilterCancelledLabel": "Storniert",
+  "@parcelsFilterCancelledLabel": {
+    "description": "Filterlabel für stornierte Sendungen"
+  },
+  "parcelsStatusScheduled": "Geplant",
+  "@parcelsStatusScheduled": {
+    "description": "Sendungsstatus: zur Abholung geplant"
+  },
+  "parcelsStatusPickupPending": "Abholung ausstehend",
+  "@parcelsStatusPickupPending": {
+    "description": "Sendungsstatus: wartet auf Abholung"
+  },
+  "parcelsStatusPickedUp": "Abgeholt",
+  "@parcelsStatusPickedUp": {
+    "description": "Sendungsstatus: vom Kurier abgeholt"
+  },
+  "parcelsStatusInTransit": "Unterwegs",
+  "@parcelsStatusInTransit": {
+    "description": "Sendungsstatus: unterwegs"
+  },
+  "parcelsStatusDelivered": "Zugestellt",
+  "@parcelsStatusDelivered": {
+    "description": "Sendungsstatus: an Empfänger zugestellt"
+  },
+  "parcelsStatusCancelled": "Storniert",
+  "@parcelsStatusCancelled": {
+    "description": "Sendungsstatus: storniert"
+  },
+  "parcelsStatusFailed": "Fehlgeschlagen",
+  "@parcelsStatusFailed": {
+    "description": "Sendungsstatus: Zustellung fehlgeschlagen"
+  },
+
+  "parcelsCreateShipmentTitle": "Neue Sendung",
+  "@parcelsCreateShipmentTitle": {
+    "description": "Titel für den Bildschirm zur Sendungserstellung (Track C - Ticket #46)"
+  },
+  "parcelsCreateSenderSectionTitle": "Absender",
+  "@parcelsCreateSenderSectionTitle": {
+    "description": "Abschnittstitel für Absenderinformationen"
+  },
+  "parcelsCreateReceiverSectionTitle": "Empfänger",
+  "@parcelsCreateReceiverSectionTitle": {
+    "description": "Abschnittstitel für Empfängerinformationen"
+  },
+  "parcelsCreateDetailsSectionTitle": "Sendungsdetails",
+  "@parcelsCreateDetailsSectionTitle": {
+    "description": "Abschnittstitel für Sendungsdetails"
+  },
+  "parcelsCreateServiceSectionTitle": "Serviceart",
+  "@parcelsCreateServiceSectionTitle": {
+    "description": "Abschnittstitel für die Serviceauswahl"
+  },
+  "parcelsCreateSenderNameLabel": "Absendername",
+  "@parcelsCreateSenderNameLabel": {
+    "description": "Label für das Absendernamefeld"
+  },
+  "parcelsCreateSenderPhoneLabel": "Absendertelefon",
+  "@parcelsCreateSenderPhoneLabel": {
+    "description": "Label für das Absendertelefonfeld"
+  },
+  "parcelsCreateSenderAddressLabel": "Absenderadresse",
+  "@parcelsCreateSenderAddressLabel": {
+    "description": "Label für das Absenderadressfeld"
+  },
+  "parcelsCreateReceiverNameLabel": "Empfängername",
+  "@parcelsCreateReceiverNameLabel": {
+    "description": "Label für das Empfängernamefeld"
+  },
+  "parcelsCreateReceiverPhoneLabel": "Empfängertelefon",
+  "@parcelsCreateReceiverPhoneLabel": {
+    "description": "Label für das Empfängertelefonfeld"
+  },
+  "parcelsCreateReceiverAddressLabel": "Empfängeradresse",
+  "@parcelsCreateReceiverAddressLabel": {
+    "description": "Label für das Empfängeradressfeld"
+  },
+  "parcelsCreateWeightLabel": "Gewicht (kg)",
+  "@parcelsCreateWeightLabel": {
+    "description": "Label für das Gewichtsfeld"
+  },
+  "parcelsCreateSizeLabel": "Größe",
+  "@parcelsCreateSizeLabel": {
+    "description": "Label für die Größenauswahl"
+  },
+  "parcelsCreateNotesLabel": "Notizen (optional)",
+  "@parcelsCreateNotesLabel": {
+    "description": "Label für das Notizfeld"
+  },
+  "parcelsCreateServiceExpress": "Express",
+  "@parcelsCreateServiceExpress": {
+    "description": "Express-Serviceoption"
+  },
+  "parcelsCreateServiceStandard": "Standard",
+  "@parcelsCreateServiceStandard": {
+    "description": "Standard-Serviceoption"
+  },
+  "parcelsCreateShipmentCtaGetEstimate": "Kostenvoranschlag",
+  "@parcelsCreateShipmentCtaGetEstimate": {
+    "description": "CTA-Schaltfläche zum Einreichen und Kostenvoranschlag erhalten"
+  },
+  "parcelsCreateErrorRequired": "Dieses Feld ist erforderlich",
+  "@parcelsCreateErrorRequired": {
+    "description": "Validierungsfehler für Pflichtfelder"
+  },
+  "parcelsCreateErrorInvalidNumber": "Bitte geben Sie eine gültige Zahl ein",
+  "@parcelsCreateErrorInvalidNumber": {
+    "description": "Validierungsfehler für ungültige numerische Eingabe"
+  },
+  "parcelsCreateErrorInvalidPhone": "Bitte geben Sie eine gültige Telefonnummer ein",
+  "@parcelsCreateErrorInvalidPhone": {
+    "description": "Validierungsfehler für ungültige Telefonnummer"
+  },
+
+  "parcelsShipmentDetailsTitle": "Sendungsdetails",
+  "@parcelsShipmentDetailsTitle": {
+    "description": "Titel für den Sendungsdetails-Bildschirm (Track C - Ticket #47)"
+  },
+  "parcelsShipmentDetailsCreatedAt": "Erstellt am {date}",
+  "@parcelsShipmentDetailsCreatedAt": {
+    "description": "Label mit Erstellungsdatum",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "parcelsShipmentDetailsRouteSectionTitle": "Route",
+  "@parcelsShipmentDetailsRouteSectionTitle": {
+    "description": "Abschnittstitel für Routeninformationen"
+  },
+  "parcelsShipmentDetailsPickupLabel": "Abholung",
+  "@parcelsShipmentDetailsPickupLabel": {
+    "description": "Label für Abholadresse"
+  },
+  "parcelsShipmentDetailsDropoffLabel": "Zustellung",
+  "@parcelsShipmentDetailsDropoffLabel": {
+    "description": "Label für Zustelladresse"
+  },
+  "parcelsShipmentDetailsAddressSectionTitle": "Adressen",
+  "@parcelsShipmentDetailsAddressSectionTitle": {
+    "description": "Abschnittstitel für Absender-/Empfängeradressen"
+  },
+  "parcelsShipmentDetailsSenderLabel": "Von (Absender)",
+  "@parcelsShipmentDetailsSenderLabel": {
+    "description": "Label für Absenderadresse"
+  },
+  "parcelsShipmentDetailsReceiverLabel": "An (Empfänger)",
+  "@parcelsShipmentDetailsReceiverLabel": {
+    "description": "Label für Empfängeradresse"
+  },
+  "parcelsShipmentDetailsMetaSectionTitle": "Paketdetails",
+  "@parcelsShipmentDetailsMetaSectionTitle": {
+    "description": "Abschnittstitel für Paket-Metainformationen"
+  },
+  "parcelsShipmentDetailsWeightLabel": "Gewicht",
+  "@parcelsShipmentDetailsWeightLabel": {
+    "description": "Label für Gewicht"
+  },
+  "parcelsShipmentDetailsSizeLabel": "Größe",
+  "@parcelsShipmentDetailsSizeLabel": {
+    "description": "Label für Größe"
+  },
+  "parcelsShipmentDetailsNotesLabel": "Notizen",
+  "@parcelsShipmentDetailsNotesLabel": {
+    "description": "Label für Notizen"
+  },
+  "parcelsShipmentDetailsNotAvailable": "N/V",
+  "@parcelsShipmentDetailsNotAvailable": {
+    "description": "Platzhalter für nicht verfügbare Daten"
+  },
+  "parcelsShipmentDetailsSizeSmall": "Klein",
+  "@parcelsShipmentDetailsSizeSmall": {
+    "description": "Größenlabel für kleine Pakete"
+  },
+  "parcelsShipmentDetailsSizeMedium": "Mittel",
+  "@parcelsShipmentDetailsSizeMedium": {
+    "description": "Größenlabel für mittlere Pakete"
+  },
+  "parcelsShipmentDetailsSizeLarge": "Groß",
+  "@parcelsShipmentDetailsSizeLarge": {
+    "description": "Größenlabel für große Pakete"
+  },
+  "parcelsShipmentDetailsSizeOversize": "Übergröße",
+  "@parcelsShipmentDetailsSizeOversize": {
+    "description": "Größenlabel für übergroße Pakete"
+  },
+  "parcelsDetailsPriceLabel": "Preis",
+  "@parcelsDetailsPriceLabel": {
+    "description": "Label für den Paketpreis in den Sendungsdetails (Track C - Ticket #50)"
+  },
+
+  "foodComingSoonAppBarTitle": "Essenslieferung",
+  "@foodComingSoonAppBarTitle": {
+    "description": "AppBar-Titel für den Bildschirm Essenslieferung bald verfügbar (Track C - Ticket #48)"
+  },
+  "foodComingSoonTitle": "Essenslieferung kommt bald",
+  "@foodComingSoonTitle": {
+    "description": "Haupttitel auf dem Bildschirm Essenslieferung bald verfügbar"
+  },
+  "foodComingSoonSubtitle": "Wir arbeiten daran, Essenslieferung in deine Region zu bringen. Bleib dran!",
+  "@foodComingSoonSubtitle": {
+    "description": "Untertitel auf dem Bildschirm Essenslieferung bald verfügbar"
+  },
+  "foodComingSoonPrimaryCta": "Zurück zur Startseite",
+  "@foodComingSoonPrimaryCta": {
+    "description": "CTA-Schaltfläche auf dem Bildschirm Essenslieferung bald verfügbar"
+  }
+}
+

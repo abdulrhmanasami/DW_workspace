@@ -1,0 +1,12 @@
+# melos_managed_dependency_overrides: foundation_shims,payments,payments_shims,payments_stripe_impl,payments_adapter_stripe
+dependency_overrides:
+  foundation_shims:
+    path: ../foundation_shims
+  payments:
+    path: ../payments
+  payments_adapter_stripe:
+    path: ../payments_adapter_stripe
+  payments_shims:
+    path: ../payments_shims
+  payments_stripe_impl:
+    path: ../payments_stripe_impl

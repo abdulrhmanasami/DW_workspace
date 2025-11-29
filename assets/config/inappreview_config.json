@@ -1,0 +1,24 @@
+{
+  "version": "2025110313",
+  "enabled": true,
+  "kill_switch": false,
+  "experiment_off": true,
+  "weights": {
+    "CONTROL": 0.0,
+    "A": 1.0,
+    "B": 0.0
+  },
+  "min_sessions": 2,
+  "cooldown_days": 7,
+  "pin_days": 30,
+  "guardrails": {
+    "crash_max": 1.0,
+    "anr_max": 0.3,
+    "d7_uplift_min_pp": 1.5
+  },
+  "meta": {
+    "finalized": true,
+    "version": "202511031308",
+    "rationale": "A variant wins with +16.7pp D7 uplift vs control, guardrails PASS (Crash: 0.056%≤1.0%, ANR: 0.020%≤0.30%), highest retention performance"
+  }
+}

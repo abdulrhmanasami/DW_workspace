@@ -1,0 +1,24 @@
+name: payments_adapter_stripe
+description: Stripe adapter implementation for payments package contracts
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  payments: ^1.0.0
+  flutter_stripe: ^10.1.1
+  http: ^1.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.4.7
+  json_serializable: ^6.7.1
+
+flutter:

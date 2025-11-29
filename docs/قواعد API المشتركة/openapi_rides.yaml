@@ -1,0 +1,488 @@
+openapi: 3.0.3
+info:
+  title: Delivery Ways Rides API
+  description: API Contracts for the Ride-Hailing service, covering trip lifecycle, pricing, and driver assignment.
+  version: v1
+servers:
+  - url: https://api.deliveryways.com/v1
+    description: Production Server
+security:
+  - BearerAuth: []
+
+paths:
+  /rides/quote:
+    post:
+      summary: Get Ride Price Quote
+      operationId: getRideQuote
+      tags:
+        - Rides
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - pickup
+                - dropoff
+              properties:
+                pickup:
+                  $ref: '#/components/schemas/Location'
+                dropoff:
+                  $ref: '#/components/schemas/Location'
+      responses:
+        '200':
+          description: A list of price quotes for available service types.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  quotes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        service_type:
+                          type: string
+                          description: The type of ride service (e.g., ride_economy).
+                        price_estimate:
+                          $ref: '#/components/schemas/PriceEstimate'
+                        eta_minutes:
+                          type: integer
+                          description: Estimated arrival time in minutes.
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rides:
+    post:
+      summary: Request a New Ride
+      operationId: requestRide
+      tags:
+        - Rides
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - service_type
+                - pickup
+                - dropoff
+                - payment_method_id
+              properties:
+                service_type:
+                  type: string
+                  description: The type of ride service requested (e.g., ride_economy).
+                pickup:
+                  $ref: '#/components/schemas/Location'
+                dropoff:
+                  $ref: '#/components/schemas/Location'
+                payment_method_id:
+                  type: string
+                  description: ID of the selected payment method.
+      responses:
+        '200':
+          description: The newly created Trip object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trip:
+                    $ref: '#/components/schemas/Trip'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+  /rides/{id}:
+    get:
+      summary: Get Trip Details
+      operationId: getTripDetails
+      tags:
+        - Rides
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Unique trip identifier (e.g., trip_123).
+      responses:
+        '200':
+          description: The requested Trip object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trip:
+                    $ref: '#/components/schemas/Trip'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rides/{id}/events:
+    get:
+      summary: Get Trip Timeline Events
+      operationId: getTripEvents
+      tags:
+        - Rides
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Unique trip identifier.
+      responses:
+        '200':
+          description: A list of chronological trip events.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  events:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TripEvent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rides/{id}/cancel:
+    post:
+      summary: Cancel a Ride
+      operationId: cancelRide
+      tags:
+        - Rides
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Unique trip identifier.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: Optional reason for cancellation.
+      responses:
+        '200':
+          description: The updated Trip object with status 'canceled'.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trip:
+                    $ref: '#/components/schemas/Trip'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication using a Bearer Token.
+
+  parameters:
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+      description: Cursor for the next page of results.
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+      description: Maximum number of items to return per page.
+
+  schemas:
+    Location:
+      type: object
+      description: Represents a geographical point with address details.
+      required:
+        - lat
+        - lng
+        - address
+      properties:
+        lat:
+          type: number
+          format: double
+          description: Latitude.
+        lng:
+          type: number
+          format: double
+          description: Longitude.
+        address:
+          type: string
+          description: Full text address.
+        place_id:
+          type: string
+          description: Optional map provider place ID.
+
+    PriceEstimate:
+      type: object
+      description: Represents a price range estimate for a service.
+      required:
+        - currency
+        - min
+        - max
+        - service_type
+      properties:
+        currency:
+          type: string
+          description: Currency code (e.g., SAR).
+        min:
+          type: number
+          format: double
+          description: Minimum estimated price.
+        max:
+          type: number
+          format: double
+          description: Maximum estimated price.
+        service_type:
+          type: string
+          description: The service type this estimate applies to.
+
+    Vehicle:
+      type: object
+      description: Details of the vehicle.
+      required:
+        - plate_number
+        - make
+        - model
+        - color
+      properties:
+        plate_number:
+          type: string
+          description: Vehicle plate number.
+        make:
+          type: string
+          description: Manufacturer (e.g., Toyota).
+        model:
+          type: string
+          description: Model (e.g., Camry).
+        color:
+          type: string
+          description: Color.
+
+    Driver:
+      type: object
+      description: Details of the assigned driver.
+      required:
+        - id
+        - name
+        - rating
+        - phone_number
+        - vehicle
+      properties:
+        id:
+          type: string
+          description: Unique driver identifier (e.g., driver_789).
+        name:
+          type: string
+          description: Driver's name.
+        rating:
+          type: number
+          format: double
+          description: Driver's rating.
+        phone_number:
+          type: string
+          description: Driver's phone number.
+        vehicle:
+          $ref: '#/components/schemas/Vehicle'
+        current_location:
+          $ref: '#/components/schemas/Location'
+          description: Driver's current location for tracking.
+
+    TripEvent:
+      type: object
+      description: A chronological event in the trip's lifecycle.
+      required:
+        - id
+        - status
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: Unique event identifier.
+        status:
+          type: string
+          description: The new status of the trip.
+          enum:
+            - requested
+            - searching_driver
+            - driver_assigned
+            - en_route_to_pickup
+            - arrived
+            - in_progress
+            - completed
+            - canceled
+            - failed
+        timestamp:
+          type: string
+          format: date-time
+          description: Time of the event (ISO8601 UTC).
+        details:
+          type: object
+          description: Additional event-specific details.
+
+    Trip:
+      type: object
+      description: The main entity representing a ride-hailing trip.
+      required:
+        - id
+        - rider_id
+        - status
+        - service_type
+        - pickup
+        - dropoff
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Unique trip identifier (e.g., trip_123).
+        rider_id:
+          type: string
+          description: User ID of the rider.
+        driver:
+          $ref: '#/components/schemas/Driver'
+        status:
+          type: string
+          description: Current status of the trip.
+          enum:
+            - requested
+            - searching_driver
+            - driver_assigned
+            - en_route_to_pickup
+            - arrived
+            - in_progress
+            - completed
+            - canceled
+            - failed
+        service_type:
+          type: string
+          description: The type of service requested (e.g., ride_economy).
+        pickup:
+          $ref: '#/components/schemas/Location'
+        dropoff:
+          $ref: '#/components/schemas/Location'
+        price_estimate:
+          $ref: '#/components/schemas/PriceEstimate'
+        final_price:
+          type: object
+          description: Final price details after completion.
+        eta_minutes:
+          type: integer
+          description: Estimated arrival time in minutes.
+        created_at:
+          type: string
+          format: date-time
+          description: Time of creation (ISO8601 UTC).
+        updated_at:
+          type: string
+          format: date-time
+          description: Time of last update (ISO8601 UTC).
+
+  responses:
+    InvalidRequest:
+      description: Bad Request - Invalid or missing fields.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized - Invalid or expired token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Forbidden - User lacks permission to access the resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Not Found - The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Conflict - Resource state prevents the action (e.g., canceling a completed trip).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalError:
+      description: Internal Server Error - An unexpected error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      description: Standard error response format.
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              description: Standardized error code.
+              enum:
+                - invalid_request
+                - unauthorized
+                - forbidden
+                - not_found
+                - conflict
+                - rate_limited
+                - internal_error
+            message:
+              type: string
+              description: Human-readable error message.
+            details:
+              type: object
+              description: Optional object for field-specific errors.

@@ -1,0 +1,240 @@
+Analyzing ui, legal, dsr_erasure_screen.dart, dsr_export_screen.dart...
+
+  error - lib/screens/legal/about_legal_screen.dart:6:8 - Target of URI doesn't exist: '../ui/ui.dart'. Try creating the file referenced by the URI, or try using a URI for a file that does exist. - uri_does_not_exist
+  error - lib/screens/legal/about_legal_screen.dart:8:32 - Classes can only extend other classes. Try specifying a different superclass, or removing the extends clause. - extends_non_class
+  error - lib/screens/legal/about_legal_screen.dart:9:33 - No associated named super constructor parameter. Try changing the name to the name of an existing named super constructor parameter, or creating such named parameter. - super_formal_parameter_without_associated_named
+  error - lib/screens/legal/about_legal_screen.dart:12:3 - Undefined class 'Widget'. Try changing the name to the name of an existing class, or creating a class with the name 'Widget'. - undefined_class
+  error - lib/screens/legal/about_legal_screen.dart:12:10 - The method doesn't override an inherited method. Try updating this class to match the superclass, or removing the override annotation. - override_on_non_overriding_member
+  error - lib/screens/legal/about_legal_screen.dart:12:16 - Undefined class 'BuildContext'. Try changing the name to the name of an existing class, or creating a class with the name 'BuildContext'. - undefined_class
+  error - lib/screens/legal/about_legal_screen.dart:12:38 - Undefined class 'WidgetRef'. Try changing the name to the name of an existing class, or creating a class with the name 'WidgetRef'. - undefined_class
+  error - lib/screens/legal/about_legal_screen.dart:13:11 - The value of the local variable 'navigatorKey' isn't used. Try removing the variable or using it. - unused_local_variable
+  error - lib/screens/legal/about_legal_screen.dart:13:36 - Undefined name 'fnd'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/legal/about_legal_screen.dart:15:12 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/legal/about_legal_screen.dart:16:14 - The method 'Column' isn't defined for the type 'AboutLegalScreen'. Try correcting the name to the name of an existing method, or defining a method named 'Column'. - undefined_method
+  error - lib/screens/legal/about_legal_screen.dart:18:11 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/legal/about_legal_screen.dart:23:17 - The name 'SizedBox' isn't a class. Try correcting the name to match an existing class. - creation_with_non_type
+  error - lib/screens/legal/about_legal_screen.dart:24:11 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/legal/about_legal_screen.dart:29:17 - The name 'SizedBox' isn't a class. Try correcting the name to match an existing class. - creation_with_non_type
+  error - lib/screens/legal/about_legal_screen.dart:30:11 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/legal/licenses_browser_screen.dart:7:8 - Target of URI doesn't exist: '../ui/ui.dart'. Try creating the file referenced by the URI, or try using a URI for a file that does exist. - uri_does_not_exist
+  error - lib/screens/legal/licenses_browser_screen.dart:9:37 - Classes can only extend other classes. Try specifying a different superclass, or removing the extends clause. - extends_non_class
+  error - lib/screens/legal/licenses_browser_screen.dart:10:38 - No associated named super constructor parameter. Try changing the name to the name of an existing named super constructor parameter, or creating such named parameter. - super_formal_parameter_without_associated_named
+  error - lib/screens/legal/licenses_browser_screen.dart:13:3 - Undefined class 'Widget'. Try changing the name to the name of an existing class, or creating a class with the name 'Widget'. - undefined_class
+  error - lib/screens/legal/licenses_browser_screen.dart:13:10 - The method doesn't override an inherited method. Try updating this class to match the superclass, or removing the override annotation. - override_on_non_overriding_member
+  error - lib/screens/legal/licenses_browser_screen.dart:13:16 - Undefined class 'BuildContext'. Try changing the name to the name of an existing class, or creating a class with the name 'BuildContext'. - undefined_class
+  error - lib/screens/legal/licenses_browser_screen.dart:13:38 - Undefined class 'WidgetRef'. Try changing the name to the name of an existing class, or creating a class with the name 'WidgetRef'. - undefined_class
+  error - lib/screens/legal/licenses_browser_screen.dart:14:12 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/legal/licenses_browser_screen.dart:15:14 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/legal/privacy_markdown_screen.dart:7:8 - Target of URI doesn't exist: '../ui/ui.dart'. Try creating the file referenced by the URI, or try using a URI for a file that does exist. - uri_does_not_exist
+  error - lib/screens/legal/privacy_markdown_screen.dart:9:37 - Classes can only extend other classes. Try specifying a different superclass, or removing the extends clause. - extends_non_class
+  error - lib/screens/legal/privacy_markdown_screen.dart:10:38 - No associated named super constructor parameter. Try changing the name to the name of an existing named super constructor parameter, or creating such named parameter. - super_formal_parameter_without_associated_named
+  error - lib/screens/legal/privacy_markdown_screen.dart:13:3 - Undefined class 'Widget'. Try changing the name to the name of an existing class, or creating a class with the name 'Widget'. - undefined_class
+  error - lib/screens/legal/privacy_markdown_screen.dart:13:10 - The method doesn't override an inherited method. Try updating this class to match the superclass, or removing the override annotation. - override_on_non_overriding_member
+  error - lib/screens/legal/privacy_markdown_screen.dart:13:16 - Undefined class 'BuildContext'. Try changing the name to the name of an existing class, or creating a class with the name 'BuildContext'. - undefined_class
+  error - lib/screens/legal/privacy_markdown_screen.dart:13:38 - Undefined class 'WidgetRef'. Try changing the name to the name of an existing class, or creating a class with the name 'WidgetRef'. - undefined_class
+  error - lib/screens/legal/privacy_markdown_screen.dart:17:12 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/legal/privacy_markdown_screen.dart:19:19 - The name 'SingleChildScrollView' isn't a class. Try correcting the name to match an existing class. - creation_with_non_type
+  error - lib/screens/legal/terms_markdown_screen.dart:7:8 - Target of URI doesn't exist: '../ui/ui.dart'. Try creating the file referenced by the URI, or try using a URI for a file that does exist. - uri_does_not_exist
+  error - lib/screens/legal/terms_markdown_screen.dart:9:35 - Classes can only extend other classes. Try specifying a different superclass, or removing the extends clause. - extends_non_class
+  error - lib/screens/legal/terms_markdown_screen.dart:10:36 - No associated named super constructor parameter. Try changing the name to the name of an existing named super constructor parameter, or creating such named parameter. - super_formal_parameter_without_associated_named
+  error - lib/screens/legal/terms_markdown_screen.dart:13:3 - Undefined class 'Widget'. Try changing the name to the name of an existing class, or creating a class with the name 'Widget'. - undefined_class
+  error - lib/screens/legal/terms_markdown_screen.dart:13:10 - The method doesn't override an inherited method. Try updating this class to match the superclass, or removing the override annotation. - override_on_non_overriding_member
+  error - lib/screens/legal/terms_markdown_screen.dart:13:16 - Undefined class 'BuildContext'. Try changing the name to the name of an existing class, or creating a class with the name 'BuildContext'. - undefined_class
+  error - lib/screens/legal/terms_markdown_screen.dart:13:38 - Undefined class 'WidgetRef'. Try changing the name to the name of an existing class, or creating a class with the name 'WidgetRef'. - undefined_class
+  error - lib/screens/legal/terms_markdown_screen.dart:17:12 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/legal/terms_markdown_screen.dart:19:19 - The name 'SingleChildScrollView' isn't a class. Try correcting the name to match an existing class. - creation_with_non_type
+  error - lib/screens/settings/dsr_erasure_screen.dart:3:8 - Target of URI doesn't exist: '../ui/ui.dart'. Try creating the file referenced by the URI, or try using a URI for a file that does exist. - uri_does_not_exist
+  error - lib/screens/settings/dsr_erasure_screen.dart:7:32 - Classes can only extend other classes. Try specifying a different superclass, or removing the extends clause. - extends_non_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:8:33 - No associated named super constructor parameter. Try changing the name to the name of an existing named super constructor parameter, or creating such named parameter. - super_formal_parameter_without_associated_named
+  error - lib/screens/settings/dsr_erasure_screen.dart:11:3 - Undefined class 'ConsumerState'. Try changing the name to the name of an existing class, or creating a class with the name 'ConsumerState'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:11:35 - The method doesn't override an inherited method. Try updating this class to match the superclass, or removing the override annotation. - override_on_non_overriding_member
+  error - lib/screens/settings/dsr_erasure_screen.dart:14:38 - Classes can only extend other classes. Try specifying a different superclass, or removing the extends clause. - extends_non_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:16:10 - The method doesn't override an inherited method. Try updating this class to match the superclass, or removing the override annotation. - override_on_non_overriding_member
+  error - lib/screens/settings/dsr_erasure_screen.dart:17:19 - Undefined name 'ref'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:17:29 - Undefined name 'dsrErasureStateProvider'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:18:24 - Undefined name 'ref'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:18:33 - Undefined name 'dsrControllerProvider'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:19:29 - Undefined name 'ref'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:19:38 - Undefined name 'dsrErasureStateProvider'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:20:19 - Undefined name 'ref'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:20:29 - Undefined name 'appThemeProvider'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:41:13 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:70:28 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:71:12 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:108:29 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:135:28 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:153:27 - Undefined class 'DsrErasureState'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrErasureState'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:158:5 - Undefined class 'DsrController'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrController'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:159:5 - Undefined class 'DsrErasureNotifier'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrErasureNotifier'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:164:31 - Undefined name 'AsyncValue'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:165:33 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:171:27 - Undefined name 'AsyncValue'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:176:5 - Undefined class 'DsrRequestId'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrRequestId'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:177:5 - Undefined class 'DsrController'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrController'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:178:5 - Undefined class 'DsrErasureNotifier'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrErasureNotifier'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:184:31 - Undefined name 'AsyncValue'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:189:27 - Undefined name 'AsyncValue'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:194:5 - Undefined class 'DsrRequestId'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrRequestId'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:195:5 - Undefined class 'DsrController'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrController'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:196:5 - Undefined class 'DsrErasureNotifier'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrErasureNotifier'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:202:31 - Undefined name 'AsyncValue'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:206:27 - Undefined name 'AsyncValue'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:212:5 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:213:5 - Undefined class 'DsrRequestSummary'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrRequestSummary'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:214:5 - Undefined class 'DsrController'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrController'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:215:5 - Undefined class 'DsrErasureNotifier'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrErasureNotifier'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:220:12 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:247:35 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:258:35 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:268:35 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:270:15 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:276:35 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:278:15 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:292:5 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:293:5 - Undefined class 'DsrRequestId'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrRequestId'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:294:5 - Undefined class 'DsrController'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrController'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:295:5 - Undefined class 'DsrErasureNotifier'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrErasureNotifier'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:325:24 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:332:24 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:344:28 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:345:12 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:363:26 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:364:12 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:390:9 - The body might complete normally, causing 'null' to be returned, but the return type, 'Color', is a potentially non-nullable type. Try adding either a return or a throw statement at the end. - body_might_complete_normally
+  error - lib/screens/settings/dsr_erasure_screen.dart:390:25 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:390:45 - Undefined class 'DsrStatus'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrStatus'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:392:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:394:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:396:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:398:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:400:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:402:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:407:12 - The body might complete normally, causing 'null' to be returned, but the return type, 'IconData', is a potentially non-nullable type. Try adding either a return or a throw statement at the end. - body_might_complete_normally
+  error - lib/screens/settings/dsr_erasure_screen.dart:407:27 - Undefined class 'DsrStatus'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrStatus'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:409:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:411:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:413:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:415:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:417:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:419:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:424:10 - The body might complete normally, causing 'null' to be returned, but the return type, 'String', is a potentially non-nullable type. Try adding either a return or a throw statement at the end. - body_might_complete_normally
+  error - lib/screens/settings/dsr_erasure_screen.dart:424:25 - Undefined class 'DsrStatus'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrStatus'. - undefined_class
+  error - lib/screens/settings/dsr_erasure_screen.dart:426:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:428:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:430:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:432:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:434:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_erasure_screen.dart:436:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:3:8 - Target of URI doesn't exist: '../ui/ui.dart'. Try creating the file referenced by the URI, or try using a URI for a file that does exist. - uri_does_not_exist
+  error - lib/screens/settings/dsr_export_screen.dart:9:31 - Classes can only extend other classes. Try specifying a different superclass, or removing the extends clause. - extends_non_class
+  error - lib/screens/settings/dsr_export_screen.dart:10:32 - No associated named super constructor parameter. Try changing the name to the name of an existing named super constructor parameter, or creating such named parameter. - super_formal_parameter_without_associated_named
+  error - lib/screens/settings/dsr_export_screen.dart:13:3 - Undefined class 'ConsumerState'. Try changing the name to the name of an existing class, or creating a class with the name 'ConsumerState'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:13:34 - The method doesn't override an inherited method. Try updating this class to match the superclass, or removing the override annotation. - override_on_non_overriding_member
+  error - lib/screens/settings/dsr_export_screen.dart:16:37 - Classes can only extend other classes. Try specifying a different superclass, or removing the extends clause. - extends_non_class
+  error - lib/screens/settings/dsr_export_screen.dart:18:10 - The method doesn't override an inherited method. Try updating this class to match the superclass, or removing the override annotation. - override_on_non_overriding_member
+  error - lib/screens/settings/dsr_export_screen.dart:19:24 - Undefined name 'ref'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:20:11 - The value of the local variable 'factory' isn't used. Try removing the variable or using it. - unused_local_variable
+  error - lib/screens/settings/dsr_export_screen.dart:20:21 - Undefined name 'ref'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:21:23 - Undefined name 'ref'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:21:33 - Undefined name 'appSwitchBuilderProvider'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:22:19 - Undefined name 'ref'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:22:29 - Undefined name 'appThemeProvider'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:40:13 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:61:32 - Undefined name 'state'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:63:29 - Undefined name 'exportNotifier'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:72:13 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:75:42 - Undefined name 'state'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:76:52 - Undefined name 'exportNotifier'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:80:13 - Undefined name 'state'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:93:24 - Undefined class 'DsrExportState'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrExportState'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:99:5 - Undefined class 'DsrExportNotifier'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrExportNotifier'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:102:34 - The name 'DsrOperation' is being referenced through the prefix 'acc', but it isn't defined in any of the libraries imported using that prefix. Try correcting the prefix or importing the library that defines 'DsrOperation'. - undefined_prefixed_name
+  error - lib/screens/settings/dsr_export_screen.dart:103:48 - Expected to find ';'. - expected_token
+  error - lib/screens/settings/dsr_export_screen.dart:103:70 - Expected an identifier. - missing_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:103:70 - Expected to find ';'. - expected_token
+  error - lib/screens/settings/dsr_export_screen.dart:103:70 - Unexpected text ','. Try removing the text. - unexpected_token
+  error - lib/screens/settings/dsr_export_screen.dart:104:7 - Expected an identifier. - missing_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:104:7 - Unexpected text ')'. Try removing the text. - unexpected_token
+  error - lib/screens/settings/dsr_export_screen.dart:105:27 - Undefined name 'AsyncValue'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:105:43 - Undefined name 'summary'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:107:27 - Undefined name 'AsyncValue'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:112:5 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:113:5 - Undefined class 'DsrRequestSummary'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrRequestSummary'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:119:12 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:149:17 - Undefined name 'context'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:155:35 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:165:35 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:167:15 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:172:19 - Undefined name 'ref'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:172:28 - Undefined name 'dsrExportStateProvider'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:184:5 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:185:5 - Undefined class 'DsrExportLink'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrExportLink'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:225:9 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:234:28 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:235:12 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:253:26 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:254:12 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:280:9 - The body might complete normally, causing 'null' to be returned, but the return type, 'Color', is a potentially non-nullable type. Try adding either a return or a throw statement at the end. - body_might_complete_normally
+  error - lib/screens/settings/dsr_export_screen.dart:280:25 - Undefined class 'AppThemeData'. Try changing the name to the name of an existing class, or creating a class with the name 'AppThemeData'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:280:45 - Undefined class 'DsrStatus'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrStatus'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:282:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:284:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:286:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:288:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:290:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:292:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:297:12 - The body might complete normally, causing 'null' to be returned, but the return type, 'IconData', is a potentially non-nullable type. Try adding either a return or a throw statement at the end. - body_might_complete_normally
+  error - lib/screens/settings/dsr_export_screen.dart:297:27 - Undefined class 'DsrStatus'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrStatus'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:299:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:301:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:303:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:305:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:307:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:309:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:314:10 - The body might complete normally, causing 'null' to be returned, but the return type, 'String', is a potentially non-nullable type. Try adding either a return or a throw statement at the end. - body_might_complete_normally
+  error - lib/screens/settings/dsr_export_screen.dart:314:25 - Undefined class 'DsrStatus'. Try changing the name to the name of an existing class, or creating a class with the name 'DsrStatus'. - undefined_class
+  error - lib/screens/settings/dsr_export_screen.dart:316:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:318:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:320:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:322:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:324:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:326:12 - Undefined name 'DsrStatus'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:337:9 - Undefined name 'mounted'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:338:31 - Undefined name 'ref'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:338:40 - Undefined name 'appNoticePresenterProvider'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:339:23 - Undefined name 'AppNotice'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/screens/settings/dsr_export_screen.dart:344:39 - Classes and mixins can only implement other classes and mixins. Try specifying a class or mixin, or remove the name from the list. - implements_non_class
+  error - lib/screens/settings/dsr_export_screen.dart:346:14 - The field doesn't override an inherited getter or setter. Try updating this class to match the superclass, or removing the override annotation. - override_on_non_overriding_member
+  error - lib/screens/settings/dsr_export_screen.dart:348:28 - The field doesn't override an inherited getter or setter. Try updating this class to match the superclass, or removing the override annotation. - override_on_non_overriding_member
+  error - lib/screens/settings/dsr_export_screen.dart:350:17 - The field doesn't override an inherited getter or setter. Try updating this class to match the superclass, or removing the override annotation. - override_on_non_overriding_member
+  error - lib/ui/components/empty_state.dart:27:29 - Undefined name 'appThemeProvider'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/ui/components/empty_state.dart:33:16 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/ui/components/empty_state.dart:64:19 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/ui/components/error_view.dart:27:29 - Undefined name 'appThemeProvider'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/ui/components/error_view.dart:33:16 - Undefined name 'AppCard'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/ui/components/error_view.dart:64:19 - Undefined name 'AppButton'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/ui/components/loading_view.dart:21:29 - Undefined name 'appThemeProvider'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/ui/routes/ui_routes.dart:18:37 - Undefined name 'fnd'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib/ui/routes/ui_routes.dart:22:37 - The returned type 'AboutLegalScreen' isn't returnable from a 'Widget' function, as required by the closure's context. - return_of_invalid_type_from_closure
+  error - lib/ui/routes/ui_routes.dart:23:40 - The returned type 'LicensesBrowserScreen' isn't returnable from a 'Widget' function, as required by the closure's context. - return_of_invalid_type_from_closure
+  error - lib/ui/routes/ui_routes.dart:24:45 - The returned type 'PrivacyMarkdownScreen' isn't returnable from a 'Widget' function, as required by the closure's context. - return_of_invalid_type_from_closure
+  error - lib/ui/routes/ui_routes.dart:25:43 - The returned type 'TermsMarkdownScreen' isn't returnable from a 'Widget' function, as required by the closure's context. - return_of_invalid_type_from_closure
+  error - lib/ui/routes/ui_routes.dart:29:44 - The returned type 'DsrExportScreen' isn't returnable from a 'Widget' function, as required by the closure's context. - return_of_invalid_type_from_closure
+  error - lib/ui/routes/ui_routes.dart:30:45 - The returned type 'DsrErasureScreen' isn't returnable from a 'Widget' function, as required by the closure's context. - return_of_invalid_type_from_closure
+  error - lib/ui/ui.dart:12:8 - Expected to find ';'. - expected_token
+  error - lib/ui/ui.dart:12:57 - Expected to find ';'. - expected_token
+  error - lib/ui/ui.dart:12:57 - Variables must be declared using the keywords 'const', 'final', 'var' or a type name. Try adding the name of the type of the variable or the keyword 'var'. - missing_const_final_var_or_type
+  error - lib/ui/ui.dart:12:60 - Variables must be declared using the keywords 'const', 'final', 'var' or a type name. Try adding the name of the type of the variable or the keyword 'var'. - missing_const_final_var_or_type
+  error - lib/ui/ui.dart:15:1 - Directives must appear before any declarations. Try moving the directive before any declarations. - directive_after_declaration
+  error - lib/ui/ui.dart:32:1 - Directives must appear before any declarations. Try moving the directive before any declarations. - directive_after_declaration
+  error - lib/ui/ui.dart:33:1 - Directives must appear before any declarations. Try moving the directive before any declarations. - directive_after_declaration
+  error - lib/ui/ui.dart:34:1 - Directives must appear before any declarations. Try moving the directive before any declarations. - directive_after_declaration
+  error - lib/ui/ui.dart:37:1 - Directives must appear before any declarations. Try moving the directive before any declarations. - directive_after_declaration
+warning - lib/screens/settings/dsr_erasure_screen.dart:193:16 - The declaration '_cancelErasure' isn't referenced. Try removing the declaration of '_cancelErasure'. - unused_element
+warning - lib/screens/settings/dsr_export_screen.dart:103:9 - The label 'includePaymentsHistory' isn't used. Try removing the label, or using it in either a 'break' or 'continue' statement. - unused_label
+warning - lib/ui/ui.dart:27:3 - The library 'package:flutter/widgets.dart' doesn't export a member with the shown name 'Duration'. Try removing the name from the list of shown members. - undefined_shown_name
+   info - lib/screens/settings/dsr_export_screen.dart:104:8 - Unnecessary empty statement. Try removing the empty statement or restructuring the code. - empty_statements
+   info - lib/ui/ui.dart:12:57 - An uninitialized variable should have an explicit type annotation. Try adding a type annotation. - prefer_typing_uninitialized_variables
+   info - lib/ui/ui.dart:12:60 - An uninitialized variable should have an explicit type annotation. Try adding a type annotation. - prefer_typing_uninitialized_variables
+
+236 issues found.

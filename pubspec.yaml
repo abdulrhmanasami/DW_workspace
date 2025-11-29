@@ -1,0 +1,125 @@
+name: delivery_ways_clean
+description: A new Flutter project.
+publish_to: none
+version: 1.0.0+100
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+  flutter: '>=3.3.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  flutter_riverpod: ^2.6.1
+  in_app_review: ^2.0.9
+  core:
+    path: packages/core
+  design_system_components:
+    path: packages/design_system_components
+  design_system_foundation:
+    path: packages/design_system_foundation
+  payments:
+    path: packages/payments
+  foundation_shims:
+    path: packages/foundation_shims
+  network_shims:
+    path: packages/network_shims
+  maps_shims:
+    path: packages/maps_shims
+  mobility_shims:
+    path: packages/mobility_shims
+  mobility_adapter_geolocator:
+    path: packages/mobility_adapter_geolocator
+  mobility_stub_impl:
+    path: packages/mobility_stub_impl
+  realtime_shims:
+    path: packages/realtime_shims
+  design_system_shims:
+    path: packages/design_system_shims
+  observability_shims:
+    path: packages/observability_shims
+  auth_supabase_impl:
+    path: packages/auth_supabase_impl
+  auth_shims:
+    path: packages/auth_shims
+  auth_http_impl:
+    path: packages/auth_http_impl
+  device_security_shims:
+    path: stubs/device_security_shims
+  payments_shims:
+    path: packages/payments_shims
+  accounts_shims:
+    path: packages/accounts_shims
+  b_ui:
+    path: B-ui
+  b_ux:
+    path: B-ux
+  dsr_ux_adapter:
+    path: packages/dsr_ux_adapter
+  accounts_stub_impl:
+    path: packages/accounts_stub_impl
+  design_system_stub_impl:
+    path: packages/design_system_stub_impl
+  maps_adapter_google:
+    path: packages/maps_adapter_google
+  maps_stub_impl:
+    path: packages/maps_stub_impl
+  mobility_uplink_impl:
+    path: packages/mobility_uplink_impl
+  rbac_rest_impl:
+    path: packages/rbac_rest_impl
+  payments_adapter_stripe:
+    path: packages/payments_adapter_stripe
+  notifications_shims:
+    path: packages/notifications_shims
+  privacy:
+    path: packages/privacy
+  parcels_shims:
+    path: packages/parcels_shims
+  http: any
+  shared_preferences: any
+  geolocator: ^11.1.0
+dependency_overrides:
+  riverpod: 2.6.1
+  flutter_riverpod: 2.6.1
+  foundation_shims:
+    path: packages/foundation_shims
+  design_system_components:
+    path: packages/design_system_components
+  design_system_foundation:
+    path: packages/design_system_foundation
+  design_system_shims:
+    path: packages/design_system_shims
+  accounts_shims:
+    path: packages/accounts_shims
+  device_security_shims:
+    path: stubs/device_security_shims
+  notifications_shims:
+    path: packages/notifications_shims
+  auth_shims:
+    path: packages/auth_shims
+  auth_http_impl:
+    path: packages/auth_http_impl
+dev_dependencies:
+  melos: ^5.3.0
+  dart_code_metrics:
+    path: third_party/dart_code_metrics
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  crypto: ^3.0.3
+  sqflite: ^2.3.0
+  path: ^1.9.0
+  uuid: ^4.5.1
+  flutter_lints: ^2.0.0
+  build_runner: ^2.4.11
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+  - assets/certs/
+  - assets/rbac/
+  - assets/legal/
+  - lib/l10n/

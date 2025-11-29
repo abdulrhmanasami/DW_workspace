@@ -1,0 +1,7 @@
+name: dart_code_metrics
+version: 0.0.1
+description: Stub package for dart_code_metrics
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+

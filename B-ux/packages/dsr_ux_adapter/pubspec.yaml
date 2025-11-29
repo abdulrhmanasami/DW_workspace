@@ -1,0 +1,20 @@
+name: dsr_ux_adapter
+description: UX Compatibility Layer for DSR Components
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: '^3.9.2'
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  design_system_foundation:
+    path: ../design_system_foundation
+  design_system_shims:
+    path: ../design_system_shims
+  foundation_shims:
+    path: ../foundation_shims
+  flutter_riverpod: ^2.4.9

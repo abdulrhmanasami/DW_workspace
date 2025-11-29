@@ -1,0 +1,11 @@
+name: payments_stub_impl
+description: Temporary safe stub implementation for PaymentService (not for production)
+version: 0.1.0
+publish_to: none
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  payments_shims:
+    path: ../payments_shims

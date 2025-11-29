@@ -1,0 +1,41 @@
+# macOS
+**/.DS_Store
+.DS_Store
+
+# Build outputs
+build/
+*.apk
+*.ipa
+*.aab
+
+# Flutter/Dart
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+*.dill
+
+# Archives
+*.zip
+Archive.zip
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+*.framework/
+*.dSYM/
+
+# Android
+android/.gradle/
+android/local.properties
+*.so
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Generated
+*.g.dart
+*.freezed.dart
+*.mocks.dart

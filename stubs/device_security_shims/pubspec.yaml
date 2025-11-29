@@ -1,0 +1,13 @@
+name: device_security_shims
+description: Device security shims providing biometric authentication helpers.
+version: 0.1.0
+publish_to: none
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+  flutter: '>=3.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  auth_shims:
+    path: ../../packages/auth_shims
+  local_auth: ^2.3.0

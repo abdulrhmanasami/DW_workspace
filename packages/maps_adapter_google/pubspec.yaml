@@ -1,0 +1,11 @@
+name: maps_adapter_google
+publish_to: none
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  maps_shims:
+    path: ../maps_shims
+  google_maps_flutter: ^2.7.0

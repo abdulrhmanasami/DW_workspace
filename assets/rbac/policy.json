@@ -1,0 +1,9 @@
+{
+  "roles": {
+    "guest": { "allow": ["cart", "checkout", "orders", "orders_history", "tracking", "tracking_map", "payment"] },
+    "admin": { "allow": ["admin_panel", "*"] }
+  },
+  "screens": {
+    "admin_panel": { "minRole": "admin" }
+  }
+}

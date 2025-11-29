@@ -1,0 +1,14 @@
+# l10n Configuration for Delivery Ways App
+# Component: Localization Configuration
+# Created by: UX-003 Implementation
+# Purpose: Configure Flutter gen-l10n for EN/DE/AR support
+# Last updated: 2025-11-25
+
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-dir: lib/l10n/generated
+output-class: AppLocalizations
+synthetic-package: false
+nullable-getter: true
+

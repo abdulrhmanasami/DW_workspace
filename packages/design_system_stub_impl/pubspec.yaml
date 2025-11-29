@@ -1,0 +1,12 @@
+name: design_system_stub_impl
+publish_to: none
+description: Material Design Stub Implementation for Design System Shims
+version: 1.0.0
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.5.1
+  design_system_shims:
+    path: ../design_system_shims

@@ -1,0 +1,13 @@
+name: foundation_shims
+description: Foundation shims for Delivery Ways clean version
+publish_to: 'none'
+resolution: workspace
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sqflite: ^2.3.0
+  path: ^1.9.0

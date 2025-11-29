@@ -1,0 +1,443 @@
+openapi: 3.0.3
+info:
+  title: Delivery Ways Orders API
+  description: API Contracts for the Orders service, supporting both Parcels and Food delivery.
+  version: v1
+servers:
+  - url: https://api.deliveryways.com/v1
+    description: Production Server
+security:
+  - BearerAuth: []
+
+paths:
+  /orders:
+    get:
+      summary: List User Orders
+      operationId: listOrders
+      tags:
+        - Orders
+      parameters:
+        - $ref: '#/components/parameters/Cursor'
+        - $ref: '#/components/parameters/Limit'
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [parcel, food]
+          description: Filter by order type.
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [created, confirmed, preparing, ready_for_pickup, in_transit, delivered, canceled, failed]
+          description: Filter by order status.
+      responses:
+        '200':
+          description: A paginated list of Order objects.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+                  next_cursor:
+                    type: string
+                    nullable: true
+                    description: Cursor for the next page, null if last page.
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: Create a New Order (Parcel or Food)
+      operationId: createOrder
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - pickup_address
+                - dropoff_address
+                - items
+                - payment_method_id
+              properties:
+                type:
+                  type: string
+                  enum: [parcel, food]
+                  description: Type of order (parcel or food).
+                pickup_address:
+                  $ref: '#/components/schemas/Address'
+                dropoff_address:
+                  $ref: '#/components/schemas/Address'
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/OrderItem'
+                payment_method_id:
+                  type: string
+                  description: ID of the selected payment method.
+                parcel_details:
+                  $ref: '#/components/schemas/ParcelDetails'
+                  description: Required if type is 'parcel'.
+                restaurant_id:
+                  type: string
+                  description: Required if type is 'food'.
+      responses:
+        '200':
+          description: The newly created Order object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order:
+                    $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/InvalidRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /orders/{id}:
+    get:
+      summary: Get Order Details
+      operationId: getOrderDetails
+      tags:
+        - Orders
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Unique order identifier (e.g., order_123).
+      responses:
+        '200':
+          description: The requested Order object.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order:
+                    $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /orders/{id}/cancel:
+    post:
+      summary: Cancel an Order
+      operationId: cancelOrder
+      tags:
+        - Orders
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            description: Unique order identifier.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  description: Optional reason for cancellation.
+      responses:
+        '200':
+          description: The updated Order object with status 'canceled'.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order:
+                    $ref: '#/components/schemas/Order'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication using a Bearer Token.
+
+  parameters:
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+      description: Cursor for the next page of results.
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+      description: Maximum number of items to return per page.
+
+  schemas:
+    Address:
+      type: object
+      description: Represents a geographical location for pickup or dropoff.
+      required:
+        - lat
+        - lng
+        - address
+        - contact_name
+        - contact_phone
+      properties:
+        lat:
+          type: number
+          format: double
+          description: Latitude.
+        lng:
+          type: number
+          format: double
+          description: Longitude.
+        address:
+          type: string
+          description: Full text address.
+        description:
+          type: string
+          description: Additional description for the location (e.g., "Near the main gate").
+        contact_name:
+          type: string
+          description: Name of the contact person at this address.
+        contact_phone:
+          type: string
+          description: Phone number of the contact person.
+
+    Price:
+      type: object
+      description: Represents the total price breakdown for an order.
+      required:
+        - currency
+        - total_amount
+        - delivery_fee
+        - items_total
+      properties:
+        currency:
+          type: string
+          description: Currency code (e.g., SAR).
+        total_amount:
+          type: number
+          format: double
+          description: Total amount paid.
+        delivery_fee:
+          type: number
+          format: double
+          description: Delivery fee.
+        items_total:
+          type: number
+          format: double
+          description: Total price of items (excluding delivery fee).
+        tax_amount:
+          type: number
+          format: double
+          description: Tax amount applied.
+
+    OrderItem:
+      type: object
+      description: An item within the order (parcel content or food item).
+      required:
+        - id
+        - name
+        - quantity
+        - unit_price
+      properties:
+        id:
+          type: string
+          description: Unique item identifier.
+        name:
+          type: string
+          description: Name of the item.
+        quantity:
+          type: integer
+          description: Quantity ordered.
+        unit_price:
+          type: number
+          format: double
+          description: Price of a single unit.
+        notes:
+          type: string
+          description: Special notes for the item (e.g., "No onions").
+
+    ParcelDetails:
+      type: object
+      description: Specific details for a parcel order.
+      required:
+        - weight_kg
+        - dimensions_cm
+        - category
+      properties:
+        weight_kg:
+          type: number
+          format: double
+          description: Approximate weight in kilograms.
+        dimensions_cm:
+          type: string
+          description: Approximate dimensions (e.g., "20x30x10").
+        value_sar:
+          type: number
+          format: double
+          description: Estimated value of the parcel contents in SAR.
+        category:
+          type: string
+          description: Category of the parcel (e.g., "Documents", "Electronics").
+
+    Order:
+      type: object
+      description: The main entity representing a delivery order.
+      required:
+        - id
+        - type
+        - customer_id
+        - status
+        - pickup_address
+        - dropoff_address
+        - items
+        - price
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Unique order identifier (e.g., order_123).
+        type:
+          type: string
+          enum: [parcel, food]
+          description: Type of order.
+        customer_id:
+          type: string
+          description: User ID of the customer.
+        driver_id:
+          type: string
+          description: ID of the assigned driver.
+        status:
+          type: string
+          description: Current status of the order.
+          enum:
+            - created
+            - confirmed
+            - preparing
+            - ready_for_pickup
+            - in_transit
+            - delivered
+            - canceled
+            - failed
+        pickup_address:
+          $ref: '#/components/schemas/Address'
+        dropoff_address:
+          $ref: '#/components/schemas/Address'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        price:
+          $ref: '#/components/schemas/Price'
+        parcel_details:
+          $ref: '#/components/schemas/ParcelDetails'
+          description: Present only if type is 'parcel'.
+        restaurant_info:
+          type: object
+          description: Present only if type is 'food'. Contains restaurant name, rating, etc.
+        created_at:
+          type: string
+          format: date-time
+          description: Time of creation (ISO8601 UTC).
+        updated_at:
+          type: string
+          format: date-time
+          description: Time of last update (ISO8601 UTC).
+
+    Error:
+      type: object
+      description: Standard error response format.
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              description: Standardized error code.
+              enum:
+                - invalid_request
+                - unauthorized
+                - forbidden
+                - not_found
+                - conflict
+                - rate_limited
+                - internal_error
+            message:
+              type: string
+              description: Human-readable error message.
+            details:
+              type: object
+              description: Optional object for field-specific errors.
+
+  responses:
+    InvalidRequest:
+      description: Bad Request - Invalid or missing fields.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Unauthorized - Invalid or expired token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Forbidden - User lacks permission to access the resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Not Found - The requested resource does not exist.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Conflict - Resource state prevents the action (e.g., canceling a delivered order).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalError:
+      description: Internal Server Error - An unexpected error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
