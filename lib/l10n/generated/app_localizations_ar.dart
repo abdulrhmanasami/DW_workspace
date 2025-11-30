@@ -736,6 +736,26 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ordersFilterParcels => 'الطرود';
 
   @override
+  String get ordersFilterRides => 'الرحلات';
+
+  @override
+  String get ordersSectionRidesTitle => 'الرحلات';
+
+  @override
+  String ordersRideItemTitleToDestination(String destination) {
+    return 'رحلة إلى $destination';
+  }
+
+  @override
+  String get ordersRideStatusCompleted => 'مكتملة';
+
+  @override
+  String get ordersRideStatusCancelled => 'ملغاة';
+
+  @override
+  String get ordersRideStatusFailed => 'فشلت';
+
+  @override
   String get paymentMethodsTitle => 'وسائل الدفع';
 
   @override
@@ -1256,26 +1276,47 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rideActiveContactDriverCta => 'التواصل مع السائق';
 
   @override
-  String get rideActiveShareTripCta => 'مشاركة الرحلة';
+  String get rideActiveShareTripCta => 'مشاركة حالة الرحلة';
 
   @override
   String get rideActiveCancelTripCta => 'إلغاء الرحلة';
 
   @override
-  String get rideActiveContactDriverNotImplemented =>
-      'التواصل مع السائق غير متوفر بعد.';
+  String get rideActiveShareTripCopied =>
+      'تم نسخ حالة الرحلة. يمكنك لصقها في أي تطبيق.';
 
   @override
-  String get rideActiveShareTripNotImplemented =>
-      'مشاركة الرحلة غير متوفرة بعد.';
+  String get rideActiveContactNoPhoneError =>
+      'بيانات تواصل السائق غير متوفرة حالياً.';
 
   @override
-  String get rideActiveCancelTripNotImplemented =>
-      'إلغاء الرحلة غير متوفر بعد.';
+  String get rideActiveShareGenericError =>
+      'لا يمكن تجهيز حالة الرحلة الآن. يرجى المحاولة لاحقاً.';
+
+  @override
+  String rideActiveShareMessageTemplate(String destination, String link) {
+    return 'أنا في رحلة مع Delivery Ways إلى $destination. يمكنك متابعة حالة الرحلة هنا: $link';
+  }
 
   @override
   String get rideActiveCancelErrorGeneric =>
       'تعذر إلغاء الرحلة. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get rideCancelDialogTitle => 'هل تريد إلغاء الرحلة؟';
+
+  @override
+  String get rideCancelDialogMessage =>
+      'إذا ألغيت الآن، سيتوقف السائق عن التوجه إلى موقعك.';
+
+  @override
+  String get rideCancelDialogKeepRideCta => 'الاستمرار في الرحلة';
+
+  @override
+  String get rideCancelDialogConfirmCta => 'إلغاء الرحلة';
+
+  @override
+  String get rideCancelSuccessSnackbar => 'تم إلغاء رحلتك.';
 
   @override
   String get rideActiveHeadlineFindingDriver => 'جارٍ البحث عن سائق…';
@@ -1313,12 +1354,84 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rideActiveGoBackCta => 'العودة';
 
   @override
+  String get rideActiveCancelledTitle => 'تم إلغاء الرحلة';
+
+  @override
+  String get rideActiveCancelledBody =>
+      'تم إلغاء رحلتك. يمكنك طلب رحلة جديدة في أي وقت.';
+
+  @override
+  String get rideActiveFailedTitle => 'حدث خطأ ما';
+
+  @override
+  String get rideActiveFailedBody =>
+      'تعذّر إكمال هذه الرحلة. يرجى المحاولة مرة أخرى بعد قليل.';
+
+  @override
+  String get rideActiveBackToHomeCta => 'الرجوع للرئيسية';
+
+  @override
+  String get rideActiveRequestNewRideCta => 'طلب رحلة جديدة';
+
+  @override
   String rideActiveDestinationLabel(String destination) {
     return 'إلى $destination';
   }
 
   @override
+  String get rideDebugFsmTitle => 'أدوات تصحيح FSM';
+
+  @override
+  String rideDebugCurrentPhase(String phase) {
+    return 'المرحلة الحالية: $phase';
+  }
+
+  @override
+  String get rideDebugDriverFound => 'السائق قبل';
+
+  @override
+  String get rideDebugDriverArrived => 'السائق وصل';
+
+  @override
+  String get rideDebugStartTrip => 'بدء الرحلة';
+
+  @override
+  String get rideDebugCompleteTrip => 'إنهاء الرحلة';
+
+  @override
+  String get rideDebugConfirmPayment => 'تأكيد الدفع';
+
+  @override
+  String get rideStatusFindingDriver => 'جاري البحث عن سائق...';
+
+  @override
+  String get rideStatusDriverAccepted => 'السائق في الطريق';
+
+  @override
+  String get rideStatusDriverArrived => 'السائق وصل';
+
+  @override
+  String get rideStatusInProgress => 'الرحلة قيد التنفيذ';
+
+  @override
+  String get rideStatusPaymentPending => 'في انتظار الدفع';
+
+  @override
+  String get rideStatusCompleted => 'تم إنهاء الرحلة';
+
+  @override
+  String get rideStatusUnknown => 'جاري تجهيز رحلتك...';
+
+  @override
   String get homeActiveRideViewTripCta => 'عرض الرحلة';
+
+  @override
+  String get homeActiveRideTitleGeneric => 'رحلة نشطة';
+
+  @override
+  String homeActiveRideSubtitleToDestination(String destination) {
+    return 'إلى $destination';
+  }
 
   @override
   String get rideDestinationTitle => 'إلى أين؟';
@@ -1331,6 +1444,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get rideDestinationRecentLocationsSection => 'المواقع الأخيرة';
+
+  @override
+  String get rideLocationPickerTitle => 'اختيار موقع الرحلة';
+
+  @override
+  String get rideLocationPickerPickupLabel => 'مكان الانطلاق';
+
+  @override
+  String get rideLocationPickerDestinationLabel => 'وجهة الوصول';
+
+  @override
+  String get rideLocationPickerPickupPlaceholder => 'من أين نلتقطك؟';
+
+  @override
+  String get rideLocationPickerDestinationPlaceholder => 'إلى أين تتجه؟';
+
+  @override
+  String get rideLocationPickerMapHint =>
+      'حرّك العلامة أو استخدم البحث لتحديد المواقع.';
+
+  @override
+  String get rideLocationPickerContinueCta => 'عرض الأسعار';
 
   @override
   String get rideTripConfirmationTitle => 'تأكيد الرحلة';
@@ -1394,6 +1529,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get rideConfirmRetryCta => 'إعادة المحاولة';
+
+  @override
+  String get rideConfirmRecommendedBadge => 'موصى به';
+
+  @override
+  String get rideConfirmFromLabel => 'من';
+
+  @override
+  String get rideConfirmToLabel => 'إلى';
 
   @override
   String get onboardingWelcomeTitle => 'مرحبًا في Delivery Ways';
@@ -1530,7 +1674,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get parcelsDetailsFragileLabel => 'هذه الشحنة قابلة للكسر';
 
   @override
-  String get parcelsDetailsContinueCta => 'متابعة إلى التسعير';
+  String get parcelsDetailsContinueCta => 'مراجعة التسعيرة';
+
+  @override
+  String get parcelsDetailsErrorWeightRequired => 'يرجى إدخال وزن الطرد';
+
+  @override
+  String get parcelsDetailsErrorPositiveNumber => 'يرجى إدخال رقم صحيح موجب';
+
+  @override
+  String get parcelsDetailsErrorContentsRequired => 'يرجى وصف محتوى الشحنة';
+
+  @override
+  String get parcelsDetailsErrorSizeRequired => 'يرجى اختيار حجم الطرد';
+
+  @override
+  String get parcelsDetailsSectionParcelTitle => 'تفاصيل الطرد';
 
   @override
   String get parcelsQuoteTitle => 'تسعير الشحنة';
@@ -1562,6 +1721,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String get parcelsQuoteConfirmCta => 'تأكيد الشحنة';
 
   @override
+  String get parcelsQuoteSummaryTitle => 'ملخص الشحنة';
+
+  @override
+  String get parcelsQuoteFromLabel => 'من';
+
+  @override
+  String get parcelsQuoteToLabel => 'إلى';
+
+  @override
+  String get parcelsQuoteWeightLabel => 'الوزن';
+
+  @override
+  String get parcelsQuoteSizeLabel => 'الحجم';
+
+  @override
+  String parcelsQuoteTotalLabel(String amount) {
+    return 'الإجمالي: $amount';
+  }
+
+  @override
+  String get parcelsQuoteBreakdownStubNote =>
+      'هذا سعر تقديري. قد يتغيّر السعر النهائي بعد الربط مع خدمة التسعير الفعلية.';
+
+  @override
+  String get parcelsListTitle => 'شحناتك';
+
+  @override
   String get parcelsListSectionTitle => 'شحناتي';
 
   @override
@@ -1569,6 +1755,20 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get parcelsListEmptySubtitle => 'عند إنشاء شحنة جديدة ستظهر هنا.';
+
+  @override
+  String get parcelsListEmptyCta => 'أنشئ أول شحنة';
+
+  @override
+  String get parcelsListNewShipmentTooltip => 'شحنة جديدة';
+
+  @override
+  String parcelsListCreatedAtLabel(String date) {
+    return 'تم الإنشاء في $date';
+  }
+
+  @override
+  String get parcelsListUnknownDestinationLabel => 'وجهة غير معروفة';
 
   @override
   String get parcelsFilterAllLabel => 'الكل';
@@ -1664,6 +1864,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get parcelsCreateErrorInvalidPhone => 'يرجى إدخال رقم هاتف صحيح';
 
   @override
+  String get parcelsCreateWeightInvalidError => 'يرجى إدخال وزن صحيح.';
+
+  @override
+  String get parcelsCreateEstimateComingSoonSnackbar =>
+      'تسعيرة الشحنة قيد التنفيذ وستتوفر قريباً.';
+
+  @override
+  String get parcelsCreateSizeSmallLabel => 'صغيرة';
+
+  @override
+  String get parcelsCreateSizeMediumLabel => 'متوسطة';
+
+  @override
+  String get parcelsCreateSizeLargeLabel => 'كبيرة';
+
+  @override
+  String get parcelsCreateSizeOversizeLabel => 'ضخمة';
+
+  @override
   String get parcelsShipmentDetailsTitle => 'تفاصيل الشحنة';
 
   @override
@@ -1731,4 +1950,457 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get foodComingSoonPrimaryCta => 'العودة إلى الرئيسية';
+
+  @override
+  String get foodRestaurantsAppBarTitle => 'توصيل الطعام';
+
+  @override
+  String get foodRestaurantsSearchPlaceholder => 'ابحث عن مطاعم أو مطابخ';
+
+  @override
+  String get foodRestaurantsFilterAll => 'الكل';
+
+  @override
+  String get foodRestaurantsFilterBurgers => 'برجر';
+
+  @override
+  String get foodRestaurantsFilterItalian => 'إيطالي';
+
+  @override
+  String get foodRestaurantsEmptyTitle => 'لا توجد مطاعم مطابقة';
+
+  @override
+  String get foodRestaurantsEmptySubtitle =>
+      'جرّب تغيير الفلاتر أو البحث عن نوع آخر من الأطعمة.';
+
+  @override
+  String get foodRestaurantMenuError =>
+      'تعذّر تحميل قائمة الطعام. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String foodCartSummaryCta(String itemCount, String totalPrice) {
+    return '$itemCount عنصر · المجموع $totalPrice';
+  }
+
+  @override
+  String foodCartCheckoutStub(String itemCount, String totalPrice) {
+    return 'إتمام الطلب غير مفعّل بعد. عدد العناصر $itemCount، المجموع $totalPrice.';
+  }
+
+  @override
+  String get ordersSectionParcelsTitle => 'الطرود';
+
+  @override
+  String get ordersSectionFoodTitle => 'الطعام';
+
+  @override
+  String get ordersFilterFood => 'الطعام';
+
+  @override
+  String get ordersFoodStatusPending => 'قيد المعالجة';
+
+  @override
+  String get ordersFoodStatusInPreparation => 'قيد التحضير';
+
+  @override
+  String get ordersFoodStatusOnTheWay => 'في الطريق';
+
+  @override
+  String get ordersFoodStatusDelivered => 'تم التسليم';
+
+  @override
+  String get ordersFoodStatusCancelled => 'ملغي';
+
+  @override
+  String ordersFoodCreatedAtLabel(String date) {
+    return 'تم الطلب في $date';
+  }
+
+  @override
+  String foodCartOrderCreatedSnackbar(String restaurant) {
+    return 'تم إنشاء طلبك من $restaurant.';
+  }
+
+  @override
+  String get homeFoodComingSoonLabel => 'قريباً';
+
+  @override
+  String get homeFoodComingSoonMessage =>
+      'خدمة توصيل الطعام غير متاحة بعد في منطقتك.';
+
+  @override
+  String get homeFoodCardTitle => 'الطعام';
+
+  @override
+  String get homeFoodCardSubtitle => 'طعامك المفضل، إليك.';
+
+  @override
+  String get onboardingRideTitle => 'احصل على رحلة، فورًا.';
+
+  @override
+  String get onboardingRideBody =>
+      'اضغط، اركب، ووصل. تنقل سريع، موثوق، وبسعر مناسب في متناول يدك.';
+
+  @override
+  String get onboardingParcelsTitle => 'أرسل أي شيء، بسهولة.';
+
+  @override
+  String get onboardingParcelsBody =>
+      'من المستندات إلى الهدايا، أرسل وتتبع طرودك بسهولة وثقة.';
+
+  @override
+  String get onboardingFoodTitle => 'طعامك المفضل، إليك.';
+
+  @override
+  String get onboardingFoodBody =>
+      'استكشف المطاعم القريبة واستمتع بتوصيل سريع حتى باب منزلك.';
+
+  @override
+  String get onboardingButtonContinue => 'استمر';
+
+  @override
+  String get onboardingButtonGetStarted => 'ابدأ الآن';
+
+  @override
+  String get homeRideCardTitle => 'رحلة';
+
+  @override
+  String get homeRideCardSubtitle => 'احصل على رحلة فوراً.';
+
+  @override
+  String get rideDestinationDestinationLabel => 'الوجهة';
+
+  @override
+  String get rideDestinationDestinationPlaceholder => 'إلى أين؟';
+
+  @override
+  String get rideDestinationRecentTitle => 'الوجهات الأخيرة';
+
+  @override
+  String get rideDestinationRecentHomeLabel => 'المنزل';
+
+  @override
+  String get rideDestinationRecentHomeSubtitle => 'عنوان المنزل المحفوظ';
+
+  @override
+  String get rideDestinationRecentWorkLabel => 'العمل';
+
+  @override
+  String get rideDestinationRecentWorkSubtitle => 'عنوان العمل المحفوظ';
+
+  @override
+  String get rideDestinationRecentLastLabel => 'آخر رحلة';
+
+  @override
+  String get rideDestinationRecentLastSubtitle => 'استخدم وجهة آخر رحلة';
+
+  @override
+  String get rideDestinationNextCta => 'التالي';
+
+  @override
+  String get rideDestinationComingSoonSnackbar =>
+      'ملخص الرحلة قيد التنفيذ وسيتوفر قريباً.';
+
+  @override
+  String get rideSummaryReceiptTitle => 'الإيصال';
+
+  @override
+  String get rideSummaryReceiptFareLabel => 'أجرة الرحلة';
+
+  @override
+  String get rideSummaryReceiptFeesLabel => 'الرسوم';
+
+  @override
+  String get rideSummaryReceiptTotalLabel => 'الإجمالي';
+
+  @override
+  String get rideSummaryRatingTitle => 'قيّم السائق';
+
+  @override
+  String get rideSummaryRatingSubtitle =>
+      'ملاحظاتك تساعدنا في الحفاظ على رحلات آمنة ومريحة.';
+
+  @override
+  String get rideSummaryCommentPlaceholder => 'أضف ملاحظة (اختياري)';
+
+  @override
+  String rideReceiptTripIdLabel(String id) {
+    return 'رقم الرحلة: $id';
+  }
+
+  @override
+  String rideReceiptCompletedAt(String date, String time) {
+    return '$date في $time';
+  }
+
+  @override
+  String get rideReceiptFromLabel => 'من';
+
+  @override
+  String get rideReceiptToLabel => 'إلى';
+
+  @override
+  String get rideReceiptFareSectionTitle => 'أجرة الرحلة';
+
+  @override
+  String get rideReceiptBaseFareLabel => 'الأجرة الأساسية';
+
+  @override
+  String get rideReceiptDistanceFareLabel => 'المسافة';
+
+  @override
+  String get rideReceiptTimeFareLabel => 'الوقت';
+
+  @override
+  String get rideReceiptFeesLabel => 'الرسوم والضرائب';
+
+  @override
+  String get rideReceiptTotalLabel => 'الإجمالي';
+
+  @override
+  String get rideReceiptDriverSectionTitle => 'السائق والمركبة';
+
+  @override
+  String get rideReceiptRateDriverTitle => 'قيّم تجربتك مع السائق';
+
+  @override
+  String get rideReceiptRateDriverSubtitle =>
+      'ملاحظاتك تساعدنا على تحسين جودة الرحلات.';
+
+  @override
+  String get rideReceiptDoneCta => 'تم';
+
+  @override
+  String get rideSummaryEndTripDebugCta => 'إنهاء الرحلة';
+
+  @override
+  String get rideSummaryThankYouSnackbar => 'شكرًا لملاحظاتك.';
+
+  @override
+  String get homeActiveParcelTitleGeneric => 'شحنة نشطة';
+
+  @override
+  String homeActiveParcelSubtitleToDestination(String destination) {
+    return 'إلى $destination';
+  }
+
+  @override
+  String get homeActiveParcelViewShipmentCta => 'عرض الشحنة';
+
+  @override
+  String get homeActiveParcelStatusPreparing => 'جاري تجهيز شحنتك...';
+
+  @override
+  String get homeActiveParcelStatusScheduled => 'الاستلام مجدول';
+
+  @override
+  String get homeActiveParcelStatusPickupPending => 'في انتظار الاستلام';
+
+  @override
+  String get homeActiveParcelStatusPickedUp => 'تم الاستلام';
+
+  @override
+  String get homeActiveParcelStatusInTransit => 'قيد النقل';
+
+  @override
+  String get homeActiveParcelStatusDelivered => 'تم التسليم';
+
+  @override
+  String get homeActiveParcelStatusCancelled => 'تم إلغاء الشحنة';
+
+  @override
+  String get homeActiveParcelStatusFailed => 'فشل التسليم';
+
+  @override
+  String get parcelsActiveShipmentTitle => 'الشحنة النشطة';
+
+  @override
+  String get parcelsActiveShipmentNoActiveTitle => 'لا توجد شحنة نشطة';
+
+  @override
+  String get parcelsActiveShipmentNoActiveSubtitle =>
+      'لا يوجد لديك شحنات نشطة حالياً.';
+
+  @override
+  String get parcelsActiveShipmentMapStub => 'تتبع الخريطة (قريباً)';
+
+  @override
+  String parcelsActiveShipmentStatusLabel(String status) {
+    return 'الحالة: $status';
+  }
+
+  @override
+  String parcelsActiveShipmentIdLabel(String id) {
+    return 'رقم الشحنة: $id';
+  }
+
+  @override
+  String get parcelsActiveShipmentStubNote =>
+      'سيتوفر التتبع الكامل في تحديث قادم.';
+
+  @override
+  String get parcelsDetailsCancelShipmentCta => 'إلغاء الشحنة';
+
+  @override
+  String get parcelsCancelDialogTitle => 'هل تريد إلغاء هذه الشحنة؟';
+
+  @override
+  String get parcelsCancelDialogSubtitle =>
+      'إذا قمت بالإلغاء الآن، سيتم إيقاف هذه الشحنة ولن تظهر كشحنة نشطة.';
+
+  @override
+  String get parcelsCancelDialogConfirmCta => 'نعم، إلغاء';
+
+  @override
+  String get parcelsCancelDialogDismissCta => 'الإبقاء على الشحنة';
+
+  @override
+  String get parcelsCancelSuccessMessage => 'تم إلغاء الشحنة بنجاح.';
+
+  @override
+  String get bottomNavHomeLabel => 'الرئيسية';
+
+  @override
+  String get bottomNavOrdersLabel => 'الطلبات';
+
+  @override
+  String get bottomNavPaymentsLabel => 'المدفوعات';
+
+  @override
+  String get bottomNavProfileLabel => 'الحساب';
+
+  @override
+  String get paymentsEntryTitle => 'المدفوعات';
+
+  @override
+  String get paymentsEntryStubBody => 'إدارة المدفوعات ستتوفر في تحديث قادم.';
+
+  @override
+  String get paymentsTitle => 'طرق الدفع';
+
+  @override
+  String get paymentsAddMethodCta => 'إضافة طريقة دفع جديدة';
+
+  @override
+  String get paymentsEmptyTitle => 'لا توجد طرق دفع محفوظة';
+
+  @override
+  String get paymentsEmptyBody => 'ستظهر هنا بطاقاتك وطرق الدفع المحفوظة.';
+
+  @override
+  String get paymentsMethodTypeCash => 'نقدًا';
+
+  @override
+  String get paymentsMethodTypeCard => 'بطاقة';
+
+  @override
+  String get paymentsDefaultBadge => 'افتراضية';
+
+  @override
+  String get paymentsAddMethodComingSoon =>
+      'إضافة طرق دفع جديدة ستكون متاحة قريبًا.';
+
+  @override
+  String get profileEntryTitle => 'الملف الشخصي';
+
+  @override
+  String get profileEntryStubBody =>
+      'إعدادات الملف الشخصي والحساب ستتوفر في تحديث قادم.';
+
+  @override
+  String get rideStatusShortDraft => 'مسودة';
+
+  @override
+  String get rideStatusShortQuoting => 'جاري التسعير';
+
+  @override
+  String get rideStatusShortRequesting => 'جاري طلب الرحلة';
+
+  @override
+  String get rideStatusShortFindingDriver => 'جاري البحث عن سائق';
+
+  @override
+  String get rideStatusShortDriverAccepted => 'تم قبول السائق';
+
+  @override
+  String get rideStatusShortDriverArrived => 'وصل السائق';
+
+  @override
+  String get rideStatusShortInProgress => 'قيد التنفيذ';
+
+  @override
+  String get rideStatusShortPayment => 'جاري الدفع';
+
+  @override
+  String get rideStatusShortCompleted => 'مكتملة';
+
+  @override
+  String get rideStatusShortCancelled => 'ملغاة';
+
+  @override
+  String get rideStatusShortFailed => 'فشلت';
+
+  @override
+  String get homeActiveRideStatusPreparing => 'جاري تجهيز رحلتك...';
+
+  @override
+  String get homeActiveRideStatusFindingDriver => 'جاري البحث عن سائق...';
+
+  @override
+  String get homeActiveRideStatusDriverAccepted => 'السائق في الطريق إليك';
+
+  @override
+  String get homeActiveRideStatusDriverArrived => 'وصل السائق';
+
+  @override
+  String get homeActiveRideStatusInProgress => 'الرحلة جارية';
+
+  @override
+  String get homeActiveRideStatusPayment => 'جاري إتمام الدفع';
+
+  @override
+  String get homeActiveRideStatusCompleted => 'تم إنهاء الرحلة';
+
+  @override
+  String get homeActiveRideStatusCancelled => 'تم إلغاء الرحلة';
+
+  @override
+  String get homeActiveRideStatusFailed => 'فشلت الرحلة';
+
+  @override
+  String get rideActiveTripTitle => 'الرحلة النشطة';
+
+  @override
+  String rideActiveTripFromLabel(String pickup) {
+    return 'من: $pickup';
+  }
+
+  @override
+  String rideActiveTripToLabel(String dropoff) {
+    return 'إلى: $dropoff';
+  }
+
+  @override
+  String rideActiveTripIdLabel(String id) {
+    return 'رقم الرحلة: $id';
+  }
+
+  @override
+  String get rideActiveTripMapStub => 'تتبع الخريطة المباشر (قريبًا)';
+
+  @override
+  String get rideActiveTripStubNote =>
+      'سيتم توفير تتبع مباشر كامل بعد الربط مع خدمة الرحلات الفعلية.';
+
+  @override
+  String rideActiveTripStatusLabel(String status) {
+    return 'الحالة: $status';
+  }
+
+  @override
+  String get rideActiveTripDriverSectionTitle => 'السائق والمركبة';
+
+  @override
+  String get rideActiveTripDriverSectionStubBody =>
+      'تفاصيل السائق والمركبة ستظهر بعد الربط مع خدمة الرحلات الفعلية.';
 }

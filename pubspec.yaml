@@ -77,6 +77,8 @@ dependencies:
     path: packages/privacy
   parcels_shims:
     path: packages/parcels_shims
+  food_shims:
+    path: packages/food_shims
   http: any
   shared_preferences: any
   geolocator: ^11.1.0

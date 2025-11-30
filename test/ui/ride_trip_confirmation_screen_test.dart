@@ -2,7 +2,10 @@
 /// Purpose: Test RideTripConfirmation (RideConfirmationScreen) UI with Quote integration
 /// Created by: Track B - Ticket #21
 /// Updated by: Ticket #26 (Robust quote states: Loading/Error/Empty)
-/// Last updated: 2025-11-28
+/// Updated by: Ticket #64 (FSM integration tests)
+/// Updated by: Ticket #97 (Chaos & Resilience Tests for pricing failures)
+/// Updated by: Ticket #100 (Payment method integration tests)
+/// Last updated: 2025-11-30
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +16,8 @@ import 'package:delivery_ways_clean/screens/mobility/ride_confirmation_screen.da
 import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_quote_controller.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
+// Track B - Ticket #100: Payment method integration
+import 'package:delivery_ways_clean/state/payments/payment_methods_ui_state.dart';
 import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
@@ -22,6 +27,15 @@ void main() {
   setUpAll(() {
     ensureDesignSystemStubsForTests();
   });
+
+  // Run FSM integration tests (Ticket #64)
+  runFsmIntegrationTests();
+
+  // Run Chaos & Resilience tests (Ticket #97)
+  runPricingChaosTests();
+
+  // Run Payment Method integration tests (Ticket #100)
+  runPaymentMethodIntegrationTests();
 
   group('RideTripConfirmationScreen (RideConfirmationScreen) Widget Tests', () {
     /// Helper to create a mock RideQuote for testing
@@ -186,12 +200,13 @@ void main() {
       expect(find.textContaining('7'), findsAtLeastNWidgets(1));
     });
 
+    // Track B - Ticket #100: Updated to check for cash icon (default payment method)
     testWidgets('displays payment method section', (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Check for payment section
-      expect(find.byIcon(Icons.payment_outlined), findsOneWidget);
+      // Check for payment section - uses payments_outlined icon for cash (default)
+      expect(find.byIcon(Icons.payments_outlined), findsOneWidget);
     });
 
     testWidgets('displays Request Ride CTA button',
@@ -430,6 +445,165 @@ void main() {
       expect(find.text('تأكيد الرحلة'), findsOneWidget);
     });
 
+    // ========================================================================
+    // Ticket #91: Recommended Badge + German Locale Tests
+    // ========================================================================
+
+    testWidgets('displays Recommended badge for recommended option (Ticket #91)',
+        (WidgetTester tester) async {
+      // Mock quote with one recommended option
+      final recommendedQuote = RideQuote(
+        quoteId: 'rec_quote_123',
+        request: const RideQuoteRequest(
+          pickup: LocationPoint(latitude: 24.7136, longitude: 46.6753),
+          dropoff: LocationPoint(latitude: 24.7236, longitude: 46.6853),
+          currencyCode: 'SAR',
+        ),
+        options: const [
+          RideQuoteOption(
+            id: 'economy_rec',
+            category: RideVehicleCategory.economy,
+            displayName: 'Economy',
+            etaMinutes: 5,
+            priceMinorUnits: 1800,
+            currencyCode: 'SAR',
+            isRecommended: true,
+          ),
+          RideQuoteOption(
+            id: 'xl_not_rec',
+            category: RideVehicleCategory.xl,
+            displayName: 'XL',
+            etaMinutes: 7,
+            priceMinorUnits: 2500,
+            currencyCode: 'SAR',
+            isRecommended: false,
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(createTestWidget(
+        quoteState: RideQuoteUiState(
+          isLoading: false,
+          quote: recommendedQuote,
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Check that Recommended badge appears (only for recommended option)
+      expect(find.text('Recommended'), findsOneWidget);
+    });
+
+    testWidgets('does not display Recommended badge when isRecommended is false (Ticket #91)',
+        (WidgetTester tester) async {
+      // Mock quote with no recommended options
+      final noRecQuote = RideQuote(
+        quoteId: 'norec_quote_123',
+        request: const RideQuoteRequest(
+          pickup: LocationPoint(latitude: 24.7136, longitude: 46.6753),
+          dropoff: LocationPoint(latitude: 24.7236, longitude: 46.6853),
+          currencyCode: 'SAR',
+        ),
+        options: const [
+          RideQuoteOption(
+            id: 'economy_norec',
+            category: RideVehicleCategory.economy,
+            displayName: 'Economy',
+            etaMinutes: 5,
+            priceMinorUnits: 1800,
+            currencyCode: 'SAR',
+            isRecommended: false,
+          ),
+          RideQuoteOption(
+            id: 'xl_norec',
+            category: RideVehicleCategory.xl,
+            displayName: 'XL',
+            etaMinutes: 7,
+            priceMinorUnits: 2500,
+            currencyCode: 'SAR',
+            isRecommended: false,
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(createTestWidget(
+        quoteState: RideQuoteUiState(
+          isLoading: false,
+          quote: noRecQuote,
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Check that Recommended badge does NOT appear
+      expect(find.text('Recommended'), findsNothing);
+    });
+
+    testWidgets('displays German translations when locale is de (Ticket #91)',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updateDestination('Berlin');
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _TestRideQuoteController(RideQuoteUiState(
+                isLoading: false,
+                quote: RideQuote(
+                  quoteId: 'de_quote',
+                  request: const RideQuoteRequest(
+                    pickup: LocationPoint(latitude: 52.52, longitude: 13.405),
+                    dropoff: LocationPoint(latitude: 52.53, longitude: 13.41),
+                    currencyCode: 'EUR',
+                  ),
+                  options: const [
+                    RideQuoteOption(
+                      id: 'eco_de',
+                      category: RideVehicleCategory.economy,
+                      displayName: 'Economy',
+                      etaMinutes: 4,
+                      priceMinorUnits: 1500,
+                      currencyCode: 'EUR',
+                      isRecommended: true,
+                    ),
+                  ],
+                ),
+              ));
+            }),
+            rideTripSessionProvider.overrideWith((ref) {
+              return RideTripSessionController();
+            }),
+          ],
+          child: MaterialApp(
+            locale: const Locale('de'),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('ar'),
+              Locale('de'),
+            ],
+            home: const RideConfirmationScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Check for German title
+      expect(find.text('Fahrt bestätigen'), findsOneWidget);
+      
+      // Check for German recommended badge
+      expect(find.text('Empfohlen'), findsOneWidget);
+      
+      // Check for German CTA
+      expect(find.text('Fahrt anfordern'), findsOneWidget);
+    });
+
     testWidgets('CTA button is enabled when quote is available',
         (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
@@ -566,6 +740,938 @@ class _TestRideQuoteControllerWithRetryCount extends RideQuoteController {
   @override
   Future<void> refreshFromDraft(RideDraftUiState draft) async {
     refreshFromDraftCallCount++;
+  }
+}
+
+// ============================================================================
+// Track B - Ticket #97: Chaos & Resilience Tests for Pricing Failures
+// ============================================================================
+
+/// Tests for verifying UI resilience when pricing service fails.
+void runPricingChaosTests() {
+  setUpAll(() {
+    ensureDesignSystemStubsForTests();
+  });
+
+  group('Chaos & Resilience Tests - Pricing Failures (Ticket #97)', () {
+    /// Helper to create draft state for tests
+    RideDraftUiState createDraftForChaos() {
+      return RideDraftUiState(
+        pickupLabel: 'Home',
+        destinationQuery: 'Airport',
+        pickupPlace: MobilityPlace(
+          label: 'Home',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        destinationPlace: MobilityPlace(
+          label: 'Airport',
+          location: LocationPoint(
+            latitude: 24.7743,
+            longitude: 46.7386,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+      );
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 1: pricing_failures_shows_error_and_retry_cta
+    // -------------------------------------------------------------------------
+    testWidgets('pricing_failures_shows_error_and_retry_cta',
+        (WidgetTester tester) async {
+      // Create a controller that always returns error state
+      final errorController = _TestRideQuoteController(
+        const RideQuoteUiState(
+          isLoading: false,
+          errorMessage: 'Mock pricing service failure',
+        ),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updateDestination('Airport');
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) => errorController),
+            rideTripSessionProvider.overrideWith(
+                (ref) => RideTripSessionController()),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en')],
+            home: const RideConfirmationScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify error title is shown
+      expect(find.text("We couldn't load ride options"), findsOneWidget,
+          reason: 'Error title should be visible when pricing fails');
+
+      // Verify error subtitle is shown
+      expect(find.text('Please check your connection and try again.'),
+          findsOneWidget,
+          reason: 'Error subtitle should explain what to do');
+
+      // Verify Retry button is shown
+      expect(find.text('Retry'), findsOneWidget,
+          reason: 'Retry CTA should be visible on error state');
+
+      // Verify error icon is shown
+      expect(find.byIcon(Icons.error_outline), findsOneWidget,
+          reason: 'Error icon should be visible');
+    });
+
+    // -------------------------------------------------------------------------
+    // Test 2: pricing_retry_succeeds_after_initial_failures
+    // -------------------------------------------------------------------------
+    testWidgets('pricing_retry_succeeds_after_initial_failures',
+        (WidgetTester tester) async {
+      // Create a controller that simulates: first call fails, second succeeds
+      final retryController = _RetryableRideQuoteController();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              final draft = createDraftForChaos();
+              controller.updateDestination(draft.destinationQuery);
+              if (draft.pickupPlace != null) {
+                controller.updatePickupPlace(draft.pickupPlace!);
+              }
+              if (draft.destinationPlace != null) {
+                controller.updateDestinationPlace(draft.destinationPlace!);
+              }
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) => retryController),
+            rideTripSessionProvider.overrideWith(
+                (ref) => RideTripSessionController()),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en')],
+            home: const RideConfirmationScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Initially should show error (first call fails)
+      expect(find.text("We couldn't load ride options"), findsOneWidget,
+          reason: 'Initial error should be shown');
+      expect(find.text('Retry'), findsOneWidget);
+
+      // Tap Retry button
+      await tester.tap(find.text('Retry'));
+      await tester.pumpAndSettle();
+
+      // After retry, should show success (vehicle options)
+      expect(find.text('Economy'), findsOneWidget,
+          reason: 'After successful retry, Economy option should be visible');
+      expect(find.text('XL'), findsOneWidget,
+          reason: 'After successful retry, XL option should be visible');
+
+      // Error should be gone
+      expect(find.text("We couldn't load ride options"), findsNothing,
+          reason: 'Error should disappear after successful retry');
+    });
+
+    // -------------------------------------------------------------------------
+    // Test 3: pricing_multiple_failures_keeps_error_state_stable
+    // -------------------------------------------------------------------------
+    testWidgets('pricing_multiple_failures_keeps_error_state_stable',
+        (WidgetTester tester) async {
+      // Create a controller that always fails
+      final alwaysFailController = _AlwaysFailingRideQuoteController();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updateDestination('Airport');
+              return controller;
+            }),
+            rideQuoteControllerProvider
+                .overrideWith((ref) => alwaysFailController),
+            rideTripSessionProvider.overrideWith(
+                (ref) => RideTripSessionController()),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en')],
+            home: const RideConfirmationScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify initial error state
+      expect(find.text("We couldn't load ride options"), findsOneWidget);
+
+      // Retry multiple times
+      for (int i = 0; i < 3; i++) {
+        await tester.tap(find.text('Retry'));
+        await tester.pumpAndSettle();
+      }
+
+      // After multiple retries, should still show ONE error message (no duplicates)
+      expect(find.text("We couldn't load ride options"), findsOneWidget,
+          reason:
+              'Should show exactly one error message after multiple retries');
+
+      // Verify screen didn't crash and Retry is still available
+      expect(find.text('Retry'), findsOneWidget,
+          reason: 'Retry button should still be available');
+
+      // Verify refresh count
+      expect(alwaysFailController.refreshCount, equals(4),
+          reason: 'refreshFromDraft should be called 4 times (1 initial + 3 retries)');
+    });
+
+    // -------------------------------------------------------------------------
+    // Test 4: pricing_error_shows_correct_l10n_ar
+    // -------------------------------------------------------------------------
+    testWidgets('AR: pricing_error_shows_arabic_error_text',
+        (WidgetTester tester) async {
+      final errorController = _TestRideQuoteController(
+        const RideQuoteUiState(
+          isLoading: false,
+          errorMessage: 'Network error',
+        ),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updateDestination('المطار');
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) => errorController),
+            rideTripSessionProvider.overrideWith(
+                (ref) => RideTripSessionController()),
+          ],
+          child: const MaterialApp(
+            locale: Locale('ar'),
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: [Locale('en'), Locale('ar'), Locale('de')],
+            home: RideConfirmationScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify Arabic error title
+      expect(find.text('تعذر تحميل خيارات الرحلة'), findsOneWidget,
+          reason: 'Arabic error title should be shown');
+      
+      // Verify Arabic retry button
+      expect(find.text('إعادة المحاولة'), findsOneWidget,
+          reason: 'Arabic retry button should be shown');
+    });
+
+    // -------------------------------------------------------------------------
+    // Test 5: pricing_error_shows_correct_l10n_de
+    // -------------------------------------------------------------------------
+    testWidgets('DE: pricing_error_shows_german_error_text',
+        (WidgetTester tester) async {
+      final errorController = _TestRideQuoteController(
+        const RideQuoteUiState(
+          isLoading: false,
+          errorMessage: 'Network error',
+        ),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updateDestination('Flughafen');
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) => errorController),
+            rideTripSessionProvider.overrideWith(
+                (ref) => RideTripSessionController()),
+          ],
+          child: const MaterialApp(
+            locale: Locale('de'),
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: [Locale('en'), Locale('ar'), Locale('de')],
+            home: RideConfirmationScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify German error title
+      expect(find.text('Fahrtoptionen konnten nicht geladen werden'), findsOneWidget,
+          reason: 'German error title should be shown');
+      
+      // Verify German retry button
+      expect(find.text('Erneut versuchen'), findsOneWidget,
+          reason: 'German retry button should be shown');
+    });
+
+    // -------------------------------------------------------------------------
+    // Test 6: loading_state_during_retry_shows_indicator
+    // -------------------------------------------------------------------------
+    testWidgets('loading_state_during_retry_shows_indicator',
+        (WidgetTester tester) async {
+      // Use a controller that transitions from loading to success
+      final loadingController = _TestRideQuoteController(
+        const RideQuoteUiState(isLoading: true),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updateDestination('Airport');
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) => loadingController),
+            rideTripSessionProvider.overrideWith(
+                (ref) => RideTripSessionController()),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en')],
+            home: const RideConfirmationScreen(),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      // Verify loading indicator is shown
+      expect(find.byType(CircularProgressIndicator), findsOneWidget,
+          reason: 'Loading indicator should be visible during fetch');
+
+      // Verify loading title
+      expect(find.text('Fetching ride options...'), findsOneWidget,
+          reason: 'Loading title should be shown');
+    });
+  });
+}
+
+/// Controller that simulates retry behavior: first call fails, subsequent succeed.
+/// Uses StateNotifier properly to trigger UI rebuilds.
+class _RetryableRideQuoteController extends StateNotifier<RideQuoteUiState>
+    implements RideQuoteController {
+  _RetryableRideQuoteController()
+      : super(const RideQuoteUiState(
+          isLoading: false,
+          errorMessage: 'Initial pricing failure',
+        ));
+
+  int _callCount = 0;
+
+  @override
+  Future<void> refreshFromDraft(RideDraftUiState draft) async {
+    _callCount++;
+    
+    if (_callCount == 1) {
+      // First call fails
+      state = const RideQuoteUiState(
+        isLoading: false,
+        errorMessage: 'Pricing service unavailable',
+      );
+    } else {
+      // Subsequent calls succeed
+      state = RideQuoteUiState(
+        isLoading: false,
+        quote: RideQuote(
+          quoteId: 'retry-success-quote',
+          request: RideQuoteRequest(
+            pickup: LocationPoint(
+              latitude: 24.7136,
+              longitude: 46.6753,
+              accuracyMeters: 10,
+              timestamp: DateTime.now(),
+            ),
+            dropoff: LocationPoint(
+              latitude: 24.7743,
+              longitude: 46.7386,
+              accuracyMeters: 10,
+              timestamp: DateTime.now(),
+            ),
+            currencyCode: 'SAR',
+          ),
+          options: const [
+            RideQuoteOption(
+              id: 'economy',
+              category: RideVehicleCategory.economy,
+              displayName: 'Economy',
+              etaMinutes: 5,
+              priceMinorUnits: 1800,
+              currencyCode: 'SAR',
+              isRecommended: true,
+            ),
+            RideQuoteOption(
+              id: 'xl',
+              category: RideVehicleCategory.xl,
+              displayName: 'XL',
+              etaMinutes: 7,
+              priceMinorUnits: 2500,
+              currencyCode: 'SAR',
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  @override
+  void clear() {
+    state = const RideQuoteUiState();
+  }
+}
+
+/// Controller that always fails on every refresh.
+/// Uses StateNotifier properly to trigger UI rebuilds.
+class _AlwaysFailingRideQuoteController extends StateNotifier<RideQuoteUiState>
+    implements RideQuoteController {
+  _AlwaysFailingRideQuoteController()
+      : super(const RideQuoteUiState(
+          isLoading: false,
+          errorMessage: 'Persistent pricing failure',
+        ));
+
+  int refreshCount = 0;
+
+  @override
+  Future<void> refreshFromDraft(RideDraftUiState draft) async {
+    refreshCount++;
+    // Re-emit the same error state to simulate continuous failures
+    state = const RideQuoteUiState(
+      isLoading: false,
+      errorMessage: 'Persistent pricing failure',
+    );
+  }
+
+  @override
+  void clear() {
+    state = const RideQuoteUiState();
+  }
+}
+
+// ============================================================================
+// Track B - Ticket #64: FSM Integration Tests
+// ============================================================================
+
+/// Tests for verifying FSM state transitions when interacting with the UI.
+void runFsmIntegrationTests() {
+  setUpAll(() {
+    ensureDesignSystemStubsForTests();
+  });
+
+  group('FSM Integration Tests (Ticket #64)', () {
+    /// Helper to create a mock RideQuote
+    RideQuote createMockQuote() {
+      const pickup = LocationPoint(
+        latitude: 24.7136,
+        longitude: 46.6753,
+      );
+      const dropoff = LocationPoint(
+        latitude: 24.7236,
+        longitude: 46.6853,
+      );
+
+      return RideQuote(
+        quoteId: 'fsm_test_quote',
+        request: const RideQuoteRequest(
+          pickup: pickup,
+          dropoff: dropoff,
+          currencyCode: 'SAR',
+        ),
+        options: const [
+          RideQuoteOption(
+            id: 'economy',
+            category: RideVehicleCategory.economy,
+            displayName: 'Economy',
+            etaMinutes: 5,
+            priceMinorUnits: 1800,
+            currencyCode: 'SAR',
+            isRecommended: true,
+          ),
+        ],
+      );
+    }
+
+    testWidgets(
+        'pressing Request Ride moves FSM from requesting to findingDriver',
+        (WidgetTester tester) async {
+      // Create a container to access providers
+      late ProviderContainer container;
+
+      final draft = RideDraftUiState(
+        pickupLabel: 'Current location',
+        destinationQuery: 'Test Destination',
+        pickupPlace: MobilityPlace(
+          label: 'Current location',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        destinationPlace: MobilityPlace(
+          label: 'Test Destination',
+          location: LocationPoint(
+            latitude: 24.7236,
+            longitude: 46.6853,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+      );
+
+      final quote = RideQuoteUiState(
+        isLoading: false,
+        quote: createMockQuote(),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel(draft.pickupLabel);
+              controller.updateDestination(draft.destinationQuery);
+              if (draft.pickupPlace != null) {
+                controller.updatePickupPlace(draft.pickupPlace!);
+              }
+              if (draft.destinationPlace != null) {
+                controller.updateDestinationPlace(draft.destinationPlace!);
+              }
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _TestRideQuoteController(quote);
+            }),
+            rideTripSessionProvider.overrideWith((ref) {
+              return RideTripSessionController();
+            }),
+          ],
+          child: Builder(
+            builder: (context) {
+              return MaterialApp(
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('en')],
+                home: Consumer(
+                  builder: (context, ref, child) {
+                    // Store container reference
+                    container = ProviderScope.containerOf(context);
+                    return const RideConfirmationScreen();
+                  },
+                ),
+                routes: {
+                  '/ride/active': (context) =>
+                      const Scaffold(body: Text('Active Trip')),
+                },
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify initial FSM state (should be empty/initial before pressing button)
+      final initialState = container.read(rideTripSessionProvider);
+      expect(initialState.activeTrip, isNull);
+
+      // Find and tap the Request Ride button
+      expect(find.text('Request Ride'), findsOneWidget);
+      await tester.tap(find.text('Request Ride'));
+      await tester.pumpAndSettle();
+
+      // After pressing Request Ride:
+      // The RideConfirmationScreen calls startFromDraft() which moves FSM through:
+      // draft -> quoting -> requesting -> findingDriver
+      final updatedState = container.read(rideTripSessionProvider);
+      expect(updatedState.activeTrip, isNotNull,
+          reason: 'FSM should have an active trip after Request Ride');
+      expect(updatedState.activeTrip!.phase, RideTripPhase.findingDriver,
+          reason: 'FSM should be in findingDriver phase after Request Ride');
+    });
+
+    testWidgets('FSM phase is preserved after Request Ride navigation',
+        (WidgetTester tester) async {
+      late ProviderContainer container;
+
+      final draft = RideDraftUiState(
+        pickupLabel: 'Current location',
+        destinationQuery: 'Test Destination',
+        pickupPlace: MobilityPlace(
+          label: 'Current location',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        destinationPlace: MobilityPlace(
+          label: 'Test Destination',
+          location: LocationPoint(
+            latitude: 24.7236,
+            longitude: 46.6853,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+      );
+
+      final quote = RideQuoteUiState(
+        isLoading: false,
+        quote: RideQuote(
+          quoteId: 'fsm_nav_test',
+          request: const RideQuoteRequest(
+            pickup: LocationPoint(latitude: 24.7136, longitude: 46.6753),
+            dropoff: LocationPoint(latitude: 24.7236, longitude: 46.6853),
+            currencyCode: 'SAR',
+          ),
+          options: const [
+            RideQuoteOption(
+              id: 'economy',
+              category: RideVehicleCategory.economy,
+              displayName: 'Economy',
+              etaMinutes: 5,
+              priceMinorUnits: 1800,
+              currencyCode: 'SAR',
+              isRecommended: true,
+            ),
+          ],
+        ),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel(draft.pickupLabel);
+              controller.updateDestination(draft.destinationQuery);
+              if (draft.pickupPlace != null) {
+                controller.updatePickupPlace(draft.pickupPlace!);
+              }
+              if (draft.destinationPlace != null) {
+                controller.updateDestinationPlace(draft.destinationPlace!);
+              }
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _TestRideQuoteController(quote);
+            }),
+            rideTripSessionProvider.overrideWith((ref) {
+              return RideTripSessionController();
+            }),
+          ],
+          child: Builder(
+            builder: (context) {
+              return MaterialApp(
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('en')],
+                home: Consumer(
+                  builder: (context, ref, child) {
+                    container = ProviderScope.containerOf(context);
+                    return const RideConfirmationScreen();
+                  },
+                ),
+                routes: {
+                  '/ride/active': (context) {
+                    // On active trip screen, verify FSM state is preserved
+                    final state = container.read(rideTripSessionProvider);
+                    return Scaffold(
+                      body: Text('Phase: ${state.activeTrip?.phase.name}'),
+                    );
+                  },
+                },
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Request Ride
+      await tester.tap(find.text('Request Ride'));
+      await tester.pumpAndSettle();
+
+      // Verify navigation occurred and FSM state is correct
+      expect(find.text('Phase: findingDriver'), findsOneWidget,
+          reason: 'Active trip screen should show findingDriver phase');
+    });
+  });
+}
+
+// =============================================================================
+// Track B - Ticket #100: Payment Method Integration Tests
+// =============================================================================
+
+/// Group of tests for payment method integration in Trip Confirmation
+void runPaymentMethodIntegrationTests() {
+  group('Payment Method Integration Tests (Ticket #100)', () {
+    /// Creates a mock RideQuote for testing
+    RideQuote createMockQuote() {
+      const pickup = LocationPoint(latitude: 24.7136, longitude: 46.6753);
+      const dropoff = LocationPoint(latitude: 24.7236, longitude: 46.6853);
+
+      return RideQuote(
+        quoteId: 'test_quote_payment',
+        request: const RideQuoteRequest(
+          pickup: pickup,
+          dropoff: dropoff,
+          currencyCode: 'SAR',
+        ),
+        options: const [
+          RideQuoteOption(
+            id: 'economy',
+            category: RideVehicleCategory.economy,
+            displayName: 'Economy',
+            etaMinutes: 5,
+            priceMinorUnits: 1800,
+            currencyCode: 'SAR',
+            isRecommended: true,
+          ),
+        ],
+      );
+    }
+
+    /// Helper to create test widget with payment method override
+    Widget buildPaymentTestWidget({
+      PaymentMethodsUiState? paymentsState,
+      Locale locale = const Locale('en'),
+    }) {
+      final draft = RideDraftUiState(
+        pickupLabel: 'Current location',
+        destinationQuery: 'Test Destination',
+        pickupPlace: MobilityPlace.currentLocation(label: 'Current location'),
+        destinationPlace: const MobilityPlace(
+          id: 'test_dest',
+          label: 'Test Destination',
+          type: MobilityPlaceType.searchResult,
+        ),
+      );
+
+      final quote = RideQuoteUiState(
+        isLoading: false,
+        quote: createMockQuote(),
+      );
+
+      return ProviderScope(
+        overrides: [
+          rideDraftProvider.overrideWith((ref) {
+            final controller = RideDraftController();
+            controller.updatePickupLabel(draft.pickupLabel);
+            controller.updateDestination(draft.destinationQuery);
+            if (draft.pickupPlace != null) {
+              controller.updatePickupPlace(draft.pickupPlace!);
+            }
+            if (draft.destinationPlace != null) {
+              controller.updateDestinationPlace(draft.destinationPlace!);
+            }
+            return controller;
+          }),
+          rideQuoteControllerProvider.overrideWith((ref) {
+            return _PaymentTestQuoteController(quote);
+          }),
+          rideTripSessionProvider.overrideWith((ref) {
+            return RideTripSessionController();
+          }),
+          // Track B - Ticket #100: Payment methods override
+          paymentMethodsUiProvider.overrideWith((ref) {
+            return paymentsState ?? PaymentMethodsUiState.defaultStub();
+          }),
+        ],
+        child: MaterialApp(
+          locale: locale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('ar'),
+            Locale('de'),
+          ],
+          home: const RideConfirmationScreen(),
+          routes: {
+            '/ride/active': (context) =>
+                const Scaffold(body: Text('Active Trip')),
+          },
+        ),
+      );
+    }
+
+    testWidgets('shows_selected_payment_method_from_payments_tab', (tester) async {
+      // Setup: Visa card is selected
+      await tester.pumpWidget(buildPaymentTestWidget(
+        paymentsState: PaymentMethodsUiState(
+          methods: [
+            PaymentMethodUiModel.cash,
+            PaymentMethodUiModel.stubCard(brand: 'Visa', last4: '4242'),
+          ],
+          selectedMethodId: 'visa_4242', // Visa selected
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Verify Visa card is displayed in payment section
+      expect(find.text('Visa ···· 4242'), findsOneWidget);
+      // Type label is shown with " · " prefix
+      expect(find.text(' · Card'), findsOneWidget);
+    });
+
+    testWidgets('falls_back_to_default_payment_method_when_no_selection', (tester) async {
+      // Setup: No explicit selection, Cash is default
+      await tester.pumpWidget(buildPaymentTestWidget(
+        paymentsState: PaymentMethodsUiState(
+          methods: [
+            PaymentMethodUiModel.cash,
+            PaymentMethodUiModel.stubCard(brand: 'Visa', last4: '4242'),
+          ],
+          selectedMethodId: null, // No selection, should fall back to default (Cash)
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Verify Cash is displayed (default method)
+      expect(find.text('Cash'), findsAtLeastNWidgets(1));
+    });
+
+    testWidgets('shows_cash_payment_label_for_cash_method', (tester) async {
+      await tester.pumpWidget(buildPaymentTestWidget(
+        paymentsState: PaymentMethodsUiState(
+          methods: [PaymentMethodUiModel.cash],
+          selectedMethodId: 'cash',
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Verify Cash displayName is shown
+      expect(find.text('Cash'), findsAtLeastNWidgets(1));
+      // Type label is shown with " · " prefix
+      expect(find.text(' · Cash'), findsOneWidget);
+    });
+
+    testWidgets('l10n_ar_shows_arabic_payment_labels_in_confirmation', (tester) async {
+      await tester.pumpWidget(buildPaymentTestWidget(
+        paymentsState: PaymentMethodsUiState(
+          methods: [PaymentMethodUiModel.cash],
+          selectedMethodId: 'cash',
+        ),
+        locale: const Locale('ar'),
+      ));
+      await tester.pumpAndSettle();
+
+      // Verify Arabic payment type label (with " · " prefix)
+      expect(find.text(' · نقدًا'), findsAtLeastNWidgets(1)); // "Cash" in Arabic
+    });
+
+    testWidgets('l10n_de_shows_german_payment_labels_in_confirmation', (tester) async {
+      await tester.pumpWidget(buildPaymentTestWidget(
+        paymentsState: PaymentMethodsUiState(
+          methods: [PaymentMethodUiModel.cash],
+          selectedMethodId: 'cash',
+        ),
+        locale: const Locale('de'),
+      ));
+      await tester.pumpAndSettle();
+
+      // Verify German payment type label (with " · " prefix)
+      expect(find.text(' · Barzahlung'), findsAtLeastNWidgets(1)); // "Cash" in German
+    });
+
+    testWidgets('payment_section_shows_card_type_for_card_method', (tester) async {
+      await tester.pumpWidget(buildPaymentTestWidget(
+        paymentsState: PaymentMethodsUiState(
+          methods: [
+            PaymentMethodUiModel.stubCard(brand: 'Mastercard', last4: '5555'),
+          ],
+          selectedMethodId: 'mastercard_5555',
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Verify card info is displayed
+      expect(find.text('Mastercard ···· 5555'), findsOneWidget);
+      // Type label is shown with " · " prefix
+      expect(find.text(' · Card'), findsOneWidget);
+    });
+  });
+}
+
+/// Simple quote controller for payment tests
+class _PaymentTestQuoteController extends StateNotifier<RideQuoteUiState>
+    implements RideQuoteController {
+  _PaymentTestQuoteController(RideQuoteUiState initialState)
+      : super(initialState);
+
+  @override
+  Future<void> refreshFromDraft(RideDraftUiState draft) async {}
+
+  @override
+  void clear() {
+    state = const RideQuoteUiState();
   }
 }
 

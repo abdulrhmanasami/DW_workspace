@@ -482,6 +482,35 @@
   "@ordersFilterParcels": {
     "description": "Filter label for parcels only (Track C - Ticket #51)"
   },
+  "ordersFilterRides": "Rides",
+  "@ordersFilterRides": {
+    "description": "Filter label for rides only (Track B - Ticket #96)"
+  },
+  "ordersSectionRidesTitle": "Rides",
+  "@ordersSectionRidesTitle": {
+    "description": "Section title for rides in My Orders screen (Track B - Ticket #96)"
+  },
+  "ordersRideItemTitleToDestination": "Ride to {destination}",
+  "@ordersRideItemTitleToDestination": {
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    },
+    "description": "Title for ride order item (Track B - Ticket #96)"
+  },
+  "ordersRideStatusCompleted": "Completed",
+  "@ordersRideStatusCompleted": {
+    "description": "Ride order status: completed (Track B - Ticket #96)"
+  },
+  "ordersRideStatusCancelled": "Cancelled",
+  "@ordersRideStatusCancelled": {
+    "description": "Ride order status: cancelled (Track B - Ticket #96)"
+  },
+  "ordersRideStatusFailed": "Failed",
+  "@ordersRideStatusFailed": {
+    "description": "Ride order status: failed (Track B - Ticket #96)"
+  },
 
   "paymentMethodsTitle": "Payment Methods",
   "paymentMethodsEmptyTitle": "No payment methods",
@@ -753,15 +782,57 @@
   },
 
   "rideActiveContactDriverCta": "Contact driver",
-  "rideActiveShareTripCta": "Share trip",
+  "rideActiveShareTripCta": "Share trip status",
   "rideActiveCancelTripCta": "Cancel ride",
 
-  "rideActiveContactDriverNotImplemented": "Contact driver is not implemented yet.",
-  "rideActiveShareTripNotImplemented": "Share trip is not implemented yet.",
-  "rideActiveCancelTripNotImplemented": "Cancel ride is not implemented yet.",
+  "rideActiveShareTripCopied": "Trip status copied. You can paste it into any app.",
+  "@rideActiveShareTripCopied": {
+    "description": "Snackbar message after copying trip status to clipboard (Track B - Ticket #68)"
+  },
+  "rideActiveContactNoPhoneError": "Driver contact details are not available yet.",
+  "@rideActiveContactNoPhoneError": {
+    "description": "Error message when driver phone is not available (Track B - Ticket #68)"
+  },
+  "rideActiveShareGenericError": "Unable to prepare trip status right now. Please try again.",
+  "@rideActiveShareGenericError": {
+    "description": "Generic error message for share trip failures (Track B - Ticket #68)"
+  },
+  "rideActiveShareMessageTemplate": "I'm on a Delivery Ways ride to {destination}. Track my trip status here: {link}",
+  "@rideActiveShareMessageTemplate": {
+    "description": "Template message for sharing trip status (Track B - Ticket #68)",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "rideActiveCancelErrorGeneric": "Could not cancel the ride. Please try again.",
   "@rideActiveCancelErrorGeneric": {
     "description": "Generic error message when ride cancellation fails (Track B - Ticket #22)"
+  },
+
+  "rideCancelDialogTitle": "Cancel this ride?",
+  "@rideCancelDialogTitle": {
+    "description": "Title for cancel ride confirmation dialog (Track B - Ticket #67)"
+  },
+  "rideCancelDialogMessage": "If you cancel now, your driver will stop heading to your pickup location.",
+  "@rideCancelDialogMessage": {
+    "description": "Message in cancel ride confirmation dialog (Track B - Ticket #67)"
+  },
+  "rideCancelDialogKeepRideCta": "Keep ride",
+  "@rideCancelDialogKeepRideCta": {
+    "description": "Button to dismiss cancel dialog and keep the ride (Track B - Ticket #67)"
+  },
+  "rideCancelDialogConfirmCta": "Cancel ride",
+  "@rideCancelDialogConfirmCta": {
+    "description": "Button to confirm ride cancellation in dialog (Track B - Ticket #67)"
+  },
+  "rideCancelSuccessSnackbar": "Your ride has been cancelled.",
+  "@rideCancelSuccessSnackbar": {
+    "description": "Snackbar message after successful ride cancellation (Track B - Ticket #67)"
   },
 
   "rideActiveHeadlineFindingDriver": "Finding a driver…",
@@ -784,6 +855,31 @@
 
   "rideActiveGoBackCta": "Go back",
 
+  "rideActiveCancelledTitle": "Trip cancelled",
+  "@rideActiveCancelledTitle": {
+    "description": "Title for cancelled trip terminal view (Track B - Ticket #95)"
+  },
+  "rideActiveCancelledBody": "Your trip was cancelled. You can request a new ride at any time.",
+  "@rideActiveCancelledBody": {
+    "description": "Body text for cancelled trip terminal view (Track B - Ticket #95)"
+  },
+  "rideActiveFailedTitle": "Something went wrong",
+  "@rideActiveFailedTitle": {
+    "description": "Title for failed trip terminal view (Track B - Ticket #95)"
+  },
+  "rideActiveFailedBody": "We couldn't complete this trip. Please try again in a moment.",
+  "@rideActiveFailedBody": {
+    "description": "Body text for failed trip terminal view (Track B - Ticket #95)"
+  },
+  "rideActiveBackToHomeCta": "Back to home",
+  "@rideActiveBackToHomeCta": {
+    "description": "CTA button to return to home from terminal trip view (Track B - Ticket #95)"
+  },
+  "rideActiveRequestNewRideCta": "Request new ride",
+  "@rideActiveRequestNewRideCta": {
+    "description": "CTA button to request a new ride from terminal trip view (Track B - Ticket #95)"
+  },
+
   "rideActiveDestinationLabel": "To {destination}",
   "@rideActiveDestinationLabel": {
     "placeholders": {
@@ -793,9 +889,48 @@
     }
   },
 
+  "rideDebugFsmTitle": "Debug FSM Controls",
+  "@rideDebugFsmTitle": {
+    "description": "Title for debug FSM section (only shown in debug mode)"
+  },
+  "rideDebugCurrentPhase": "Current phase: {phase}",
+  "@rideDebugCurrentPhase": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "rideDebugDriverFound": "Driver Found",
+  "rideDebugDriverArrived": "Driver Arrived",
+  "rideDebugStartTrip": "Start Trip",
+  "rideDebugCompleteTrip": "Complete Trip",
+  "rideDebugConfirmPayment": "Confirm Payment",
+
+  "rideStatusFindingDriver": "Looking for a driver...",
+  "rideStatusDriverAccepted": "Driver on the way",
+  "rideStatusDriverArrived": "Driver has arrived",
+  "rideStatusInProgress": "Trip in progress",
+  "rideStatusPaymentPending": "Waiting for payment",
+  "rideStatusCompleted": "Trip completed",
+  "rideStatusUnknown": "Preparing your trip...",
+
   "homeActiveRideViewTripCta": "View trip",
   "@homeActiveRideViewTripCta": {
     "description": "CTA button on Home Hub active ride card to open the active trip screen."
+  },
+  "homeActiveRideTitleGeneric": "Active ride",
+  "@homeActiveRideTitleGeneric": {
+    "description": "Generic fallback title for active ride card on Home Hub (Track B - Ticket #65)"
+  },
+  "homeActiveRideSubtitleToDestination": "To {destination}",
+  "@homeActiveRideSubtitleToDestination": {
+    "description": "Subtitle showing destination on active ride card",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
   },
 
   "rideDestinationTitle": "Where to?",
@@ -813,6 +948,35 @@
   "rideDestinationRecentLocationsSection": "Recent locations",
   "@rideDestinationRecentLocationsSection": {
     "description": "Section header for the list of recent/saved locations"
+  },
+
+  "rideLocationPickerTitle": "Choose your trip",
+  "@rideLocationPickerTitle": {
+    "description": "Title for the location picker screen (Ticket #93)"
+  },
+  "rideLocationPickerPickupLabel": "Pickup",
+  "@rideLocationPickerPickupLabel": {
+    "description": "Label for the pickup location field (Ticket #93)"
+  },
+  "rideLocationPickerDestinationLabel": "Destination",
+  "@rideLocationPickerDestinationLabel": {
+    "description": "Label for the destination field (Ticket #93)"
+  },
+  "rideLocationPickerPickupPlaceholder": "Where should we pick you up?",
+  "@rideLocationPickerPickupPlaceholder": {
+    "description": "Placeholder for the pickup location field (Ticket #93)"
+  },
+  "rideLocationPickerDestinationPlaceholder": "Where are you going?",
+  "@rideLocationPickerDestinationPlaceholder": {
+    "description": "Placeholder for the destination field (Ticket #93)"
+  },
+  "rideLocationPickerMapHint": "Adjust the pin or use search to set your locations.",
+  "@rideLocationPickerMapHint": {
+    "description": "Hint text displayed above the map (Ticket #93)"
+  },
+  "rideLocationPickerContinueCta": "See prices",
+  "@rideLocationPickerContinueCta": {
+    "description": "Continue CTA button text (Ticket #93)"
   },
 
   "rideTripConfirmationTitle": "Confirm your trip",
@@ -896,6 +1060,18 @@
   "rideConfirmRetryCta": "Retry",
   "@rideConfirmRetryCta": {
     "description": "CTA button to retry loading ride options"
+  },
+  "rideConfirmRecommendedBadge": "Recommended",
+  "@rideConfirmRecommendedBadge": {
+    "description": "Badge shown on recommended ride option (Ticket #91)"
+  },
+  "rideConfirmFromLabel": "From",
+  "@rideConfirmFromLabel": {
+    "description": "Label for pickup location in trip summary (Ticket #91)"
+  },
+  "rideConfirmToLabel": "To",
+  "@rideConfirmToLabel": {
+    "description": "Label for destination in trip summary (Ticket #91)"
   },
 
   "onboardingWelcomeTitle": "Welcome to Delivery Ways",
@@ -1071,9 +1247,29 @@
   "@parcelsDetailsFragileLabel": {
     "description": "Label for fragile toggle"
   },
-  "parcelsDetailsContinueCta": "Continue to pricing",
+  "parcelsDetailsContinueCta": "Review price",
   "@parcelsDetailsContinueCta": {
     "description": "Continue button on Parcel Details screen"
+  },
+  "parcelsDetailsErrorWeightRequired": "Please enter the parcel weight",
+  "@parcelsDetailsErrorWeightRequired": {
+    "description": "Error when weight field is empty (Track C - Ticket #76)"
+  },
+  "parcelsDetailsErrorPositiveNumber": "Enter a valid positive number",
+  "@parcelsDetailsErrorPositiveNumber": {
+    "description": "Error when weight is not a positive number (Track C - Ticket #76)"
+  },
+  "parcelsDetailsErrorContentsRequired": "Please describe what you are sending",
+  "@parcelsDetailsErrorContentsRequired": {
+    "description": "Error when contents field is empty (Track C - Ticket #76)"
+  },
+  "parcelsDetailsErrorSizeRequired": "Please select a parcel size",
+  "@parcelsDetailsErrorSizeRequired": {
+    "description": "Error when size is not selected (Track C - Ticket #76)"
+  },
+  "parcelsDetailsSectionParcelTitle": "Parcel details",
+  "@parcelsDetailsSectionParcelTitle": {
+    "description": "Section header for parcel details (Track C - Ticket #76)"
   },
 
   "parcelsQuoteTitle": "Shipment pricing",
@@ -1112,7 +1308,44 @@
   "@parcelsQuoteConfirmCta": {
     "description": "Confirm button on Parcel Quote screen"
   },
+  "parcelsQuoteSummaryTitle": "Shipment summary",
+  "@parcelsQuoteSummaryTitle": {
+    "description": "Title for the shipment summary card (Track C - Ticket #77)"
+  },
+  "parcelsQuoteFromLabel": "From",
+  "@parcelsQuoteFromLabel": {
+    "description": "Label for pickup address in summary (Track C - Ticket #77)"
+  },
+  "parcelsQuoteToLabel": "To",
+  "@parcelsQuoteToLabel": {
+    "description": "Label for dropoff address in summary (Track C - Ticket #77)"
+  },
+  "parcelsQuoteWeightLabel": "Weight",
+  "@parcelsQuoteWeightLabel": {
+    "description": "Label for weight in summary (Track C - Ticket #77)"
+  },
+  "parcelsQuoteSizeLabel": "Size",
+  "@parcelsQuoteSizeLabel": {
+    "description": "Label for size in summary (Track C - Ticket #77)"
+  },
+  "parcelsQuoteTotalLabel": "Total: {amount}",
+  "@parcelsQuoteTotalLabel": {
+    "description": "Total price label with amount (Track C - Ticket #77)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "parcelsQuoteBreakdownStubNote": "This is an estimated price. Final price may change after integration with the live pricing service.",
+  "@parcelsQuoteBreakdownStubNote": {
+    "description": "Stub note about estimated pricing (Track C - Ticket #77)"
+  },
 
+  "parcelsListTitle": "Your shipments",
+  "@parcelsListTitle": {
+    "description": "AppBar title for parcels list screen (Track C - Ticket #72)"
+  },
   "parcelsListSectionTitle": "My shipments",
   "@parcelsListSectionTitle": {
     "description": "Section title for the shipments list (Track C - Ticket #45)"
@@ -1124,6 +1357,27 @@
   "parcelsListEmptySubtitle": "When you create a shipment, it will appear here.",
   "@parcelsListEmptySubtitle": {
     "description": "Subtitle shown when no parcels exist"
+  },
+  "parcelsListEmptyCta": "Create first shipment",
+  "@parcelsListEmptyCta": {
+    "description": "CTA button in empty state to create first shipment (Track C - Ticket #73)"
+  },
+  "parcelsListNewShipmentTooltip": "New shipment",
+  "@parcelsListNewShipmentTooltip": {
+    "description": "Tooltip for the + button in AppBar (Track C - Ticket #73)"
+  },
+  "parcelsListCreatedAtLabel": "Created on {date}",
+  "@parcelsListCreatedAtLabel": {
+    "description": "Label showing parcel creation date (Track C - Ticket #73)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "parcelsListUnknownDestinationLabel": "Unknown destination",
+  "@parcelsListUnknownDestinationLabel": {
+    "description": "Fallback label when destination is not set (Track C - Ticket #73)"
   },
   "parcelsFilterAllLabel": "All",
   "@parcelsFilterAllLabel": {
@@ -1250,6 +1504,30 @@
   "@parcelsCreateErrorInvalidPhone": {
     "description": "Validation error for invalid phone number"
   },
+  "parcelsCreateWeightInvalidError": "Please enter a valid weight.",
+  "@parcelsCreateWeightInvalidError": {
+    "description": "Validation error for invalid weight input (Track C - Ticket #69)"
+  },
+  "parcelsCreateEstimateComingSoonSnackbar": "Shipment estimate is coming soon.",
+  "@parcelsCreateEstimateComingSoonSnackbar": {
+    "description": "Snackbar message when estimate feature is not yet available (Track C - Ticket #69)"
+  },
+  "parcelsCreateSizeSmallLabel": "Small",
+  "@parcelsCreateSizeSmallLabel": {
+    "description": "Size option label: Small (Track C - Ticket #69)"
+  },
+  "parcelsCreateSizeMediumLabel": "Medium",
+  "@parcelsCreateSizeMediumLabel": {
+    "description": "Size option label: Medium (Track C - Ticket #69)"
+  },
+  "parcelsCreateSizeLargeLabel": "Large",
+  "@parcelsCreateSizeLargeLabel": {
+    "description": "Size option label: Large (Track C - Ticket #69)"
+  },
+  "parcelsCreateSizeOversizeLabel": "Oversize",
+  "@parcelsCreateSizeOversizeLabel": {
+    "description": "Size option label: Oversize (Track C - Ticket #69)"
+  },
 
   "parcelsShipmentDetailsTitle": "Shipment details",
   "@parcelsShipmentDetailsTitle": {
@@ -1344,5 +1622,650 @@
   "foodComingSoonPrimaryCta": "Back to home",
   "@foodComingSoonPrimaryCta": {
     "description": "CTA button on Food Coming Soon screen to return to home"
+  },
+
+  "foodRestaurantsAppBarTitle": "Food delivery",
+  "@foodRestaurantsAppBarTitle": {
+    "description": "AppBar title for the Food Restaurants List screen (Track C - Ticket #52)"
+  },
+  "foodRestaurantsSearchPlaceholder": "Search restaurants or cuisines",
+  "@foodRestaurantsSearchPlaceholder": {
+    "description": "Placeholder text for search input field"
+  },
+  "foodRestaurantsFilterAll": "All",
+  "@foodRestaurantsFilterAll": {
+    "description": "Filter chip label for showing all restaurants"
+  },
+  "foodRestaurantsFilterBurgers": "Burgers",
+  "@foodRestaurantsFilterBurgers": {
+    "description": "Filter chip label for burger restaurants"
+  },
+  "foodRestaurantsFilterItalian": "Italian",
+  "@foodRestaurantsFilterItalian": {
+    "description": "Filter chip label for Italian restaurants"
+  },
+  "foodRestaurantsEmptyTitle": "No restaurants found",
+  "@foodRestaurantsEmptyTitle": {
+    "description": "Title shown when no restaurants match the filters"
+  },
+  "foodRestaurantsEmptySubtitle": "Try changing the filters or search for a different cuisine.",
+  "@foodRestaurantsEmptySubtitle": {
+    "description": "Subtitle shown when no restaurants match the filters"
+  },
+
+  "foodRestaurantMenuError": "Could not load menu. Please try again.",
+  "@foodRestaurantMenuError": {
+    "description": "Error message when menu fails to load (Track C - Ticket #53)"
+  },
+  "foodCartSummaryCta": "{itemCount} items · {totalPrice} total",
+  "@foodCartSummaryCta": {
+    "description": "Cart summary button text",
+    "placeholders": {
+      "itemCount": {
+        "type": "String"
+      },
+      "totalPrice": {
+        "type": "String"
+      }
+    }
+  },
+  "foodCartCheckoutStub": "Checkout not implemented yet. {itemCount} items, total {totalPrice}.",
+  "@foodCartCheckoutStub": {
+    "description": "Temporary message shown when checkout is tapped",
+    "placeholders": {
+      "itemCount": {
+        "type": "String"
+      },
+      "totalPrice": {
+        "type": "String"
+      }
+    }
+  },
+
+  "ordersSectionParcelsTitle": "Parcels",
+  "@ordersSectionParcelsTitle": {
+    "description": "Section title for parcels orders in My Orders screen (Track C - Ticket #54)"
+  },
+  "ordersSectionFoodTitle": "Food",
+  "@ordersSectionFoodTitle": {
+    "description": "Section title for food orders in My Orders screen (Track C - Ticket #54)"
+  },
+  "ordersFilterFood": "Food",
+  "@ordersFilterFood": {
+    "description": "Filter label for food orders only (Track C - Ticket #54)"
+  },
+
+  "ordersFoodStatusPending": "Pending",
+  "@ordersFoodStatusPending": {
+    "description": "Food order status: pending (Track C - Ticket #54)"
+  },
+  "ordersFoodStatusInPreparation": "In preparation",
+  "@ordersFoodStatusInPreparation": {
+    "description": "Food order status: in preparation (Track C - Ticket #54)"
+  },
+  "ordersFoodStatusOnTheWay": "On the way",
+  "@ordersFoodStatusOnTheWay": {
+    "description": "Food order status: on the way (Track C - Ticket #54)"
+  },
+  "ordersFoodStatusDelivered": "Delivered",
+  "@ordersFoodStatusDelivered": {
+    "description": "Food order status: delivered (Track C - Ticket #54)"
+  },
+  "ordersFoodStatusCancelled": "Cancelled",
+  "@ordersFoodStatusCancelled": {
+    "description": "Food order status: cancelled (Track C - Ticket #54)"
+  },
+
+  "ordersFoodCreatedAtLabel": "Ordered on {date}",
+  "@ordersFoodCreatedAtLabel": {
+    "description": "Label showing when the food order was created (Track C - Ticket #54)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+
+  "foodCartOrderCreatedSnackbar": "Your order from {restaurant} has been created.",
+  "@foodCartOrderCreatedSnackbar": {
+    "description": "Snackbar message shown after successfully creating a food order (Track C - Ticket #54)",
+    "placeholders": {
+      "restaurant": {
+        "type": "String"
+      }
+    }
+  },
+
+  "homeFoodComingSoonLabel": "Coming soon",
+  "@homeFoodComingSoonLabel": {
+    "description": "Label shown on Food service card when feature is disabled (Track C - Ticket #55)"
+  },
+  "homeFoodComingSoonMessage": "Food delivery is not available yet in your area.",
+  "@homeFoodComingSoonMessage": {
+    "description": "Message shown when user taps disabled Food card (Track C - Ticket #55)"
+  },
+
+  "homeFoodCardTitle": "Food",
+  "@homeFoodCardTitle": {
+    "description": "Title for the Food service card on Home Hub (Track C - Ticket #56)"
+  },
+  "homeFoodCardSubtitle": "Your favorite food, delivered.",
+  "@homeFoodCardSubtitle": {
+    "description": "Subtitle for the Food service card on Home Hub (Track C - Ticket #56)"
+  },
+
+  "onboardingRideTitle": "Get a Ride, Instantly.",
+  "@onboardingRideTitle": {
+    "description": "Title for Ride onboarding screen (Track D - Ticket #57)"
+  },
+  "onboardingRideBody": "Tap, ride, and arrive. Fast, reliable, and affordable transport at your fingertips.",
+  "@onboardingRideBody": {
+    "description": "Body text for Ride onboarding screen (Track D - Ticket #57)"
+  },
+  "onboardingParcelsTitle": "Deliver Anything, Effortlessly.",
+  "@onboardingParcelsTitle": {
+    "description": "Title for Parcels onboarding screen (Track D - Ticket #57)"
+  },
+  "onboardingParcelsBody": "From documents to gifts, send and track your parcels with ease and confidence.",
+  "@onboardingParcelsBody": {
+    "description": "Body text for Parcels onboarding screen (Track D - Ticket #57)"
+  },
+  "onboardingFoodTitle": "Your Favorite Food, Delivered.",
+  "@onboardingFoodTitle": {
+    "description": "Title for Food onboarding screen (Track D - Ticket #57)"
+  },
+  "onboardingFoodBody": "Explore local restaurants and enjoy fast delivery right to your door.",
+  "@onboardingFoodBody": {
+    "description": "Body text for Food onboarding screen (Track D - Ticket #57)"
+  },
+  "onboardingButtonContinue": "Continue",
+  "@onboardingButtonContinue": {
+    "description": "Continue button text for onboarding screens (Track D - Ticket #57)"
+  },
+  "onboardingButtonGetStarted": "Get Started",
+  "@onboardingButtonGetStarted": {
+    "description": "Get Started button text for final onboarding screen (Track D - Ticket #57)"
+  },
+
+  "homeRideCardTitle": "Ride",
+  "@homeRideCardTitle": {
+    "description": "Title for the Ride service card on Home Hub (Track B - Ticket #60)"
+  },
+  "homeRideCardSubtitle": "Get a ride, instantly.",
+  "@homeRideCardSubtitle": {
+    "description": "Subtitle for the Ride service card on Home Hub (Track B - Ticket #60)"
+  },
+
+  "rideDestinationDestinationLabel": "Destination",
+  "@rideDestinationDestinationLabel": {
+    "description": "Label for the destination field (Track B - Ticket #60)"
+  },
+  "rideDestinationDestinationPlaceholder": "Where to?",
+  "@rideDestinationDestinationPlaceholder": {
+    "description": "Placeholder text for destination input (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentTitle": "Recent destinations",
+  "@rideDestinationRecentTitle": {
+    "description": "Section title for recent destinations (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentHomeLabel": "Home",
+  "@rideDestinationRecentHomeLabel": {
+    "description": "Label for Home in recent destinations (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentHomeSubtitle": "Saved home address",
+  "@rideDestinationRecentHomeSubtitle": {
+    "description": "Subtitle for Home in recent destinations (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentWorkLabel": "Work",
+  "@rideDestinationRecentWorkLabel": {
+    "description": "Label for Work in recent destinations (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentWorkSubtitle": "Saved work address",
+  "@rideDestinationRecentWorkSubtitle": {
+    "description": "Subtitle for Work in recent destinations (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentLastLabel": "Last trip",
+  "@rideDestinationRecentLastLabel": {
+    "description": "Label for last trip in recent destinations (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentLastSubtitle": "Use the destination from your last ride",
+  "@rideDestinationRecentLastSubtitle": {
+    "description": "Subtitle for last trip in recent destinations (Track B - Ticket #60)"
+  },
+  "rideDestinationNextCta": "Next",
+  "@rideDestinationNextCta": {
+    "description": "CTA button text on ride destination screen (Track B - Ticket #60)"
+  },
+  "rideDestinationComingSoonSnackbar": "Trip summary is coming soon.",
+  "@rideDestinationComingSoonSnackbar": {
+    "description": "Snackbar message when trip summary is not yet implemented (Track B - Ticket #60)"
+  },
+
+  "rideSummaryReceiptTitle": "Receipt",
+  "@rideSummaryReceiptTitle": {
+    "description": "Title for the receipt section in trip summary (Track B - Ticket #62)"
+  },
+  "rideSummaryReceiptFareLabel": "Fare",
+  "@rideSummaryReceiptFareLabel": {
+    "description": "Label for the fare amount in receipt breakdown (Track B - Ticket #62)"
+  },
+  "rideSummaryReceiptFeesLabel": "Fees",
+  "@rideSummaryReceiptFeesLabel": {
+    "description": "Label for the fees amount in receipt breakdown (Track B - Ticket #62)"
+  },
+  "rideSummaryReceiptTotalLabel": "Total",
+  "@rideSummaryReceiptTotalLabel": {
+    "description": "Label for the total amount in receipt breakdown (Track B - Ticket #62)"
+  },
+  "rideSummaryRatingTitle": "Rate your driver",
+  "@rideSummaryRatingTitle": {
+    "description": "Title for the driver rating section (Track B - Ticket #62)"
+  },
+  "rideSummaryRatingSubtitle": "Your feedback helps keep rides safe and comfortable.",
+  "@rideSummaryRatingSubtitle": {
+    "description": "Subtitle for the driver rating section (Track B - Ticket #62)"
+  },
+  "rideSummaryCommentPlaceholder": "Add a comment (optional)",
+  "@rideSummaryCommentPlaceholder": {
+    "description": "Placeholder text for the optional comment field (Track B - Ticket #62)"
+  },
+
+  "rideReceiptTripIdLabel": "Trip ID: {id}",
+  "@rideReceiptTripIdLabel": {
+    "description": "Trip ID label with value (Ticket #92)",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "rideReceiptCompletedAt": "{date} at {time}",
+  "@rideReceiptCompletedAt": {
+    "description": "Completed timestamp format (Ticket #92)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "rideReceiptFromLabel": "From",
+  "@rideReceiptFromLabel": {
+    "description": "From label for pickup location (Ticket #92)"
+  },
+  "rideReceiptToLabel": "To",
+  "@rideReceiptToLabel": {
+    "description": "To label for destination (Ticket #92)"
+  },
+  "rideReceiptFareSectionTitle": "Trip fare",
+  "@rideReceiptFareSectionTitle": {
+    "description": "Section title for fare breakdown (Ticket #92)"
+  },
+  "rideReceiptBaseFareLabel": "Base fare",
+  "@rideReceiptBaseFareLabel": {
+    "description": "Base fare label (Ticket #92)"
+  },
+  "rideReceiptDistanceFareLabel": "Distance",
+  "@rideReceiptDistanceFareLabel": {
+    "description": "Distance fare label (Ticket #92)"
+  },
+  "rideReceiptTimeFareLabel": "Time",
+  "@rideReceiptTimeFareLabel": {
+    "description": "Time fare label (Ticket #92)"
+  },
+  "rideReceiptFeesLabel": "Fees & surcharges",
+  "@rideReceiptFeesLabel": {
+    "description": "Fees label (Ticket #92)"
+  },
+  "rideReceiptTotalLabel": "Total",
+  "@rideReceiptTotalLabel": {
+    "description": "Total label (Ticket #92)"
+  },
+  "rideReceiptDriverSectionTitle": "Driver & vehicle",
+  "@rideReceiptDriverSectionTitle": {
+    "description": "Driver section title (Ticket #92)"
+  },
+  "rideReceiptRateDriverTitle": "Rate your driver",
+  "@rideReceiptRateDriverTitle": {
+    "description": "Rate driver title (Ticket #92)"
+  },
+  "rideReceiptRateDriverSubtitle": "Your feedback helps keep rides safe and comfortable.",
+  "@rideReceiptRateDriverSubtitle": {
+    "description": "Rate driver subtitle (Ticket #92)"
+  },
+  "rideReceiptDoneCta": "Done",
+  "@rideReceiptDoneCta": {
+    "description": "Done CTA button (Ticket #92)"
+  },
+
+  "rideSummaryEndTripDebugCta": "End trip",
+  "@rideSummaryEndTripDebugCta": {
+    "description": "Debug CTA button to end trip (Track B - Ticket #62)"
+  },
+  "rideSummaryThankYouSnackbar": "Thanks for your feedback.",
+  "@rideSummaryThankYouSnackbar": {
+    "description": "Snackbar message after submitting feedback (Track B - Ticket #62)"
+  },
+
+  "homeActiveParcelTitleGeneric": "Active shipment",
+  "@homeActiveParcelTitleGeneric": {
+    "description": "Generic title for active parcel card on Home Hub (Track C - Ticket #70)"
+  },
+  "homeActiveParcelSubtitleToDestination": "To {destination}",
+  "@homeActiveParcelSubtitleToDestination": {
+    "description": "Subtitle showing destination on active parcel card (Track C - Ticket #70)",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "homeActiveParcelViewShipmentCta": "View shipment",
+  "@homeActiveParcelViewShipmentCta": {
+    "description": "CTA button on Home Hub active parcel card (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusPreparing": "Preparing your shipment...",
+  "@homeActiveParcelStatusPreparing": {
+    "description": "Parcel status label for draft/quoting phase (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusScheduled": "Pickup scheduled",
+  "@homeActiveParcelStatusScheduled": {
+    "description": "Parcel status label for scheduled (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusPickupPending": "Waiting for pickup",
+  "@homeActiveParcelStatusPickupPending": {
+    "description": "Parcel status label for pickup pending (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusPickedUp": "Picked up",
+  "@homeActiveParcelStatusPickedUp": {
+    "description": "Parcel status label for picked up (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusInTransit": "In transit",
+  "@homeActiveParcelStatusInTransit": {
+    "description": "Parcel status label for in transit (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusDelivered": "Delivered",
+  "@homeActiveParcelStatusDelivered": {
+    "description": "Parcel status label for delivered (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusCancelled": "Shipment cancelled",
+  "@homeActiveParcelStatusCancelled": {
+    "description": "Parcel status label for cancelled (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusFailed": "Delivery failed",
+  "@homeActiveParcelStatusFailed": {
+    "description": "Parcel status label for failed (Track C - Ticket #70)"
+  },
+
+  "parcelsActiveShipmentTitle": "Active shipment",
+  "@parcelsActiveShipmentTitle": {
+    "description": "AppBar title for active shipment screen (Track C - Ticket #70)"
+  },
+  "parcelsActiveShipmentNoActiveTitle": "No active shipment",
+  "@parcelsActiveShipmentNoActiveTitle": {
+    "description": "Title when no active shipment exists (Track C - Ticket #70)"
+  },
+  "parcelsActiveShipmentNoActiveSubtitle": "You don't have any active shipments right now.",
+  "@parcelsActiveShipmentNoActiveSubtitle": {
+    "description": "Subtitle when no active shipment exists (Track C - Ticket #70)"
+  },
+  "parcelsActiveShipmentMapStub": "Map tracking (coming soon)",
+  "@parcelsActiveShipmentMapStub": {
+    "description": "Map placeholder text (Track C - Ticket #70)"
+  },
+  "parcelsActiveShipmentStatusLabel": "Status: {status}",
+  "@parcelsActiveShipmentStatusLabel": {
+    "description": "Status label with value (Track C - Ticket #70)",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "parcelsActiveShipmentIdLabel": "Shipment ID: {id}",
+  "@parcelsActiveShipmentIdLabel": {
+    "description": "Shipment ID label (Track C - Ticket #70)",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "parcelsActiveShipmentStubNote": "Full tracking will be available in a future update.",
+  "@parcelsActiveShipmentStubNote": {
+    "description": "Note explaining this is a stub screen (Track C - Ticket #70)"
+  },
+  "parcelsDetailsCancelShipmentCta": "Cancel shipment",
+  "@parcelsDetailsCancelShipmentCta": {
+    "description": "Cancel shipment button text (Track C - Ticket #81)"
+  },
+  "parcelsCancelDialogTitle": "Cancel this shipment?",
+  "@parcelsCancelDialogTitle": {
+    "description": "Cancel confirmation dialog title (Track C - Ticket #81)"
+  },
+  "parcelsCancelDialogSubtitle": "If you cancel now, this shipment will be stopped and will no longer appear as active.",
+  "@parcelsCancelDialogSubtitle": {
+    "description": "Cancel confirmation dialog subtitle (Track C - Ticket #81)"
+  },
+  "parcelsCancelDialogConfirmCta": "Yes, cancel",
+  "@parcelsCancelDialogConfirmCta": {
+    "description": "Cancel confirmation dialog confirm button (Track C - Ticket #81)"
+  },
+  "parcelsCancelDialogDismissCta": "Keep shipment",
+  "@parcelsCancelDialogDismissCta": {
+    "description": "Cancel confirmation dialog dismiss button (Track C - Ticket #81)"
+  },
+  "parcelsCancelSuccessMessage": "Shipment has been cancelled.",
+  "@parcelsCancelSuccessMessage": {
+    "description": "Success message after cancelling shipment (Track C - Ticket #81)"
+  },
+
+  "bottomNavHomeLabel": "Home",
+  "@bottomNavHomeLabel": {
+    "description": "Bottom navigation Home tab label (Track A - Ticket #82)"
+  },
+  "bottomNavOrdersLabel": "Orders",
+  "@bottomNavOrdersLabel": {
+    "description": "Bottom navigation Orders tab label (Track A - Ticket #82)"
+  },
+  "bottomNavPaymentsLabel": "Payments",
+  "@bottomNavPaymentsLabel": {
+    "description": "Bottom navigation Payments tab label (Track A - Ticket #82)"
+  },
+  "bottomNavProfileLabel": "Profile",
+  "@bottomNavProfileLabel": {
+    "description": "Bottom navigation Profile tab label (Track A - Ticket #82)"
+  },
+
+  "paymentsEntryTitle": "Payments",
+  "@paymentsEntryTitle": {
+    "description": "Payments stub screen title (Track A - Ticket #82)"
+  },
+  "paymentsEntryStubBody": "Payments management will be available in a future update.",
+  "@paymentsEntryStubBody": {
+    "description": "Payments stub screen body text (Track A - Ticket #82)"
+  },
+
+  "paymentsTitle": "Payments",
+  "@paymentsTitle": {
+    "description": "Payments screen title (Track B - Ticket #99)"
+  },
+  "paymentsAddMethodCta": "Add new payment method",
+  "@paymentsAddMethodCta": {
+    "description": "CTA button to add a new payment method (Track B - Ticket #99)"
+  },
+  "paymentsEmptyTitle": "No payment methods saved",
+  "@paymentsEmptyTitle": {
+    "description": "Empty state title when no payment methods (Track B - Ticket #99)"
+  },
+  "paymentsEmptyBody": "Your saved cards and payment options will appear here.",
+  "@paymentsEmptyBody": {
+    "description": "Empty state body text for payments (Track B - Ticket #99)"
+  },
+  "paymentsMethodTypeCash": "Cash",
+  "@paymentsMethodTypeCash": {
+    "description": "Payment method type label for Cash (Track B - Ticket #99)"
+  },
+  "paymentsMethodTypeCard": "Card",
+  "@paymentsMethodTypeCard": {
+    "description": "Payment method type label for Card (Track B - Ticket #99)"
+  },
+  "paymentsDefaultBadge": "Default",
+  "@paymentsDefaultBadge": {
+    "description": "Badge label for default payment method (Track B - Ticket #99)"
+  },
+  "paymentsAddMethodComingSoon": "Adding new payment methods will be available soon.",
+  "@paymentsAddMethodComingSoon": {
+    "description": "Coming soon message for add payment method (Track B - Ticket #99)"
+  },
+
+  "profileEntryTitle": "Profile",
+  "@profileEntryTitle": {
+    "description": "Profile stub screen title - unused as full profile exists (Track A - Ticket #82)"
+  },
+  "profileEntryStubBody": "Profile and account settings will be available in a future update.",
+  "@profileEntryStubBody": {
+    "description": "Profile stub screen body text - unused as full profile exists (Track A - Ticket #82)"
+  },
+
+  "rideStatusShortDraft": "Draft",
+  "@rideStatusShortDraft": {
+    "description": "Short status label for ride in draft phase (Track B - Ticket #85)"
+  },
+  "rideStatusShortQuoting": "Getting price",
+  "@rideStatusShortQuoting": {
+    "description": "Short status label for ride in quoting phase (Track B - Ticket #85)"
+  },
+  "rideStatusShortRequesting": "Requesting ride",
+  "@rideStatusShortRequesting": {
+    "description": "Short status label for ride in requesting phase (Track B - Ticket #85)"
+  },
+  "rideStatusShortFindingDriver": "Finding driver",
+  "@rideStatusShortFindingDriver": {
+    "description": "Short status label for ride in findingDriver phase (Track B - Ticket #85)"
+  },
+  "rideStatusShortDriverAccepted": "Driver accepted",
+  "@rideStatusShortDriverAccepted": {
+    "description": "Short status label for ride in driverAccepted phase (Track B - Ticket #85)"
+  },
+  "rideStatusShortDriverArrived": "Driver arrived",
+  "@rideStatusShortDriverArrived": {
+    "description": "Short status label for ride in driverArrived phase (Track B - Ticket #85)"
+  },
+  "rideStatusShortInProgress": "In progress",
+  "@rideStatusShortInProgress": {
+    "description": "Short status label for ride in inProgress phase (Track B - Ticket #85)"
+  },
+  "rideStatusShortPayment": "Payment in progress",
+  "@rideStatusShortPayment": {
+    "description": "Short status label for ride in payment phase (Track B - Ticket #85)"
+  },
+  "rideStatusShortCompleted": "Completed",
+  "@rideStatusShortCompleted": {
+    "description": "Short status label for ride in completed phase (Track B - Ticket #85)"
+  },
+  "rideStatusShortCancelled": "Cancelled",
+  "@rideStatusShortCancelled": {
+    "description": "Short status label for ride in cancelled phase (Track B - Ticket #85)"
+  },
+  "rideStatusShortFailed": "Failed",
+  "@rideStatusShortFailed": {
+    "description": "Short status label for ride in failed phase (Track B - Ticket #85)"
+  },
+
+  "homeActiveRideStatusPreparing": "Preparing your trip...",
+  "@homeActiveRideStatusPreparing": {
+    "description": "Long status label for ride in draft/quoting/requesting phases (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusFindingDriver": "Looking for a driver...",
+  "@homeActiveRideStatusFindingDriver": {
+    "description": "Long status label for ride in findingDriver phase (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusDriverAccepted": "Driver on the way",
+  "@homeActiveRideStatusDriverAccepted": {
+    "description": "Long status label for ride in driverAccepted phase (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusDriverArrived": "Driver has arrived",
+  "@homeActiveRideStatusDriverArrived": {
+    "description": "Long status label for ride in driverArrived phase (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusInProgress": "Trip in progress",
+  "@homeActiveRideStatusInProgress": {
+    "description": "Long status label for ride in inProgress phase (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusPayment": "Finalizing payment",
+  "@homeActiveRideStatusPayment": {
+    "description": "Long status label for ride in payment phase (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusCompleted": "Trip completed",
+  "@homeActiveRideStatusCompleted": {
+    "description": "Long status label for ride in completed phase (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusCancelled": "Trip cancelled",
+  "@homeActiveRideStatusCancelled": {
+    "description": "Long status label for ride in cancelled phase (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusFailed": "Trip failed",
+  "@homeActiveRideStatusFailed": {
+    "description": "Long status label for ride in failed phase (Track B - Ticket #85)"
+  },
+
+  "rideActiveTripTitle": "Active trip",
+  "@rideActiveTripTitle": {
+    "description": "AppBar title for active trip screen (Track B - Ticket #87)"
+  },
+  "rideActiveTripFromLabel": "From: {pickup}",
+  "@rideActiveTripFromLabel": {
+    "description": "Pickup address label with value (Track B - Ticket #87)",
+    "placeholders": {
+      "pickup": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActiveTripToLabel": "To: {dropoff}",
+  "@rideActiveTripToLabel": {
+    "description": "Dropoff address label with value (Track B - Ticket #87)",
+    "placeholders": {
+      "dropoff": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActiveTripIdLabel": "Trip ID: {id}",
+  "@rideActiveTripIdLabel": {
+    "description": "Trip ID label with value (Track B - Ticket #87)",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActiveTripMapStub": "Live map tracking (coming soon)",
+  "@rideActiveTripMapStub": {
+    "description": "[RESERVED - Ticket #88] Fallback text when map fails to load. Currently unused as real MapWidget is active."
+  },
+  "rideActiveTripStubNote": "Full live tracking will be available after integration with the mobility service.",
+  "@rideActiveTripStubNote": {
+    "description": "[RESERVED - Ticket #88] Fallback note for map stub. Currently unused."
+  },
+  "rideActiveTripStatusLabel": "Status: {status}",
+  "@rideActiveTripStatusLabel": {
+    "description": "[RESERVED - Ticket #88] Generic status label. Prefer specific headline keys for UI.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActiveTripDriverSectionTitle": "Driver & vehicle",
+  "@rideActiveTripDriverSectionTitle": {
+    "description": "Driver section title (Track B - Ticket #87, #88)"
+  },
+  "rideActiveTripDriverSectionStubBody": "Driver and vehicle details will be available once the mobility integration is connected.",
+  "@rideActiveTripDriverSectionStubBody": {
+    "description": "[RESERVED - Ticket #88] Fallback when driver data unavailable. Currently using mock data."
   }
 }

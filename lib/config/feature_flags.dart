@@ -1,14 +1,72 @@
 import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 import 'config_manager.dart' as app_cfg;
 
 /// Component: FeatureFlags
 /// Created by: Cursor (auto-generated)
 /// Purpose: Feature flags for payment system rollout and control
-/// Last updated: 2025-01-27
+/// Updated by: Ticket #56 (Injectable FeatureFlags for testing)
+/// Last updated: 2025-11-29
 
 /// Feature flags for controlling payment system and RBAC rollout
+/// Updated to support test injection (Ticket #56)
+@immutable
 class FeatureFlags {
+  /// Constructor for creating injectable feature flags instances
+  const FeatureFlags({
+    required this.enableFoodMvpValue,
+  });
+
+  /// The injectable value for Food MVP flag
+  final bool enableFoodMvpValue;
+
+  // ---------------------------------------------------------------------------
+  // Injectable Feature Flags System (Ticket #56)
+  // ---------------------------------------------------------------------------
+
+  /// Current feature flags instance used by the application
+  static FeatureFlags _current = FeatureFlags._fromEnv();
+
+  /// Access the current feature flags instance
+  static FeatureFlags get current => _current;
+
+  /// Factory to create flags from environment variables (production/dev)
+  factory FeatureFlags._fromEnv() {
+    const String envValue = String.fromEnvironment(
+      'ENABLE_FOOD_MVP',
+      defaultValue: 'false',
+    );
+    return FeatureFlags(
+      enableFoodMvpValue: envValue.toLowerCase() == 'true',
+    );
+  }
+
+  /// Override feature flags for tests only
+  /// Usage in tests:
+  /// ```dart
+  /// setUp(() {
+  ///   FeatureFlags.overrideForTests(const FeatureFlags(enableFoodMvpValue: true));
+  /// });
+  /// tearDown(() {
+  ///   FeatureFlags.resetForTests();
+  /// });
+  /// ```
+  @visibleForTesting
+  static void overrideForTests(FeatureFlags flags) {
+    _current = flags;
+  }
+
+  /// Reset feature flags to environment defaults after tests
+  @visibleForTesting
+  static void resetForTests() {
+    _current = FeatureFlags._fromEnv();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Static Key Constants
+  // ---------------------------------------------------------------------------
+
   static const String _paymentsEnabled = 'payments.enabled';
   static const String _applePayEnabled = 'applepay.enabled';
   static const String _googlePayEnabled = 'gpay.enabled';
@@ -224,13 +282,8 @@ class FeatureFlags {
 
   /// Check if Food MVP is enabled (Track C - Future)
   /// Reserved for future Food vertical implementation
-  static bool get enableFoodMvp {
-    const String envValue = String.fromEnvironment(
-      'ENABLE_FOOD_MVP',
-      defaultValue: 'false',
-    );
-    return envValue.toLowerCase() == 'true';
-  }
+  /// Updated by Ticket #56: Now reads from injectable _current instance
+  static bool get enableFoodMvp => _current.enableFoodMvpValue;
 
   /// Get all feature flags as a map for debugging
   static Map<String, dynamic> getAllFlags() {

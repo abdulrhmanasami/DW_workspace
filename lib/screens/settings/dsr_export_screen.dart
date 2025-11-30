@@ -4,6 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart' as ds;
 import 'package:dsr_ux_adapter/dsr_ux_adapter.dart' as dsr;
 
+import '../../l10n/generated/app_localizations.dart';
+
+/// DSR Export Screen - Track D - Ticket #59
+/// Allows users to request a copy of their personal data.
+/// Updated to use L10n instead of hardcoded strings.
 class DsrExportScreen extends ConsumerStatefulWidget {
   const DsrExportScreen({super.key});
 
@@ -14,6 +19,7 @@ class DsrExportScreen extends ConsumerStatefulWidget {
 class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(dsr.dsrExportStateProvider);
     final exportNotifier = ref.read(dsr.dsrExportStateProvider.notifier);
     final controller = ref.watch(dsr.dsrRequestControllerProvider);
@@ -21,16 +27,16 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
     final theme = ref.watch(ds.appThemeProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('تصدير البيانات')),
+      appBar: AppBar(title: Text(l10n.dsrExportTitle)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('تصدير بياناتك الشخصية', style: theme.typography.headline6),
+            Text(l10n.dsrExportHeadline, style: theme.typography.headline6),
             const SizedBox(height: 8),
             Text(
-              'ستحصل على رابط آمن لتنزيل جميع بياناتك. الرابط صالح لمدة 7 أيام فقط.',
+              l10n.dsrExportDescription,
               style: theme.typography.body2.copyWith(
                 color: theme.colors.onSurface.withValues(alpha: 0.7),
               ),
@@ -43,12 +49,12 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'تضمين سجل المدفوعات',
+                      l10n.dsrExportIncludePaymentsTitle,
                       style: theme.typography.subtitle2,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'قد يحتوي سجل المدفوعات على معلومات حساسة. تأكد من مراجعة الملف بعناية.',
+                      l10n.dsrExportIncludePaymentsDescription,
                       style: theme.typography.caption.copyWith(
                         color: theme.colors.onSurface.withValues(alpha: 0.6),
                       ),
@@ -59,7 +65,7 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
                       _ConcreteSwitchProps(
                         value: state.includePaymentsHistory,
                         onChanged: exportNotifier.setIncludePaymentsHistory,
-                        label: 'تضمين سجل المدفوعات',
+                        label: l10n.dsrExportIncludePaymentsTitle,
                       ),
                     ),
                   ],
@@ -68,7 +74,7 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
             ),
             const SizedBox(height: 24),
             ds.AppButton.primary(
-              label: 'ابدأ التصدير',
+              label: l10n.dsrExportStartButton,
               expanded: true,
               onPressed: _canStartExport(state)
                   ? () => _startExport(controller, state.includePaymentsHistory)
@@ -77,10 +83,10 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
             const SizedBox(height: 16),
             state.request.when(
               data: (summary) => summary != null
-                  ? _buildStatusCard(theme, summary, controller)
+                  ? _buildStatusCard(theme, summary, controller, l10n)
                   : const SizedBox.shrink(),
-              loading: () => _buildLoadingCard(theme),
-              error: (error, _) => _buildErrorCard(theme, error.toString()),
+              loading: () => _buildLoadingCard(theme, l10n),
+              error: (error, _) => _buildErrorCard(theme, l10n, error.toString()),
             ),
           ],
         ),
@@ -112,9 +118,10 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
     ds.AppThemeData theme,
     dsr.DsrRequestSummary summary,
     dsr.DsrRequestController controller,
+    AppLocalizations l10n,
   ) {
     final statusColor = _getStatusColor(theme, summary.status);
-    final statusText = _getStatusText(summary.status);
+    final statusText = _getStatusText(summary.status, l10n);
 
     return ds.AppCard.standard(
       child: Padding(
@@ -130,7 +137,7 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
                   size: 24,
                 ),
                 const SizedBox(width: 8),
-                Text('حالة الطلب', style: theme.typography.subtitle2),
+                Text(l10n.dsrExportRequestStatus, style: theme.typography.subtitle2),
               ],
             ),
             const SizedBox(height: 8),
@@ -140,19 +147,19 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              'تاريخ الطلب: ${_formatDateTime(summary.createdAt)}',
+              l10n.dsrExportRequestDate(_formatDateTime(summary.createdAt)),
               style: theme.typography.caption,
             ),
             if (summary.isExportReady) ...[
               const SizedBox(height: 16),
-              _buildExportLinkSection(theme, summary.exportLink!),
+              _buildExportLinkSection(theme, summary.exportLink!, l10n),
             ],
             if (summary.status == dsr.DsrStatus.inProgress) ...[
               const SizedBox(height: 16),
               const LinearProgressIndicator(),
               const SizedBox(height: 8),
               Text(
-                'جارٍ تجهيز ملفك…',
+                l10n.dsrExportPreparingFile,
                 style: theme.typography.caption,
                 textAlign: TextAlign.center,
               ),
@@ -160,7 +167,7 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
             if (summary.status == dsr.DsrStatus.failed) ...[
               const SizedBox(height: 16),
               ds.AppButton.primary(
-                label: 'إعادة المحاولة',
+                label: l10n.retry,
                 expanded: true,
                 onPressed: () => _startExport(
                   controller,
@@ -177,11 +184,12 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
   Widget _buildExportLinkSection(
     ds.AppThemeData theme,
     dsr.DsrExportLink exportLink,
+    AppLocalizations l10n,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('رابط التنزيل', style: theme.typography.subtitle2),
+        Text(l10n.dsrExportDownloadLink, style: theme.typography.subtitle2),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(12),
@@ -204,7 +212,7 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'ينتهي في: ${_formatDateTime(exportLink.expiresAt)}',
+                l10n.dsrExportLinkExpires(_formatDateTime(exportLink.expiresAt)),
                 style: theme.typography.caption.copyWith(
                   color: exportLink.isValid
                       ? theme.colors.success
@@ -216,15 +224,15 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
         ),
         const SizedBox(height: 12),
         ds.AppButton.primary(
-          label: 'نسخ الرابط',
+          label: l10n.dsrExportCopyLink,
           expanded: true,
-          onPressed: () => _copyToClipboard(exportLink.url.toString()),
+          onPressed: () => _copyToClipboard(exportLink.url.toString(), l10n),
         ),
       ],
     );
   }
 
-  Widget _buildLoadingCard(ds.AppThemeData theme) {
+  Widget _buildLoadingCard(ds.AppThemeData theme, AppLocalizations l10n) {
     return ds.AppCard.standard(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -233,7 +241,7 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
             const CircularProgressIndicator(),
             const SizedBox(height: 16),
             Text(
-              'جارٍ إرسال طلب التصدير…',
+              l10n.dsrExportSendingRequest,
               style: theme.typography.body2,
               textAlign: TextAlign.center,
             ),
@@ -243,7 +251,7 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
     );
   }
 
-  Widget _buildErrorCard(ds.AppThemeData theme, String error) {
+  Widget _buildErrorCard(ds.AppThemeData theme, AppLocalizations l10n, String error) {
     return ds.AppCard.standard(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -252,7 +260,7 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
             Icon(Icons.error_outline, color: theme.colors.error, size: 48),
             const SizedBox(height: 16),
             Text(
-              'فشل في إرسال الطلب',
+              l10n.dsrExportRequestFailed,
               style: theme.typography.subtitle2.copyWith(
                 color: theme.colors.error,
               ),
@@ -304,20 +312,20 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
     }
   }
 
-  String _getStatusText(dsr.DsrStatus status) {
+  String _getStatusText(dsr.DsrStatus status, AppLocalizations l10n) {
     switch (status) {
       case dsr.DsrStatus.pending:
-        return 'في انتظار المراجعة';
+        return l10n.dsrErasureStatusPending;
       case dsr.DsrStatus.inProgress:
-        return 'قيد المعالجة';
+        return l10n.dsrErasureStatusInProgress;
       case dsr.DsrStatus.ready:
-        return 'جاهز للتنزيل';
+        return l10n.dsrErasureStatusReady;
       case dsr.DsrStatus.completed:
-        return 'مكتمل';
+        return l10n.dsrErasureStatusCompleted;
       case dsr.DsrStatus.failed:
-        return 'فشل في المعالجة';
+        return l10n.dsrErasureStatusFailed;
       case dsr.DsrStatus.canceled:
-        return 'ملغي';
+        return l10n.dsrErasureStatusCanceled;
     }
   }
 
@@ -325,11 +333,11 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
-  Future<void> _copyToClipboard(String text) async {
+  Future<void> _copyToClipboard(String text, AppLocalizations l10n) async {
     await Clipboard.setData(ClipboardData(text: text));
     if (mounted) {
       final noticePresenter = ref.read(ds.appNoticePresenterProvider);
-      noticePresenter(ds.AppNotice.info(message: 'تم نسخ الرابط'));
+      noticePresenter(ds.AppNotice.info(message: l10n.dsrExportLinkCopied));
     }
   }
 }

@@ -1,7 +1,8 @@
-/// Ride Quote Domain Models - Track B Ticket #13
+/// Ride Quote Domain Models - Track B Ticket #13, #63
 /// Purpose: Canonical domain models for ride pricing/quotes
 /// Created by: Track B - Ticket #13
-/// Last updated: 2025-11-28
+/// Updated by: Track B - Ticket #63 (RidePriceBreakdown)
+/// Last updated: 2025-11-29
 ///
 /// These models are the single source of truth for ride pricing.
 /// They are SDK/backend agnostic and should be used by:
@@ -16,6 +17,119 @@
 import 'package:meta/meta.dart';
 
 import '../location/models.dart' show LocationPoint;
+
+// ============================================================================
+// Price Breakdown Model - Track B Ticket #63
+// ============================================================================
+
+/// Detailed breakdown of a ride price.
+///
+/// This model provides granular pricing components that can be displayed
+/// in the trip summary/receipt screen (Screen 10).
+///
+/// All amounts are in minor units (e.g. 1800 = 18.00 SAR).
+///
+/// Example:
+/// ```dart
+/// const breakdown = RidePriceBreakdown(
+///   currencyCode: 'SAR',
+///   baseFareMinorUnits: 500,       // 5.00 SAR
+///   distanceComponentMinorUnits: 800, // 8.00 SAR
+///   timeComponentMinorUnits: 200,     // 2.00 SAR
+///   feesMinorUnits: 300,              // 3.00 SAR
+/// );
+/// print(breakdown.totalMinorUnits); // 1800 (18.00 SAR)
+/// ```
+@immutable
+class RidePriceBreakdown {
+  /// Creates a price breakdown with all components.
+  const RidePriceBreakdown({
+    required this.currencyCode,
+    required this.baseFareMinorUnits,
+    required this.distanceComponentMinorUnits,
+    required this.timeComponentMinorUnits,
+    required this.feesMinorUnits,
+  })  : assert(baseFareMinorUnits >= 0, 'baseFareMinorUnits must be non-negative'),
+        assert(distanceComponentMinorUnits >= 0, 'distanceComponentMinorUnits must be non-negative'),
+        assert(timeComponentMinorUnits >= 0, 'timeComponentMinorUnits must be non-negative'),
+        assert(feesMinorUnits >= 0, 'feesMinorUnits must be non-negative');
+
+  /// ISO-4217 currency code (e.g. 'SAR', 'USD').
+  final String currencyCode;
+
+  /// Base fare in minor units (charged regardless of distance/time).
+  final int baseFareMinorUnits;
+
+  /// Distance-based charge in minor units.
+  final int distanceComponentMinorUnits;
+
+  /// Time-based charge in minor units.
+  final int timeComponentMinorUnits;
+
+  /// Fees and surcharges in minor units.
+  final int feesMinorUnits;
+
+  /// Total price in minor units (sum of all components).
+  int get totalMinorUnits =>
+      baseFareMinorUnits + distanceComponentMinorUnits + timeComponentMinorUnits + feesMinorUnits;
+
+  /// Fare subtotal (base + distance + time) without fees.
+  int get fareSubtotalMinorUnits =>
+      baseFareMinorUnits + distanceComponentMinorUnits + timeComponentMinorUnits;
+
+  /// Formats a minor unit value as display string (e.g. 1850 -> "18.50").
+  String _formatMinorUnits(int minorUnits) {
+    final major = minorUnits ~/ 100;
+    final minor = minorUnits % 100;
+    return '$major.${minor.toString().padLeft(2, '0')}';
+  }
+
+  /// Formatted base fare (e.g. "5.00").
+  String get formattedBaseFare => _formatMinorUnits(baseFareMinorUnits);
+
+  /// Formatted distance component (e.g. "8.00").
+  String get formattedDistanceComponent => _formatMinorUnits(distanceComponentMinorUnits);
+
+  /// Formatted time component (e.g. "2.00").
+  String get formattedTimeComponent => _formatMinorUnits(timeComponentMinorUnits);
+
+  /// Formatted fees (e.g. "3.00").
+  String get formattedFees => _formatMinorUnits(feesMinorUnits);
+
+  /// Formatted total (e.g. "18.00").
+  String get formattedTotal => _formatMinorUnits(totalMinorUnits);
+
+  /// Formatted fare subtotal (e.g. "15.00").
+  String get formattedFareSubtotal => _formatMinorUnits(fareSubtotalMinorUnits);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is RidePriceBreakdown &&
+        other.currencyCode == currencyCode &&
+        other.baseFareMinorUnits == baseFareMinorUnits &&
+        other.distanceComponentMinorUnits == distanceComponentMinorUnits &&
+        other.timeComponentMinorUnits == timeComponentMinorUnits &&
+        other.feesMinorUnits == feesMinorUnits;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        currencyCode,
+        baseFareMinorUnits,
+        distanceComponentMinorUnits,
+        timeComponentMinorUnits,
+        feesMinorUnits,
+      );
+
+  @override
+  String toString() =>
+      'RidePriceBreakdown(currency: $currencyCode, base: $formattedBaseFare, distance: $formattedDistanceComponent, time: $formattedTimeComponent, fees: $formattedFees, total: $formattedTotal)';
+}
+
+// ============================================================================
+// Vehicle Category Enum
+// ============================================================================
 
 /// Vehicle categories supported by the ride platform.
 ///
@@ -83,6 +197,7 @@ class RideQuoteOption {
     required this.priceMinorUnits,
     required this.currencyCode,
     this.isRecommended = false,
+    this.priceBreakdown,
   })  : assert(etaMinutes >= 0, 'etaMinutes must be non-negative'),
         assert(priceMinorUnits >= 0, 'priceMinorUnits must be non-negative');
 
@@ -106,6 +221,12 @@ class RideQuoteOption {
 
   /// Whether this option is recommended to the user.
   final bool isRecommended;
+
+  /// Detailed price breakdown (Track B - Ticket #63).
+  ///
+  /// When available, use this for displaying receipt/fare summary.
+  /// If null, UI should fall back to [priceMinorUnits] for total.
+  final RidePriceBreakdown? priceBreakdown;
 
   /// Formats the price for display (e.g. "18.00").
   String get formattedPrice {

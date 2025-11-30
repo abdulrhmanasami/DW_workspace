@@ -1,7 +1,8 @@
-/// Mock Ride Pricing Service - Track B Ticket #27
+/// Mock Ride Pricing Service - Track B Ticket #27, #63
 /// Purpose: Simulated backend pricing engine for development and testing
 /// Created by: Track B - Ticket #27
-/// Last updated: 2025-11-28
+/// Updated by: Track B - Ticket #63 (RidePriceBreakdown integration)
+/// Last updated: 2025-11-29
 ///
 /// This implementation simulates a backend pricing engine:
 /// - Configurable network latency
@@ -105,13 +106,17 @@ class MockRidePricingService implements RidePricingService {
       destination.location,
     );
 
-    // 4) Build options based on service type
+    // 4) Estimate trip duration (assume average speed of 25 km/h for city driving)
+    final durationMinutes = (distanceKm / 25.0 * 60).round().clamp(5, 45);
+
+    // 5) Build options based on service type (includes price breakdown)
     final options = _buildOptions(
       distanceKm: distanceKm,
+      durationMinutes: durationMinutes,
       serviceType: serviceType,
     );
 
-    // 5) Create the quote request for backward compatibility
+    // 6) Create the quote request for backward compatibility
     final request = _buildRequest(pickup, destination);
 
     return RideQuote(
@@ -153,24 +158,14 @@ class MockRidePricingService implements RidePricingService {
   }
 
   /// Builds ride options based on distance and requested service type.
+  ///
+  /// Track B - Ticket #63: Now includes [RidePriceBreakdown] for each option.
   List<RideQuoteOption> _buildOptions({
     required double distanceKm,
+    required int durationMinutes,
     required RideServiceType serviceType,
   }) {
     final options = <RideQuoteOption>[];
-
-    // Helper to convert SAR to minor units (halalas)
-    int toMinor(double amount) => (amount * 100).round();
-
-    // Calculate fares
-    final economyFare = toMinor(_baseFareEconomy + _perKmEconomy * distanceKm);
-    final xlFare = toMinor(_baseFareXl + _perKmXl * distanceKm);
-    final premiumFare = toMinor(_baseFarePremium + _perKmPremium * distanceKm);
-
-    // Calculate ETAs (distance / speed * 60 = minutes)
-    final economyEta = (distanceKm / _avgSpeedEconomy * 60).round().clamp(2, 15);
-    final xlEta = (distanceKm / _avgSpeedXl * 60).round().clamp(3, 18);
-    final premiumEta = (distanceKm / _avgSpeedPremium * 60).round().clamp(2, 12);
 
     // Build options based on service type
     final shouldIncludeEconomy = serviceType == RideServiceType.ride ||
@@ -181,42 +176,112 @@ class MockRidePricingService implements RidePricingService {
         serviceType == RideServiceType.premium;
 
     if (shouldIncludeEconomy) {
+      final breakdown = _buildBreakdownForCategory(
+        category: RideVehicleCategory.economy,
+        distanceKm: distanceKm,
+        durationMinutes: durationMinutes,
+      );
+      final eta = (distanceKm / _avgSpeedEconomy * 60).round().clamp(2, 15);
+      
       options.add(RideQuoteOption(
         id: 'economy',
         category: RideVehicleCategory.economy,
         displayName: 'Economy',
-        etaMinutes: economyEta,
-        priceMinorUnits: economyFare,
+        etaMinutes: eta,
+        priceMinorUnits: breakdown.totalMinorUnits,
         currencyCode: 'SAR',
         isRecommended: serviceType == RideServiceType.ride,
+        priceBreakdown: breakdown,
       ));
     }
 
     if (shouldIncludeXl) {
+      final breakdown = _buildBreakdownForCategory(
+        category: RideVehicleCategory.xl,
+        distanceKm: distanceKm,
+        durationMinutes: durationMinutes,
+      );
+      final eta = (distanceKm / _avgSpeedXl * 60).round().clamp(3, 18);
+      
       options.add(RideQuoteOption(
         id: 'xl',
         category: RideVehicleCategory.xl,
         displayName: 'XL',
-        etaMinutes: xlEta,
-        priceMinorUnits: xlFare,
+        etaMinutes: eta,
+        priceMinorUnits: breakdown.totalMinorUnits,
         currencyCode: 'SAR',
         isRecommended: serviceType == RideServiceType.xl,
+        priceBreakdown: breakdown,
       ));
     }
 
     if (shouldIncludePremium) {
+      final breakdown = _buildBreakdownForCategory(
+        category: RideVehicleCategory.premium,
+        distanceKm: distanceKm,
+        durationMinutes: durationMinutes,
+      );
+      final eta = (distanceKm / _avgSpeedPremium * 60).round().clamp(2, 12);
+      
       options.add(RideQuoteOption(
         id: 'premium',
         category: RideVehicleCategory.premium,
         displayName: 'Premium',
-        etaMinutes: premiumEta,
-        priceMinorUnits: premiumFare,
+        etaMinutes: eta,
+        priceMinorUnits: breakdown.totalMinorUnits,
         currencyCode: 'SAR',
         isRecommended: serviceType == RideServiceType.premium,
+        priceBreakdown: breakdown,
       ));
     }
 
     return options;
+  }
+
+  /// Builds a detailed price breakdown for a vehicle category.
+  ///
+  /// Track B - Ticket #63: Deterministic pricing based on distance and time.
+  RidePriceBreakdown _buildBreakdownForCategory({
+    required RideVehicleCategory category,
+    required double distanceKm,
+    required int durationMinutes,
+  }) {
+    // Helper to convert SAR to minor units (halalas)
+    int toMinor(double amount) => (amount * 100).round();
+
+    late final double baseFare;
+    late final double perKm;
+    late final double perMinute;
+    late final double fees;
+
+    switch (category) {
+      case RideVehicleCategory.economy:
+        baseFare = _baseFareEconomy;
+        perKm = _perKmEconomy;
+        perMinute = 0.50; // 0.50 SAR per minute
+        fees = 3.0;       // 3.00 SAR fees
+      case RideVehicleCategory.xl:
+        baseFare = _baseFareXl;
+        perKm = _perKmXl;
+        perMinute = 0.70; // 0.70 SAR per minute
+        fees = 4.0;       // 4.00 SAR fees
+      case RideVehicleCategory.premium:
+        baseFare = _baseFarePremium;
+        perKm = _perKmPremium;
+        perMinute = 0.90; // 0.90 SAR per minute
+        fees = 6.0;       // 6.00 SAR fees
+    }
+
+    final distanceComponent = distanceKm * perKm;
+    final timeComponent = durationMinutes * perMinute;
+
+    return RidePriceBreakdown(
+      currencyCode: 'SAR',
+      baseFareMinorUnits: toMinor(baseFare),
+      distanceComponentMinorUnits: toMinor(distanceComponent),
+      timeComponentMinorUnits: toMinor(timeComponent),
+      feesMinorUnits: toMinor(fees),
+    );
   }
 
   /// Builds a [RideQuoteRequest] from [MobilityPlace] objects.

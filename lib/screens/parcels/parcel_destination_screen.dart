@@ -1,3 +1,8 @@
+/// Parcel Destination Screen (Create Shipment - Screen 11)
+/// Created by: Track C - Ticket #41
+/// Purpose: First step in create-shipment flow matching Screen 11 mockups.
+/// Last updated: 2025-11-29 (Ticket #75 - Alignment + Form Validation MVP)
+
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,9 +11,8 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../state/parcels/parcel_draft_state.dart';
 import 'parcel_details_screen.dart';
 
-/// Parcel Destination Screen
-/// Created by: Track C - Ticket #41
-/// Purpose: First step in create-shipment flow (pickup & dropoff addresses).
+/// Parcel Destination Screen Widget.
+/// Track C - Ticket #75: Aligned with Screen 11 mockups.
 class ParcelDestinationScreen extends ConsumerStatefulWidget {
   const ParcelDestinationScreen({super.key});
 
@@ -19,24 +23,42 @@ class ParcelDestinationScreen extends ConsumerStatefulWidget {
 
 class _ParcelDestinationScreenState
     extends ConsumerState<ParcelDestinationScreen> {
+  // Form key for validation
+  final _formKey = GlobalKey<FormState>();
+
+  // Sender controllers
+  late final TextEditingController _senderNameController;
   late final TextEditingController _pickupController;
+
+  // Receiver controllers
+  late final TextEditingController _receiverNameController;
   late final TextEditingController _dropoffController;
+
+  // Focus nodes
+  final FocusNode _senderNameFocusNode = FocusNode();
   final FocusNode _pickupFocusNode = FocusNode();
+  final FocusNode _receiverNameFocusNode = FocusNode();
   final FocusNode _dropoffFocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     final draft = ref.read(parcelDraftProvider);
+    _senderNameController = TextEditingController();
     _pickupController = TextEditingController(text: draft.pickupAddress);
+    _receiverNameController = TextEditingController();
     _dropoffController = TextEditingController(text: draft.dropoffAddress);
   }
 
   @override
   void dispose() {
+    _senderNameController.dispose();
     _pickupController.dispose();
+    _receiverNameController.dispose();
     _dropoffController.dispose();
+    _senderNameFocusNode.dispose();
     _pickupFocusNode.dispose();
+    _receiverNameFocusNode.dispose();
     _dropoffFocusNode.dispose();
     super.dispose();
   }
@@ -46,96 +68,167 @@ class _ParcelDestinationScreenState
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
-    final colors = theme.colorScheme;
-
-    final draft = ref.watch(parcelDraftProvider);
-    final controller = ref.read(parcelDraftProvider.notifier);
-
-    final bool canContinue = draft.pickupAddress.trim().isNotEmpty &&
-        draft.dropoffAddress.trim().isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          l10n?.parcelsDestinationTitle ?? 'Create shipment',
+          l10n?.parcelsCreateShipmentTitle ?? 'New Shipment',
         ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(DWSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                l10n?.parcelsDestinationSubtitle ??
-                    'Enter where to pick up and where to deliver your parcel.',
-                style: textTheme.bodyLarge?.copyWith(
-                  color: colors.onSurfaceVariant,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(DWSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ========== SENDER SECTION ==========
+                _buildSectionHeader(
+                  l10n?.parcelsCreateSenderSectionTitle ?? 'Sender',
+                  textTheme,
                 ),
-              ),
-              const SizedBox(height: DWSpacing.lg),
+                const SizedBox(height: DWSpacing.sm),
+                _buildTextFormField(
+                  controller: _senderNameController,
+                  focusNode: _senderNameFocusNode,
+                  label: l10n?.parcelsCreateSenderNameLabel ?? 'Sender name',
+                  prefixIcon: const Icon(Icons.person_outline),
+                  textInputAction: TextInputAction.next,
+                  validator: (value) => _requiredValidator(value, l10n),
+                  onFieldSubmitted: (_) {
+                    _pickupFocusNode.requestFocus();
+                  },
+                ),
+                const SizedBox(height: DWSpacing.sm),
+                _buildTextFormField(
+                  controller: _pickupController,
+                  focusNode: _pickupFocusNode,
+                  label: l10n?.parcelsDestinationPickupLabel ?? 'Pickup address',
+                  prefixIcon: const Icon(Icons.my_location),
+                  textInputAction: TextInputAction.next,
+                  validator: (value) => _requiredValidator(value, l10n),
+                  onChanged: (value) {
+                    ref.read(parcelDraftProvider.notifier).updatePickupAddress(value);
+                  },
+                  onFieldSubmitted: (_) {
+                    _receiverNameFocusNode.requestFocus();
+                  },
+                ),
+                const SizedBox(height: DWSpacing.lg),
 
-              // Pickup field
-              Text(
-                l10n?.parcelsDestinationPickupLabel ?? 'Pickup address',
-                style: textTheme.labelLarge,
-              ),
-              const SizedBox(height: DWSpacing.xs),
-              DWTextField(
-                controller: _pickupController,
-                focusNode: _pickupFocusNode,
-                hintText: l10n?.parcelsDestinationPickupHint ??
-                    'Enter pickup address',
-                prefixIcon: const Icon(Icons.my_location),
-                textInputAction: TextInputAction.next,
-                onChanged: (value) {
-                  controller.updatePickupAddress(value);
-                },
-                onSubmitted: (_) {
-                  _dropoffFocusNode.requestFocus();
-                },
-              ),
-
-              const SizedBox(height: DWSpacing.md),
-
-              // Dropoff field
-              Text(
-                l10n?.parcelsDestinationDropoffLabel ?? 'Delivery address',
-                style: textTheme.labelLarge,
-              ),
-              const SizedBox(height: DWSpacing.xs),
-              DWTextField(
-                controller: _dropoffController,
-                focusNode: _dropoffFocusNode,
-                hintText: l10n?.parcelsDestinationDropoffHint ??
-                    'Enter delivery address',
-                prefixIcon: const Icon(Icons.place_outlined),
-                textInputAction: TextInputAction.done,
-                onChanged: (value) {
-                  controller.updateDropoffAddress(value);
-                },
-                onSubmitted: (_) {
-                  if (canContinue) {
-                    _onContinuePressed(context);
-                  }
-                },
-              ),
-
-              const Spacer(),
-
-              DWButton.primary(
-                label: l10n?.parcelsDestinationContinueCta ?? 'Continue',
-                onPressed: canContinue ? () => _onContinuePressed(context) : null,
-              ),
-              const SizedBox(height: DWSpacing.sm),
-            ],
+                // ========== RECEIVER SECTION ==========
+                _buildSectionHeader(
+                  l10n?.parcelsCreateReceiverSectionTitle ?? 'Receiver',
+                  textTheme,
+                ),
+                const SizedBox(height: DWSpacing.sm),
+                _buildTextFormField(
+                  controller: _receiverNameController,
+                  focusNode: _receiverNameFocusNode,
+                  label: l10n?.parcelsCreateReceiverNameLabel ?? 'Receiver name',
+                  prefixIcon: const Icon(Icons.person_outline),
+                  textInputAction: TextInputAction.next,
+                  validator: (value) => _requiredValidator(value, l10n),
+                  onFieldSubmitted: (_) {
+                    _dropoffFocusNode.requestFocus();
+                  },
+                ),
+                const SizedBox(height: DWSpacing.sm),
+                _buildTextFormField(
+                  controller: _dropoffController,
+                  focusNode: _dropoffFocusNode,
+                  label: l10n?.parcelsDestinationDropoffLabel ?? 'Delivery address',
+                  prefixIcon: const Icon(Icons.place_outlined),
+                  textInputAction: TextInputAction.done,
+                  validator: (value) => _requiredValidator(value, l10n),
+                  onChanged: (value) {
+                    ref.read(parcelDraftProvider.notifier).updateDropoffAddress(value);
+                  },
+                  onFieldSubmitted: (_) {
+                    _onGetEstimatePressed();
+                  },
+                ),
+                const SizedBox(height: DWSpacing.xxl),
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.all(DWSpacing.md),
+        child: SizedBox(
+          width: double.infinity,
+          child: DWButton.primary(
+            label: l10n?.parcelsCreateShipmentCtaGetEstimate ?? 'Get estimate',
+            onPressed: _onGetEstimatePressed,
           ),
         ),
       ),
     );
   }
 
-  void _onContinuePressed(BuildContext context) {
+  /// Build section header text widget.
+  Widget _buildSectionHeader(String title, TextTheme textTheme) {
+    return Text(
+      title,
+      style: textTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
+
+  /// Build a TextFormField with consistent styling.
+  Widget _buildTextFormField({
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required String label,
+    Widget? prefixIcon,
+    TextInputAction textInputAction = TextInputAction.next,
+    String? Function(String?)? validator,
+    ValueChanged<String>? onChanged,
+    ValueChanged<String>? onFieldSubmitted,
+  }) {
+    return TextFormField(
+      controller: controller,
+      focusNode: focusNode,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: prefixIcon,
+        border: const OutlineInputBorder(),
+      ),
+      textInputAction: textInputAction,
+      validator: validator,
+      onChanged: onChanged,
+      onFieldSubmitted: onFieldSubmitted,
+    );
+  }
+
+  /// Validator for required fields.
+  String? _requiredValidator(String? value, AppLocalizations? l10n) {
+    if (value == null || value.trim().isEmpty) {
+      return l10n?.parcelsCreateErrorRequired ?? 'This field is required';
+    }
+    return null;
+  }
+
+  /// Handle Get Estimate button press with validation.
+  void _onGetEstimatePressed() {
+    final form = _formKey.currentState;
+    if (form == null) return;
+
+    if (!form.validate()) {
+      // Validation failed – errors are shown in fields
+      return;
+    }
+
+    // Track C - Ticket #75:
+    // After successful validation, proceed to next step.
+    _proceedToNextStep();
+  }
+
+  /// Navigate to the next step (ParcelDetailsScreen).
+  void _proceedToNextStep() {
     // Track C - Ticket #42:
     // Navigate to ParcelDetailsScreen (Step 2).
     Navigator.of(context).push(
@@ -145,4 +238,3 @@ class _ParcelDestinationScreenState
     );
   }
 }
-

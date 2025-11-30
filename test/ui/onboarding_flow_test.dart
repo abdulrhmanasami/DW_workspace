@@ -1,7 +1,8 @@
-/// Widget tests for Onboarding Flow (Ticket #33 - Track D)
+/// Widget tests for Onboarding Flow
 /// Purpose: Verify onboarding screens UI and navigation flow
 /// Created by: Ticket #33 - Track D Onboarding
-/// Last updated: 2025-11-28
+/// Updated by: Ticket #57 - 3-screen Product Onboarding Flow (Ride/Parcels/Food)
+/// Last updated: 2025-11-29
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,10 +12,373 @@ import 'package:delivery_ways_clean/screens/onboarding/welcome_screen.dart';
 import 'package:delivery_ways_clean/screens/onboarding/permissions_screen.dart';
 import 'package:delivery_ways_clean/screens/onboarding/screen_preferences.dart';
 import 'package:delivery_ways_clean/screens/onboarding/onboarding_root_screen.dart';
+import 'package:delivery_ways_clean/screens/onboarding/onboarding_page_ride_screen.dart';
+import 'package:delivery_ways_clean/screens/onboarding/onboarding_page_parcels_screen.dart';
+import 'package:delivery_ways_clean/screens/onboarding/onboarding_page_food_screen.dart';
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 
 void main() {
-  group('Onboarding Flow - Ticket #33', () {
+  // ============================================================================
+  // Ticket #57: 3-Screen Product Onboarding Flow Tests
+  // ============================================================================
+  group('Onboarding Flow - Ticket #57 (3-Screen Product Flow)', () {
+    /// Helper to build test widget with MaterialApp wrapper
+    Widget buildTestApp({
+      required Widget home,
+      Locale locale = const Locale('en'),
+    }) {
+      return MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: locale,
+        home: home,
+      );
+    }
+
+    group('OnboardingRootScreen - Initial State', () {
+      testWidgets('shows Ride screen by default', (tester) async {
+        await tester.pumpWidget(buildTestApp(
+          home: const OnboardingRootScreen(),
+        ));
+        await tester.pumpAndSettle();
+
+        // Verify Ride screen title is displayed
+        expect(find.text('Get a Ride, Instantly.'), findsOneWidget);
+
+        // Verify car icon is displayed
+        expect(find.byIcon(Icons.directions_car_outlined), findsOneWidget);
+
+        // Verify body text
+        expect(
+          find.text(
+              'Tap, ride, and arrive. Fast, reliable, and affordable transport at your fingertips.'),
+          findsOneWidget,
+        );
+
+        // Verify Continue button (not Get Started)
+        expect(find.text('Continue'), findsOneWidget);
+      });
+
+      testWidgets('shows 3 progress dots with first highlighted', (tester) async {
+        await tester.pumpWidget(buildTestApp(
+          home: const OnboardingRootScreen(),
+        ));
+        await tester.pumpAndSettle();
+
+        // Find animated containers (progress dots)
+        final dots = find.byType(AnimatedContainer);
+        expect(dots, findsAtLeastNWidgets(3));
+      });
+    });
+
+    group('Navigation between screens', () {
+      testWidgets('navigates from Ride to Parcels on Continue tap', (tester) async {
+        await tester.pumpWidget(buildTestApp(
+          home: const OnboardingRootScreen(),
+        ));
+        await tester.pumpAndSettle();
+
+        // Verify on Ride screen
+        expect(find.text('Get a Ride, Instantly.'), findsOneWidget);
+
+        // Tap Continue
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+
+        // Verify now on Parcels screen
+        expect(find.text('Deliver Anything, Effortlessly.'), findsOneWidget);
+        expect(find.byIcon(Icons.inventory_2_outlined), findsOneWidget);
+      });
+
+      testWidgets('navigates from Parcels to Food on Continue tap', (tester) async {
+        await tester.pumpWidget(buildTestApp(
+          home: const OnboardingRootScreen(),
+        ));
+        await tester.pumpAndSettle();
+
+        // Navigate to Parcels
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+
+        // Verify on Parcels screen
+        expect(find.text('Deliver Anything, Effortlessly.'), findsOneWidget);
+
+        // Tap Continue again
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+
+        // Verify now on Food screen
+        expect(find.text('Your Favorite Food, Delivered.'), findsOneWidget);
+        expect(find.byIcon(Icons.restaurant_outlined), findsOneWidget);
+      });
+
+      testWidgets('Food screen shows Get Started button instead of Continue',
+          (tester) async {
+        await tester.pumpWidget(buildTestApp(
+          home: const OnboardingRootScreen(),
+        ));
+        await tester.pumpAndSettle();
+
+        // Navigate to Food screen
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+
+        // Verify on Food screen with Get Started button
+        expect(find.text('Your Favorite Food, Delivered.'), findsOneWidget);
+        expect(find.text('Get Started'), findsOneWidget);
+        expect(find.text('Continue'), findsNothing);
+      });
+    });
+
+    group('Onboarding Completion', () {
+      testWidgets('Get Started calls onComplete callback', (tester) async {
+        var completeCalled = false;
+
+        await tester.pumpWidget(buildTestApp(
+          home: OnboardingRootScreen(
+            onComplete: () {
+              completeCalled = true;
+            },
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        // Navigate through all screens
+        // Ride → Parcels
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+
+        // Parcels → Food
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+
+        // Tap Get Started
+        await tester.tap(find.text('Get Started'));
+        await tester.pumpAndSettle();
+
+        // Verify onComplete was called
+        expect(completeCalled, isTrue);
+      });
+
+      testWidgets('Get Started navigates back to root', (tester) async {
+        await tester.pumpWidget(MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          home: Builder(
+            builder: (context) {
+              return Scaffold(
+                body: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const OnboardingRootScreen(),
+                      ),
+                    );
+                  },
+                  child: const Text('Start Onboarding'),
+                ),
+              );
+            },
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        // Navigate to onboarding
+        await tester.tap(find.text('Start Onboarding'));
+        await tester.pumpAndSettle();
+
+        // Verify on Ride screen
+        expect(find.text('Get a Ride, Instantly.'), findsOneWidget);
+
+        // Navigate through all screens
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+
+        // Tap Get Started
+        await tester.tap(find.text('Get Started'));
+        await tester.pumpAndSettle();
+
+        // Verify back at root
+        expect(find.byType(OnboardingRootScreen), findsNothing);
+        expect(find.text('Start Onboarding'), findsOneWidget);
+      });
+    });
+
+    group('Localization - Arabic', () {
+      testWidgets('displays Arabic texts when locale is ar', (tester) async {
+        await tester.pumpWidget(buildTestApp(
+          home: const OnboardingRootScreen(),
+          locale: const Locale('ar'),
+        ));
+        await tester.pumpAndSettle();
+
+        // Verify Arabic Ride title
+        expect(find.text('احصل على رحلة، فورًا.'), findsOneWidget);
+
+        // Verify Arabic Continue button
+        expect(find.text('استمر'), findsOneWidget);
+      });
+
+      testWidgets('displays Arabic Food screen texts', (tester) async {
+        await tester.pumpWidget(buildTestApp(
+          home: const OnboardingRootScreen(),
+          locale: const Locale('ar'),
+        ));
+        await tester.pumpAndSettle();
+
+        // Navigate to Food screen
+        await tester.tap(find.text('استمر'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('استمر'));
+        await tester.pumpAndSettle();
+
+        // Verify Arabic Food title and Get Started
+        expect(find.text('طعامك المفضل، إليك.'), findsOneWidget);
+        expect(find.text('ابدأ الآن'), findsOneWidget);
+      });
+    });
+
+    group('Localization - German', () {
+      testWidgets('displays German texts when locale is de', (tester) async {
+        await tester.pumpWidget(buildTestApp(
+          home: const OnboardingRootScreen(),
+          locale: const Locale('de'),
+        ));
+        await tester.pumpAndSettle();
+
+        // Verify German Ride title
+        expect(find.text('Sofort eine Fahrt bekommen.'), findsOneWidget);
+
+        // Verify German Continue button
+        expect(find.text('Weiter'), findsOneWidget);
+      });
+
+      testWidgets('displays German Food screen texts', (tester) async {
+        await tester.pumpWidget(buildTestApp(
+          home: const OnboardingRootScreen(),
+          locale: const Locale('de'),
+        ));
+        await tester.pumpAndSettle();
+
+        // Navigate to Food screen
+        await tester.tap(find.text('Weiter'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Weiter'));
+        await tester.pumpAndSettle();
+
+        // Verify German Food title and Get Started
+        expect(find.text('Dein Lieblingsessen, geliefert.'), findsOneWidget);
+        expect(find.text("Los geht's"), findsOneWidget);
+      });
+    });
+
+    group('Individual Page Widgets', () {
+      testWidgets('OnboardingPageRideScreen renders correctly', (tester) async {
+        var nextCalled = false;
+
+        await tester.pumpWidget(buildTestApp(
+          home: Scaffold(
+            body: OnboardingPageRideScreen(
+              onNext: () => nextCalled = true,
+            ),
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Get a Ride, Instantly.'), findsOneWidget);
+        expect(find.byIcon(Icons.directions_car_outlined), findsOneWidget);
+
+        await tester.tap(find.text('Continue'));
+        expect(nextCalled, isTrue);
+      });
+
+      testWidgets('OnboardingPageParcelsScreen renders correctly',
+          (tester) async {
+        var nextCalled = false;
+
+        await tester.pumpWidget(buildTestApp(
+          home: Scaffold(
+            body: OnboardingPageParcelsScreen(
+              onNext: () => nextCalled = true,
+            ),
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Deliver Anything, Effortlessly.'), findsOneWidget);
+        expect(find.byIcon(Icons.inventory_2_outlined), findsOneWidget);
+
+        await tester.tap(find.text('Continue'));
+        expect(nextCalled, isTrue);
+      });
+
+      testWidgets('OnboardingPageFoodScreen renders correctly', (tester) async {
+        var nextCalled = false;
+
+        await tester.pumpWidget(buildTestApp(
+          home: Scaffold(
+            body: OnboardingPageFoodScreen(
+              onNext: () => nextCalled = true,
+            ),
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Your Favorite Food, Delivered.'), findsOneWidget);
+        expect(find.byIcon(Icons.restaurant_outlined), findsOneWidget);
+
+        await tester.tap(find.text('Get Started'));
+        expect(nextCalled, isTrue);
+      });
+    });
+
+    group('Full Flow Test', () {
+      testWidgets('completes full onboarding: Ride → Parcels → Food → Done',
+          (tester) async {
+        var completeCalled = false;
+
+        await tester.pumpWidget(buildTestApp(
+          home: OnboardingRootScreen(
+            onComplete: () => completeCalled = true,
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        // Step 1: Ride Screen
+        expect(find.text('Get a Ride, Instantly.'), findsOneWidget);
+        expect(find.byIcon(Icons.directions_car_outlined), findsOneWidget);
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+
+        // Step 2: Parcels Screen
+        expect(find.text('Deliver Anything, Effortlessly.'), findsOneWidget);
+        expect(find.byIcon(Icons.inventory_2_outlined), findsOneWidget);
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+
+        // Step 3: Food Screen
+        expect(find.text('Your Favorite Food, Delivered.'), findsOneWidget);
+        expect(find.byIcon(Icons.restaurant_outlined), findsOneWidget);
+        expect(find.text('Get Started'), findsOneWidget);
+        await tester.tap(find.text('Get Started'));
+        await tester.pumpAndSettle();
+
+        // Verify completion
+        expect(completeCalled, isTrue);
+      });
+    });
+  });
+
+  // ============================================================================
+  // Legacy Tests: Ticket #33 (Welcome/Permissions/Preferences Flow)
+  // These screens still exist and may be used elsewhere.
+  // ============================================================================
+  group('Onboarding Flow - Ticket #33 (Legacy Screens)', () {
     /// Helper to build test widget with MaterialApp wrapper
     Widget buildTestApp({
       required Widget home,
@@ -253,57 +617,9 @@ void main() {
       });
     });
 
-    group('OnboardingRootScreen', () {
-      testWidgets('displays WelcomeScreen as initial screen', (tester) async {
-        await tester.pumpWidget(MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: const OnboardingRootScreen(),
-        ));
-        await tester.pumpAndSettle();
-
-        // Verify WelcomeScreen is shown
-        expect(find.byType(WelcomeScreen), findsOneWidget);
-        expect(find.text('Welcome to Delivery Ways'), findsOneWidget);
-      });
-
-      testWidgets('passes onComplete callback through constructor chain',
-          (tester) async {
-        var completeCalled = false;
-
-        await tester.pumpWidget(MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: OnboardingRootScreen(
-            onComplete: () {
-              completeCalled = true;
-            },
-          ),
-        ));
-        await tester.pumpAndSettle();
-
-        // Navigate through the flow
-        // Welcome → Permissions
-        await tester.tap(find.text('Get started'));
-        await tester.pumpAndSettle();
-
-        // Permissions → Preferences
-        await tester.tap(find.text('Continue'));
-        await tester.pumpAndSettle();
-
-        // Preferences → Complete
-        await tester.tap(find.text('Start using Delivery Ways'));
-        await tester.pumpAndSettle();
-
-        // Verify onComplete was called
-        expect(completeCalled, isTrue);
-      });
-    });
-
-    group('Full Flow Navigation', () {
-      testWidgets('completes full onboarding flow: Welcome → Permissions → Preferences',
+    group('Full Legacy Flow Navigation', () {
+      testWidgets(
+          'completes full legacy flow: Welcome → Permissions → Preferences',
           (tester) async {
         await tester.pumpWidget(buildTestApp(
           home: const WelcomeScreen(),
@@ -331,7 +647,7 @@ void main() {
         expect(find.byIcon(Icons.check_circle), findsOneWidget);
       });
 
-      testWidgets('can navigate back through the flow', (tester) async {
+      testWidgets('can navigate back through the legacy flow', (tester) async {
         await tester.pumpWidget(buildTestApp(
           home: const WelcomeScreen(),
         ));
@@ -358,4 +674,3 @@ void main() {
     });
   });
 }
-

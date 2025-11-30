@@ -5,12 +5,13 @@
 /// Updated by: Track B - Ticket #12 (RideTrip FSM integration)
 /// Updated by: Track B - Ticket #14 (RideQuote integration)
 /// Updated by: Ticket #26 (Robust quote states: Loading/Error/Empty)
-/// Last updated: 2025-11-28
+/// Updated by: Track B - Ticket #100 (Payment method integration)
+/// Last updated: 2025-11-30
 ///
 /// This screen provides the Ride trip confirmation interface with:
 /// - Map stub (placeholder for future maps_shims integration)
 /// - Vehicle options list (dynamic from RideQuoteService)
-/// - Payment method card (stub)
+/// - Payment method section (from PaymentMethodsUiState)
 /// - Request Ride CTA button
 /// - Trip status display (FSM phase)
 /// - Robust Loading/Error/Empty states for quote fetching (Ticket #26)
@@ -30,6 +31,8 @@ import '../../router/app_router.dart';
 import '../../state/mobility/ride_draft_state.dart';
 import '../../state/mobility/ride_trip_session.dart';
 import '../../state/mobility/ride_quote_controller.dart';
+// Track B - Ticket #100: Payment method integration
+import '../../state/payments/payment_methods_ui_state.dart';
 
 /// UI-only model for ride options (maps from domain RideQuoteOption)
 class RideOptionUiModel {
@@ -342,11 +345,8 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
         ],
         const SizedBox(height: 16),
 
-        // Payment method (stub)
-        _PaymentMethodCard(
-          label: l10n.rideConfirmPaymentLabel,
-          value: l10n.rideConfirmPaymentStubValue,
-        ),
+        // Payment method section (Track B - Ticket #100)
+        _PaymentMethodSection(l10n: l10n),
         const SizedBox(height: 16),
 
         // Request button
@@ -425,6 +425,7 @@ List<RideOptionUiModel> _buildUiOptions({
 }
 
 /// Vehicle option card widget
+/// Updated by: Ticket #91 - Recommended badge + DWSpacing/DWRadius tokens
 class _RideOptionCard extends StatelessWidget {
   const _RideOptionCard({
     required this.option,
@@ -441,94 +442,197 @@ class _RideOptionCard extends StatelessWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: EdgeInsets.symmetric(vertical: DWSpacing.xxs),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(DWRadius.md),
         side: BorderSide(
           color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
           width: isSelected ? 2 : 1,
         ),
       ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(DWRadius.md),
+        onTap: onSelected,
+        child: Padding(
+          padding: EdgeInsets.all(DWSpacing.md),
+          child: Row(
+            children: [
+              // Leading icon
+              Icon(
+                Icons.directions_car_filled,
+                color: isSelected
+                    ? colorScheme.primary
+                    : colorScheme.onSurfaceVariant,
+                size: 28,
+              ),
+              SizedBox(width: DWSpacing.md),
+              // Title + subtitle + recommended badge
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          option.title,
+                          style: textTheme.bodyLarge?.copyWith(
+                            fontWeight:
+                                isSelected ? FontWeight.w600 : FontWeight.normal,
+                          ),
+                        ),
+                        if (option.isRecommended) ...[
+                          SizedBox(width: DWSpacing.xs),
+                          _RecommendedBadge(label: l10n.rideConfirmRecommendedBadge),
+                        ],
+                      ],
+                    ),
+                    SizedBox(height: DWSpacing.xxs),
+                    Text(
+                      option.description,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(width: DWSpacing.sm),
+              // Price + ETA
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    option.priceText,
+                    style: textTheme.titleMedium?.copyWith(
+                      color: isSelected ? colorScheme.primary : null,
+                    ),
+                  ),
+                  SizedBox(height: DWSpacing.xxs),
+                  Text(
+                    option.etaText,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+              // Selection indicator
+              if (isSelected) ...[
+                SizedBox(width: DWSpacing.xs),
+                Icon(
+                  Icons.check_circle,
+                  color: colorScheme.primary,
+                  size: 20,
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Recommended badge widget (Ticket #91)
+class _RecommendedBadge extends StatelessWidget {
+  const _RecommendedBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: DWSpacing.xs,
+        vertical: DWSpacing.xxs / 2,
+      ),
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(DWRadius.xs),
+      ),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: colorScheme.onPrimaryContainer,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+/// Payment method section widget
+/// Track B - Ticket #100: Shows selected payment method from PaymentMethodsUiState
+class _PaymentMethodSection extends ConsumerWidget {
+  const _PaymentMethodSection({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    
+    // Track B - Ticket #100: Get selected payment method from provider
+    final paymentsState = ref.watch(paymentMethodsUiProvider);
+    final selectedMethod = paymentsState.selectedMethod;
+
+    // Determine display values
+    final displayName = selectedMethod?.displayName ?? l10n.paymentsMethodTypeCash;
+    final typeLabel = selectedMethod?.type == PaymentMethodUiType.card
+        ? l10n.paymentsMethodTypeCard
+        : l10n.paymentsMethodTypeCash;
+    final icon = selectedMethod?.type == PaymentMethodUiType.card
+        ? Icons.credit_card
+        : Icons.payments_outlined;
+
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: ListTile(
-        leading: Icon(
-          Icons.directions_car_filled,
-          color:
-              isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
-        ),
+        leading: Icon(icon, color: colorScheme.primary),
         title: Text(
-          option.title,
-          style: textTheme.bodyLarge?.copyWith(
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-          ),
+          l10n.rideTripConfirmationPaymentSectionTitle,
+          style: textTheme.bodyLarge,
         ),
-        subtitle: Text(
-          option.description,
-          style: textTheme.bodySmall?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
+        subtitle: Row(
           children: [
             Text(
-              option.priceText,
-              style: textTheme.titleMedium?.copyWith(
-                color: isSelected ? colorScheme.primary : null,
+              displayName,
+              style: textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 4),
             Text(
-              option.etaText,
+              ' · $typeLabel',
               style: textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
           ],
         ),
-        onTap: onSelected,
-      ),
-    );
-  }
-}
-
-/// Payment method card widget (stub)
-class _PaymentMethodCard extends StatelessWidget {
-  const _PaymentMethodCard({
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final colorScheme = theme.colorScheme;
-
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: ListTile(
-        leading: Icon(Icons.payment_outlined, color: colorScheme.primary),
-        title: Text(label, style: textTheme.bodyLarge),
-        subtitle: Text(
-          value,
-          style: textTheme.bodySmall?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
         trailing: Icon(
           Icons.keyboard_arrow_right,
           color: colorScheme.onSurfaceVariant,
         ),
         onTap: () {
-          // TODO(Track B/C later): Open payment method selection from payments shim
+          // Track B - Ticket #100: Tapping navigates to Payments tab
+          // For now, show a snackbar indicating the payment method is selected
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$displayName selected'),
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 1),
+            ),
+          );
         },
       ),
     );

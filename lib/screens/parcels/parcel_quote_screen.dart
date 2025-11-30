@@ -1,7 +1,7 @@
 /// Parcel Quote Screen
 /// Created by: Track C - Ticket #43
 /// Purpose: Display pricing options for parcel shipments
-/// Last updated: 2025-11-28 (Ticket #44 - Added Confirm integration)
+/// Last updated: 2025-11-29 (Ticket #77 - Added Summary card + Stub note)
 
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
 import '../../state/parcels/parcel_draft_state.dart';
 import '../../state/parcels/parcel_orders_state.dart';
 import '../../state/parcels/parcel_quote_state.dart';
+import 'parcel_shipment_details_screen.dart';
 
 /// Screen for displaying parcel pricing options (Step 3 of parcel shipment flow).
 class ParcelQuoteScreen extends ConsumerStatefulWidget {
@@ -155,23 +155,53 @@ class _ParcelQuoteScreenState extends ConsumerState<ParcelQuoteScreen> {
       );
     }
 
-    return ListView.separated(
-      itemCount: options.length,
-      separatorBuilder: (_, __) => const SizedBox(height: DWSpacing.sm),
-      itemBuilder: (context, index) {
-        final option = options[index];
-        final isSelected = option.id == selectedId;
+    // Get the selected option for total display
+    final selectedOption = selectedId != null
+        ? options.firstWhere(
+            (o) => o.id == selectedId,
+            orElse: () => options.first,
+          )
+        : null;
 
-        return _QuoteOptionTile(
-          option: option,
-          isSelected: isSelected,
-          onTap: () => onOptionSelected(option.id),
-        );
-      },
+    return ListView(
+      children: [
+        // Summary card showing shipment details
+        _QuoteSummaryCard(l10n: l10n),
+        const SizedBox(height: DWSpacing.md),
+
+        // Pricing options list
+        ...options.map((option) {
+          final isSelected = option.id == selectedId;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: DWSpacing.sm),
+            child: _QuoteOptionTile(
+              option: option,
+              isSelected: isSelected,
+              onTap: () => onOptionSelected(option.id),
+            ),
+          );
+        }),
+
+        // Total display when option is selected
+        if (selectedOption != null) ...[
+          const SizedBox(height: DWSpacing.md),
+          _QuoteTotalRow(
+            l10n: l10n,
+            option: selectedOption,
+            textTheme: textTheme,
+            colors: colors,
+          ),
+        ],
+
+        // Stub note about estimated pricing
+        const SizedBox(height: DWSpacing.md),
+        _QuoteStubNote(l10n: l10n, textTheme: textTheme, colors: colors),
+      ],
     );
   }
 
   void _onConfirmPressed(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final draft = ref.read(parcelDraftProvider);
     final quoteState = ref.read(parcelQuoteControllerProvider);
     final quote = quoteState.quote;
@@ -199,12 +229,29 @@ class _ParcelQuoteScreenState extends ConsumerState<ParcelQuoteScreen> {
     ref.read(parcelDraftProvider.notifier).reset();
     ref.read(parcelQuoteControllerProvider.notifier).reset();
 
-    // 3) Navigate back to Parcels Home
-    Navigator.of(context).popUntil((route) {
-      final name = route.settings.name;
-      if (name == RoutePaths.parcelsHome) return true;
-      return route.isFirst;
-    });
+    // 3) Read the created parcel from orders provider
+    final ordersState = ref.read(parcelOrdersProvider);
+    final createdParcel = ordersState.activeParcel ??
+        (ordersState.parcels.isNotEmpty ? ordersState.parcels.first : null);
+
+    if (createdParcel == null) {
+      // Guard: No parcel created (unexpected state)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n?.parcelsQuoteErrorSubtitle ?? 'Something went wrong'),
+        ),
+      );
+      return;
+    }
+
+    // 4) Navigate to ParcelShipmentDetailsScreen with clean back stack
+    // Removes all Wizard screens, keeps only root (Home/Tabs)
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(
+        builder: (_) => ParcelShipmentDetailsScreen(parcel: createdParcel),
+      ),
+      (route) => route.isFirst,
+    );
   }
 }
 
@@ -300,6 +347,229 @@ class _QuoteEmptyCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Summary card showing shipment details (pickup, dropoff, weight, size).
+/// Track C - Ticket #77
+class _QuoteSummaryCard extends ConsumerWidget {
+  const _QuoteSummaryCard({required this.l10n});
+
+  final AppLocalizations? l10n;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final draft = ref.watch(parcelDraftProvider);
+
+    // Format size label
+    String sizeLabel(ParcelSize? size) {
+      if (size == null) return '-';
+      switch (size) {
+        case ParcelSize.small:
+          return 'Small';
+        case ParcelSize.medium:
+          return 'Medium';
+        case ParcelSize.large:
+          return 'Large';
+        case ParcelSize.oversize:
+          return 'Oversize';
+      }
+    }
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(DWSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n?.parcelsQuoteSummaryTitle ?? 'Shipment summary',
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: DWSpacing.sm),
+            _SummaryRow(
+              icon: Icons.location_on_outlined,
+              label: l10n?.parcelsQuoteFromLabel ?? 'From',
+              value: draft.pickupAddress.isNotEmpty
+                  ? draft.pickupAddress
+                  : '-',
+              colors: colors,
+              textTheme: textTheme,
+            ),
+            const SizedBox(height: DWSpacing.xs),
+            _SummaryRow(
+              icon: Icons.flag_outlined,
+              label: l10n?.parcelsQuoteToLabel ?? 'To',
+              value: draft.dropoffAddress.isNotEmpty
+                  ? draft.dropoffAddress
+                  : '-',
+              colors: colors,
+              textTheme: textTheme,
+            ),
+            const Divider(height: DWSpacing.lg),
+            Row(
+              children: [
+                Expanded(
+                  child: _SummaryRow(
+                    icon: Icons.scale_outlined,
+                    label: l10n?.parcelsQuoteWeightLabel ?? 'Weight',
+                    value: draft.weightText.isNotEmpty
+                        ? '${draft.weightText} kg'
+                        : '-',
+                    colors: colors,
+                    textTheme: textTheme,
+                  ),
+                ),
+                const SizedBox(width: DWSpacing.md),
+                Expanded(
+                  child: _SummaryRow(
+                    icon: Icons.inventory_2_outlined,
+                    label: l10n?.parcelsQuoteSizeLabel ?? 'Size',
+                    value: sizeLabel(draft.size),
+                    colors: colors,
+                    textTheme: textTheme,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Helper widget for summary row
+class _SummaryRow extends StatelessWidget {
+  const _SummaryRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.colors,
+    required this.textTheme,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final ColorScheme colors;
+  final TextTheme textTheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: colors.onSurfaceVariant),
+        const SizedBox(width: DWSpacing.xs),
+        Text(
+          '$label: ',
+          style: textTheme.bodySmall?.copyWith(
+            color: colors.onSurfaceVariant,
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: textTheme.bodySmall?.copyWith(
+              fontWeight: FontWeight.w500,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Widget showing total price when an option is selected.
+/// Track C - Ticket #77
+class _QuoteTotalRow extends StatelessWidget {
+  const _QuoteTotalRow({
+    required this.l10n,
+    required this.option,
+    required this.textTheme,
+    required this.colors,
+  });
+
+  final AppLocalizations? l10n;
+  final ParcelQuoteOption option;
+  final TextTheme textTheme;
+  final ColorScheme colors;
+
+  @override
+  Widget build(BuildContext context) {
+    final priceFormatted =
+        '${(option.totalAmountCents / 100).toStringAsFixed(2)} ${option.currencyCode}';
+
+    return Container(
+      padding: const EdgeInsets.all(DWSpacing.md),
+      decoration: BoxDecoration(
+        color: colors.primaryContainer,
+        borderRadius: BorderRadius.circular(DWRadius.md),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            l10n?.parcelsQuoteTotalLabel(priceFormatted).split(':').first ??
+                'Total',
+            style: textTheme.titleMedium?.copyWith(
+              color: colors.onPrimaryContainer,
+            ),
+          ),
+          Text(
+            priceFormatted,
+            style: textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: colors.onPrimaryContainer,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Stub note about estimated pricing.
+/// Track C - Ticket #77
+class _QuoteStubNote extends StatelessWidget {
+  const _QuoteStubNote({
+    required this.l10n,
+    required this.textTheme,
+    required this.colors,
+  });
+
+  final AppLocalizations? l10n;
+  final TextTheme textTheme;
+  final ColorScheme colors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          Icons.info_outline,
+          size: 16,
+          color: colors.onSurfaceVariant,
+        ),
+        const SizedBox(width: DWSpacing.xs),
+        Expanded(
+          child: Text(
+            l10n?.parcelsQuoteBreakdownStubNote ??
+                'This is an estimated price. Final price may change after integration with the live pricing service.',
+            style: textTheme.bodySmall?.copyWith(
+              color: colors.onSurfaceVariant,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

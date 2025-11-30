@@ -30,7 +30,9 @@ import '../screens/mobility/tracking_screen.dart';
 import '../screens/parcels/parcel_destination_screen.dart';
 import '../screens/parcels/parcel_details_screen.dart';
 import '../screens/parcels/parcel_quote_screen.dart';
+import '../screens/parcels/parcels_active_shipment_screen.dart';
 import '../screens/parcels/parcels_entry_screen.dart';
+import '../screens/parcels/parcels_list_screen.dart'; // Track C - Ticket #72
 import '../screens/order_tracking_screen.dart';
 import '../screens/orders_history_screen.dart';
 import '../screens/orders_screen.dart';
@@ -75,9 +77,11 @@ class RoutePaths {
 
   // Track C - Parcels routes (Ticket #40+)
   static const String parcelsHome = '/parcels';
+  static const String parcelsList = '/parcels/list'; // Ticket #72: My Shipments list
   static const String parcelsDestination = '/parcels/destination'; // Ticket #41
   static const String parcelsDetails = '/parcels/details'; // Ticket #42
   static const String parcelsQuote = '/parcels/quote'; // Ticket #43
+  static const String parcelsActiveShipment = '/parcels/active'; // Ticket #70
 }
 
 Map<String, WidgetBuilder> buildNotificationRoutesWithRbac() {
@@ -198,14 +202,24 @@ class AppRouter {
       // Ride Active Trip route (Track B - Ticket #15)
       RoutePaths.rideActive: (c) => const RideActiveTripScreen(),
 
-      // Ride Trip Summary route (Track B - Ticket #23)
-      RoutePaths.rideTripSummary: (c) => const RideTripSummaryScreen(),
+      // Ride Trip Summary route (Track B - Ticket #23, #98)
+      // Track B - Ticket #98: Now supports RideTripSummaryArgs for history navigation
+      RoutePaths.rideTripSummary: (c) {
+        final args = ModalRoute.of(c)?.settings.arguments;
+        if (args is RideTripSummaryArgs) {
+          return RideTripSummaryScreen(historyEntry: args.historyEntry);
+        }
+        return const RideTripSummaryScreen();
+      },
 
-      // Track C - Parcels routes (Ticket #40, #41, #42, #43)
+      // Track C - Parcels routes (Ticket #40, #41, #42, #43, #70, #72)
       RoutePaths.parcelsHome: (c) => const ParcelsEntryScreen(),
+      RoutePaths.parcelsList: (c) => const ParcelsListScreen(), // Ticket #72
       RoutePaths.parcelsDestination: (c) => const ParcelDestinationScreen(),
       RoutePaths.parcelsDetails: (c) => const ParcelDetailsScreen(),
       RoutePaths.parcelsQuote: (c) => const ParcelQuoteScreen(),
+      RoutePaths.parcelsActiveShipment: (c) =>
+          const ParcelsActiveShipmentScreen(),
 
       // UI layer routes (feature-gated)
       ...uiRoutes,

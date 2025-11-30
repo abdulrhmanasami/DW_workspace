@@ -229,8 +229,9 @@ void main() {
       });
     });
 
-    group('cancelActiveTrip - Track B Ticket #22, #24', () {
-      test('returns true and clears activeTrip when cancellable phase', () async {
+    group('cancelActiveTrip - Track B Ticket #22, #24, #95', () {
+      // Ticket #95: cancelActiveTrip now keeps trip in cancelled state instead of clearing
+      test('returns true and keeps activeTrip in cancelled phase', () async {
         final controller = RideTripSessionController();
         const draft = RideDraftUiState(destinationQuery: 'Test Cancel');
 
@@ -240,7 +241,9 @@ void main() {
         final result = await controller.cancelActiveTrip();
 
         expect(result, isTrue);
-        expect(controller.state.activeTrip, isNull);
+        // Ticket #95: Trip stays in cancelled state, not cleared
+        expect(controller.state.activeTrip, isNotNull);
+        expect(controller.state.activeTrip!.phase, RideTripPhase.cancelled);
       });
 
       test('returns false when activeTrip is null', () async {
@@ -306,6 +309,7 @@ void main() {
         expect(controller.state.activeTrip!.phase, RideTripPhase.completed);
       });
 
+      // Ticket #95: Trip stays in cancelled state after cancel
       test('cancels successfully from driverAccepted phase', () async {
         final controller = RideTripSessionController();
         const draft = RideDraftUiState(destinationQuery: 'Test');
@@ -317,9 +321,11 @@ void main() {
         final result = await controller.cancelActiveTrip();
 
         expect(result, isTrue);
-        expect(controller.state.activeTrip, isNull);
+        expect(controller.state.activeTrip, isNotNull);
+        expect(controller.state.activeTrip!.phase, RideTripPhase.cancelled);
       });
 
+      // Ticket #95: Trip stays in cancelled state after cancel
       test('cancels successfully from driverArrived phase', () async {
         final controller = RideTripSessionController();
         const draft = RideDraftUiState(destinationQuery: 'Test');
@@ -332,7 +338,8 @@ void main() {
         final result = await controller.cancelActiveTrip();
 
         expect(result, isTrue);
-        expect(controller.state.activeTrip, isNull);
+        expect(controller.state.activeTrip, isNotNull);
+        expect(controller.state.activeTrip!.phase, RideTripPhase.cancelled);
       });
     });
 
@@ -624,7 +631,8 @@ void main() {
       expect(tripController.hasActiveTrip, isFalse);
     });
 
-    test('full flow with cancellation at findingDriver phase', () {
+    // Ticket #95: cancelActiveTrip keeps trip in cancelled state
+    test('full flow with cancellation at findingDriver phase', () async {
       // Setup draft
       final pickupPlace = MobilityPlace(
         label: 'Start',
@@ -649,11 +657,12 @@ void main() {
       expect(tripController.state.activeTrip?.phase, RideTripPhase.findingDriver);
 
       // Cancel trip
-      final result = tripController.cancelActiveTrip();
+      final result = await tripController.cancelActiveTrip();
 
-      expect(result, isA<Future<bool>>());
-      // cancelActiveTrip clears the active trip
-      expect(tripController.state.activeTrip, isNull);
+      expect(result, isTrue);
+      // Ticket #95: cancelActiveTrip keeps trip in cancelled state
+      expect(tripController.state.activeTrip, isNotNull);
+      expect(tripController.state.activeTrip!.phase, RideTripPhase.cancelled);
       expect(tripController.hasActiveTrip, isFalse);
     });
 

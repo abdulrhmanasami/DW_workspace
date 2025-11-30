@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
 import '../../../l10n/generated/app_localizations.dart';
+// Track C - Ticket #78: Unified parcel status helpers
+import '../../../state/parcels/parcel_status_utils.dart';
 
 /// Reusable parcel order card showing shipment summary.
 /// Displays: ID, Status, Route, Price, and Created Date.
@@ -58,7 +60,8 @@ class ParcelOrderCard extends StatelessWidget {
                     ),
                     const SizedBox(width: DWSpacing.xs),
                     Text(
-                      '• ${_statusLabel(parcel.status, l10n)}',
+                      // Track C - Ticket #78: Use unified parcel status helper
+                      '• ${localizedParcelStatusShort(l10n, parcel.status)}',
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -116,28 +119,7 @@ class ParcelOrderCard extends StatelessWidget {
     return '$year-$month-$day $hour:$minute';
   }
 
-  /// Get localized status label for a ParcelStatus.
-  String _statusLabel(ParcelStatus status, AppLocalizations? l10n) {
-    switch (status) {
-      case ParcelStatus.draft:
-        return l10n?.parcelsStatusScheduled ?? 'Draft';
-      case ParcelStatus.quoting:
-        return l10n?.parcelsStatusScheduled ?? 'Quoting';
-      case ParcelStatus.scheduled:
-        return l10n?.parcelsStatusScheduled ?? 'Scheduled';
-      case ParcelStatus.pickupPending:
-        return l10n?.parcelsStatusPickupPending ?? 'Pickup pending';
-      case ParcelStatus.pickedUp:
-        return l10n?.parcelsStatusPickedUp ?? 'Picked up';
-      case ParcelStatus.inTransit:
-        return l10n?.parcelsStatusInTransit ?? 'In transit';
-      case ParcelStatus.delivered:
-        return l10n?.parcelsStatusDelivered ?? 'Delivered';
-      case ParcelStatus.cancelled:
-        return l10n?.parcelsStatusCancelled ?? 'Cancelled';
-      case ParcelStatus.failed:
-        return l10n?.parcelsStatusFailed ?? 'Failed';
-    }
-  }
+  // Track C - Ticket #78: _statusLabel moved to parcel_status_utils.dart
+  // Use localizedParcelStatusShort(l10n, status) instead.
 }
 

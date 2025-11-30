@@ -1,14 +1,21 @@
 /// Food Coming Soon Screen
 /// Created by: Track C - Ticket #48
+/// Updated by: Track C - Ticket #56 (Production-Ready UX with Empty State pattern)
 /// Purpose: Display "Coming Soon" message when Food feature is disabled via feature flag.
-/// Last updated: 2025-11-28
+/// Last updated: 2025-11-29
 
 import 'package:flutter/material.dart';
 import 'package:design_system_shims/design_system_shims.dart' show DWSpacing;
 import '../../l10n/generated/app_localizations.dart';
 
 /// Screen displayed when the Food delivery feature is not yet enabled.
-/// Shows an informative message and a CTA to return to home.
+/// Shows an informative message using the Utility/EmptyState pattern consistent
+/// with other screens like OrdersHistoryScreen.
+///
+/// Design System compliance (Ticket #56):
+/// - Uses Navigation/AppBar pattern consistent with My Orders / Payments screens
+/// - Uses Utility/EmptyState pattern for the content area
+/// - RTL/LTR: Layout relies on default Directionality for automatic mirroring
 class FoodComingSoonScreen extends StatelessWidget {
   const FoodComingSoonScreen({super.key});
 
@@ -23,40 +30,42 @@ class FoodComingSoonScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.foodComingSoonAppBarTitle),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(DWSpacing.lg),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.fastfood_outlined,
-                size: 56,
-                color: colorScheme.outline,
-              ),
-              const SizedBox(height: DWSpacing.lg),
-              Text(
-                l10n.foodComingSoonTitle,
-                style: textTheme.headlineSmall,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: DWSpacing.sm),
-              Text(
-                l10n.foodComingSoonSubtitle,
-                style: textTheme.bodyMedium?.copyWith(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(DWSpacing.lg),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Empty State Icon (consistent with OrdersHistoryScreen empty state)
+                Icon(
+                  Icons.fastfood_outlined,
+                  size: 64,
                   color: colorScheme.onSurfaceVariant,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: DWSpacing.lg),
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(l10n.foodComingSoonPrimaryCta),
+                const SizedBox(height: DWSpacing.lg),
+
+                // Empty State Title (using homeFoodComingSoonLabel per Ticket #56)
+                Text(
+                  l10n.homeFoodComingSoonLabel,
+                  style: textTheme.headlineSmall,
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            ],
+                const SizedBox(height: DWSpacing.sm),
+
+                // Empty State Body (using homeFoodComingSoonMessage per Ticket #56)
+                Text(
+                  l10n.homeFoodComingSoonMessage,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                // Note: No complex CTA per Ticket #56 requirements
+                // User returns via AppBar back button (sufficient for MVP)
+              ],
+            ),
           ),
         ),
       ),

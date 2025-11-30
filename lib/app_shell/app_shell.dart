@@ -7,8 +7,14 @@
 /// Updated by: Track D - Ticket #36 (Phone + OTP Auth flow)
 /// Updated by: Track D - Ticket #37 (Account Bottom Sheet + Sign out)
 /// Updated by: Track C - Ticket #51 (Orders Tab → OrdersHistoryScreen)
+/// Updated by: Track C - Ticket #70 (Home Hub Active Parcel Card)
+/// Updated by: Track C - Ticket #71 (Active Order State Layout + Design System alignment)
+/// Updated by: Track C - Ticket #74 (Unified navigation to ParcelShipmentDetailsScreen)
+/// Updated by: Track A - Ticket #82 (L10n for BottomNav + Orders→ParcelsListScreen)
+/// Updated by: Track B - Ticket #94 (Ride End-to-End Flow Wiring - Ride card active trip check)
+/// Updated by: Track B - Ticket #99 (Payments tab → PaymentsTabScreen)
 /// Purpose: Unified AppShell with Bottom Navigation (Home, Orders, Payments, Profile)
-/// Last updated: 2025-11-29
+/// Last updated: 2025-11-30
 ///
 /// This widget serves as the main entry point for authenticated users,
 /// providing a consistent navigation structure across the app.
@@ -18,6 +24,7 @@ import 'package:flutter/material.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobility_shims/mobility_shims.dart';
+import 'package:parcels_shims/parcels_shims.dart' show Parcel;
 import 'package:design_system_shims/design_system_shims.dart'
     show DWButton, DWSpacing, DWRadius;
 
@@ -25,12 +32,22 @@ import '../config/feature_flags.dart';
 import '../router/app_router.dart';
 import '../screens/auth/phone_sign_in_screen.dart';
 import '../screens/food/food_coming_soon_screen.dart';
+import '../screens/food/food_restaurants_list_screen.dart';
+// Track A - Ticket #82, Updated Ticket #96: Orders tab now uses OrdersHistoryScreen
 import '../screens/orders/orders_history_screen.dart';
 import '../state/auth/auth_state.dart';
 import '../state/infra/auth_providers.dart';
 import '../state/mobility/ride_trip_session.dart';
 import '../state/mobility/ride_draft_state.dart';
-import '../state/mobility/ride_quote_controller.dart';
+import '../state/parcels/parcel_orders_state.dart';
+// Track C - Ticket #74: Import for unified navigation to shipment details
+import '../screens/parcels/parcel_shipment_details_screen.dart';
+// Track C - Ticket #78: Unified parcel status helpers
+import '../state/parcels/parcel_status_utils.dart';
+// Track B - Ticket #85: Unified ride status helpers
+import '../state/mobility/ride_status_utils.dart';
+// Track B - Ticket #99: Payments tab screen
+import '../screens/payments/payments_tab_screen.dart';
 
 /// Root App Shell for Delivery Ways Super-App
 /// Tabs: Home, Orders, Payments, Profile
@@ -53,13 +70,17 @@ class _AppShellState extends State<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: IndexedStack(
         index: _selectedIndex,
         children: const <Widget>[
           _HomeTab(), // Home Hub
-          OrdersHistoryScreen(), // Orders history (Track C - Ticket #51)
-          _PaymentsTabStub(), // Payments (stub for now)
+          // Track A - Ticket #82, Updated #96: Orders tab → OrdersHistoryScreen (Rides + Parcels + Food)
+          OrdersHistoryScreen(),
+          // Track B - Ticket #99: Payments tab → PaymentsTabScreen (Screen 16)
+          PaymentsTabScreen(),
           _ProfileTab(), // Profile & Settings (Track D - Ticket #5)
         ],
       ),
@@ -67,26 +88,27 @@ class _AppShellState extends State<AppShell> {
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onItemTapped,
         // Design System: 4 tabs as per spec (Home, Orders, Payments, Profile)
-        destinations: const [
+        // Track A - Ticket #82: L10n for navigation labels
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home),
+            label: l10n.bottomNavHomeLabel,
           ),
           NavigationDestination(
-            icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long),
-            label: 'Orders',
+            icon: const Icon(Icons.receipt_long_outlined),
+            selectedIcon: const Icon(Icons.receipt_long),
+            label: l10n.bottomNavOrdersLabel,
           ),
           NavigationDestination(
-            icon: Icon(Icons.payment_outlined),
-            selectedIcon: Icon(Icons.payment),
-            label: 'Payments',
+            icon: const Icon(Icons.payment_outlined),
+            selectedIcon: const Icon(Icons.payment),
+            label: l10n.bottomNavPaymentsLabel,
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person),
+            label: l10n.bottomNavProfileLabel,
           ),
         ],
       ),
@@ -96,15 +118,29 @@ class _AppShellState extends State<AppShell> {
 
 /// Home Hub tab – map-centric layout + service cards (Ride / Parcels / Food)
 /// Updated by: Track B - Ticket #19 (Home Hub Active Ride Card)
+/// Updated by: Track C - Ticket #70 (Home Hub Active Parcel Card)
+/// Updated by: Track C - Ticket #71 (Active Order State Layout per Screen 7 design)
+/// Updated by: Track B - Ticket #85 (Unified ride_status_utils)
+///
+/// Layout behavior (Ticket #71):
+/// - Default State: Map at full size (16:9), service cards below
+/// - Active Order State: Map reduced (16:5), Hero card(s) prominent, then services
 /// NOTE: Map integration & real data will be wired in Tracks B/C, this is a UI shell only.
 class _HomeTab extends ConsumerWidget {
   const _HomeTab();
 
-  /// Check if a phase is terminal (completed/cancelled/failed).
-  bool _isTerminal(RideTripPhase phase) =>
-      phase == RideTripPhase.completed ||
-      phase == RideTripPhase.cancelled ||
-      phase == RideTripPhase.failed;
+  /// Select the active (non-terminal) parcel from state.
+  /// Returns the most recent active parcel, or null if none.
+  /// Track C - Ticket #70, Updated by Ticket #78 (use parcel_status_utils)
+  Parcel? _selectActiveParcel(ParcelOrdersState state) {
+    final active = state.parcels
+        .where((p) => !isParcelStatusTerminal(p.status))
+        .toList();
+    if (active.isEmpty) return null;
+    // Sort by createdAt descending (newest first)
+    active.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return active.first;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -116,27 +152,27 @@ class _HomeTab extends ConsumerWidget {
     // Watch ride state providers (Track B - Ticket #19)
     final tripSession = ref.watch(rideTripSessionProvider);
     final rideDraft = ref.watch(rideDraftProvider);
-    final quoteState = ref.watch(rideQuoteControllerProvider);
-    final quote = quoteState.quote;
 
-    // Extract destination and selected option
+    // Watch parcel orders state (Track C - Ticket #70)
+    final parcelOrdersState = ref.watch(parcelOrdersProvider);
+    final activeParcel = _selectActiveParcel(parcelOrdersState);
+    final hasActiveParcel = activeParcel != null;
+
+    // Extract destination for active ride card (Track B - Ticket #86)
     final destination = rideDraft.destinationQuery.trim();
-    final selectedOptionId = rideDraft.selectedOptionId;
-
-    final selectedOption = quote == null
-        ? null
-        : (selectedOptionId != null
-            ? quote.optionById(selectedOptionId) ?? quote.recommendedOption
-            : quote.recommendedOption);
 
     // Determine if there's an active (non-terminal) trip
     // Use local binding to avoid null assertion warnings
+    // Track B - Ticket #85: Use centralized isRidePhaseTerminal from ride_status_utils
     final activeTripState = tripSession.activeTrip;
     final hasActiveTrip =
-        activeTripState != null && !_isTerminal(activeTripState.phase);
+        activeTripState != null && !isRidePhaseTerminal(activeTripState.phase);
 
-    // Adjust map aspect ratio based on active trip
-    final aspectRatio = hasActiveTrip ? (16 / 6) : (16 / 9);
+    // Track C - Ticket #71: Adjust map aspect ratio based on active order state
+    // When there's an active parcel or trip, reduce map height to make room for the card
+    // Screen 7 Design: Map ≈30% when active order, Hero card prominent below
+    final hasActiveOrder = hasActiveParcel || hasActiveTrip;
+    final aspectRatio = hasActiveOrder ? (16 / 5) : (16 / 9);
 
     return SafeArea(
       child: Column(
@@ -233,28 +269,51 @@ class _HomeTab extends ConsumerWidget {
             ),
           ),
 
-          SizedBox(height: DWSpacing.md),
-
-          // Service Cards: Ride / Parcels / Food
-          Expanded(
-            child: Padding(
+          // Track C - Ticket #71: Active Order State Layout
+          // When there's an active parcel/trip, show a prominent "hero" card section
+          // between the map and service cards (Screen 7 design)
+          if (hasActiveOrder) ...[
+            SizedBox(height: DWSpacing.sm),
+            // Active Order Cards Section - Hero area
+            Padding(
               padding: EdgeInsets.symmetric(horizontal: DWSpacing.md),
-              child: ListView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Active Ride Card (Track B - Ticket #19)
-                  if (activeTripState != null && hasActiveTrip) ...[
+                  // Active Parcel Card (Track C - Ticket #70, #71)
+                  if (hasActiveParcel) ...[
+                    _ActiveParcelHomeCard(
+                      activeParcel: activeParcel,
+                    ),
+                    if (hasActiveTrip) SizedBox(height: DWSpacing.sm),
+                  ],
+                  // Active Ride Card (Track B - Ticket #19, #86)
+                  // Track B - Ticket #86: Uses localizedRidePhaseStatusLong for status
+                  if (activeTripState != null && hasActiveTrip)
                     _ActiveRideHomeCard(
                       phase: activeTripState.phase,
                       destinationLabel: destination.isEmpty
                           ? null
                           : l10n.rideActiveDestinationLabel(destination),
-                      selectedOption: selectedOption,
                       onViewTrip: () {
                         Navigator.of(context).pushNamed(RoutePaths.rideActive);
                       },
                     ),
-                    SizedBox(height: DWSpacing.md),
-                  ],
+                ],
+              ),
+            ),
+            SizedBox(height: DWSpacing.sm),
+          ] else ...[
+            SizedBox(height: DWSpacing.md),
+          ],
+
+          // Service Cards Section: Ride / Parcels / Food
+          // Track C - Ticket #71: When active order exists, services are secondary (below hero)
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: DWSpacing.md),
+              child: ListView(
+                children: [
                   Text(
                     'Services',
                     style: textTheme.headlineSmall,
@@ -262,11 +321,17 @@ class _HomeTab extends ConsumerWidget {
                   SizedBox(height: DWSpacing.xs),
                   _ServiceCard(
                     icon: Icons.directions_car,
-                    title: 'Ride',
-                    subtitle: 'Get a ride, instantly.',
+                    title: l10n.homeRideCardTitle,
+                    subtitle: l10n.homeRideCardSubtitle,
                     onTap: () {
-                      // Track B - Ticket #20: Navigate to RideDestinationScreen
-                      Navigator.of(context).pushNamed(RoutePaths.rideDestination);
+                      // Track B - Ticket #94: Check for active trip before navigating
+                      // If active trip exists → go to RideActiveTripScreen
+                      // Otherwise → go to RideDestinationScreen (Location Picker)
+                      if (hasActiveTrip) {
+                        Navigator.of(context).pushNamed(RoutePaths.rideActive);
+                      } else {
+                        Navigator.of(context).pushNamed(RoutePaths.rideDestination);
+                      }
                     },
                   ),
                   SizedBox(height: DWSpacing.xs),
@@ -275,9 +340,10 @@ class _HomeTab extends ConsumerWidget {
                     title: 'Parcels',
                     subtitle: 'Send anything, anywhere.',
                     onTap: () {
-                      // Track C - Ticket #40: Parcels Feature Flag gate
+                      // Track C - Ticket #40, #72: Parcels Feature Flag gate
+                      // Navigate to ParcelsListScreen when enabled
                       if (FeatureFlags.enableParcelsMvp) {
-                        Navigator.of(context).pushNamed(RoutePaths.parcelsHome);
+                        Navigator.of(context).pushNamed(RoutePaths.parcelsList);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -292,10 +358,12 @@ class _HomeTab extends ConsumerWidget {
                   SizedBox(height: DWSpacing.xs),
                   _ServiceCard(
                     icon: Icons.fastfood_outlined,
-                    title: 'Food',
-                    subtitle: 'Your favorite food, delivered.',
+                    title: l10n.homeFoodCardTitle,
+                    subtitle: l10n.homeFoodCardSubtitle,
                     onTap: () {
                       // Track C - Ticket #48: Food Feature Flag gate
+                      // Track C - Ticket #52: Wire to Food flow when enabled
+                      // Track C - Ticket #56: L10n for card title/subtitle
                       if (!FeatureFlags.enableFoodMvp) {
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
@@ -304,7 +372,11 @@ class _HomeTab extends ConsumerWidget {
                         );
                         return;
                       }
-                      // TODO: Wire to Food flow when enableFoodMvp == true.
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const FoodRestaurantsListScreen(),
+                        ),
+                      );
                     },
                   ),
                 ],
@@ -317,56 +389,144 @@ class _HomeTab extends ConsumerWidget {
   }
 }
 
-/// Helper function to generate the headline based on trip phase and ETA.
-/// Track B - Ticket #19
-String _homeActiveRideHeadline({
-  required AppLocalizations l10n,
-  required RideTripPhase phase,
-  required RideQuoteOption? selectedOption,
-}) {
-  final etaMinutes = selectedOption?.etaMinutes;
+// Track C - Ticket #78: _mapParcelStatusToLabel moved to parcel_status_utils.dart
+// Use localizedParcelStatusLong(l10n, status) instead.
 
-  switch (phase) {
-    case RideTripPhase.findingDriver:
-      return l10n.rideActiveHeadlineFindingDriver;
-    case RideTripPhase.driverAccepted:
-      if (etaMinutes != null) {
-        return l10n.rideActiveHeadlineDriverEta(etaMinutes.toString());
-      }
-      return l10n.rideActiveHeadlineDriverOnTheWay;
-    case RideTripPhase.driverArrived:
-      return l10n.rideActiveHeadlineDriverArrived;
-    case RideTripPhase.inProgress:
-      return l10n.rideActiveHeadlineInProgress;
-    case RideTripPhase.payment:
-      return l10n.rideActiveHeadlinePayment;
-    case RideTripPhase.completed:
-      return l10n.rideActiveHeadlineCompleted;
-    case RideTripPhase.cancelled:
-      return l10n.rideActiveHeadlineCancelled;
-    case RideTripPhase.failed:
-      return l10n.rideActiveHeadlineFailed;
-    case RideTripPhase.draft:
-    case RideTripPhase.quoting:
-    case RideTripPhase.requesting:
-      return l10n.rideActiveHeadlinePreparing;
+/// Active Parcel Card displayed on Home Hub when there's an active shipment.
+/// Track C - Ticket #70, Updated by Ticket #71 (Design System alignment)
+/// Track C - Ticket #74: Unified navigation to ParcelShipmentDetailsScreen
+///
+/// Design System Alignment (Ticket #71):
+/// - Card: uses Card/Generic style (radius.md, elevation.medium from CardTheme)
+/// - Typography: titleMedium (type.title.default), bodyMedium (type.subtitle.default)
+/// - Spacing: DWSpacing tokens (space.md, space.sm, space.xxs)
+/// - CTA: DWButton.tertiary for "View shipment" action
+class _ActiveParcelHomeCard extends StatelessWidget {
+  const _ActiveParcelHomeCard({
+    required this.activeParcel,
+  });
+
+  final Parcel activeParcel;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    final statusLabel = localizedParcelStatusLong(l10n, activeParcel.status);
+
+    // Determine destination label from dropoff address
+    final destinationLabel = activeParcel.dropoffAddress.label.isNotEmpty
+        ? activeParcel.dropoffAddress.label
+        : '';
+
+    // Track C - Ticket #74: Navigate directly to ParcelShipmentDetailsScreen
+    void navigateToDetails() {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ParcelShipmentDetailsScreen(parcel: activeParcel),
+        ),
+      );
+    }
+
+    return Card(
+      // Card/Generic style: radius.md + elevation.medium (from CardTheme in DWTheme)
+      // Track C - Ticket #71: Card is the "hero" element in Active Order State
+      child: InkWell(
+        borderRadius: BorderRadius.circular(DWRadius.md),
+        onTap: navigateToDetails,
+        child: Padding(
+          // space.md padding from Design Tokens
+          padding: EdgeInsets.all(DWSpacing.md),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Icon container with primary background tint
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(DWRadius.sm),
+                ),
+                child: Icon(
+                  Icons.local_shipping_outlined,
+                  color: colorScheme.primary,
+                  size: 24,
+                ),
+              ),
+              SizedBox(width: DWSpacing.md),
+              // Text content: Title + Subtitle
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // type.title.default → titleMedium
+                    Text(
+                      statusLabel,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (destinationLabel.isNotEmpty) ...[
+                      SizedBox(height: DWSpacing.xxs),
+                      // type.subtitle.default → bodyMedium
+                      Text(
+                        l10n.homeActiveParcelSubtitleToDestination(
+                          destinationLabel,
+                        ),
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              SizedBox(width: DWSpacing.sm),
+              // CTA: "View shipment" using DWButton.tertiary for type.label.button
+              // Track C - Ticket #74: Unified navigation
+              DWButton.tertiary(
+                label: l10n.homeActiveParcelViewShipmentCta,
+                onPressed: navigateToDetails,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
+
+// Track C - Ticket #78: _mapParcelStatusToLabel moved to parcel_status_utils.dart
+// Track B - Ticket #86: _homeActiveRideHeadline removed, using localizedRidePhaseStatusLong instead
 
 /// Active Ride Card displayed on Home Hub when there's an active trip.
 /// Track B - Ticket #19
 /// Updated by: Ticket #32 (DWSpacing/DWRadius consistency)
+/// Updated by: Track B - Ticket #86 (Design System alignment + ride_status_utils)
+///
+/// Design System Alignment (Ticket #86):
+/// - Card: uses Card/Generic style (radius.md, elevation.medium from CardTheme)
+/// - Typography: titleMedium (type.title.default), bodyMedium (type.subtitle.default)
+/// - Spacing: DWSpacing tokens (space.md, space.sm, space.xxs)
+/// - CTA: DWButton.tertiary for "View trip" action
+/// - Layout: Same as _ActiveParcelHomeCard (InkWell + Row structure)
 class _ActiveRideHomeCard extends StatelessWidget {
   const _ActiveRideHomeCard({
     required this.phase,
     required this.destinationLabel,
-    required this.selectedOption,
     required this.onViewTrip,
   });
 
   final RideTripPhase phase;
   final String? destinationLabel;
-  final RideQuoteOption? selectedOption;
   final VoidCallback onViewTrip;
 
   @override
@@ -376,53 +536,74 @@ class _ActiveRideHomeCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    final headline = _homeActiveRideHeadline(
-      l10n: l10n,
-      phase: phase,
-      selectedOption: selectedOption,
-    );
+    // Track B - Ticket #86: Use centralized localizedRidePhaseStatusLong
+    final statusLabel = localizedRidePhaseStatusLong(l10n, phase);
 
     return Card(
-      // Uses CardTheme from DWTheme (radius: DWRadius.md, elevation: DWElevation.medium)
-      child: Padding(
-        padding: EdgeInsets.all(DWSpacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.directions_car_filled, color: colorScheme.primary),
-                SizedBox(width: DWSpacing.sm),
-                Expanded(
-                  child: Text(
-                    headline,
-                    style: textTheme.titleMedium,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+      // Card/Generic style: radius.md + elevation.medium (from CardTheme in DWTheme)
+      // Track B - Ticket #86: Card is the "hero" element in Active Order State
+      child: InkWell(
+        borderRadius: BorderRadius.circular(DWRadius.md),
+        onTap: onViewTrip,
+        child: Padding(
+          // space.md padding from Design Tokens
+          padding: EdgeInsets.all(DWSpacing.md),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Icon container with primary background tint
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: colorScheme.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(DWRadius.sm),
                 ),
-              ],
-            ),
-            if (destinationLabel != null && destinationLabel!.isNotEmpty) ...[
-              SizedBox(height: DWSpacing.xxs),
-              Text(
-                destinationLabel!,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+                child: Icon(
+                  Icons.directions_car_outlined,
+                  color: colorScheme.primary,
+                  size: 24,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
-            ],
-            SizedBox(height: DWSpacing.sm),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: DWButton.tertiary(
+              SizedBox(width: DWSpacing.md),
+              // Text content: Title + Subtitle
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // type.title.default → titleMedium
+                    Text(
+                      statusLabel,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (destinationLabel != null &&
+                        destinationLabel!.isNotEmpty) ...[
+                      SizedBox(height: DWSpacing.xxs),
+                      // type.subtitle.default → bodyMedium
+                      Text(
+                        destinationLabel!,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              SizedBox(width: DWSpacing.sm),
+              // CTA: "View trip" using DWButton.tertiary for type.label.button
+              DWButton.tertiary(
                 label: l10n.homeActiveRideViewTripCta,
                 onPressed: onViewTrip,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -495,47 +676,6 @@ class _ServiceCard extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Payments Tab Stub
-/// NOTE: Payment Methods to be implemented in Track C
-class _PaymentsTabStub extends StatelessWidget {
-  const _PaymentsTabStub();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    return SafeArea(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.payment_outlined,
-              size: 64,
-              color: colorScheme.onSurfaceVariant,
-            ),
-            SizedBox(height: DWSpacing.md),
-            Text(
-              'Payments',
-              style: textTheme.headlineSmall,
-            ),
-            SizedBox(height: DWSpacing.xs),
-            Text(
-              'Payment methods will be implemented in future tracks',
-              textAlign: TextAlign.center,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
         ),
       ),
     );

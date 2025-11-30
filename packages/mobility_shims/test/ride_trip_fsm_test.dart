@@ -1,7 +1,8 @@
-/// RideTrip FSM Unit Tests - Track B Ticket #24
+/// RideTrip FSM Unit Tests - Track B Ticket #24, #89
 /// Purpose: Comprehensive domain-level tests for the Ride FSM
 /// Created by: Track B - Ticket #24
-/// Last updated: 2025-11-28
+/// Updated by: Track B - Ticket #89 (Domain helpers + tryApply + double events)
+/// Last updated: 2025-11-30
 ///
 /// This file tests the canonical FSM for ride lifecycle transitions.
 /// All tests are domain-level and do not depend on UI or backend.
@@ -519,6 +520,375 @@ void main() {
             reason: 'complete should be invalid from $phase',
           );
         }
+      });
+    });
+
+    // =========================================================================
+    // Track B - Ticket #89: Domain Helpers Tests
+    // =========================================================================
+
+    group('Domain Helpers (Ticket #89)', () {
+      group('isActiveTrip', () {
+        test('returns true for findingDriver', () {
+          expect(RideTripPhase.findingDriver.isActiveTrip, isTrue);
+        });
+
+        test('returns true for driverAccepted', () {
+          expect(RideTripPhase.driverAccepted.isActiveTrip, isTrue);
+        });
+
+        test('returns true for driverArrived', () {
+          expect(RideTripPhase.driverArrived.isActiveTrip, isTrue);
+        });
+
+        test('returns true for inProgress', () {
+          expect(RideTripPhase.inProgress.isActiveTrip, isTrue);
+        });
+
+        test('returns false for draft', () {
+          expect(RideTripPhase.draft.isActiveTrip, isFalse);
+        });
+
+        test('returns false for quoting', () {
+          expect(RideTripPhase.quoting.isActiveTrip, isFalse);
+        });
+
+        test('returns false for requesting', () {
+          expect(RideTripPhase.requesting.isActiveTrip, isFalse);
+        });
+
+        test('returns false for payment', () {
+          expect(RideTripPhase.payment.isActiveTrip, isFalse);
+        });
+
+        test('returns false for completed', () {
+          expect(RideTripPhase.completed.isActiveTrip, isFalse);
+        });
+
+        test('returns false for cancelled', () {
+          expect(RideTripPhase.cancelled.isActiveTrip, isFalse);
+        });
+
+        test('returns false for failed', () {
+          expect(RideTripPhase.failed.isActiveTrip, isFalse);
+        });
+      });
+
+      group('isTerminal', () {
+        test('returns true for completed', () {
+          expect(RideTripPhase.completed.isTerminal, isTrue);
+        });
+
+        test('returns true for cancelled', () {
+          expect(RideTripPhase.cancelled.isTerminal, isTrue);
+        });
+
+        test('returns true for failed', () {
+          expect(RideTripPhase.failed.isTerminal, isTrue);
+        });
+
+        test('returns false for all non-terminal phases', () {
+          final nonTerminal = [
+            RideTripPhase.draft,
+            RideTripPhase.quoting,
+            RideTripPhase.requesting,
+            RideTripPhase.findingDriver,
+            RideTripPhase.driverAccepted,
+            RideTripPhase.driverArrived,
+            RideTripPhase.inProgress,
+            RideTripPhase.payment,
+          ];
+
+          for (final phase in nonTerminal) {
+            expect(phase.isTerminal, isFalse,
+                reason: '$phase should not be terminal');
+          }
+        });
+      });
+
+      group('isCancellable', () {
+        test('returns true for phases before trip starts', () {
+          final cancellable = [
+            RideTripPhase.draft,
+            RideTripPhase.quoting,
+            RideTripPhase.requesting,
+            RideTripPhase.findingDriver,
+            RideTripPhase.driverAccepted,
+            RideTripPhase.driverArrived,
+          ];
+
+          for (final phase in cancellable) {
+            expect(phase.isCancellable, isTrue,
+                reason: '$phase should be cancellable');
+          }
+        });
+
+        test('returns false for inProgress', () {
+          expect(RideTripPhase.inProgress.isCancellable, isFalse);
+        });
+
+        test('returns false for payment', () {
+          expect(RideTripPhase.payment.isCancellable, isFalse);
+        });
+
+        test('returns false for terminal phases', () {
+          expect(RideTripPhase.completed.isCancellable, isFalse);
+          expect(RideTripPhase.cancelled.isCancellable, isFalse);
+          expect(RideTripPhase.failed.isCancellable, isFalse);
+        });
+      });
+
+      group('isPreTrip', () {
+        test('returns true for draft', () {
+          expect(RideTripPhase.draft.isPreTrip, isTrue);
+        });
+
+        test('returns true for quoting', () {
+          expect(RideTripPhase.quoting.isPreTrip, isTrue);
+        });
+
+        test('returns true for requesting', () {
+          expect(RideTripPhase.requesting.isPreTrip, isTrue);
+        });
+
+        test('returns false for driver-involved phases', () {
+          final driverPhases = [
+            RideTripPhase.findingDriver,
+            RideTripPhase.driverAccepted,
+            RideTripPhase.driverArrived,
+            RideTripPhase.inProgress,
+            RideTripPhase.payment,
+            RideTripPhase.completed,
+            RideTripPhase.cancelled,
+            RideTripPhase.failed,
+          ];
+
+          for (final phase in driverPhases) {
+            expect(phase.isPreTrip, isFalse,
+                reason: '$phase should not be pre-trip');
+          }
+        });
+      });
+    });
+
+    // =========================================================================
+    // Track B - Ticket #89: tryApplyRideTripEvent Tests (Safe/No-throw)
+    // =========================================================================
+
+    group('tryApplyRideTripEvent (Ticket #89)', () {
+      test('returns new state for valid transition', () {
+        final state = RideTripState(
+          tripId: 'try-apply-1',
+          phase: RideTripPhase.draft,
+        );
+
+        final result = tryApplyRideTripEvent(state, RideTripEvent.requestQuote);
+
+        expect(result, isNotNull);
+        expect(result!.phase, RideTripPhase.quoting);
+        expect(result.tripId, 'try-apply-1');
+      });
+
+      test('returns null for invalid transition (no exception)', () {
+        final state = RideTripState(
+          tripId: 'try-apply-2',
+          phase: RideTripPhase.draft,
+        );
+
+        final result = tryApplyRideTripEvent(state, RideTripEvent.complete);
+
+        expect(result, isNull);
+      });
+
+      test('returns null for double events (idempotency)', () {
+        var state = RideTripState(
+          tripId: 'try-apply-3',
+          phase: RideTripPhase.draft,
+        );
+
+        // First event: valid
+        final result1 = tryApplyRideTripEvent(state, RideTripEvent.requestQuote);
+        expect(result1, isNotNull);
+        state = result1!;
+
+        // Second event (same): no-op, returns null
+        final result2 = tryApplyRideTripEvent(state, RideTripEvent.requestQuote);
+        expect(result2, isNull);
+        expect(state.phase, RideTripPhase.quoting); // unchanged
+      });
+
+      test('handles terminal state gracefully', () {
+        final state = RideTripState(
+          tripId: 'try-apply-4',
+          phase: RideTripPhase.completed,
+        );
+
+        final result = tryApplyRideTripEvent(state, RideTripEvent.cancel);
+
+        expect(result, isNull); // No exception, just null
+      });
+
+      test('Happy Path with tryApply - no exceptions thrown', () {
+        var state = RideTripState(
+          tripId: 'try-apply-happy',
+          phase: RideTripPhase.draft,
+        );
+
+        // Apply all events in sequence using tryApply
+        final events = [
+          RideTripEvent.requestQuote,
+          RideTripEvent.quoteReceived,
+          RideTripEvent.submitRequest,
+          RideTripEvent.driverAccepted,
+          RideTripEvent.driverArrived,
+          RideTripEvent.startTrip,
+          RideTripEvent.startPayment,
+          RideTripEvent.complete,
+        ];
+
+        for (final event in events) {
+          final result = tryApplyRideTripEvent(state, event);
+          expect(result, isNotNull, reason: '$event should succeed');
+          state = result!;
+        }
+
+        expect(state.phase, RideTripPhase.completed);
+      });
+    });
+
+    // =========================================================================
+    // Track B - Ticket #89: isValidTransition Tests
+    // =========================================================================
+
+    group('isValidTransition (Ticket #89)', () {
+      test('returns true for valid draft -> quoting', () {
+        expect(
+          isValidTransition(RideTripPhase.draft, RideTripEvent.requestQuote),
+          isTrue,
+        );
+      });
+
+      test('returns false for invalid draft -> complete', () {
+        expect(
+          isValidTransition(RideTripPhase.draft, RideTripEvent.complete),
+          isFalse,
+        );
+      });
+
+      test('returns false for terminal states', () {
+        for (final event in RideTripEvent.values) {
+          expect(
+            isValidTransition(RideTripPhase.completed, event),
+            isFalse,
+            reason: 'completed should reject $event',
+          );
+          expect(
+            isValidTransition(RideTripPhase.cancelled, event),
+            isFalse,
+            reason: 'cancelled should reject $event',
+          );
+          expect(
+            isValidTransition(RideTripPhase.failed, event),
+            isFalse,
+            reason: 'failed should reject $event',
+          );
+        }
+      });
+
+      test('validates cancel from cancellable phases', () {
+        final cancellablePhases = [
+          RideTripPhase.draft,
+          RideTripPhase.quoting,
+          RideTripPhase.requesting,
+          RideTripPhase.findingDriver,
+          RideTripPhase.driverAccepted,
+          RideTripPhase.driverArrived,
+        ];
+
+        for (final phase in cancellablePhases) {
+          expect(
+            isValidTransition(phase, RideTripEvent.cancel),
+            isTrue,
+            reason: '$phase should allow cancel',
+          );
+        }
+      });
+
+      test('validates fail from all non-terminal phases', () {
+        final nonTerminal = [
+          RideTripPhase.draft,
+          RideTripPhase.quoting,
+          RideTripPhase.requesting,
+          RideTripPhase.findingDriver,
+          RideTripPhase.driverAccepted,
+          RideTripPhase.driverArrived,
+          RideTripPhase.inProgress,
+          RideTripPhase.payment,
+        ];
+
+        for (final phase in nonTerminal) {
+          expect(
+            isValidTransition(phase, RideTripEvent.fail),
+            isTrue,
+            reason: '$phase should allow fail',
+          );
+        }
+      });
+    });
+
+    // =========================================================================
+    // Track B - Ticket #89: Double Events / Network Delay Resilience
+    // =========================================================================
+
+    group('Double Events Resilience (Ticket #89)', () {
+      test('quoteReceived twice does not change state after first apply', () {
+        var state = RideTripState(
+          tripId: 'double-event-1',
+          phase: RideTripPhase.draft,
+        );
+
+        // Move to quoting first
+        state = applyRideTripEvent(state, RideTripEvent.requestQuote);
+        expect(state.phase, RideTripPhase.quoting);
+
+        // Apply quoteReceived
+        state = applyRideTripEvent(state, RideTripEvent.quoteReceived);
+        expect(state.phase, RideTripPhase.requesting);
+
+        // Try quoteReceived again - should be no-op (using tryApply)
+        final result = tryApplyRideTripEvent(state, RideTripEvent.quoteReceived);
+        expect(result, isNull);
+        expect(state.phase, RideTripPhase.requesting); // unchanged
+      });
+
+      test('driverAccepted twice is idempotent with tryApply', () {
+        var state = RideTripState(
+          tripId: 'double-event-2',
+          phase: RideTripPhase.findingDriver,
+        );
+
+        // First driverAccepted
+        state = applyRideTripEvent(state, RideTripEvent.driverAccepted);
+        expect(state.phase, RideTripPhase.driverAccepted);
+
+        // Second driverAccepted - no-op
+        final result = tryApplyRideTripEvent(state, RideTripEvent.driverAccepted);
+        expect(result, isNull);
+      });
+
+      test('complete twice is idempotent with tryApply', () {
+        var state = RideTripState(
+          tripId: 'double-event-3',
+          phase: RideTripPhase.payment,
+        );
+
+        // First complete
+        state = applyRideTripEvent(state, RideTripEvent.complete);
+        expect(state.phase, RideTripPhase.completed);
+
+        // Second complete - no-op (terminal state)
+        final result = tryApplyRideTripEvent(state, RideTripEvent.complete);
+        expect(result, isNull);
       });
     });
   });

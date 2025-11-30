@@ -297,6 +297,19 @@
   "@ordersFilterParcels": {
     "description": "عنوان فلتر الطرود فقط (Track C - Ticket #51)"
   },
+  "ordersFilterRides": "الرحلات",
+  "ordersSectionRidesTitle": "الرحلات",
+  "ordersRideItemTitleToDestination": "رحلة إلى {destination}",
+  "@ordersRideItemTitleToDestination": {
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "ordersRideStatusCompleted": "مكتملة",
+  "ordersRideStatusCancelled": "ملغاة",
+  "ordersRideStatusFailed": "فشلت",
 
   "paymentMethodsTitle": "وسائل الدفع",
   "paymentMethodsEmptyTitle": "لا توجد وسائل دفع",
@@ -568,15 +581,57 @@
   },
 
   "rideActiveContactDriverCta": "التواصل مع السائق",
-  "rideActiveShareTripCta": "مشاركة الرحلة",
+  "rideActiveShareTripCta": "مشاركة حالة الرحلة",
   "rideActiveCancelTripCta": "إلغاء الرحلة",
 
-  "rideActiveContactDriverNotImplemented": "التواصل مع السائق غير متوفر بعد.",
-  "rideActiveShareTripNotImplemented": "مشاركة الرحلة غير متوفرة بعد.",
-  "rideActiveCancelTripNotImplemented": "إلغاء الرحلة غير متوفر بعد.",
+  "rideActiveShareTripCopied": "تم نسخ حالة الرحلة. يمكنك لصقها في أي تطبيق.",
+  "@rideActiveShareTripCopied": {
+    "description": "رسالة بعد نسخ حالة الرحلة إلى الحافظة (Track B - Ticket #68)"
+  },
+  "rideActiveContactNoPhoneError": "بيانات تواصل السائق غير متوفرة حالياً.",
+  "@rideActiveContactNoPhoneError": {
+    "description": "رسالة خطأ عند عدم توفر رقم هاتف السائق (Track B - Ticket #68)"
+  },
+  "rideActiveShareGenericError": "لا يمكن تجهيز حالة الرحلة الآن. يرجى المحاولة لاحقاً.",
+  "@rideActiveShareGenericError": {
+    "description": "رسالة خطأ عامة لفشل مشاركة الرحلة (Track B - Ticket #68)"
+  },
+  "rideActiveShareMessageTemplate": "أنا في رحلة مع Delivery Ways إلى {destination}. يمكنك متابعة حالة الرحلة هنا: {link}",
+  "@rideActiveShareMessageTemplate": {
+    "description": "قالب رسالة مشاركة حالة الرحلة (Track B - Ticket #68)",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      },
+      "link": {
+        "type": "String"
+      }
+    }
+  },
   "rideActiveCancelErrorGeneric": "تعذر إلغاء الرحلة. يرجى المحاولة مرة أخرى.",
   "@rideActiveCancelErrorGeneric": {
     "description": "رسالة خطأ عامة عند فشل إلغاء الرحلة (Track B - Ticket #22)"
+  },
+
+  "rideCancelDialogTitle": "هل تريد إلغاء الرحلة؟",
+  "@rideCancelDialogTitle": {
+    "description": "عنوان مربع حوار تأكيد إلغاء الرحلة (Track B - Ticket #67)"
+  },
+  "rideCancelDialogMessage": "إذا ألغيت الآن، سيتوقف السائق عن التوجه إلى موقعك.",
+  "@rideCancelDialogMessage": {
+    "description": "رسالة في مربع حوار تأكيد إلغاء الرحلة (Track B - Ticket #67)"
+  },
+  "rideCancelDialogKeepRideCta": "الاستمرار في الرحلة",
+  "@rideCancelDialogKeepRideCta": {
+    "description": "زر لإغلاق مربع الحوار والاستمرار في الرحلة (Track B - Ticket #67)"
+  },
+  "rideCancelDialogConfirmCta": "إلغاء الرحلة",
+  "@rideCancelDialogConfirmCta": {
+    "description": "زر لتأكيد إلغاء الرحلة في مربع الحوار (Track B - Ticket #67)"
+  },
+  "rideCancelSuccessSnackbar": "تم إلغاء رحلتك.",
+  "@rideCancelSuccessSnackbar": {
+    "description": "رسالة snackbar بعد إلغاء الرحلة بنجاح (Track B - Ticket #67)"
   },
 
   "rideActiveHeadlineFindingDriver": "جارٍ البحث عن سائق…",
@@ -599,6 +654,13 @@
 
   "rideActiveGoBackCta": "العودة",
 
+  "rideActiveCancelledTitle": "تم إلغاء الرحلة",
+  "rideActiveCancelledBody": "تم إلغاء رحلتك. يمكنك طلب رحلة جديدة في أي وقت.",
+  "rideActiveFailedTitle": "حدث خطأ ما",
+  "rideActiveFailedBody": "تعذّر إكمال هذه الرحلة. يرجى المحاولة مرة أخرى بعد قليل.",
+  "rideActiveBackToHomeCta": "الرجوع للرئيسية",
+  "rideActiveRequestNewRideCta": "طلب رحلة جديدة",
+
   "rideActiveDestinationLabel": "إلى {destination}",
   "@rideActiveDestinationLabel": {
     "placeholders": {
@@ -608,9 +670,48 @@
     }
   },
 
+  "rideDebugFsmTitle": "أدوات تصحيح FSM",
+  "@rideDebugFsmTitle": {
+    "description": "عنوان قسم أدوات FSM (يظهر فقط في وضع التصحيح)"
+  },
+  "rideDebugCurrentPhase": "المرحلة الحالية: {phase}",
+  "@rideDebugCurrentPhase": {
+    "placeholders": {
+      "phase": {
+        "type": "String"
+      }
+    }
+  },
+  "rideDebugDriverFound": "السائق قبل",
+  "rideDebugDriverArrived": "السائق وصل",
+  "rideDebugStartTrip": "بدء الرحلة",
+  "rideDebugCompleteTrip": "إنهاء الرحلة",
+  "rideDebugConfirmPayment": "تأكيد الدفع",
+
+  "rideStatusFindingDriver": "جاري البحث عن سائق...",
+  "rideStatusDriverAccepted": "السائق في الطريق",
+  "rideStatusDriverArrived": "السائق وصل",
+  "rideStatusInProgress": "الرحلة قيد التنفيذ",
+  "rideStatusPaymentPending": "في انتظار الدفع",
+  "rideStatusCompleted": "تم إنهاء الرحلة",
+  "rideStatusUnknown": "جاري تجهيز رحلتك...",
+
   "homeActiveRideViewTripCta": "عرض الرحلة",
   "@homeActiveRideViewTripCta": {
     "description": "زر في كرت الرحلة النشطة في الشاشة الرئيسية لفتح شاشة الرحلة."
+  },
+  "homeActiveRideTitleGeneric": "رحلة نشطة",
+  "@homeActiveRideTitleGeneric": {
+    "description": "عنوان عام لكرت الرحلة النشطة على الشاشة الرئيسية (Track B - Ticket #65)"
+  },
+  "homeActiveRideSubtitleToDestination": "إلى {destination}",
+  "@homeActiveRideSubtitleToDestination": {
+    "description": "النص الفرعي الذي يعرض الوجهة على كرت الرحلة النشطة",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
   },
 
   "rideDestinationTitle": "إلى أين؟",
@@ -628,6 +729,35 @@
   "rideDestinationRecentLocationsSection": "المواقع الأخيرة",
   "@rideDestinationRecentLocationsSection": {
     "description": "عنوان قسم قائمة المواقع الأخيرة/المحفوظة"
+  },
+
+  "rideLocationPickerTitle": "اختيار موقع الرحلة",
+  "@rideLocationPickerTitle": {
+    "description": "عنوان شاشة اختيار المواقع (Ticket #93)"
+  },
+  "rideLocationPickerPickupLabel": "مكان الانطلاق",
+  "@rideLocationPickerPickupLabel": {
+    "description": "تسمية حقل موقع الانطلاق (Ticket #93)"
+  },
+  "rideLocationPickerDestinationLabel": "وجهة الوصول",
+  "@rideLocationPickerDestinationLabel": {
+    "description": "تسمية حقل الوجهة (Ticket #93)"
+  },
+  "rideLocationPickerPickupPlaceholder": "من أين نلتقطك؟",
+  "@rideLocationPickerPickupPlaceholder": {
+    "description": "نص تلميحي لحقل موقع الانطلاق (Ticket #93)"
+  },
+  "rideLocationPickerDestinationPlaceholder": "إلى أين تتجه؟",
+  "@rideLocationPickerDestinationPlaceholder": {
+    "description": "نص تلميحي لحقل الوجهة (Ticket #93)"
+  },
+  "rideLocationPickerMapHint": "حرّك العلامة أو استخدم البحث لتحديد المواقع.",
+  "@rideLocationPickerMapHint": {
+    "description": "نص تلميحي يظهر فوق الخريطة (Ticket #93)"
+  },
+  "rideLocationPickerContinueCta": "عرض الأسعار",
+  "@rideLocationPickerContinueCta": {
+    "description": "نص زر المتابعة (Ticket #93)"
   },
 
   "rideTripConfirmationTitle": "تأكيد الرحلة",
@@ -711,6 +841,18 @@
   "rideConfirmRetryCta": "إعادة المحاولة",
   "@rideConfirmRetryCta": {
     "description": "زر إعادة محاولة تحميل خيارات الرحلة"
+  },
+  "rideConfirmRecommendedBadge": "موصى به",
+  "@rideConfirmRecommendedBadge": {
+    "description": "شارة تظهر على خيار الرحلة الموصى به (Ticket #91)"
+  },
+  "rideConfirmFromLabel": "من",
+  "@rideConfirmFromLabel": {
+    "description": "تسمية موقع الانطلاق في ملخص الرحلة (Ticket #91)"
+  },
+  "rideConfirmToLabel": "إلى",
+  "@rideConfirmToLabel": {
+    "description": "تسمية الوجهة في ملخص الرحلة (Ticket #91)"
   },
 
   "onboardingWelcomeTitle": "مرحبًا في Delivery Ways",
@@ -886,9 +1028,29 @@
   "@parcelsDetailsFragileLabel": {
     "description": "عنوان مفتاح القابلية للكسر"
   },
-  "parcelsDetailsContinueCta": "متابعة إلى التسعير",
+  "parcelsDetailsContinueCta": "مراجعة التسعيرة",
   "@parcelsDetailsContinueCta": {
     "description": "زر المتابعة في شاشة تفاصيل الشحنة"
+  },
+  "parcelsDetailsErrorWeightRequired": "يرجى إدخال وزن الطرد",
+  "@parcelsDetailsErrorWeightRequired": {
+    "description": "Error when weight field is empty (Track C - Ticket #76)"
+  },
+  "parcelsDetailsErrorPositiveNumber": "يرجى إدخال رقم صحيح موجب",
+  "@parcelsDetailsErrorPositiveNumber": {
+    "description": "Error when weight is not a positive number (Track C - Ticket #76)"
+  },
+  "parcelsDetailsErrorContentsRequired": "يرجى وصف محتوى الشحنة",
+  "@parcelsDetailsErrorContentsRequired": {
+    "description": "Error when contents field is empty (Track C - Ticket #76)"
+  },
+  "parcelsDetailsErrorSizeRequired": "يرجى اختيار حجم الطرد",
+  "@parcelsDetailsErrorSizeRequired": {
+    "description": "Error when size is not selected (Track C - Ticket #76)"
+  },
+  "parcelsDetailsSectionParcelTitle": "تفاصيل الطرد",
+  "@parcelsDetailsSectionParcelTitle": {
+    "description": "Section header for parcel details (Track C - Ticket #76)"
   },
 
   "parcelsQuoteTitle": "تسعير الشحنة",
@@ -927,7 +1089,44 @@
   "@parcelsQuoteConfirmCta": {
     "description": "زر التأكيد في شاشة تسعير الشحنة"
   },
+  "parcelsQuoteSummaryTitle": "ملخص الشحنة",
+  "@parcelsQuoteSummaryTitle": {
+    "description": "عنوان بطاقة ملخص الشحنة (Track C - Ticket #77)"
+  },
+  "parcelsQuoteFromLabel": "من",
+  "@parcelsQuoteFromLabel": {
+    "description": "تسمية عنوان الاستلام في الملخص (Track C - Ticket #77)"
+  },
+  "parcelsQuoteToLabel": "إلى",
+  "@parcelsQuoteToLabel": {
+    "description": "تسمية عنوان التسليم في الملخص (Track C - Ticket #77)"
+  },
+  "parcelsQuoteWeightLabel": "الوزن",
+  "@parcelsQuoteWeightLabel": {
+    "description": "تسمية الوزن في الملخص (Track C - Ticket #77)"
+  },
+  "parcelsQuoteSizeLabel": "الحجم",
+  "@parcelsQuoteSizeLabel": {
+    "description": "تسمية الحجم في الملخص (Track C - Ticket #77)"
+  },
+  "parcelsQuoteTotalLabel": "الإجمالي: {amount}",
+  "@parcelsQuoteTotalLabel": {
+    "description": "تسمية السعر الإجمالي مع المبلغ (Track C - Ticket #77)",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "parcelsQuoteBreakdownStubNote": "هذا سعر تقديري. قد يتغيّر السعر النهائي بعد الربط مع خدمة التسعير الفعلية.",
+  "@parcelsQuoteBreakdownStubNote": {
+    "description": "ملاحظة حول السعر التقديري (Track C - Ticket #77)"
+  },
 
+  "parcelsListTitle": "شحناتك",
+  "@parcelsListTitle": {
+    "description": "عنوان شريط التطبيق لشاشة قائمة الشحنات (Track C - Ticket #72)"
+  },
   "parcelsListSectionTitle": "شحناتي",
   "@parcelsListSectionTitle": {
     "description": "عنوان قسم قائمة الشحنات (Track C - Ticket #45)"
@@ -939,6 +1138,27 @@
   "parcelsListEmptySubtitle": "عند إنشاء شحنة جديدة ستظهر هنا.",
   "@parcelsListEmptySubtitle": {
     "description": "النص الفرعي عند عدم وجود شحنات"
+  },
+  "parcelsListEmptyCta": "أنشئ أول شحنة",
+  "@parcelsListEmptyCta": {
+    "description": "زر CTA في الحالة الفارغة لإنشاء أول شحنة (Track C - Ticket #73)"
+  },
+  "parcelsListNewShipmentTooltip": "شحنة جديدة",
+  "@parcelsListNewShipmentTooltip": {
+    "description": "تلميح لزر + في شريط التطبيق (Track C - Ticket #73)"
+  },
+  "parcelsListCreatedAtLabel": "تم الإنشاء في {date}",
+  "@parcelsListCreatedAtLabel": {
+    "description": "عنوان يعرض تاريخ إنشاء الشحنة (Track C - Ticket #73)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "parcelsListUnknownDestinationLabel": "وجهة غير معروفة",
+  "@parcelsListUnknownDestinationLabel": {
+    "description": "نص بديل عندما لا تكون الوجهة محددة (Track C - Ticket #73)"
   },
   "parcelsFilterAllLabel": "الكل",
   "@parcelsFilterAllLabel": {
@@ -1065,6 +1285,30 @@
   "@parcelsCreateErrorInvalidPhone": {
     "description": "رسالة خطأ لأرقام الهاتف غير الصحيحة"
   },
+  "parcelsCreateWeightInvalidError": "يرجى إدخال وزن صحيح.",
+  "@parcelsCreateWeightInvalidError": {
+    "description": "رسالة خطأ للوزن غير الصحيح (Track C - Ticket #69)"
+  },
+  "parcelsCreateEstimateComingSoonSnackbar": "تسعيرة الشحنة قيد التنفيذ وستتوفر قريباً.",
+  "@parcelsCreateEstimateComingSoonSnackbar": {
+    "description": "رسالة عندما لا تتوفر ميزة التسعير بعد (Track C - Ticket #69)"
+  },
+  "parcelsCreateSizeSmallLabel": "صغيرة",
+  "@parcelsCreateSizeSmallLabel": {
+    "description": "خيار الحجم: صغير (Track C - Ticket #69)"
+  },
+  "parcelsCreateSizeMediumLabel": "متوسطة",
+  "@parcelsCreateSizeMediumLabel": {
+    "description": "خيار الحجم: متوسط (Track C - Ticket #69)"
+  },
+  "parcelsCreateSizeLargeLabel": "كبيرة",
+  "@parcelsCreateSizeLargeLabel": {
+    "description": "خيار الحجم: كبير (Track C - Ticket #69)"
+  },
+  "parcelsCreateSizeOversizeLabel": "ضخمة",
+  "@parcelsCreateSizeOversizeLabel": {
+    "description": "خيار الحجم: ضخم (Track C - Ticket #69)"
+  },
 
   "parcelsShipmentDetailsTitle": "تفاصيل الشحنة",
   "@parcelsShipmentDetailsTitle": {
@@ -1159,5 +1403,650 @@
   "foodComingSoonPrimaryCta": "العودة إلى الرئيسية",
   "@foodComingSoonPrimaryCta": {
     "description": "زر العودة في شاشة توصيل الطعام قريباً"
+  },
+
+  "foodRestaurantsAppBarTitle": "توصيل الطعام",
+  "@foodRestaurantsAppBarTitle": {
+    "description": "عنوان شريط التطبيق لشاشة قائمة المطاعم (Track C - Ticket #52)"
+  },
+  "foodRestaurantsSearchPlaceholder": "ابحث عن مطاعم أو مطابخ",
+  "@foodRestaurantsSearchPlaceholder": {
+    "description": "نص التلميح لحقل البحث"
+  },
+  "foodRestaurantsFilterAll": "الكل",
+  "@foodRestaurantsFilterAll": {
+    "description": "عنوان فلتر إظهار جميع المطاعم"
+  },
+  "foodRestaurantsFilterBurgers": "برجر",
+  "@foodRestaurantsFilterBurgers": {
+    "description": "عنوان فلتر مطاعم البرجر"
+  },
+  "foodRestaurantsFilterItalian": "إيطالي",
+  "@foodRestaurantsFilterItalian": {
+    "description": "عنوان فلتر المطاعم الإيطالية"
+  },
+  "foodRestaurantsEmptyTitle": "لا توجد مطاعم مطابقة",
+  "@foodRestaurantsEmptyTitle": {
+    "description": "العنوان عند عدم وجود مطاعم تطابق الفلاتر"
+  },
+  "foodRestaurantsEmptySubtitle": "جرّب تغيير الفلاتر أو البحث عن نوع آخر من الأطعمة.",
+  "@foodRestaurantsEmptySubtitle": {
+    "description": "النص الفرعي عند عدم وجود مطاعم تطابق الفلاتر"
+  },
+
+  "foodRestaurantMenuError": "تعذّر تحميل قائمة الطعام. يرجى المحاولة مرة أخرى.",
+  "@foodRestaurantMenuError": {
+    "description": "رسالة خطأ عند فشل تحميل القائمة (Track C - Ticket #53)"
+  },
+  "foodCartSummaryCta": "{itemCount} عنصر · المجموع {totalPrice}",
+  "@foodCartSummaryCta": {
+    "description": "نص زر ملخص السلة",
+    "placeholders": {
+      "itemCount": {
+        "type": "String"
+      },
+      "totalPrice": {
+        "type": "String"
+      }
+    }
+  },
+  "foodCartCheckoutStub": "إتمام الطلب غير مفعّل بعد. عدد العناصر {itemCount}، المجموع {totalPrice}.",
+  "@foodCartCheckoutStub": {
+    "description": "رسالة مؤقتة عند الضغط على الدفع",
+    "placeholders": {
+      "itemCount": {
+        "type": "String"
+      },
+      "totalPrice": {
+        "type": "String"
+      }
+    }
+  },
+
+  "ordersSectionParcelsTitle": "الطرود",
+  "@ordersSectionParcelsTitle": {
+    "description": "عنوان قسم طلبات الطرود في شاشة طلباتي (Track C - Ticket #54)"
+  },
+  "ordersSectionFoodTitle": "الطعام",
+  "@ordersSectionFoodTitle": {
+    "description": "عنوان قسم طلبات الطعام في شاشة طلباتي (Track C - Ticket #54)"
+  },
+  "ordersFilterFood": "الطعام",
+  "@ordersFilterFood": {
+    "description": "عنوان فلتر طلبات الطعام فقط (Track C - Ticket #54)"
+  },
+
+  "ordersFoodStatusPending": "قيد المعالجة",
+  "@ordersFoodStatusPending": {
+    "description": "حالة طلب الطعام: قيد المعالجة (Track C - Ticket #54)"
+  },
+  "ordersFoodStatusInPreparation": "قيد التحضير",
+  "@ordersFoodStatusInPreparation": {
+    "description": "حالة طلب الطعام: قيد التحضير (Track C - Ticket #54)"
+  },
+  "ordersFoodStatusOnTheWay": "في الطريق",
+  "@ordersFoodStatusOnTheWay": {
+    "description": "حالة طلب الطعام: في الطريق (Track C - Ticket #54)"
+  },
+  "ordersFoodStatusDelivered": "تم التسليم",
+  "@ordersFoodStatusDelivered": {
+    "description": "حالة طلب الطعام: تم التسليم (Track C - Ticket #54)"
+  },
+  "ordersFoodStatusCancelled": "ملغي",
+  "@ordersFoodStatusCancelled": {
+    "description": "حالة طلب الطعام: ملغي (Track C - Ticket #54)"
+  },
+
+  "ordersFoodCreatedAtLabel": "تم الطلب في {date}",
+  "@ordersFoodCreatedAtLabel": {
+    "description": "عنوان يعرض تاريخ إنشاء طلب الطعام (Track C - Ticket #54)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+
+  "foodCartOrderCreatedSnackbar": "تم إنشاء طلبك من {restaurant}.",
+  "@foodCartOrderCreatedSnackbar": {
+    "description": "رسالة Snackbar بعد إنشاء طلب طعام بنجاح (Track C - Ticket #54)",
+    "placeholders": {
+      "restaurant": {
+        "type": "String"
+      }
+    }
+  },
+
+  "homeFoodComingSoonLabel": "قريباً",
+  "@homeFoodComingSoonLabel": {
+    "description": "عنوان يظهر على بطاقة خدمة الطعام عند تعطيل الميزة (Track C - Ticket #55)"
+  },
+  "homeFoodComingSoonMessage": "خدمة توصيل الطعام غير متاحة بعد في منطقتك.",
+  "@homeFoodComingSoonMessage": {
+    "description": "رسالة تظهر عند الضغط على بطاقة الطعام المعطلة (Track C - Ticket #55)"
+  },
+
+  "homeFoodCardTitle": "الطعام",
+  "@homeFoodCardTitle": {
+    "description": "عنوان بطاقة خدمة الطعام في الشاشة الرئيسية (Track C - Ticket #56)"
+  },
+  "homeFoodCardSubtitle": "طعامك المفضل، إليك.",
+  "@homeFoodCardSubtitle": {
+    "description": "النص الفرعي لبطاقة خدمة الطعام في الشاشة الرئيسية (Track C - Ticket #56)"
+  },
+
+  "onboardingRideTitle": "احصل على رحلة، فورًا.",
+  "@onboardingRideTitle": {
+    "description": "عنوان شاشة الترحيب للرحلات (Track D - Ticket #57)"
+  },
+  "onboardingRideBody": "اضغط، اركب، ووصل. تنقل سريع، موثوق، وبسعر مناسب في متناول يدك.",
+  "@onboardingRideBody": {
+    "description": "النص الفرعي لشاشة الترحيب للرحلات (Track D - Ticket #57)"
+  },
+  "onboardingParcelsTitle": "أرسل أي شيء، بسهولة.",
+  "@onboardingParcelsTitle": {
+    "description": "عنوان شاشة الترحيب للطرود (Track D - Ticket #57)"
+  },
+  "onboardingParcelsBody": "من المستندات إلى الهدايا، أرسل وتتبع طرودك بسهولة وثقة.",
+  "@onboardingParcelsBody": {
+    "description": "النص الفرعي لشاشة الترحيب للطرود (Track D - Ticket #57)"
+  },
+  "onboardingFoodTitle": "طعامك المفضل، إليك.",
+  "@onboardingFoodTitle": {
+    "description": "عنوان شاشة الترحيب للطعام (Track D - Ticket #57)"
+  },
+  "onboardingFoodBody": "استكشف المطاعم القريبة واستمتع بتوصيل سريع حتى باب منزلك.",
+  "@onboardingFoodBody": {
+    "description": "النص الفرعي لشاشة الترحيب للطعام (Track D - Ticket #57)"
+  },
+  "onboardingButtonContinue": "استمر",
+  "@onboardingButtonContinue": {
+    "description": "زر الاستمرار في شاشات الترحيب (Track D - Ticket #57)"
+  },
+  "onboardingButtonGetStarted": "ابدأ الآن",
+  "@onboardingButtonGetStarted": {
+    "description": "زر البدء في شاشة الترحيب الأخيرة (Track D - Ticket #57)"
+  },
+
+  "homeRideCardTitle": "رحلة",
+  "@homeRideCardTitle": {
+    "description": "عنوان بطاقة خدمة الرحلات في الشاشة الرئيسية (Track B - Ticket #60)"
+  },
+  "homeRideCardSubtitle": "احصل على رحلة فوراً.",
+  "@homeRideCardSubtitle": {
+    "description": "النص الفرعي لبطاقة خدمة الرحلات (Track B - Ticket #60)"
+  },
+
+  "rideDestinationDestinationLabel": "الوجهة",
+  "@rideDestinationDestinationLabel": {
+    "description": "عنوان حقل الوجهة (Track B - Ticket #60)"
+  },
+  "rideDestinationDestinationPlaceholder": "إلى أين؟",
+  "@rideDestinationDestinationPlaceholder": {
+    "description": "نص التلميح لحقل الوجهة (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentTitle": "الوجهات الأخيرة",
+  "@rideDestinationRecentTitle": {
+    "description": "عنوان قسم الوجهات الأخيرة (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentHomeLabel": "المنزل",
+  "@rideDestinationRecentHomeLabel": {
+    "description": "عنوان المنزل في الوجهات الأخيرة (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentHomeSubtitle": "عنوان المنزل المحفوظ",
+  "@rideDestinationRecentHomeSubtitle": {
+    "description": "النص الفرعي للمنزل في الوجهات الأخيرة (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentWorkLabel": "العمل",
+  "@rideDestinationRecentWorkLabel": {
+    "description": "عنوان العمل في الوجهات الأخيرة (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentWorkSubtitle": "عنوان العمل المحفوظ",
+  "@rideDestinationRecentWorkSubtitle": {
+    "description": "النص الفرعي للعمل في الوجهات الأخيرة (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentLastLabel": "آخر رحلة",
+  "@rideDestinationRecentLastLabel": {
+    "description": "عنوان آخر رحلة في الوجهات الأخيرة (Track B - Ticket #60)"
+  },
+  "rideDestinationRecentLastSubtitle": "استخدم وجهة آخر رحلة",
+  "@rideDestinationRecentLastSubtitle": {
+    "description": "النص الفرعي لآخر رحلة في الوجهات الأخيرة (Track B - Ticket #60)"
+  },
+  "rideDestinationNextCta": "التالي",
+  "@rideDestinationNextCta": {
+    "description": "زر التالي في شاشة اختيار الوجهة (Track B - Ticket #60)"
+  },
+  "rideDestinationComingSoonSnackbar": "ملخص الرحلة قيد التنفيذ وسيتوفر قريباً.",
+  "@rideDestinationComingSoonSnackbar": {
+    "description": "رسالة Snackbar عند عدم توفر ملخص الرحلة (Track B - Ticket #60)"
+  },
+
+  "rideSummaryReceiptTitle": "الإيصال",
+  "@rideSummaryReceiptTitle": {
+    "description": "عنوان قسم الإيصال في ملخص الرحلة (Track B - Ticket #62)"
+  },
+  "rideSummaryReceiptFareLabel": "أجرة الرحلة",
+  "@rideSummaryReceiptFareLabel": {
+    "description": "عنوان الأجرة في تفصيل الإيصال (Track B - Ticket #62)"
+  },
+  "rideSummaryReceiptFeesLabel": "الرسوم",
+  "@rideSummaryReceiptFeesLabel": {
+    "description": "عنوان الرسوم في تفصيل الإيصال (Track B - Ticket #62)"
+  },
+  "rideSummaryReceiptTotalLabel": "الإجمالي",
+  "@rideSummaryReceiptTotalLabel": {
+    "description": "عنوان الإجمالي في تفصيل الإيصال (Track B - Ticket #62)"
+  },
+  "rideSummaryRatingTitle": "قيّم السائق",
+  "@rideSummaryRatingTitle": {
+    "description": "عنوان قسم تقييم السائق (Track B - Ticket #62)"
+  },
+  "rideSummaryRatingSubtitle": "ملاحظاتك تساعدنا في الحفاظ على رحلات آمنة ومريحة.",
+  "@rideSummaryRatingSubtitle": {
+    "description": "النص الفرعي لقسم تقييم السائق (Track B - Ticket #62)"
+  },
+  "rideSummaryCommentPlaceholder": "أضف ملاحظة (اختياري)",
+  "@rideSummaryCommentPlaceholder": {
+    "description": "نص التلميح لحقل الملاحظات الاختياري (Track B - Ticket #62)"
+  },
+
+  "rideReceiptTripIdLabel": "رقم الرحلة: {id}",
+  "@rideReceiptTripIdLabel": {
+    "description": "رقم الرحلة مع القيمة (Ticket #92)",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "rideReceiptCompletedAt": "{date} في {time}",
+  "@rideReceiptCompletedAt": {
+    "description": "تنسيق وقت الانتهاء (Ticket #92)",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "rideReceiptFromLabel": "من",
+  "@rideReceiptFromLabel": {
+    "description": "تسمية موقع الانطلاق (Ticket #92)"
+  },
+  "rideReceiptToLabel": "إلى",
+  "@rideReceiptToLabel": {
+    "description": "تسمية الوجهة (Ticket #92)"
+  },
+  "rideReceiptFareSectionTitle": "أجرة الرحلة",
+  "@rideReceiptFareSectionTitle": {
+    "description": "عنوان قسم تفاصيل الأجرة (Ticket #92)"
+  },
+  "rideReceiptBaseFareLabel": "الأجرة الأساسية",
+  "@rideReceiptBaseFareLabel": {
+    "description": "تسمية الأجرة الأساسية (Ticket #92)"
+  },
+  "rideReceiptDistanceFareLabel": "المسافة",
+  "@rideReceiptDistanceFareLabel": {
+    "description": "تسمية أجرة المسافة (Ticket #92)"
+  },
+  "rideReceiptTimeFareLabel": "الوقت",
+  "@rideReceiptTimeFareLabel": {
+    "description": "تسمية أجرة الوقت (Ticket #92)"
+  },
+  "rideReceiptFeesLabel": "الرسوم والضرائب",
+  "@rideReceiptFeesLabel": {
+    "description": "تسمية الرسوم (Ticket #92)"
+  },
+  "rideReceiptTotalLabel": "الإجمالي",
+  "@rideReceiptTotalLabel": {
+    "description": "تسمية الإجمالي (Ticket #92)"
+  },
+  "rideReceiptDriverSectionTitle": "السائق والمركبة",
+  "@rideReceiptDriverSectionTitle": {
+    "description": "عنوان قسم السائق (Ticket #92)"
+  },
+  "rideReceiptRateDriverTitle": "قيّم تجربتك مع السائق",
+  "@rideReceiptRateDriverTitle": {
+    "description": "عنوان تقييم السائق (Ticket #92)"
+  },
+  "rideReceiptRateDriverSubtitle": "ملاحظاتك تساعدنا على تحسين جودة الرحلات.",
+  "@rideReceiptRateDriverSubtitle": {
+    "description": "نص فرعي لتقييم السائق (Ticket #92)"
+  },
+  "rideReceiptDoneCta": "تم",
+  "@rideReceiptDoneCta": {
+    "description": "زر الانتهاء (Ticket #92)"
+  },
+
+  "rideSummaryEndTripDebugCta": "إنهاء الرحلة",
+  "@rideSummaryEndTripDebugCta": {
+    "description": "زر إنهاء الرحلة للاختبار (Track B - Ticket #62)"
+  },
+  "rideSummaryThankYouSnackbar": "شكرًا لملاحظاتك.",
+  "@rideSummaryThankYouSnackbar": {
+    "description": "رسالة Snackbar بعد إرسال الملاحظات (Track B - Ticket #62)"
+  },
+
+  "homeActiveParcelTitleGeneric": "شحنة نشطة",
+  "@homeActiveParcelTitleGeneric": {
+    "description": "عنوان عام لكرت الشحنة النشطة على الشاشة الرئيسية (Track C - Ticket #70)"
+  },
+  "homeActiveParcelSubtitleToDestination": "إلى {destination}",
+  "@homeActiveParcelSubtitleToDestination": {
+    "description": "النص الفرعي الذي يعرض الوجهة على كرت الشحنة النشطة (Track C - Ticket #70)",
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "homeActiveParcelViewShipmentCta": "عرض الشحنة",
+  "@homeActiveParcelViewShipmentCta": {
+    "description": "زر في كرت الشحنة النشطة لفتح شاشة التتبع (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusPreparing": "جاري تجهيز شحنتك...",
+  "@homeActiveParcelStatusPreparing": {
+    "description": "حالة الشحنة للمسودة/التسعير (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusScheduled": "الاستلام مجدول",
+  "@homeActiveParcelStatusScheduled": {
+    "description": "حالة الشحنة للمجدولة (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusPickupPending": "في انتظار الاستلام",
+  "@homeActiveParcelStatusPickupPending": {
+    "description": "حالة الشحنة لانتظار الاستلام (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusPickedUp": "تم الاستلام",
+  "@homeActiveParcelStatusPickedUp": {
+    "description": "حالة الشحنة بعد الاستلام (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusInTransit": "قيد النقل",
+  "@homeActiveParcelStatusInTransit": {
+    "description": "حالة الشحنة في النقل (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusDelivered": "تم التسليم",
+  "@homeActiveParcelStatusDelivered": {
+    "description": "حالة الشحنة بعد التسليم (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusCancelled": "تم إلغاء الشحنة",
+  "@homeActiveParcelStatusCancelled": {
+    "description": "حالة الشحنة الملغاة (Track C - Ticket #70)"
+  },
+  "homeActiveParcelStatusFailed": "فشل التسليم",
+  "@homeActiveParcelStatusFailed": {
+    "description": "حالة الشحنة الفاشلة (Track C - Ticket #70)"
+  },
+
+  "parcelsActiveShipmentTitle": "الشحنة النشطة",
+  "@parcelsActiveShipmentTitle": {
+    "description": "عنوان شريط التطبيق لشاشة الشحنة النشطة (Track C - Ticket #70)"
+  },
+  "parcelsActiveShipmentNoActiveTitle": "لا توجد شحنة نشطة",
+  "@parcelsActiveShipmentNoActiveTitle": {
+    "description": "العنوان عند عدم وجود شحنة نشطة (Track C - Ticket #70)"
+  },
+  "parcelsActiveShipmentNoActiveSubtitle": "لا يوجد لديك شحنات نشطة حالياً.",
+  "@parcelsActiveShipmentNoActiveSubtitle": {
+    "description": "النص الفرعي عند عدم وجود شحنة نشطة (Track C - Ticket #70)"
+  },
+  "parcelsActiveShipmentMapStub": "تتبع الخريطة (قريباً)",
+  "@parcelsActiveShipmentMapStub": {
+    "description": "نص بديل للخريطة (Track C - Ticket #70)"
+  },
+  "parcelsActiveShipmentStatusLabel": "الحالة: {status}",
+  "@parcelsActiveShipmentStatusLabel": {
+    "description": "عنوان الحالة مع القيمة (Track C - Ticket #70)",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "parcelsActiveShipmentIdLabel": "رقم الشحنة: {id}",
+  "@parcelsActiveShipmentIdLabel": {
+    "description": "عنوان رقم الشحنة (Track C - Ticket #70)",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "parcelsActiveShipmentStubNote": "سيتوفر التتبع الكامل في تحديث قادم.",
+  "@parcelsActiveShipmentStubNote": {
+    "description": "ملاحظة توضح أن هذه شاشة مؤقتة (Track C - Ticket #70)"
+  },
+  "parcelsDetailsCancelShipmentCta": "إلغاء الشحنة",
+  "@parcelsDetailsCancelShipmentCta": {
+    "description": "نص زر إلغاء الشحنة (Track C - Ticket #81)"
+  },
+  "parcelsCancelDialogTitle": "هل تريد إلغاء هذه الشحنة؟",
+  "@parcelsCancelDialogTitle": {
+    "description": "عنوان نافذة تأكيد الإلغاء (Track C - Ticket #81)"
+  },
+  "parcelsCancelDialogSubtitle": "إذا قمت بالإلغاء الآن، سيتم إيقاف هذه الشحنة ولن تظهر كشحنة نشطة.",
+  "@parcelsCancelDialogSubtitle": {
+    "description": "النص الفرعي لنافذة تأكيد الإلغاء (Track C - Ticket #81)"
+  },
+  "parcelsCancelDialogConfirmCta": "نعم، إلغاء",
+  "@parcelsCancelDialogConfirmCta": {
+    "description": "زر تأكيد الإلغاء (Track C - Ticket #81)"
+  },
+  "parcelsCancelDialogDismissCta": "الإبقاء على الشحنة",
+  "@parcelsCancelDialogDismissCta": {
+    "description": "زر رفض الإلغاء (Track C - Ticket #81)"
+  },
+  "parcelsCancelSuccessMessage": "تم إلغاء الشحنة بنجاح.",
+  "@parcelsCancelSuccessMessage": {
+    "description": "رسالة نجاح بعد إلغاء الشحنة (Track C - Ticket #81)"
+  },
+
+  "bottomNavHomeLabel": "الرئيسية",
+  "@bottomNavHomeLabel": {
+    "description": "تسمية تبويب الرئيسية في شريط التنقل السفلي (Track A - Ticket #82)"
+  },
+  "bottomNavOrdersLabel": "الطلبات",
+  "@bottomNavOrdersLabel": {
+    "description": "تسمية تبويب الطلبات في شريط التنقل السفلي (Track A - Ticket #82)"
+  },
+  "bottomNavPaymentsLabel": "المدفوعات",
+  "@bottomNavPaymentsLabel": {
+    "description": "تسمية تبويب المدفوعات في شريط التنقل السفلي (Track A - Ticket #82)"
+  },
+  "bottomNavProfileLabel": "الحساب",
+  "@bottomNavProfileLabel": {
+    "description": "تسمية تبويب الحساب في شريط التنقل السفلي (Track A - Ticket #82)"
+  },
+
+  "paymentsEntryTitle": "المدفوعات",
+  "@paymentsEntryTitle": {
+    "description": "عنوان شاشة المدفوعات المؤقتة (Track A - Ticket #82)"
+  },
+  "paymentsEntryStubBody": "إدارة المدفوعات ستتوفر في تحديث قادم.",
+  "@paymentsEntryStubBody": {
+    "description": "نص شاشة المدفوعات المؤقتة (Track A - Ticket #82)"
+  },
+
+  "paymentsTitle": "طرق الدفع",
+  "@paymentsTitle": {
+    "description": "عنوان شاشة طرق الدفع (Track B - Ticket #99)"
+  },
+  "paymentsAddMethodCta": "إضافة طريقة دفع جديدة",
+  "@paymentsAddMethodCta": {
+    "description": "زر إضافة طريقة دفع جديدة (Track B - Ticket #99)"
+  },
+  "paymentsEmptyTitle": "لا توجد طرق دفع محفوظة",
+  "@paymentsEmptyTitle": {
+    "description": "عنوان الحالة الفارغة عند عدم وجود طرق دفع (Track B - Ticket #99)"
+  },
+  "paymentsEmptyBody": "ستظهر هنا بطاقاتك وطرق الدفع المحفوظة.",
+  "@paymentsEmptyBody": {
+    "description": "نص الحالة الفارغة لطرق الدفع (Track B - Ticket #99)"
+  },
+  "paymentsMethodTypeCash": "نقدًا",
+  "@paymentsMethodTypeCash": {
+    "description": "نوع طريقة الدفع للنقد (Track B - Ticket #99)"
+  },
+  "paymentsMethodTypeCard": "بطاقة",
+  "@paymentsMethodTypeCard": {
+    "description": "نوع طريقة الدفع للبطاقة (Track B - Ticket #99)"
+  },
+  "paymentsDefaultBadge": "افتراضية",
+  "@paymentsDefaultBadge": {
+    "description": "شارة طريقة الدفع الافتراضية (Track B - Ticket #99)"
+  },
+  "paymentsAddMethodComingSoon": "إضافة طرق دفع جديدة ستكون متاحة قريبًا.",
+  "@paymentsAddMethodComingSoon": {
+    "description": "رسالة قريبًا لإضافة طريقة دفع (Track B - Ticket #99)"
+  },
+
+  "profileEntryTitle": "الملف الشخصي",
+  "@profileEntryTitle": {
+    "description": "عنوان شاشة الملف الشخصي المؤقتة - غير مستخدم لأن الملف الشخصي الكامل موجود (Track A - Ticket #82)"
+  },
+  "profileEntryStubBody": "إعدادات الملف الشخصي والحساب ستتوفر في تحديث قادم.",
+  "@profileEntryStubBody": {
+    "description": "نص شاشة الملف الشخصي المؤقتة - غير مستخدم لأن الملف الشخصي الكامل موجود (Track A - Ticket #82)"
+  },
+
+  "rideStatusShortDraft": "مسودة",
+  "@rideStatusShortDraft": {
+    "description": "حالة الرحلة القصيرة: مسودة (Track B - Ticket #85)"
+  },
+  "rideStatusShortQuoting": "جاري التسعير",
+  "@rideStatusShortQuoting": {
+    "description": "حالة الرحلة القصيرة: جاري التسعير (Track B - Ticket #85)"
+  },
+  "rideStatusShortRequesting": "جاري طلب الرحلة",
+  "@rideStatusShortRequesting": {
+    "description": "حالة الرحلة القصيرة: جاري طلب الرحلة (Track B - Ticket #85)"
+  },
+  "rideStatusShortFindingDriver": "جاري البحث عن سائق",
+  "@rideStatusShortFindingDriver": {
+    "description": "حالة الرحلة القصيرة: جاري البحث عن سائق (Track B - Ticket #85)"
+  },
+  "rideStatusShortDriverAccepted": "تم قبول السائق",
+  "@rideStatusShortDriverAccepted": {
+    "description": "حالة الرحلة القصيرة: تم قبول السائق (Track B - Ticket #85)"
+  },
+  "rideStatusShortDriverArrived": "وصل السائق",
+  "@rideStatusShortDriverArrived": {
+    "description": "حالة الرحلة القصيرة: وصل السائق (Track B - Ticket #85)"
+  },
+  "rideStatusShortInProgress": "قيد التنفيذ",
+  "@rideStatusShortInProgress": {
+    "description": "حالة الرحلة القصيرة: قيد التنفيذ (Track B - Ticket #85)"
+  },
+  "rideStatusShortPayment": "جاري الدفع",
+  "@rideStatusShortPayment": {
+    "description": "حالة الرحلة القصيرة: جاري الدفع (Track B - Ticket #85)"
+  },
+  "rideStatusShortCompleted": "مكتملة",
+  "@rideStatusShortCompleted": {
+    "description": "حالة الرحلة القصيرة: مكتملة (Track B - Ticket #85)"
+  },
+  "rideStatusShortCancelled": "ملغاة",
+  "@rideStatusShortCancelled": {
+    "description": "حالة الرحلة القصيرة: ملغاة (Track B - Ticket #85)"
+  },
+  "rideStatusShortFailed": "فشلت",
+  "@rideStatusShortFailed": {
+    "description": "حالة الرحلة القصيرة: فشلت (Track B - Ticket #85)"
+  },
+
+  "homeActiveRideStatusPreparing": "جاري تجهيز رحلتك...",
+  "@homeActiveRideStatusPreparing": {
+    "description": "حالة الرحلة الطويلة: التجهيز (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusFindingDriver": "جاري البحث عن سائق...",
+  "@homeActiveRideStatusFindingDriver": {
+    "description": "حالة الرحلة الطويلة: البحث عن سائق (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusDriverAccepted": "السائق في الطريق إليك",
+  "@homeActiveRideStatusDriverAccepted": {
+    "description": "حالة الرحلة الطويلة: السائق في الطريق (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusDriverArrived": "وصل السائق",
+  "@homeActiveRideStatusDriverArrived": {
+    "description": "حالة الرحلة الطويلة: وصل السائق (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusInProgress": "الرحلة جارية",
+  "@homeActiveRideStatusInProgress": {
+    "description": "حالة الرحلة الطويلة: الرحلة جارية (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusPayment": "جاري إتمام الدفع",
+  "@homeActiveRideStatusPayment": {
+    "description": "حالة الرحلة الطويلة: إتمام الدفع (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusCompleted": "تم إنهاء الرحلة",
+  "@homeActiveRideStatusCompleted": {
+    "description": "حالة الرحلة الطويلة: مكتملة (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusCancelled": "تم إلغاء الرحلة",
+  "@homeActiveRideStatusCancelled": {
+    "description": "حالة الرحلة الطويلة: ملغاة (Track B - Ticket #85)"
+  },
+  "homeActiveRideStatusFailed": "فشلت الرحلة",
+  "@homeActiveRideStatusFailed": {
+    "description": "حالة الرحلة الطويلة: فشلت (Track B - Ticket #85)"
+  },
+
+  "rideActiveTripTitle": "الرحلة النشطة",
+  "@rideActiveTripTitle": {
+    "description": "عنوان شريط التطبيق لشاشة الرحلة النشطة (Track B - Ticket #87)"
+  },
+  "rideActiveTripFromLabel": "من: {pickup}",
+  "@rideActiveTripFromLabel": {
+    "description": "عنوان الاستلام مع القيمة (Track B - Ticket #87)",
+    "placeholders": {
+      "pickup": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActiveTripToLabel": "إلى: {dropoff}",
+  "@rideActiveTripToLabel": {
+    "description": "عنوان التوصيل مع القيمة (Track B - Ticket #87)",
+    "placeholders": {
+      "dropoff": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActiveTripIdLabel": "رقم الرحلة: {id}",
+  "@rideActiveTripIdLabel": {
+    "description": "رقم الرحلة مع القيمة (Track B - Ticket #87)",
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActiveTripMapStub": "تتبع الخريطة المباشر (قريبًا)",
+  "@rideActiveTripMapStub": {
+    "description": "[محجوز - Ticket #88] نص بديل عند فشل تحميل الخريطة. غير مستخدم حالياً."
+  },
+  "rideActiveTripStubNote": "سيتم توفير تتبع مباشر كامل بعد الربط مع خدمة الرحلات الفعلية.",
+  "@rideActiveTripStubNote": {
+    "description": "[محجوز - Ticket #88] ملاحظة بديلة للخريطة. غير مستخدم حالياً."
+  },
+  "rideActiveTripStatusLabel": "الحالة: {status}",
+  "@rideActiveTripStatusLabel": {
+    "description": "[محجوز - Ticket #88] عنوان حالة عام. يفضل استخدام مفاتيح headline المحددة.",
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActiveTripDriverSectionTitle": "السائق والمركبة",
+  "@rideActiveTripDriverSectionTitle": {
+    "description": "عنوان قسم السائق (Track B - Ticket #87, #88)"
+  },
+  "rideActiveTripDriverSectionStubBody": "تفاصيل السائق والمركبة ستظهر بعد الربط مع خدمة الرحلات الفعلية.",
+  "@rideActiveTripDriverSectionStubBody": {
+    "description": "[محجوز - Ticket #88] بديل عند عدم توفر بيانات السائق. حالياً يستخدم بيانات تجريبية."
   }
 }

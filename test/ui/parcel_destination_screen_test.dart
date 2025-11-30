@@ -1,7 +1,7 @@
-/// Parcel Destination Screen Widget Tests - Track C Ticket #41 + #42
+/// Parcel Destination Screen Widget Tests - Track C Ticket #41, #42, #75
 /// Purpose: Test ParcelDestinationScreen UI components and behavior
 /// Created by: Track C - Ticket #41
-/// Last updated: 2025-11-28 (Ticket #42 - Updated navigation tests)
+/// Last updated: 2025-11-29 (Ticket #75 - Form validation tests)
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +11,6 @@ import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 import 'package:delivery_ways_clean/screens/parcels/parcel_destination_screen.dart';
 import 'package:delivery_ways_clean/screens/parcels/parcel_details_screen.dart';
 import 'package:delivery_ways_clean/state/parcels/parcel_draft_state.dart';
-import 'package:design_system_shims/design_system_shims.dart';
 import '../support/design_system_harness.dart';
 
 void main() {
@@ -37,43 +36,135 @@ void main() {
           supportedLocales: const [
             Locale('en'),
             Locale('ar'),
+            Locale('de'),
           ],
           home: const ParcelDestinationScreen(),
         ),
       );
     }
 
-    testWidgets('displays title and subtitle', (WidgetTester tester) async {
+    // ========== Ticket #75: Section and CTA Tests ==========
+
+    testWidgets('shows all main sections and CTA', (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Check for title
-      expect(find.text('Create shipment'), findsAtLeastNWidgets(1));
+      // Track C - Ticket #75: Verify AppBar title uses parcelsCreateShipmentTitle
+      // Note: L10n key parcelsCreateShipmentTitle = "New Shipment" (capital S)
+      expect(find.text('New Shipment'), findsAtLeastNWidgets(1));
 
-      // Check for subtitle
-      expect(
-        find.text('Enter where to pick up and where to deliver your parcel.'),
-        findsOneWidget,
-      );
+      // Verify section headers are present
+      expect(find.text('Sender'), findsOneWidget);
+      expect(find.text('Receiver'), findsOneWidget);
+
+      // Verify field labels are present
+      expect(find.text('Sender name'), findsOneWidget);
+      expect(find.text('Pickup address'), findsOneWidget);
+      expect(find.text('Receiver name'), findsOneWidget);
+      expect(find.text('Delivery address'), findsOneWidget);
+
+      // Verify CTA button uses parcelsCreateShipmentCtaGetEstimate
+      expect(find.text('Get estimate'), findsOneWidget);
     });
 
-    testWidgets('displays two DWTextField inputs', (WidgetTester tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      // Check for two DWTextField widgets
-      final textFieldFinder = find.byType(DWTextField);
-      expect(textFieldFinder, findsNWidgets(2));
-    });
-
-    testWidgets('displays pickup and dropoff labels',
+    testWidgets('validation blocks navigation when required fields are empty',
         (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Check for labels
-      expect(find.text('Pickup address'), findsOneWidget);
-      expect(find.text('Delivery address'), findsOneWidget);
+      // Act: Tap "Get estimate" with empty fields
+      await tester.tap(find.text('Get estimate'));
+      await tester.pumpAndSettle();
+
+      // Assert: Validation errors appear
+      expect(find.text('This field is required'), findsAtLeastNWidgets(2));
+
+      // Assert: Still on ParcelDestinationScreen (no navigation)
+      expect(find.byType(ParcelDestinationScreen), findsOneWidget);
+      expect(find.byType(ParcelDetailsScreen), findsNothing);
+    });
+
+    testWidgets('allows proceeding when form is valid',
+        (WidgetTester tester) async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en')],
+            home: const ParcelDestinationScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Find text fields and fill them
+      final textFields = find.byType(TextFormField);
+      expect(textFields, findsNWidgets(4));
+
+      // Fill in sender name
+      await tester.enterText(textFields.at(0), 'John Doe');
+      await tester.pumpAndSettle();
+
+      // Fill in pickup address
+      await tester.enterText(textFields.at(1), '123 Main Street');
+      await tester.pumpAndSettle();
+
+      // Fill in receiver name
+      await tester.enterText(textFields.at(2), 'Jane Smith');
+      await tester.pumpAndSettle();
+
+      // Fill in delivery address
+      await tester.enterText(textFields.at(3), '456 Oak Avenue');
+      await tester.pumpAndSettle();
+
+      // Tap "Get estimate"
+      await tester.tap(find.text('Get estimate'));
+      await tester.pumpAndSettle();
+
+      // Assert: No validation errors visible
+      expect(find.text('This field is required'), findsNothing);
+
+      // Assert: Navigated to ParcelDetailsScreen
+      expect(find.byType(ParcelDetailsScreen), findsOneWidget);
+    });
+
+    // ========== Ticket #75: L10n Tests for AR and DE ==========
+
+    testWidgets('l10n_AR_title_renders_correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget(locale: const Locale('ar')));
+      await tester.pumpAndSettle();
+
+      // Check for Arabic title
+      expect(find.text('شحنة جديدة'), findsAtLeastNWidgets(1));
+    });
+
+    testWidgets('l10n_DE_title_renders_correctly', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget(locale: const Locale('de')));
+      await tester.pumpAndSettle();
+
+      // Check for German title
+      expect(find.text('Neue Sendung'), findsAtLeastNWidgets(1));
+    });
+
+    // ========== Original Tests (Updated) ==========
+
+    testWidgets('displays four TextFormField inputs',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Check for four TextFormField widgets (sender name, pickup, receiver name, dropoff)
+      final textFieldFinder = find.byType(TextFormField);
+      expect(textFieldFinder, findsNWidgets(4));
     });
 
     testWidgets('displays location icons', (WidgetTester tester) async {
@@ -83,6 +174,7 @@ void main() {
       // Check for icons
       expect(find.byIcon(Icons.my_location), findsOneWidget);
       expect(find.byIcon(Icons.place_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.person_outline), findsNWidgets(2));
     });
 
     testWidgets('entering text in pickup field updates parcelDraftProvider',
@@ -107,12 +199,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Find the first DWTextField (pickup)
-      final textFieldFinder = find.byType(DWTextField);
-      expect(textFieldFinder, findsNWidgets(2));
+      // Find the pickup address field (second TextFormField)
+      final textFieldFinder = find.byType(TextFormField);
+      expect(textFieldFinder, findsNWidgets(4));
 
-      // Enter text in pickup field
-      await tester.enterText(textFieldFinder.first, '123 Main Street');
+      // Enter text in pickup field (index 1)
+      await tester.enterText(textFieldFinder.at(1), '123 Main Street');
       await tester.pumpAndSettle();
 
       // Verify provider was updated
@@ -142,121 +234,17 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Find the second DWTextField (dropoff)
-      final textFieldFinder = find.byType(DWTextField);
-      expect(textFieldFinder, findsNWidgets(2));
+      // Find the dropoff address field (fourth TextFormField)
+      final textFieldFinder = find.byType(TextFormField);
+      expect(textFieldFinder, findsNWidgets(4));
 
-      // Enter text in dropoff field
-      await tester.enterText(textFieldFinder.at(1), '456 Oak Avenue');
+      // Enter text in dropoff field (index 3)
+      await tester.enterText(textFieldFinder.at(3), '456 Oak Avenue');
       await tester.pumpAndSettle();
 
       // Verify provider was updated
       final draft = container.read(parcelDraftProvider);
       expect(draft.dropoffAddress, '456 Oak Avenue');
-    });
-
-    testWidgets('Continue button is disabled when fields are empty',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
-
-      // Find the DWButton
-      final buttonFinder = find.byType(DWButton);
-      expect(buttonFinder, findsOneWidget);
-
-      // Button should be present but disabled (onPressed = null)
-      // We can verify by checking the button label exists
-      expect(find.text('Continue'), findsOneWidget);
-    });
-
-    testWidgets('Continue button is enabled when both fields have text',
-        (WidgetTester tester) async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelDestinationScreen(),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Enter text in both fields
-      final textFieldFinder = find.byType(DWTextField);
-      await tester.enterText(textFieldFinder.first, 'Pickup Address');
-      await tester.enterText(textFieldFinder.at(1), 'Dropoff Address');
-      await tester.pumpAndSettle();
-
-      // Button should be enabled now
-      final buttonFinder = find.byType(DWButton);
-      expect(buttonFinder, findsOneWidget);
-      expect(find.text('Continue'), findsOneWidget);
-    });
-
-    testWidgets('pressing Continue navigates to ParcelDetailsScreen',
-        (WidgetTester tester) async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelDestinationScreen(),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Verify we're on ParcelDestinationScreen
-      expect(find.text('Create shipment'), findsAtLeastNWidgets(1));
-
-      // Enter text in both fields
-      final textFieldFinder = find.byType(DWTextField);
-      await tester.enterText(textFieldFinder.first, 'Pickup');
-      await tester.enterText(textFieldFinder.at(1), 'Dropoff');
-      await tester.pumpAndSettle();
-
-      // Tap Continue button
-      await tester.tap(find.text('Continue'));
-      await tester.pumpAndSettle();
-
-      // Verify we navigated to ParcelDetailsScreen
-      expect(find.byType(ParcelDetailsScreen), findsOneWidget);
-      expect(find.text('Parcel details'), findsAtLeastNWidgets(1));
-    });
-
-    testWidgets('displays Arabic translations when locale is ar',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(createTestWidget(locale: const Locale('ar')));
-      await tester.pumpAndSettle();
-
-      // Check for Arabic title
-      expect(find.text('إنشاء شحنة'), findsAtLeastNWidgets(1));
-
-      // Check for Arabic labels
-      expect(find.text('عنوان الاستلام'), findsOneWidget);
-      expect(find.text('عنوان التسليم'), findsOneWidget);
-
-      // Check for Arabic CTA
-      expect(find.text('متابعة'), findsOneWidget);
     });
 
     testWidgets('has back button in app bar', (WidgetTester tester) async {
@@ -305,6 +293,51 @@ void main() {
       // Check that SafeArea is present
       expect(find.byType(SafeArea), findsAtLeastNWidgets(1));
     });
+
+    testWidgets('displays Arabic section headers when locale is ar',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget(locale: const Locale('ar')));
+      await tester.pumpAndSettle();
+
+      // Check for Arabic section headers
+      expect(find.text('المرسل'), findsOneWidget);
+      expect(find.text('المستلم'), findsOneWidget);
+    });
+
+    testWidgets('displays German labels when locale is de',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget(locale: const Locale('de')));
+      await tester.pumpAndSettle();
+
+      // Check for German labels
+      expect(find.text('Absender'), findsOneWidget);
+      expect(find.text('Empfänger'), findsOneWidget);
+    });
+
+    testWidgets('validation error message is localized in Arabic',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget(locale: const Locale('ar')));
+      await tester.pumpAndSettle();
+
+      // Tap "Get estimate" with empty fields
+      await tester.tap(find.text('احصل على التقدير'));
+      await tester.pumpAndSettle();
+
+      // Check for Arabic error message
+      expect(find.text('هذا الحقل مطلوب'), findsAtLeastNWidgets(2));
+    });
+
+    testWidgets('validation error message is localized in German',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget(locale: const Locale('de')));
+      await tester.pumpAndSettle();
+
+      // Tap "Get estimate" with empty fields
+      await tester.tap(find.text('Kostenvoranschlag'));
+      await tester.pumpAndSettle();
+
+      // Check for German error message
+      expect(find.text('Dieses Feld ist erforderlich'), findsAtLeastNWidgets(2));
+    });
   });
 }
-

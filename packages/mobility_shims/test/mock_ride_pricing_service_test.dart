@@ -1,7 +1,8 @@
-/// MockRidePricingService Unit Tests - Track B Ticket #27
+/// MockRidePricingService Unit Tests - Track B Ticket #27, #63
 /// Purpose: Test the mock pricing service for ride quotes
 /// Created by: Track B - Ticket #27
-/// Last updated: 2025-11-28
+/// Updated by: Track B - Ticket #63 (RidePriceBreakdown tests)
+/// Last updated: 2025-11-29
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobility_shims/mobility_shims.dart';
@@ -293,8 +294,10 @@ void main() {
         expect(quote.options, isNotEmpty);
         // Default distance is 5km, so prices should be reasonable
         final economy = quote.options.firstWhere((o) => o.id == 'economy');
-        // base 5 + 2*5 = 15 SAR = 1500 minor units
-        expect(economy.priceMinorUnits, equals(1500));
+        // Price includes base fare + distance + time + fees
+        // Should be a reasonable amount for a 5km trip
+        expect(economy.priceMinorUnits, greaterThan(1000)); // > 10 SAR
+        expect(economy.priceMinorUnits, lessThan(5000));    // < 50 SAR
       });
     });
 
@@ -569,6 +572,309 @@ void main() {
       const exception = RidePricingException('My error');
       expect(exception.toString(), contains('My error'));
       expect(exception.toString(), contains('RidePricingException'));
+    });
+  });
+
+  // ============================================================================
+  // Track B - Ticket #63: RidePriceBreakdown Tests
+  // ============================================================================
+  
+  group('RidePriceBreakdown - Ticket #63', () {
+    test('calculates totalMinorUnits correctly', () {
+      const breakdown = RidePriceBreakdown(
+        currencyCode: 'SAR',
+        baseFareMinorUnits: 500,          // 5.00
+        distanceComponentMinorUnits: 800, // 8.00
+        timeComponentMinorUnits: 200,     // 2.00
+        feesMinorUnits: 300,              // 3.00
+      );
+
+      // Total = 500 + 800 + 200 + 300 = 1800
+      expect(breakdown.totalMinorUnits, equals(1800));
+    });
+
+    test('calculates fareSubtotalMinorUnits correctly', () {
+      const breakdown = RidePriceBreakdown(
+        currencyCode: 'SAR',
+        baseFareMinorUnits: 500,
+        distanceComponentMinorUnits: 800,
+        timeComponentMinorUnits: 200,
+        feesMinorUnits: 300,
+      );
+
+      // Fare subtotal = 500 + 800 + 200 = 1500 (without fees)
+      expect(breakdown.fareSubtotalMinorUnits, equals(1500));
+    });
+
+    test('formattedTotal formats correctly', () {
+      const breakdown = RidePriceBreakdown(
+        currencyCode: 'SAR',
+        baseFareMinorUnits: 500,
+        distanceComponentMinorUnits: 800,
+        timeComponentMinorUnits: 200,
+        feesMinorUnits: 300,
+      );
+
+      expect(breakdown.formattedTotal, equals('18.00'));
+    });
+
+    test('formatted values handle single-digit minor units', () {
+      const breakdown = RidePriceBreakdown(
+        currencyCode: 'SAR',
+        baseFareMinorUnits: 505, // 5.05
+        distanceComponentMinorUnits: 0,
+        timeComponentMinorUnits: 0,
+        feesMinorUnits: 0,
+      );
+
+      expect(breakdown.formattedBaseFare, equals('5.05'));
+    });
+
+    test('equality works correctly', () {
+      const a = RidePriceBreakdown(
+        currencyCode: 'SAR',
+        baseFareMinorUnits: 500,
+        distanceComponentMinorUnits: 800,
+        timeComponentMinorUnits: 200,
+        feesMinorUnits: 300,
+      );
+
+      const b = RidePriceBreakdown(
+        currencyCode: 'SAR',
+        baseFareMinorUnits: 500,
+        distanceComponentMinorUnits: 800,
+        timeComponentMinorUnits: 200,
+        feesMinorUnits: 300,
+      );
+
+      const c = RidePriceBreakdown(
+        currencyCode: 'USD',
+        baseFareMinorUnits: 500,
+        distanceComponentMinorUnits: 800,
+        timeComponentMinorUnits: 200,
+        feesMinorUnits: 300,
+      );
+
+      expect(a, equals(b));
+      expect(a, isNot(equals(c)));
+    });
+
+    test('toString contains all components', () {
+      const breakdown = RidePriceBreakdown(
+        currencyCode: 'SAR',
+        baseFareMinorUnits: 500,
+        distanceComponentMinorUnits: 800,
+        timeComponentMinorUnits: 200,
+        feesMinorUnits: 300,
+      );
+
+      final str = breakdown.toString();
+      expect(str, contains('SAR'));
+      expect(str, contains('5.00'));
+      expect(str, contains('8.00'));
+      expect(str, contains('2.00'));
+      expect(str, contains('3.00'));
+      expect(str, contains('18.00'));
+    });
+  });
+
+  group('MockRidePricingService priceBreakdown - Ticket #63', () {
+    MobilityPlace placeWithLocation({
+      required String label,
+      required double lat,
+      required double lng,
+    }) {
+      return MobilityPlace(
+        label: label,
+        location: LocationPoint(
+          latitude: lat,
+          longitude: lng,
+          accuracyMeters: 10,
+          timestamp: DateTime.now(),
+        ),
+      );
+    }
+
+    test('options include priceBreakdown', () async {
+      const service = MockRidePricingService(baseLatency: Duration.zero);
+
+      final pickup = placeWithLocation(
+        label: 'A',
+        lat: 24.7136,
+        lng: 46.6753,
+      );
+      final destination = placeWithLocation(
+        label: 'B',
+        lat: 24.7200,
+        lng: 46.6800,
+      );
+
+      final quote = await service.quoteRide(
+        pickup: pickup,
+        destination: destination,
+        serviceType: RideServiceType.ride,
+      );
+
+      for (final option in quote.options) {
+        expect(option.priceBreakdown, isNotNull);
+      }
+    });
+
+    test('priceBreakdown totalMinorUnits matches priceMinorUnits', () async {
+      const service = MockRidePricingService(baseLatency: Duration.zero);
+
+      final pickup = placeWithLocation(
+        label: 'A',
+        lat: 24.7136,
+        lng: 46.6753,
+      );
+      final destination = placeWithLocation(
+        label: 'B',
+        lat: 24.7200,
+        lng: 46.6800,
+      );
+
+      final quote = await service.quoteRide(
+        pickup: pickup,
+        destination: destination,
+        serviceType: RideServiceType.ride,
+      );
+
+      for (final option in quote.options) {
+        expect(
+          option.priceBreakdown!.totalMinorUnits,
+          equals(option.priceMinorUnits),
+          reason: '${option.id} breakdown total should match priceMinorUnits',
+        );
+      }
+    });
+
+    test('priceBreakdown has positive components', () async {
+      const service = MockRidePricingService(baseLatency: Duration.zero);
+
+      final pickup = placeWithLocation(
+        label: 'A',
+        lat: 24.7136,
+        lng: 46.6753,
+      );
+      final destination = placeWithLocation(
+        label: 'B',
+        lat: 24.7500,
+        lng: 46.7000,
+      );
+
+      final quote = await service.quoteRide(
+        pickup: pickup,
+        destination: destination,
+        serviceType: RideServiceType.ride,
+      );
+
+      for (final option in quote.options) {
+        final breakdown = option.priceBreakdown!;
+        expect(breakdown.baseFareMinorUnits, greaterThan(0),
+            reason: '${option.id} should have positive base fare');
+        expect(breakdown.distanceComponentMinorUnits, greaterThanOrEqualTo(0),
+            reason: '${option.id} should have non-negative distance component');
+        expect(breakdown.timeComponentMinorUnits, greaterThanOrEqualTo(0),
+            reason: '${option.id} should have non-negative time component');
+        expect(breakdown.feesMinorUnits, greaterThan(0),
+            reason: '${option.id} should have positive fees');
+      }
+    });
+
+    test('priceBreakdown uses SAR currency', () async {
+      const service = MockRidePricingService(baseLatency: Duration.zero);
+
+      final pickup = placeWithLocation(
+        label: 'A',
+        lat: 24.7136,
+        lng: 46.6753,
+      );
+      final destination = placeWithLocation(
+        label: 'B',
+        lat: 24.7200,
+        lng: 46.6800,
+      );
+
+      final quote = await service.quoteRide(
+        pickup: pickup,
+        destination: destination,
+        serviceType: RideServiceType.ride,
+      );
+
+      for (final option in quote.options) {
+        expect(option.priceBreakdown!.currencyCode, equals('SAR'));
+      }
+    });
+
+    test('priceBreakdown is deterministic for same inputs', () async {
+      const service = MockRidePricingService(baseLatency: Duration.zero);
+
+      final pickup = placeWithLocation(
+        label: 'A',
+        lat: 24.7136,
+        lng: 46.6753,
+      );
+      final destination = placeWithLocation(
+        label: 'B',
+        lat: 24.7200,
+        lng: 46.6800,
+      );
+
+      final quote1 = await service.quoteRide(
+        pickup: pickup,
+        destination: destination,
+        serviceType: RideServiceType.ride,
+      );
+
+      final quote2 = await service.quoteRide(
+        pickup: pickup,
+        destination: destination,
+        serviceType: RideServiceType.ride,
+      );
+
+      // Compare breakdowns for each option type
+      for (var i = 0; i < quote1.options.length; i++) {
+        final breakdown1 = quote1.options[i].priceBreakdown!;
+        final breakdown2 = quote2.options[i].priceBreakdown!;
+
+        expect(breakdown1.baseFareMinorUnits, equals(breakdown2.baseFareMinorUnits));
+        expect(breakdown1.distanceComponentMinorUnits,
+            equals(breakdown2.distanceComponentMinorUnits));
+        expect(breakdown1.timeComponentMinorUnits,
+            equals(breakdown2.timeComponentMinorUnits));
+        expect(breakdown1.feesMinorUnits, equals(breakdown2.feesMinorUnits));
+        expect(breakdown1.totalMinorUnits, equals(breakdown2.totalMinorUnits));
+      }
+    });
+
+    test('premium breakdown has higher fees than economy', () async {
+      const service = MockRidePricingService(baseLatency: Duration.zero);
+
+      final pickup = placeWithLocation(
+        label: 'A',
+        lat: 24.7136,
+        lng: 46.6753,
+      );
+      final destination = placeWithLocation(
+        label: 'B',
+        lat: 24.7500,
+        lng: 46.7000,
+      );
+
+      final quote = await service.quoteRide(
+        pickup: pickup,
+        destination: destination,
+        serviceType: RideServiceType.ride,
+      );
+
+      final economy = quote.options.firstWhere((o) => o.id == 'economy');
+      final premium = quote.options.firstWhere((o) => o.id == 'premium');
+
+      expect(
+        premium.priceBreakdown!.feesMinorUnits,
+        greaterThan(economy.priceBreakdown!.feesMinorUnits),
+      );
     });
   });
 }

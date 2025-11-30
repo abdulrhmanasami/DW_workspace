@@ -1,8 +1,9 @@
-/// Ride Destination Screen Widget Tests - Track B Ticket #20
+/// Ride Destination Screen Widget Tests - Track B Ticket #20, #93
 /// Purpose: Test RideDestinationScreen UI components and behavior
 /// Created by: Track B - Ticket #20
 /// Updated by: Ticket #35 - Updated for DWTextField
-/// Last updated: 2025-11-28
+/// Updated by: Ticket #93 - Updated for Location Picker enhancements
+/// Last updated: 2025-11-30
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,21 +48,21 @@ void main() {
       );
     }
 
-    testWidgets('displays pickup field with "Current location" text',
+    testWidgets('displays pickup field with placeholder text (Ticket #93)',
         (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Check that "Current location" text is displayed (default pickup label)
-      expect(find.text('Current location'), findsOneWidget);
+      // Check that pickup placeholder text is displayed (Ticket #93 updated)
+      expect(find.text('Where should we pick you up?'), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('displays "Where to?" title', (WidgetTester tester) async {
+    testWidgets('displays "Choose your trip" title (Ticket #93)', (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Check for the title "Where to?"
-      expect(find.text('Where to?'), findsAtLeastNWidgets(1));
+      // Check for the title "Choose your trip" (Ticket #93 updated)
+      expect(find.text('Choose your trip'), findsOneWidget);
     });
 
     testWidgets('displays destination input field with search icon',
@@ -127,42 +128,47 @@ void main() {
       expect(rideDraft.destinationQuery, 'Airport');
     });
 
-    testWidgets('shows continue button when destination is entered',
+    testWidgets('shows continue button always but disabled until destination entered (Ticket #93)',
         (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Initially, the button should not be visible (no destination entered)
-      expect(find.byType(DWButton), findsNothing);
+      // Ticket #93: Button is always visible but disabled when no destination
+      expect(find.byType(DWButton), findsOneWidget);
+      
+      // Verify it's disabled initially
+      final dwButtonBefore = tester.widget<DWButton>(find.byType(DWButton));
+      expect(dwButtonBefore.onPressed, isNull);
 
       // Enter a destination (Ticket #35: now using DWTextField)
       final textFieldFinder = find.byType(DWTextField);
       await tester.enterText(textFieldFinder, 'Mall');
       await tester.pumpAndSettle();
 
-      // Now the button should be visible (DWButton.primary)
-      expect(find.byType(DWButton), findsOneWidget);
+      // Now the button should be enabled (Ticket #93)
+      final dwButtonAfter = tester.widget<DWButton>(find.byType(DWButton));
+      expect(dwButtonAfter.onPressed, isNotNull);
     });
 
-    testWidgets('displays Arabic translations when locale is ar',
+    testWidgets('displays Arabic translations when locale is ar (Ticket #93)',
         (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget(locale: const Locale('ar')));
       await tester.pumpAndSettle();
 
-      // Check for Arabic text - "إلى أين؟" is the Arabic for "Where to?"
-      expect(find.text('إلى أين؟'), findsAtLeastNWidgets(1));
+      // Check for Arabic text - "اختيار موقع الرحلة" is the Arabic for "Choose your trip" (Ticket #93)
+      expect(find.text('اختيار موقع الرحلة'), findsOneWidget);
 
       // Check for Arabic "Recent locations" text
       expect(find.text('المواقع الأخيرة'), findsOneWidget);
     });
 
-    testWidgets('displays pickup lock icon (readonly indicator)',
+    testWidgets('displays pickup edit icon (tappable indicator - Ticket #93)',
         (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Check for the lock icon indicating readonly pickup field
-      expect(find.byIcon(Icons.lock_outline), findsOneWidget);
+      // Check for the edit icon indicating tappable pickup field (Ticket #93)
+      expect(find.byIcon(Icons.edit_location_outlined), findsOneWidget);
     });
 
     testWidgets('displays back button in app bar', (WidgetTester tester) async {

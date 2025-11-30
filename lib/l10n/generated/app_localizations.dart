@@ -1390,6 +1390,42 @@ abstract class AppLocalizations {
   /// **'Parcels'**
   String get ordersFilterParcels;
 
+  /// Filter label for rides only (Track B - Ticket #96)
+  ///
+  /// In en, this message translates to:
+  /// **'Rides'**
+  String get ordersFilterRides;
+
+  /// Section title for rides in My Orders screen (Track B - Ticket #96)
+  ///
+  /// In en, this message translates to:
+  /// **'Rides'**
+  String get ordersSectionRidesTitle;
+
+  /// Title for ride order item (Track B - Ticket #96)
+  ///
+  /// In en, this message translates to:
+  /// **'Ride to {destination}'**
+  String ordersRideItemTitleToDestination(String destination);
+
+  /// Ride order status: completed (Track B - Ticket #96)
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get ordersRideStatusCompleted;
+
+  /// Ride order status: cancelled (Track B - Ticket #96)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get ordersRideStatusCancelled;
+
+  /// Ride order status: failed (Track B - Ticket #96)
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get ordersRideStatusFailed;
+
   /// No description provided for @paymentMethodsTitle.
   ///
   /// In en, this message translates to:
@@ -2335,7 +2371,7 @@ abstract class AppLocalizations {
   /// No description provided for @rideActiveShareTripCta.
   ///
   /// In en, this message translates to:
-  /// **'Share trip'**
+  /// **'Share trip status'**
   String get rideActiveShareTripCta;
 
   /// No description provided for @rideActiveCancelTripCta.
@@ -2344,29 +2380,65 @@ abstract class AppLocalizations {
   /// **'Cancel ride'**
   String get rideActiveCancelTripCta;
 
-  /// No description provided for @rideActiveContactDriverNotImplemented.
+  /// Snackbar message after copying trip status to clipboard (Track B - Ticket #68)
   ///
   /// In en, this message translates to:
-  /// **'Contact driver is not implemented yet.'**
-  String get rideActiveContactDriverNotImplemented;
+  /// **'Trip status copied. You can paste it into any app.'**
+  String get rideActiveShareTripCopied;
 
-  /// No description provided for @rideActiveShareTripNotImplemented.
+  /// Error message when driver phone is not available (Track B - Ticket #68)
   ///
   /// In en, this message translates to:
-  /// **'Share trip is not implemented yet.'**
-  String get rideActiveShareTripNotImplemented;
+  /// **'Driver contact details are not available yet.'**
+  String get rideActiveContactNoPhoneError;
 
-  /// No description provided for @rideActiveCancelTripNotImplemented.
+  /// Generic error message for share trip failures (Track B - Ticket #68)
   ///
   /// In en, this message translates to:
-  /// **'Cancel ride is not implemented yet.'**
-  String get rideActiveCancelTripNotImplemented;
+  /// **'Unable to prepare trip status right now. Please try again.'**
+  String get rideActiveShareGenericError;
+
+  /// Template message for sharing trip status (Track B - Ticket #68)
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m on a Delivery Ways ride to {destination}. Track my trip status here: {link}'**
+  String rideActiveShareMessageTemplate(String destination, String link);
 
   /// Generic error message when ride cancellation fails (Track B - Ticket #22)
   ///
   /// In en, this message translates to:
   /// **'Could not cancel the ride. Please try again.'**
   String get rideActiveCancelErrorGeneric;
+
+  /// Title for cancel ride confirmation dialog (Track B - Ticket #67)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this ride?'**
+  String get rideCancelDialogTitle;
+
+  /// Message in cancel ride confirmation dialog (Track B - Ticket #67)
+  ///
+  /// In en, this message translates to:
+  /// **'If you cancel now, your driver will stop heading to your pickup location.'**
+  String get rideCancelDialogMessage;
+
+  /// Button to dismiss cancel dialog and keep the ride (Track B - Ticket #67)
+  ///
+  /// In en, this message translates to:
+  /// **'Keep ride'**
+  String get rideCancelDialogKeepRideCta;
+
+  /// Button to confirm ride cancellation in dialog (Track B - Ticket #67)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel ride'**
+  String get rideCancelDialogConfirmCta;
+
+  /// Snackbar message after successful ride cancellation (Track B - Ticket #67)
+  ///
+  /// In en, this message translates to:
+  /// **'Your ride has been cancelled.'**
+  String get rideCancelSuccessSnackbar;
 
   /// No description provided for @rideActiveHeadlineFindingDriver.
   ///
@@ -2434,17 +2506,149 @@ abstract class AppLocalizations {
   /// **'Go back'**
   String get rideActiveGoBackCta;
 
+  /// Title for cancelled trip terminal view (Track B - Ticket #95)
+  ///
+  /// In en, this message translates to:
+  /// **'Trip cancelled'**
+  String get rideActiveCancelledTitle;
+
+  /// Body text for cancelled trip terminal view (Track B - Ticket #95)
+  ///
+  /// In en, this message translates to:
+  /// **'Your trip was cancelled. You can request a new ride at any time.'**
+  String get rideActiveCancelledBody;
+
+  /// Title for failed trip terminal view (Track B - Ticket #95)
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get rideActiveFailedTitle;
+
+  /// Body text for failed trip terminal view (Track B - Ticket #95)
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t complete this trip. Please try again in a moment.'**
+  String get rideActiveFailedBody;
+
+  /// CTA button to return to home from terminal trip view (Track B - Ticket #95)
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get rideActiveBackToHomeCta;
+
+  /// CTA button to request a new ride from terminal trip view (Track B - Ticket #95)
+  ///
+  /// In en, this message translates to:
+  /// **'Request new ride'**
+  String get rideActiveRequestNewRideCta;
+
   /// No description provided for @rideActiveDestinationLabel.
   ///
   /// In en, this message translates to:
   /// **'To {destination}'**
   String rideActiveDestinationLabel(String destination);
 
+  /// Title for debug FSM section (only shown in debug mode)
+  ///
+  /// In en, this message translates to:
+  /// **'Debug FSM Controls'**
+  String get rideDebugFsmTitle;
+
+  /// No description provided for @rideDebugCurrentPhase.
+  ///
+  /// In en, this message translates to:
+  /// **'Current phase: {phase}'**
+  String rideDebugCurrentPhase(String phase);
+
+  /// No description provided for @rideDebugDriverFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver Found'**
+  String get rideDebugDriverFound;
+
+  /// No description provided for @rideDebugDriverArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver Arrived'**
+  String get rideDebugDriverArrived;
+
+  /// No description provided for @rideDebugStartTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Trip'**
+  String get rideDebugStartTrip;
+
+  /// No description provided for @rideDebugCompleteTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Trip'**
+  String get rideDebugCompleteTrip;
+
+  /// No description provided for @rideDebugConfirmPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Payment'**
+  String get rideDebugConfirmPayment;
+
+  /// No description provided for @rideStatusFindingDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for a driver...'**
+  String get rideStatusFindingDriver;
+
+  /// No description provided for @rideStatusDriverAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver on the way'**
+  String get rideStatusDriverAccepted;
+
+  /// No description provided for @rideStatusDriverArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver has arrived'**
+  String get rideStatusDriverArrived;
+
+  /// No description provided for @rideStatusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip in progress'**
+  String get rideStatusInProgress;
+
+  /// No description provided for @rideStatusPaymentPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for payment'**
+  String get rideStatusPaymentPending;
+
+  /// No description provided for @rideStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip completed'**
+  String get rideStatusCompleted;
+
+  /// No description provided for @rideStatusUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing your trip...'**
+  String get rideStatusUnknown;
+
   /// CTA button on Home Hub active ride card to open the active trip screen.
   ///
   /// In en, this message translates to:
   /// **'View trip'**
   String get homeActiveRideViewTripCta;
+
+  /// Generic fallback title for active ride card on Home Hub (Track B - Ticket #65)
+  ///
+  /// In en, this message translates to:
+  /// **'Active ride'**
+  String get homeActiveRideTitleGeneric;
+
+  /// Subtitle showing destination on active ride card
+  ///
+  /// In en, this message translates to:
+  /// **'To {destination}'**
+  String homeActiveRideSubtitleToDestination(String destination);
 
   /// Title for the ride destination input screen (Screen 8)
   ///
@@ -2469,6 +2673,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recent locations'**
   String get rideDestinationRecentLocationsSection;
+
+  /// Title for the location picker screen (Ticket #93)
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your trip'**
+  String get rideLocationPickerTitle;
+
+  /// Label for the pickup location field (Ticket #93)
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup'**
+  String get rideLocationPickerPickupLabel;
+
+  /// Label for the destination field (Ticket #93)
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get rideLocationPickerDestinationLabel;
+
+  /// Placeholder for the pickup location field (Ticket #93)
+  ///
+  /// In en, this message translates to:
+  /// **'Where should we pick you up?'**
+  String get rideLocationPickerPickupPlaceholder;
+
+  /// Placeholder for the destination field (Ticket #93)
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you going?'**
+  String get rideLocationPickerDestinationPlaceholder;
+
+  /// Hint text displayed above the map (Ticket #93)
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust the pin or use search to set your locations.'**
+  String get rideLocationPickerMapHint;
+
+  /// Continue CTA button text (Ticket #93)
+  ///
+  /// In en, this message translates to:
+  /// **'See prices'**
+  String get rideLocationPickerContinueCta;
 
   /// Title for the trip confirmation screen (Screen 9)
   ///
@@ -2589,6 +2835,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get rideConfirmRetryCta;
+
+  /// Badge shown on recommended ride option (Ticket #91)
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get rideConfirmRecommendedBadge;
+
+  /// Label for pickup location in trip summary (Ticket #91)
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get rideConfirmFromLabel;
+
+  /// Label for destination in trip summary (Ticket #91)
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get rideConfirmToLabel;
 
   /// Title for the welcome onboarding screen
   ///
@@ -2845,8 +3109,38 @@ abstract class AppLocalizations {
   /// Continue button on Parcel Details screen
   ///
   /// In en, this message translates to:
-  /// **'Continue to pricing'**
+  /// **'Review price'**
   String get parcelsDetailsContinueCta;
+
+  /// Error when weight field is empty (Track C - Ticket #76)
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the parcel weight'**
+  String get parcelsDetailsErrorWeightRequired;
+
+  /// Error when weight is not a positive number (Track C - Ticket #76)
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid positive number'**
+  String get parcelsDetailsErrorPositiveNumber;
+
+  /// Error when contents field is empty (Track C - Ticket #76)
+  ///
+  /// In en, this message translates to:
+  /// **'Please describe what you are sending'**
+  String get parcelsDetailsErrorContentsRequired;
+
+  /// Error when size is not selected (Track C - Ticket #76)
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a parcel size'**
+  String get parcelsDetailsErrorSizeRequired;
+
+  /// Section header for parcel details (Track C - Ticket #76)
+  ///
+  /// In en, this message translates to:
+  /// **'Parcel details'**
+  String get parcelsDetailsSectionParcelTitle;
 
   /// Title for Parcel Quote screen (Track C - Ticket #43)
   ///
@@ -2902,6 +3196,54 @@ abstract class AppLocalizations {
   /// **'Confirm shipment'**
   String get parcelsQuoteConfirmCta;
 
+  /// Title for the shipment summary card (Track C - Ticket #77)
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment summary'**
+  String get parcelsQuoteSummaryTitle;
+
+  /// Label for pickup address in summary (Track C - Ticket #77)
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get parcelsQuoteFromLabel;
+
+  /// Label for dropoff address in summary (Track C - Ticket #77)
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get parcelsQuoteToLabel;
+
+  /// Label for weight in summary (Track C - Ticket #77)
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get parcelsQuoteWeightLabel;
+
+  /// Label for size in summary (Track C - Ticket #77)
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get parcelsQuoteSizeLabel;
+
+  /// Total price label with amount (Track C - Ticket #77)
+  ///
+  /// In en, this message translates to:
+  /// **'Total: {amount}'**
+  String parcelsQuoteTotalLabel(String amount);
+
+  /// Stub note about estimated pricing (Track C - Ticket #77)
+  ///
+  /// In en, this message translates to:
+  /// **'This is an estimated price. Final price may change after integration with the live pricing service.'**
+  String get parcelsQuoteBreakdownStubNote;
+
+  /// AppBar title for parcels list screen (Track C - Ticket #72)
+  ///
+  /// In en, this message translates to:
+  /// **'Your shipments'**
+  String get parcelsListTitle;
+
   /// Section title for the shipments list (Track C - Ticket #45)
   ///
   /// In en, this message translates to:
@@ -2919,6 +3261,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'When you create a shipment, it will appear here.'**
   String get parcelsListEmptySubtitle;
+
+  /// CTA button in empty state to create first shipment (Track C - Ticket #73)
+  ///
+  /// In en, this message translates to:
+  /// **'Create first shipment'**
+  String get parcelsListEmptyCta;
+
+  /// Tooltip for the + button in AppBar (Track C - Ticket #73)
+  ///
+  /// In en, this message translates to:
+  /// **'New shipment'**
+  String get parcelsListNewShipmentTooltip;
+
+  /// Label showing parcel creation date (Track C - Ticket #73)
+  ///
+  /// In en, this message translates to:
+  /// **'Created on {date}'**
+  String parcelsListCreatedAtLabel(String date);
+
+  /// Fallback label when destination is not set (Track C - Ticket #73)
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown destination'**
+  String get parcelsListUnknownDestinationLabel;
 
   /// Filter label for all parcels
   ///
@@ -3106,6 +3472,42 @@ abstract class AppLocalizations {
   /// **'Please enter a valid phone number'**
   String get parcelsCreateErrorInvalidPhone;
 
+  /// Validation error for invalid weight input (Track C - Ticket #69)
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid weight.'**
+  String get parcelsCreateWeightInvalidError;
+
+  /// Snackbar message when estimate feature is not yet available (Track C - Ticket #69)
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment estimate is coming soon.'**
+  String get parcelsCreateEstimateComingSoonSnackbar;
+
+  /// Size option label: Small (Track C - Ticket #69)
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get parcelsCreateSizeSmallLabel;
+
+  /// Size option label: Medium (Track C - Ticket #69)
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get parcelsCreateSizeMediumLabel;
+
+  /// Size option label: Large (Track C - Ticket #69)
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get parcelsCreateSizeLargeLabel;
+
+  /// Size option label: Oversize (Track C - Ticket #69)
+  ///
+  /// In en, this message translates to:
+  /// **'Oversize'**
+  String get parcelsCreateSizeOversizeLabel;
+
   /// Title for Shipment Details screen (Track C - Ticket #47)
   ///
   /// In en, this message translates to:
@@ -3237,6 +3639,828 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to home'**
   String get foodComingSoonPrimaryCta;
+
+  /// AppBar title for the Food Restaurants List screen (Track C - Ticket #52)
+  ///
+  /// In en, this message translates to:
+  /// **'Food delivery'**
+  String get foodRestaurantsAppBarTitle;
+
+  /// Placeholder text for search input field
+  ///
+  /// In en, this message translates to:
+  /// **'Search restaurants or cuisines'**
+  String get foodRestaurantsSearchPlaceholder;
+
+  /// Filter chip label for showing all restaurants
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get foodRestaurantsFilterAll;
+
+  /// Filter chip label for burger restaurants
+  ///
+  /// In en, this message translates to:
+  /// **'Burgers'**
+  String get foodRestaurantsFilterBurgers;
+
+  /// Filter chip label for Italian restaurants
+  ///
+  /// In en, this message translates to:
+  /// **'Italian'**
+  String get foodRestaurantsFilterItalian;
+
+  /// Title shown when no restaurants match the filters
+  ///
+  /// In en, this message translates to:
+  /// **'No restaurants found'**
+  String get foodRestaurantsEmptyTitle;
+
+  /// Subtitle shown when no restaurants match the filters
+  ///
+  /// In en, this message translates to:
+  /// **'Try changing the filters or search for a different cuisine.'**
+  String get foodRestaurantsEmptySubtitle;
+
+  /// Error message when menu fails to load (Track C - Ticket #53)
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load menu. Please try again.'**
+  String get foodRestaurantMenuError;
+
+  /// Cart summary button text
+  ///
+  /// In en, this message translates to:
+  /// **'{itemCount} items · {totalPrice} total'**
+  String foodCartSummaryCta(String itemCount, String totalPrice);
+
+  /// Temporary message shown when checkout is tapped
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout not implemented yet. {itemCount} items, total {totalPrice}.'**
+  String foodCartCheckoutStub(String itemCount, String totalPrice);
+
+  /// Section title for parcels orders in My Orders screen (Track C - Ticket #54)
+  ///
+  /// In en, this message translates to:
+  /// **'Parcels'**
+  String get ordersSectionParcelsTitle;
+
+  /// Section title for food orders in My Orders screen (Track C - Ticket #54)
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get ordersSectionFoodTitle;
+
+  /// Filter label for food orders only (Track C - Ticket #54)
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get ordersFilterFood;
+
+  /// Food order status: pending (Track C - Ticket #54)
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get ordersFoodStatusPending;
+
+  /// Food order status: in preparation (Track C - Ticket #54)
+  ///
+  /// In en, this message translates to:
+  /// **'In preparation'**
+  String get ordersFoodStatusInPreparation;
+
+  /// Food order status: on the way (Track C - Ticket #54)
+  ///
+  /// In en, this message translates to:
+  /// **'On the way'**
+  String get ordersFoodStatusOnTheWay;
+
+  /// Food order status: delivered (Track C - Ticket #54)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get ordersFoodStatusDelivered;
+
+  /// Food order status: cancelled (Track C - Ticket #54)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get ordersFoodStatusCancelled;
+
+  /// Label showing when the food order was created (Track C - Ticket #54)
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered on {date}'**
+  String ordersFoodCreatedAtLabel(String date);
+
+  /// Snackbar message shown after successfully creating a food order (Track C - Ticket #54)
+  ///
+  /// In en, this message translates to:
+  /// **'Your order from {restaurant} has been created.'**
+  String foodCartOrderCreatedSnackbar(String restaurant);
+
+  /// Label shown on Food service card when feature is disabled (Track C - Ticket #55)
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get homeFoodComingSoonLabel;
+
+  /// Message shown when user taps disabled Food card (Track C - Ticket #55)
+  ///
+  /// In en, this message translates to:
+  /// **'Food delivery is not available yet in your area.'**
+  String get homeFoodComingSoonMessage;
+
+  /// Title for the Food service card on Home Hub (Track C - Ticket #56)
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get homeFoodCardTitle;
+
+  /// Subtitle for the Food service card on Home Hub (Track C - Ticket #56)
+  ///
+  /// In en, this message translates to:
+  /// **'Your favorite food, delivered.'**
+  String get homeFoodCardSubtitle;
+
+  /// Title for Ride onboarding screen (Track D - Ticket #57)
+  ///
+  /// In en, this message translates to:
+  /// **'Get a Ride, Instantly.'**
+  String get onboardingRideTitle;
+
+  /// Body text for Ride onboarding screen (Track D - Ticket #57)
+  ///
+  /// In en, this message translates to:
+  /// **'Tap, ride, and arrive. Fast, reliable, and affordable transport at your fingertips.'**
+  String get onboardingRideBody;
+
+  /// Title for Parcels onboarding screen (Track D - Ticket #57)
+  ///
+  /// In en, this message translates to:
+  /// **'Deliver Anything, Effortlessly.'**
+  String get onboardingParcelsTitle;
+
+  /// Body text for Parcels onboarding screen (Track D - Ticket #57)
+  ///
+  /// In en, this message translates to:
+  /// **'From documents to gifts, send and track your parcels with ease and confidence.'**
+  String get onboardingParcelsBody;
+
+  /// Title for Food onboarding screen (Track D - Ticket #57)
+  ///
+  /// In en, this message translates to:
+  /// **'Your Favorite Food, Delivered.'**
+  String get onboardingFoodTitle;
+
+  /// Body text for Food onboarding screen (Track D - Ticket #57)
+  ///
+  /// In en, this message translates to:
+  /// **'Explore local restaurants and enjoy fast delivery right to your door.'**
+  String get onboardingFoodBody;
+
+  /// Continue button text for onboarding screens (Track D - Ticket #57)
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get onboardingButtonContinue;
+
+  /// Get Started button text for final onboarding screen (Track D - Ticket #57)
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get onboardingButtonGetStarted;
+
+  /// Title for the Ride service card on Home Hub (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Ride'**
+  String get homeRideCardTitle;
+
+  /// Subtitle for the Ride service card on Home Hub (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Get a ride, instantly.'**
+  String get homeRideCardSubtitle;
+
+  /// Label for the destination field (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get rideDestinationDestinationLabel;
+
+  /// Placeholder text for destination input (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Where to?'**
+  String get rideDestinationDestinationPlaceholder;
+
+  /// Section title for recent destinations (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Recent destinations'**
+  String get rideDestinationRecentTitle;
+
+  /// Label for Home in recent destinations (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get rideDestinationRecentHomeLabel;
+
+  /// Subtitle for Home in recent destinations (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Saved home address'**
+  String get rideDestinationRecentHomeSubtitle;
+
+  /// Label for Work in recent destinations (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get rideDestinationRecentWorkLabel;
+
+  /// Subtitle for Work in recent destinations (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Saved work address'**
+  String get rideDestinationRecentWorkSubtitle;
+
+  /// Label for last trip in recent destinations (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Last trip'**
+  String get rideDestinationRecentLastLabel;
+
+  /// Subtitle for last trip in recent destinations (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Use the destination from your last ride'**
+  String get rideDestinationRecentLastSubtitle;
+
+  /// CTA button text on ride destination screen (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get rideDestinationNextCta;
+
+  /// Snackbar message when trip summary is not yet implemented (Track B - Ticket #60)
+  ///
+  /// In en, this message translates to:
+  /// **'Trip summary is coming soon.'**
+  String get rideDestinationComingSoonSnackbar;
+
+  /// Title for the receipt section in trip summary (Track B - Ticket #62)
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt'**
+  String get rideSummaryReceiptTitle;
+
+  /// Label for the fare amount in receipt breakdown (Track B - Ticket #62)
+  ///
+  /// In en, this message translates to:
+  /// **'Fare'**
+  String get rideSummaryReceiptFareLabel;
+
+  /// Label for the fees amount in receipt breakdown (Track B - Ticket #62)
+  ///
+  /// In en, this message translates to:
+  /// **'Fees'**
+  String get rideSummaryReceiptFeesLabel;
+
+  /// Label for the total amount in receipt breakdown (Track B - Ticket #62)
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get rideSummaryReceiptTotalLabel;
+
+  /// Title for the driver rating section (Track B - Ticket #62)
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your driver'**
+  String get rideSummaryRatingTitle;
+
+  /// Subtitle for the driver rating section (Track B - Ticket #62)
+  ///
+  /// In en, this message translates to:
+  /// **'Your feedback helps keep rides safe and comfortable.'**
+  String get rideSummaryRatingSubtitle;
+
+  /// Placeholder text for the optional comment field (Track B - Ticket #62)
+  ///
+  /// In en, this message translates to:
+  /// **'Add a comment (optional)'**
+  String get rideSummaryCommentPlaceholder;
+
+  /// Trip ID label with value (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'Trip ID: {id}'**
+  String rideReceiptTripIdLabel(String id);
+
+  /// Completed timestamp format (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'{date} at {time}'**
+  String rideReceiptCompletedAt(String date, String time);
+
+  /// From label for pickup location (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get rideReceiptFromLabel;
+
+  /// To label for destination (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get rideReceiptToLabel;
+
+  /// Section title for fare breakdown (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'Trip fare'**
+  String get rideReceiptFareSectionTitle;
+
+  /// Base fare label (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'Base fare'**
+  String get rideReceiptBaseFareLabel;
+
+  /// Distance fare label (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get rideReceiptDistanceFareLabel;
+
+  /// Time fare label (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get rideReceiptTimeFareLabel;
+
+  /// Fees label (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'Fees & surcharges'**
+  String get rideReceiptFeesLabel;
+
+  /// Total label (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get rideReceiptTotalLabel;
+
+  /// Driver section title (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'Driver & vehicle'**
+  String get rideReceiptDriverSectionTitle;
+
+  /// Rate driver title (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your driver'**
+  String get rideReceiptRateDriverTitle;
+
+  /// Rate driver subtitle (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'Your feedback helps keep rides safe and comfortable.'**
+  String get rideReceiptRateDriverSubtitle;
+
+  /// Done CTA button (Ticket #92)
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get rideReceiptDoneCta;
+
+  /// Debug CTA button to end trip (Track B - Ticket #62)
+  ///
+  /// In en, this message translates to:
+  /// **'End trip'**
+  String get rideSummaryEndTripDebugCta;
+
+  /// Snackbar message after submitting feedback (Track B - Ticket #62)
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your feedback.'**
+  String get rideSummaryThankYouSnackbar;
+
+  /// Generic title for active parcel card on Home Hub (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Active shipment'**
+  String get homeActiveParcelTitleGeneric;
+
+  /// Subtitle showing destination on active parcel card (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'To {destination}'**
+  String homeActiveParcelSubtitleToDestination(String destination);
+
+  /// CTA button on Home Hub active parcel card (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'View shipment'**
+  String get homeActiveParcelViewShipmentCta;
+
+  /// Parcel status label for draft/quoting phase (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing your shipment...'**
+  String get homeActiveParcelStatusPreparing;
+
+  /// Parcel status label for scheduled (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup scheduled'**
+  String get homeActiveParcelStatusScheduled;
+
+  /// Parcel status label for pickup pending (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for pickup'**
+  String get homeActiveParcelStatusPickupPending;
+
+  /// Parcel status label for picked up (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Picked up'**
+  String get homeActiveParcelStatusPickedUp;
+
+  /// Parcel status label for in transit (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'In transit'**
+  String get homeActiveParcelStatusInTransit;
+
+  /// Parcel status label for delivered (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get homeActiveParcelStatusDelivered;
+
+  /// Parcel status label for cancelled (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment cancelled'**
+  String get homeActiveParcelStatusCancelled;
+
+  /// Parcel status label for failed (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery failed'**
+  String get homeActiveParcelStatusFailed;
+
+  /// AppBar title for active shipment screen (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Active shipment'**
+  String get parcelsActiveShipmentTitle;
+
+  /// Title when no active shipment exists (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'No active shipment'**
+  String get parcelsActiveShipmentNoActiveTitle;
+
+  /// Subtitle when no active shipment exists (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any active shipments right now.'**
+  String get parcelsActiveShipmentNoActiveSubtitle;
+
+  /// Map placeholder text (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Map tracking (coming soon)'**
+  String get parcelsActiveShipmentMapStub;
+
+  /// Status label with value (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status}'**
+  String parcelsActiveShipmentStatusLabel(String status);
+
+  /// Shipment ID label (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment ID: {id}'**
+  String parcelsActiveShipmentIdLabel(String id);
+
+  /// Note explaining this is a stub screen (Track C - Ticket #70)
+  ///
+  /// In en, this message translates to:
+  /// **'Full tracking will be available in a future update.'**
+  String get parcelsActiveShipmentStubNote;
+
+  /// Cancel shipment button text (Track C - Ticket #81)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel shipment'**
+  String get parcelsDetailsCancelShipmentCta;
+
+  /// Cancel confirmation dialog title (Track C - Ticket #81)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this shipment?'**
+  String get parcelsCancelDialogTitle;
+
+  /// Cancel confirmation dialog subtitle (Track C - Ticket #81)
+  ///
+  /// In en, this message translates to:
+  /// **'If you cancel now, this shipment will be stopped and will no longer appear as active.'**
+  String get parcelsCancelDialogSubtitle;
+
+  /// Cancel confirmation dialog confirm button (Track C - Ticket #81)
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, cancel'**
+  String get parcelsCancelDialogConfirmCta;
+
+  /// Cancel confirmation dialog dismiss button (Track C - Ticket #81)
+  ///
+  /// In en, this message translates to:
+  /// **'Keep shipment'**
+  String get parcelsCancelDialogDismissCta;
+
+  /// Success message after cancelling shipment (Track C - Ticket #81)
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment has been cancelled.'**
+  String get parcelsCancelSuccessMessage;
+
+  /// Bottom navigation Home tab label (Track A - Ticket #82)
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get bottomNavHomeLabel;
+
+  /// Bottom navigation Orders tab label (Track A - Ticket #82)
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get bottomNavOrdersLabel;
+
+  /// Bottom navigation Payments tab label (Track A - Ticket #82)
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get bottomNavPaymentsLabel;
+
+  /// Bottom navigation Profile tab label (Track A - Ticket #82)
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get bottomNavProfileLabel;
+
+  /// Payments stub screen title (Track A - Ticket #82)
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get paymentsEntryTitle;
+
+  /// Payments stub screen body text (Track A - Ticket #82)
+  ///
+  /// In en, this message translates to:
+  /// **'Payments management will be available in a future update.'**
+  String get paymentsEntryStubBody;
+
+  /// Payments screen title (Track B - Ticket #99)
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get paymentsTitle;
+
+  /// CTA button to add a new payment method (Track B - Ticket #99)
+  ///
+  /// In en, this message translates to:
+  /// **'Add new payment method'**
+  String get paymentsAddMethodCta;
+
+  /// Empty state title when no payment methods (Track B - Ticket #99)
+  ///
+  /// In en, this message translates to:
+  /// **'No payment methods saved'**
+  String get paymentsEmptyTitle;
+
+  /// Empty state body text for payments (Track B - Ticket #99)
+  ///
+  /// In en, this message translates to:
+  /// **'Your saved cards and payment options will appear here.'**
+  String get paymentsEmptyBody;
+
+  /// Payment method type label for Cash (Track B - Ticket #99)
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get paymentsMethodTypeCash;
+
+  /// Payment method type label for Card (Track B - Ticket #99)
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get paymentsMethodTypeCard;
+
+  /// Badge label for default payment method (Track B - Ticket #99)
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get paymentsDefaultBadge;
+
+  /// Coming soon message for add payment method (Track B - Ticket #99)
+  ///
+  /// In en, this message translates to:
+  /// **'Adding new payment methods will be available soon.'**
+  String get paymentsAddMethodComingSoon;
+
+  /// Profile stub screen title - unused as full profile exists (Track A - Ticket #82)
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileEntryTitle;
+
+  /// Profile stub screen body text - unused as full profile exists (Track A - Ticket #82)
+  ///
+  /// In en, this message translates to:
+  /// **'Profile and account settings will be available in a future update.'**
+  String get profileEntryStubBody;
+
+  /// Short status label for ride in draft phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get rideStatusShortDraft;
+
+  /// Short status label for ride in quoting phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Getting price'**
+  String get rideStatusShortQuoting;
+
+  /// Short status label for ride in requesting phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Requesting ride'**
+  String get rideStatusShortRequesting;
+
+  /// Short status label for ride in findingDriver phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Finding driver'**
+  String get rideStatusShortFindingDriver;
+
+  /// Short status label for ride in driverAccepted phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Driver accepted'**
+  String get rideStatusShortDriverAccepted;
+
+  /// Short status label for ride in driverArrived phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Driver arrived'**
+  String get rideStatusShortDriverArrived;
+
+  /// Short status label for ride in inProgress phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get rideStatusShortInProgress;
+
+  /// Short status label for ride in payment phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Payment in progress'**
+  String get rideStatusShortPayment;
+
+  /// Short status label for ride in completed phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get rideStatusShortCompleted;
+
+  /// Short status label for ride in cancelled phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get rideStatusShortCancelled;
+
+  /// Short status label for ride in failed phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get rideStatusShortFailed;
+
+  /// Long status label for ride in draft/quoting/requesting phases (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing your trip...'**
+  String get homeActiveRideStatusPreparing;
+
+  /// Long status label for ride in findingDriver phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for a driver...'**
+  String get homeActiveRideStatusFindingDriver;
+
+  /// Long status label for ride in driverAccepted phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Driver on the way'**
+  String get homeActiveRideStatusDriverAccepted;
+
+  /// Long status label for ride in driverArrived phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Driver has arrived'**
+  String get homeActiveRideStatusDriverArrived;
+
+  /// Long status label for ride in inProgress phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Trip in progress'**
+  String get homeActiveRideStatusInProgress;
+
+  /// Long status label for ride in payment phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Finalizing payment'**
+  String get homeActiveRideStatusPayment;
+
+  /// Long status label for ride in completed phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Trip completed'**
+  String get homeActiveRideStatusCompleted;
+
+  /// Long status label for ride in cancelled phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Trip cancelled'**
+  String get homeActiveRideStatusCancelled;
+
+  /// Long status label for ride in failed phase (Track B - Ticket #85)
+  ///
+  /// In en, this message translates to:
+  /// **'Trip failed'**
+  String get homeActiveRideStatusFailed;
+
+  /// AppBar title for active trip screen (Track B - Ticket #87)
+  ///
+  /// In en, this message translates to:
+  /// **'Active trip'**
+  String get rideActiveTripTitle;
+
+  /// Pickup address label with value (Track B - Ticket #87)
+  ///
+  /// In en, this message translates to:
+  /// **'From: {pickup}'**
+  String rideActiveTripFromLabel(String pickup);
+
+  /// Dropoff address label with value (Track B - Ticket #87)
+  ///
+  /// In en, this message translates to:
+  /// **'To: {dropoff}'**
+  String rideActiveTripToLabel(String dropoff);
+
+  /// Trip ID label with value (Track B - Ticket #87)
+  ///
+  /// In en, this message translates to:
+  /// **'Trip ID: {id}'**
+  String rideActiveTripIdLabel(String id);
+
+  /// [RESERVED - Ticket #88] Fallback text when map fails to load. Currently unused as real MapWidget is active.
+  ///
+  /// In en, this message translates to:
+  /// **'Live map tracking (coming soon)'**
+  String get rideActiveTripMapStub;
+
+  /// [RESERVED - Ticket #88] Fallback note for map stub. Currently unused.
+  ///
+  /// In en, this message translates to:
+  /// **'Full live tracking will be available after integration with the mobility service.'**
+  String get rideActiveTripStubNote;
+
+  /// [RESERVED - Ticket #88] Generic status label. Prefer specific headline keys for UI.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status}'**
+  String rideActiveTripStatusLabel(String status);
+
+  /// Driver section title (Track B - Ticket #87, #88)
+  ///
+  /// In en, this message translates to:
+  /// **'Driver & vehicle'**
+  String get rideActiveTripDriverSectionTitle;
+
+  /// [RESERVED - Ticket #88] Fallback when driver data unavailable. Currently using mock data.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver and vehicle details will be available once the mobility integration is connected.'**
+  String get rideActiveTripDriverSectionStubBody;
 }
 
 class _AppLocalizationsDelegate

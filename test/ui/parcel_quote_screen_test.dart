@@ -1,7 +1,7 @@
-/// Parcel Quote Screen Widget Tests - Track C Ticket #43 + #44
+/// Parcel Quote Screen Widget Tests - Track C Ticket #43 + #44 + #77
 /// Purpose: Test ParcelQuoteScreen UI components and behavior
 /// Created by: Track C - Ticket #43
-/// Last updated: 2025-11-28 (Ticket #44 - Added Confirm integration tests)
+/// Last updated: 2025-11-29 (Ticket #77 - Added Summary card + Stub note tests)
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +13,7 @@ import 'package:parcels_shims/parcels_shims.dart';
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 import 'package:delivery_ways_clean/router/app_router.dart';
 import 'package:delivery_ways_clean/screens/parcels/parcel_quote_screen.dart';
+import 'package:delivery_ways_clean/screens/parcels/parcel_shipment_details_screen.dart';
 import 'package:delivery_ways_clean/screens/parcels/parcels_entry_screen.dart';
 import 'package:delivery_ways_clean/state/parcels/parcel_draft_state.dart';
 import 'package:delivery_ways_clean/state/parcels/parcel_orders_state.dart';
@@ -559,6 +560,265 @@ void main() {
       });
     });
 
+    // =========================================================================
+    // Ticket #77 - Summary Card + Stub Note Tests
+    // =========================================================================
+
+    group('Ticket #77 - Summary Card', () {
+      testWidgets('displays shipment summary title when loaded',
+          (WidgetTester tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            parcelPricingServiceProvider.overrideWithValue(
+              const MockParcelPricingService(
+                baseLatency: Duration.zero,
+                failureRate: 0.0,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        // Pre-fill draft with valid data
+        container.read(parcelDraftProvider.notifier).updatePickupAddress('123 Main St');
+        container.read(parcelDraftProvider.notifier).updateDropoffAddress('456 Oak Ave');
+        container.read(parcelDraftProvider.notifier).updateSize(ParcelSize.medium);
+        container.read(parcelDraftProvider.notifier).updateWeightText('2.5');
+        container.read(parcelDraftProvider.notifier).updateContentsDescription('Test');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: const ParcelQuoteScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Shipment summary'), findsOneWidget);
+      });
+
+      testWidgets('displays pickup address in summary',
+          (WidgetTester tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            parcelPricingServiceProvider.overrideWithValue(
+              const MockParcelPricingService(
+                baseLatency: Duration.zero,
+                failureRate: 0.0,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        container.read(parcelDraftProvider.notifier).updatePickupAddress('Test Pickup Location');
+        container.read(parcelDraftProvider.notifier).updateDropoffAddress('Test Dropoff');
+        container.read(parcelDraftProvider.notifier).updateSize(ParcelSize.medium);
+        container.read(parcelDraftProvider.notifier).updateWeightText('2.5');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: const ParcelQuoteScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Test Pickup Location'), findsOneWidget);
+      });
+
+      testWidgets('displays dropoff address in summary',
+          (WidgetTester tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            parcelPricingServiceProvider.overrideWithValue(
+              const MockParcelPricingService(
+                baseLatency: Duration.zero,
+                failureRate: 0.0,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        container.read(parcelDraftProvider.notifier).updatePickupAddress('Test Pickup');
+        container.read(parcelDraftProvider.notifier).updateDropoffAddress('Test Dropoff Location');
+        container.read(parcelDraftProvider.notifier).updateSize(ParcelSize.medium);
+        container.read(parcelDraftProvider.notifier).updateWeightText('2.5');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: const ParcelQuoteScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Test Dropoff Location'), findsOneWidget);
+      });
+
+      testWidgets('displays weight in summary',
+          (WidgetTester tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            parcelPricingServiceProvider.overrideWithValue(
+              const MockParcelPricingService(
+                baseLatency: Duration.zero,
+                failureRate: 0.0,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        container.read(parcelDraftProvider.notifier).updatePickupAddress('A');
+        container.read(parcelDraftProvider.notifier).updateDropoffAddress('B');
+        container.read(parcelDraftProvider.notifier).updateSize(ParcelSize.medium);
+        container.read(parcelDraftProvider.notifier).updateWeightText('5.5');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: const ParcelQuoteScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('5.5 kg'), findsOneWidget);
+      });
+
+      testWidgets('displays stub note about estimated pricing',
+          (WidgetTester tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            parcelPricingServiceProvider.overrideWithValue(
+              const MockParcelPricingService(
+                baseLatency: Duration.zero,
+                failureRate: 0.0,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        container.read(parcelDraftProvider.notifier).updatePickupAddress('A');
+        container.read(parcelDraftProvider.notifier).updateDropoffAddress('B');
+        container.read(parcelDraftProvider.notifier).updateSize(ParcelSize.medium);
+        container.read(parcelDraftProvider.notifier).updateWeightText('2.5');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: const ParcelQuoteScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Scroll down to find stub note
+        await tester.drag(find.byType(ListView), const Offset(0, -300));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.textContaining('This is an estimated price'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('displays total row when option is selected',
+          (WidgetTester tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            parcelPricingServiceProvider.overrideWithValue(
+              const MockParcelPricingService(
+                baseLatency: Duration.zero,
+                failureRate: 0.0,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        container.read(parcelDraftProvider.notifier).updatePickupAddress('A');
+        container.read(parcelDraftProvider.notifier).updateDropoffAddress('B');
+        container.read(parcelDraftProvider.notifier).updateSize(ParcelSize.medium);
+        container.read(parcelDraftProvider.notifier).updateWeightText('2.5');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: const ParcelQuoteScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Select an option to show total
+        await tester.tap(find.text('Standard'));
+        await tester.pumpAndSettle();
+
+        // Scroll down to see the total row
+        await tester.drag(find.byType(ListView), const Offset(0, -300));
+        await tester.pumpAndSettle();
+
+        // Verify the price is shown (Total row displays the selected option's price)
+        // The MockParcelPricingService returns 15.00 SAR for Standard
+        expect(find.textContaining('SAR'), findsAtLeastNWidgets(1));
+      });
+    });
+
     group('Arabic localization', () {
       testWidgets('displays Arabic title when locale is ar',
           (WidgetTester tester) async {
@@ -604,6 +864,75 @@ void main() {
         await tester.pump();
 
         expect(find.text('جاري جلب خيارات التسعير...'), findsOneWidget);
+      });
+    });
+
+    group('German localization', () {
+      Widget createDeTestWidget({List<Override> overrides = const []}) {
+        return ProviderScope(
+          overrides: overrides,
+          child: MaterialApp(
+            locale: const Locale('de'),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'),
+              Locale('ar'),
+              Locale('de'),
+            ],
+            home: const ParcelQuoteScreen(),
+          ),
+        );
+      }
+
+      testWidgets('displays German title when locale is de',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createDeTestWidget());
+        await tester.pumpAndSettle();
+
+        expect(find.text('Sendungspreise'), findsAtLeastNWidgets(1));
+      });
+
+      testWidgets('displays German subtitle when locale is de',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createDeTestWidget());
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(
+              'Wählen Sie, wie schnell und zu welchem Preis Sie liefern möchten.'),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('displays German confirm button when locale is de',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createDeTestWidget());
+        await tester.pumpAndSettle();
+
+        expect(find.text('Sendung bestätigen'), findsOneWidget);
+      });
+
+      testWidgets('displays German loading text when locale is de',
+          (WidgetTester tester) async {
+        final loadingController = _FakeParcelQuoteController(
+          const ParcelQuoteUiState(isLoading: true),
+        );
+
+        await tester.pumpWidget(
+          createDeTestWidget(
+            overrides: [
+              parcelQuoteControllerProvider.overrideWith((_) => loadingController),
+            ],
+          ),
+        );
+        await tester.pump();
+
+        expect(find.text('Preise werden geladen...'), findsOneWidget);
       });
     });
 
@@ -875,7 +1204,7 @@ void main() {
         expect(quoteState.errorMessage, isNull);
       });
 
-      testWidgets('confirm navigates back to ParcelsEntryScreen when in stack',
+      testWidgets('confirm navigates to ParcelShipmentDetailsScreen (Ticket #80)',
           (WidgetTester tester) async {
         final container = ProviderContainer(
           overrides: [
@@ -936,8 +1265,8 @@ void main() {
         await tester.tap(find.text('Confirm shipment'));
         await tester.pumpAndSettle();
 
-        // Verify we're back at ParcelsEntryScreen
-        expect(find.byType(ParcelsEntryScreen), findsOneWidget);
+        // Ticket #80: Verify we navigated to ParcelShipmentDetailsScreen
+        expect(find.byType(ParcelShipmentDetailsScreen), findsOneWidget);
         expect(find.byType(ParcelQuoteScreen), findsNothing);
       });
 
@@ -1125,6 +1454,306 @@ void main() {
         expect(parcel.details.weightKg, 5.5);
         expect(parcel.details.description, 'Fragile items');
         expect(parcel.status, ParcelStatus.scheduled);
+      });
+    });
+
+    // =========================================================================
+    // Ticket #80 - Navigation to ParcelShipmentDetailsScreen after Confirm
+    // =========================================================================
+
+    group('Ticket #80 - Navigate to Details after Confirm', () {
+      testWidgets('navigates_to_parcel_details_after_confirm',
+          (WidgetTester tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            parcelPricingServiceProvider.overrideWithValue(
+              const MockParcelPricingService(
+                baseLatency: Duration.zero,
+                failureRate: 0.0,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        // Pre-fill draft with valid data
+        container.read(parcelDraftProvider.notifier).updatePickupAddress('123 Pickup St');
+        container.read(parcelDraftProvider.notifier).updateDropoffAddress('456 Dropoff Ave');
+        container.read(parcelDraftProvider.notifier).updateSize(ParcelSize.medium);
+        container.read(parcelDraftProvider.notifier).updateWeightText('3.0');
+        container.read(parcelDraftProvider.notifier).updateContentsDescription('Test items');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: Builder(
+                builder: (context) => Scaffold(
+                  body: Center(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ParcelQuoteScreen(),
+                        ),
+                      ),
+                      child: const Text('Go to Quote'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Navigate to ParcelQuoteScreen
+        await tester.tap(find.text('Go to Quote'));
+        await tester.pumpAndSettle();
+
+        // Verify we're on ParcelQuoteScreen
+        expect(find.byType(ParcelQuoteScreen), findsOneWidget);
+
+        // Select an option
+        await tester.tap(find.text('Standard'));
+        await tester.pumpAndSettle();
+
+        // Tap confirm button
+        await tester.tap(find.text('Confirm shipment'));
+        await tester.pumpAndSettle();
+
+        // Assert: Should navigate to ParcelShipmentDetailsScreen
+        expect(find.byType(ParcelShipmentDetailsScreen), findsOneWidget);
+        expect(find.byType(ParcelQuoteScreen), findsNothing);
+      });
+
+      testWidgets('parcel_details_screen_shows_correct_data_after_confirm',
+          (WidgetTester tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            parcelPricingServiceProvider.overrideWithValue(
+              const MockParcelPricingService(
+                baseLatency: Duration.zero,
+                failureRate: 0.0,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        // Pre-fill draft with specific data
+        container.read(parcelDraftProvider.notifier).updatePickupAddress('Test Pickup Address');
+        container.read(parcelDraftProvider.notifier).updateDropoffAddress('Test Dropoff Address');
+        container.read(parcelDraftProvider.notifier).updateSize(ParcelSize.large);
+        container.read(parcelDraftProvider.notifier).updateWeightText('4.5');
+        container.read(parcelDraftProvider.notifier).updateContentsDescription('Fragile');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: Builder(
+                builder: (context) => Scaffold(
+                  body: Center(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ParcelQuoteScreen(),
+                        ),
+                      ),
+                      child: const Text('Go to Quote'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Navigate to ParcelQuoteScreen
+        await tester.tap(find.text('Go to Quote'));
+        await tester.pumpAndSettle();
+
+        // Select an option
+        await tester.tap(find.text('Express'));
+        await tester.pumpAndSettle();
+
+        // Tap confirm button
+        await tester.tap(find.text('Confirm shipment'));
+        await tester.pumpAndSettle();
+
+        // Assert: ParcelShipmentDetailsScreen shows correct data
+        expect(find.byType(ParcelShipmentDetailsScreen), findsOneWidget);
+
+        // Verify pickup/dropoff addresses are displayed (may appear in multiple sections)
+        expect(find.text('Test Pickup Address'), findsAtLeastNWidgets(1));
+        expect(find.text('Test Dropoff Address'), findsAtLeastNWidgets(1));
+
+        // Verify weight is displayed
+        expect(find.text('4.5 kg'), findsOneWidget);
+
+        // Verify size is displayed
+        expect(find.text('Large'), findsOneWidget);
+      });
+
+      testWidgets('back_from_details_does_not_return_to_quote_screen',
+          (WidgetTester tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            parcelPricingServiceProvider.overrideWithValue(
+              const MockParcelPricingService(
+                baseLatency: Duration.zero,
+                failureRate: 0.0,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        // Pre-fill draft with valid data
+        container.read(parcelDraftProvider.notifier).updatePickupAddress('A');
+        container.read(parcelDraftProvider.notifier).updateDropoffAddress('B');
+        container.read(parcelDraftProvider.notifier).updateSize(ParcelSize.small);
+        container.read(parcelDraftProvider.notifier).updateWeightText('1.0');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: Builder(
+                builder: (context) => Scaffold(
+                  body: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('Home Screen'),
+                        ElevatedButton(
+                          onPressed: () => Navigator.push<void>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ParcelQuoteScreen(),
+                            ),
+                          ),
+                          child: const Text('Go to Quote'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Navigate to ParcelQuoteScreen
+        await tester.tap(find.text('Go to Quote'));
+        await tester.pumpAndSettle();
+
+        // Select an option and confirm
+        await tester.tap(find.text('Standard'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Confirm shipment'));
+        await tester.pumpAndSettle();
+
+        // Verify we're on ParcelShipmentDetailsScreen
+        expect(find.byType(ParcelShipmentDetailsScreen), findsOneWidget);
+
+        // Press back
+        await tester.tap(find.byIcon(Icons.arrow_back));
+        await tester.pumpAndSettle();
+
+        // Assert: Should NOT return to ParcelQuoteScreen
+        expect(find.byType(ParcelQuoteScreen), findsNothing);
+
+        // Assert: Should be back at Home (root)
+        expect(find.text('Home Screen'), findsOneWidget);
+      });
+
+      testWidgets('confirm_shows_active_shipment_title_in_details',
+          (WidgetTester tester) async {
+        final container = ProviderContainer(
+          overrides: [
+            parcelPricingServiceProvider.overrideWithValue(
+              const MockParcelPricingService(
+                baseLatency: Duration.zero,
+                failureRate: 0.0,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        // Pre-fill draft
+        container.read(parcelDraftProvider.notifier).updatePickupAddress('A');
+        container.read(parcelDraftProvider.notifier).updateDropoffAddress('B');
+        container.read(parcelDraftProvider.notifier).updateSize(ParcelSize.medium);
+        container.read(parcelDraftProvider.notifier).updateWeightText('2.0');
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: Builder(
+                builder: (context) => Scaffold(
+                  body: Center(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.push<void>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ParcelQuoteScreen(),
+                        ),
+                      ),
+                      child: const Text('Go to Quote'),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Navigate and confirm
+        await tester.tap(find.text('Go to Quote'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Standard'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Confirm shipment'));
+        await tester.pumpAndSettle();
+
+        // Assert: AppBar shows "Active shipment" title
+        expect(find.text('Active shipment'), findsOneWidget);
       });
     });
   });

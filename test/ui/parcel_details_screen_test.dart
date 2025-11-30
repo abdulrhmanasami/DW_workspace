@@ -1,7 +1,7 @@
-/// Parcel Details Screen Widget Tests - Track C Ticket #42 + #43
+/// Parcel Details Screen Widget Tests - Track C Ticket #42, #43, #76
 /// Purpose: Test ParcelDetailsScreen UI components and behavior
 /// Created by: Track C - Ticket #42
-/// Last updated: 2025-11-28 (Ticket #43 - Updated navigation test)
+/// Last updated: 2025-11-29 (Ticket #76 - Form validation tests)
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +38,7 @@ void main() {
           supportedLocales: const [
             Locale('en'),
             Locale('ar'),
+            Locale('de'),
           ],
           home: const ParcelDetailsScreen(),
         ),
@@ -63,7 +64,11 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Check for section labels
+      // Track C - Ticket #76: Check for section header
+      // 'Parcel details' appears in AppBar title and section header
+      expect(find.text('Parcel details'), findsAtLeastNWidgets(1));
+
+      // Check for field labels
       expect(find.text('Size'), findsOneWidget);
       expect(find.text('Weight'), findsOneWidget);
       expect(find.text('What are you sending?'), findsOneWidget);
@@ -96,6 +101,15 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(Switch), findsOneWidget);
+    });
+
+    // Track C - Ticket #76: CTA button label updated
+    testWidgets('displays CTA button with Review price label',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text('Review price'), findsOneWidget);
     });
 
     testWidgets('selecting Small chip updates parcelDraftProvider',
@@ -265,129 +279,426 @@ void main() {
       expect(container.read(parcelDraftProvider).isFragile, true);
     });
 
-    testWidgets('Continue button is disabled when fields are empty',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+    // Track C - Ticket #76: Validation tests
+    group('Form Validation Tests (Ticket #76)', () {
+      testWidgets('shows size error when no size selected and CTA pressed',
+          (WidgetTester tester) async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
 
-      // Find the DWButton
-      final buttonFinder = find.byType(DWButton);
-      expect(buttonFinder, findsOneWidget);
-
-      // Button label should be present
-      expect(find.text('Continue to pricing'), findsOneWidget);
-    });
-
-    testWidgets('Continue button is enabled when all required fields filled',
-        (WidgetTester tester) async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelDetailsScreen(),
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              routes: {
+                '/': (_) => const ParcelDetailsScreen(),
+                '/parcels/quote': (_) => const ParcelQuoteScreen(),
+              },
+              initialRoute: '/',
+            ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      // Select size
-      await tester.tap(find.text('Small'));
-      await tester.pumpAndSettle();
+        // Fill weight and contents but no size
+        final textFieldFinder = find.byType(DWTextField);
+        await tester.enterText(textFieldFinder.first, '2.5');
+        await tester.enterText(textFieldFinder.at(1), 'Books');
+        await tester.pumpAndSettle();
 
-      // Enter weight
-      final textFieldFinder = find.byType(DWTextField);
-      await tester.enterText(textFieldFinder.first, '2.5');
-      await tester.pumpAndSettle();
+        // Scroll to and tap Continue button
+        await tester.scrollUntilVisible(
+          find.text('Review price'),
+          100.0,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.text('Review price'));
+        await tester.pumpAndSettle();
 
-      // Enter contents
-      await tester.enterText(textFieldFinder.at(1), 'Books');
-      await tester.pumpAndSettle();
+        // Should show size error
+        expect(find.text('Please select a parcel size'), findsOneWidget);
 
-      // Button should be enabled now
-      final buttonFinder = find.byType(DWButton);
-      expect(buttonFinder, findsOneWidget);
-      expect(find.text('Continue to pricing'), findsOneWidget);
-    });
+        // Should NOT navigate (still on same screen)
+        expect(find.text('Parcel details'), findsAtLeastNWidgets(1));
+      });
 
-    testWidgets('pressing Continue navigates to ParcelQuoteScreen',
-        (WidgetTester tester) async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
+      testWidgets('shows weight error when weight empty and CTA pressed',
+          (WidgetTester tester) async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
 
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [Locale('en')],
-            routes: {
-              '/': (_) => const ParcelDetailsScreen(),
-              '/parcels/quote': (_) => const ParcelQuoteScreen(),
-            },
-            initialRoute: '/',
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              routes: {
+                '/': (_) => const ParcelDetailsScreen(),
+                '/parcels/quote': (_) => const ParcelQuoteScreen(),
+              },
+              initialRoute: '/',
+            ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      // Verify we're on ParcelDetailsScreen
-      expect(find.text('Parcel details'), findsAtLeastNWidgets(1));
+        // Select size and contents but no weight
+        await tester.tap(find.text('Small'));
+        await tester.pumpAndSettle();
 
-      // Fill required fields
-      await tester.tap(find.text('Small'));
-      await tester.pumpAndSettle();
+        final textFieldFinder = find.byType(DWTextField);
+        await tester.enterText(textFieldFinder.at(1), 'Books');
+        await tester.pumpAndSettle();
 
-      final textFieldFinder = find.byType(DWTextField);
-      await tester.enterText(textFieldFinder.first, '1.5');
-      await tester.enterText(textFieldFinder.at(1), 'Documents');
-      await tester.pumpAndSettle();
+        // Scroll to and tap Continue button
+        await tester.scrollUntilVisible(
+          find.text('Review price'),
+          100.0,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.text('Review price'));
+        await tester.pumpAndSettle();
 
-      // Tap Continue button
-      await tester.tap(find.text('Continue to pricing'));
-      await tester.pumpAndSettle();
+        // Should show weight error
+        expect(find.text('Please enter the parcel weight'), findsOneWidget);
 
-      // Verify we navigated to ParcelQuoteScreen
-      // Note: Due to pumpAndSettle behavior with async loading, we check for the title
-      expect(find.text('Shipment pricing'), findsAtLeastNWidgets(1));
+        // Should NOT navigate
+        expect(find.text('Parcel details'), findsAtLeastNWidgets(1));
+      });
+
+      testWidgets('shows weight error for invalid number (zero)',
+          (WidgetTester tester) async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              routes: {
+                '/': (_) => const ParcelDetailsScreen(),
+                '/parcels/quote': (_) => const ParcelQuoteScreen(),
+              },
+              initialRoute: '/',
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Select size
+        await tester.tap(find.text('Small'));
+        await tester.pumpAndSettle();
+
+        // Enter invalid weight (0)
+        final textFieldFinder = find.byType(DWTextField);
+        await tester.enterText(textFieldFinder.first, '0');
+        await tester.enterText(textFieldFinder.at(1), 'Books');
+        await tester.pumpAndSettle();
+
+        // Scroll to and tap Continue button
+        await tester.scrollUntilVisible(
+          find.text('Review price'),
+          100.0,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.text('Review price'));
+        await tester.pumpAndSettle();
+
+        // Should show positive number error
+        expect(find.text('Enter a valid positive number'), findsOneWidget);
+      });
+
+      testWidgets('shows contents error when contents empty and CTA pressed',
+          (WidgetTester tester) async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              routes: {
+                '/': (_) => const ParcelDetailsScreen(),
+                '/parcels/quote': (_) => const ParcelQuoteScreen(),
+              },
+              initialRoute: '/',
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Select size and weight but no contents
+        await tester.tap(find.text('Small'));
+        await tester.pumpAndSettle();
+
+        final textFieldFinder = find.byType(DWTextField);
+        await tester.enterText(textFieldFinder.first, '2.5');
+        await tester.pumpAndSettle();
+
+        // Scroll to and tap Continue button
+        await tester.scrollUntilVisible(
+          find.text('Review price'),
+          100.0,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.text('Review price'));
+        await tester.pumpAndSettle();
+
+        // Should show contents error
+        expect(
+            find.text('Please describe what you are sending'), findsOneWidget);
+      });
+
+      testWidgets('allows proceeding when all fields are valid',
+          (WidgetTester tester) async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              routes: {
+                '/': (_) => const ParcelDetailsScreen(),
+                '/parcels/quote': (_) => const ParcelQuoteScreen(),
+              },
+              initialRoute: '/',
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Fill all required fields
+        await tester.tap(find.text('Small'));
+        await tester.pumpAndSettle();
+
+        final textFieldFinder = find.byType(DWTextField);
+        await tester.enterText(textFieldFinder.first, '1.5');
+        await tester.enterText(textFieldFinder.at(1), 'Documents');
+        await tester.pumpAndSettle();
+
+        // Scroll to and tap Continue button
+        await tester.scrollUntilVisible(
+          find.text('Review price'),
+          100.0,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.text('Review price'));
+        await tester.pumpAndSettle();
+
+        // Should NOT show any error messages
+        expect(find.text('Please select a parcel size'), findsNothing);
+        expect(find.text('Please enter the parcel weight'), findsNothing);
+        expect(find.text('Please describe what you are sending'), findsNothing);
+
+        // Should navigate to ParcelQuoteScreen
+        expect(find.text('Shipment pricing'), findsAtLeastNWidgets(1));
+      });
+
+      testWidgets('clears size error when size is selected after error',
+          (WidgetTester tester) async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: const ParcelDetailsScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Tap Continue without filling anything
+        await tester.scrollUntilVisible(
+          find.text('Review price'),
+          100.0,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.text('Review price'));
+        await tester.pumpAndSettle();
+
+        // Size error should be visible
+        expect(find.text('Please select a parcel size'), findsOneWidget);
+
+        // Now select a size
+        await tester.tap(find.text('Medium'));
+        await tester.pumpAndSettle();
+
+        // Size error should be cleared
+        expect(find.text('Please select a parcel size'), findsNothing);
+      });
     });
 
-    testWidgets('displays Arabic translations when locale is ar',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(createTestWidget(locale: const Locale('ar')));
-      await tester.pumpAndSettle();
+    // Track C - Ticket #76: Localization tests
+    group('Localization Tests (Ticket #76)', () {
+      testWidgets('displays Arabic translations when locale is ar',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createTestWidget(locale: const Locale('ar')));
+        await tester.pumpAndSettle();
 
-      // Check for Arabic title
-      expect(find.text('تفاصيل الشحنة'), findsAtLeastNWidgets(1));
+        // Check for Arabic title
+        expect(find.text('تفاصيل الشحنة'), findsAtLeastNWidgets(1));
 
-      // Check for Arabic subtitle
-      expect(
-        find.text('أدخل تفاصيل الشحنة للحصول على تسعير أدق.'),
-        findsOneWidget,
-      );
+        // Check for Arabic subtitle
+        expect(
+          find.text('أدخل تفاصيل الشحنة للحصول على تسعير أدق.'),
+          findsOneWidget,
+        );
 
-      // Check for Arabic labels
-      expect(find.text('الحجم'), findsOneWidget);
-      expect(find.text('الوزن'), findsOneWidget);
-      expect(find.text('ما الذي تريد إرساله؟'), findsOneWidget);
-      expect(find.text('هذه الشحنة قابلة للكسر'), findsOneWidget);
+        // Check for Arabic section header
+        expect(find.text('تفاصيل الطرد'), findsOneWidget);
 
-      // Check for Arabic CTA
-      expect(find.text('متابعة إلى التسعير'), findsOneWidget);
+        // Check for Arabic labels
+        expect(find.text('الحجم'), findsOneWidget);
+        expect(find.text('الوزن'), findsOneWidget);
+        expect(find.text('ما الذي تريد إرساله؟'), findsOneWidget);
+        expect(find.text('هذه الشحنة قابلة للكسر'), findsOneWidget);
+
+        // Check for Arabic CTA
+        expect(find.text('مراجعة التسعيرة'), findsOneWidget);
+      });
+
+      testWidgets('displays German translations when locale is de',
+          (WidgetTester tester) async {
+        await tester.pumpWidget(createTestWidget(locale: const Locale('de')));
+        await tester.pumpAndSettle();
+
+        // Check for German title
+        expect(find.text('Sendungsdetails'), findsAtLeastNWidgets(1));
+
+        // Check for German section header
+        expect(find.text('Paketdetails'), findsOneWidget);
+
+        // Check for German labels
+        expect(find.text('Größe'), findsOneWidget);
+        expect(find.text('Gewicht'), findsOneWidget);
+        expect(find.text('Was senden Sie?'), findsOneWidget);
+        expect(find.text('Dieses Paket ist zerbrechlich'), findsOneWidget);
+
+        // Check for German CTA
+        expect(find.text('Preis prüfen'), findsOneWidget);
+      });
+
+      testWidgets('shows Arabic validation errors when locale is ar',
+          (WidgetTester tester) async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              locale: const Locale('ar'),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('ar')],
+              home: const ParcelDetailsScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Tap Continue without filling anything
+        await tester.scrollUntilVisible(
+          find.text('مراجعة التسعيرة'),
+          100.0,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.text('مراجعة التسعيرة'));
+        await tester.pumpAndSettle();
+
+        // Check for Arabic error messages
+        expect(find.text('يرجى اختيار حجم الطرد'), findsOneWidget);
+        expect(find.text('يرجى إدخال وزن الطرد'), findsOneWidget);
+        expect(find.text('يرجى وصف محتوى الشحنة'), findsOneWidget);
+      });
+
+      testWidgets('shows German validation errors when locale is de',
+          (WidgetTester tester) async {
+        final container = ProviderContainer();
+        addTearDown(container.dispose);
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: MaterialApp(
+              locale: const Locale('de'),
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('de')],
+              home: const ParcelDetailsScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Tap Continue without filling anything
+        await tester.scrollUntilVisible(
+          find.text('Preis prüfen'),
+          100.0,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.text('Preis prüfen'));
+        await tester.pumpAndSettle();
+
+        // Check for German error messages
+        expect(find.text('Bitte wählen Sie eine Paketgröße'), findsOneWidget);
+        expect(find.text('Bitte geben Sie das Gewicht des Pakets ein'),
+            findsOneWidget);
+        expect(find.text('Bitte beschreiben Sie, was Sie versenden'),
+            findsOneWidget);
+      });
     });
 
     testWidgets('has back button in app bar', (WidgetTester tester) async {
@@ -444,116 +755,5 @@ void main() {
       // Check for ChoiceChip widgets (4 size options)
       expect(find.byType(ChoiceChip), findsNWidgets(4));
     });
-
-    testWidgets('Continue button disabled without size',
-        (WidgetTester tester) async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelDetailsScreen(),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Only fill weight and contents (no size)
-      final textFieldFinder = find.byType(DWTextField);
-      await tester.enterText(textFieldFinder.first, '2.5');
-      await tester.enterText(textFieldFinder.at(1), 'Books');
-      await tester.pumpAndSettle();
-
-      // Button should still be present but state should indicate it's disabled
-      // (canContinue = false because no size selected)
-      final draft = container.read(parcelDraftProvider);
-      expect(draft.size, isNull);
-      expect(draft.weightText, '2.5');
-      expect(draft.contentsDescription, 'Books');
-    });
-
-    testWidgets('Continue button disabled without weight',
-        (WidgetTester tester) async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelDetailsScreen(),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Select size and contents only (no weight)
-      await tester.tap(find.text('Medium'));
-      await tester.pumpAndSettle();
-
-      final textFieldFinder = find.byType(DWTextField);
-      await tester.enterText(textFieldFinder.at(1), 'Books');
-      await tester.pumpAndSettle();
-
-      // Verify state
-      final draft = container.read(parcelDraftProvider);
-      expect(draft.size, ParcelSize.medium);
-      expect(draft.weightText, '');
-      expect(draft.contentsDescription, 'Books');
-    });
-
-    testWidgets('Continue button disabled without contents',
-        (WidgetTester tester) async {
-      final container = ProviderContainer();
-      addTearDown(container.dispose);
-
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelDetailsScreen(),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Select size and weight only (no contents)
-      await tester.tap(find.text('Large'));
-      await tester.pumpAndSettle();
-
-      final textFieldFinder = find.byType(DWTextField);
-      await tester.enterText(textFieldFinder.first, '5.0');
-      await tester.pumpAndSettle();
-
-      // Verify state
-      final draft = container.read(parcelDraftProvider);
-      expect(draft.size, ParcelSize.large);
-      expect(draft.weightText, '5.0');
-      expect(draft.contentsDescription, '');
-    });
   });
 }
-

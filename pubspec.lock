@@ -499,6 +499,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  food_shims:
+    dependency: "direct main"
+    description:
+      path: "packages/food_shims"
+      relative: true
+    source: path
+    version: "0.0.1"
   foundation_shims:
     dependency: "direct main"
     description:

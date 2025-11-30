@@ -4,6 +4,8 @@ import 'package:meta/meta.dart';
 ///
 /// This is the *canonical* state machine for a single ride trip.
 /// It is intentionally SDK-agnostic and backend-agnostic.
+///
+/// Updated by: Track B - Ticket #89 (FSM Integration + Domain Helpers)
 enum RideTripPhase {
   /// No quote requested yet. User is still editing pickup/destination.
   draft,
@@ -36,7 +38,52 @@ enum RideTripPhase {
   cancelled,
 
   /// Trip failed due to an unrecoverable error.
-  failed,
+  failed;
+
+  // ===========================================================================
+  // Domain Helpers (Track B - Ticket #89)
+  // ===========================================================================
+
+  /// Returns true if this phase represents an "active" trip that the user
+  /// should be tracking (driver is involved or trip is in progress).
+  ///
+  /// Active phases: findingDriver, driverAccepted, driverArrived, inProgress
+  bool get isActiveTrip {
+    return this == RideTripPhase.findingDriver ||
+        this == RideTripPhase.driverAccepted ||
+        this == RideTripPhase.driverArrived ||
+        this == RideTripPhase.inProgress;
+  }
+
+  /// Returns true if this phase is a terminal state (no further transitions).
+  ///
+  /// Terminal phases: completed, cancelled, failed
+  bool get isTerminal {
+    return this == RideTripPhase.completed ||
+        this == RideTripPhase.cancelled ||
+        this == RideTripPhase.failed;
+  }
+
+  /// Returns true if this phase allows cancellation by the user.
+  ///
+  /// Cancellation is allowed before the trip starts (not during inProgress or payment).
+  bool get isCancellable {
+    return this == RideTripPhase.draft ||
+        this == RideTripPhase.quoting ||
+        this == RideTripPhase.requesting ||
+        this == RideTripPhase.findingDriver ||
+        this == RideTripPhase.driverAccepted ||
+        this == RideTripPhase.driverArrived;
+  }
+
+  /// Returns true if this is a pre-trip phase (before driver involvement).
+  ///
+  /// Pre-trip phases: draft, quoting, requesting
+  bool get isPreTrip {
+    return this == RideTripPhase.draft ||
+        this == RideTripPhase.quoting ||
+        this == RideTripPhase.requesting;
+  }
 }
 
 /// Events that move a ride trip from one phase to another.
@@ -130,6 +177,34 @@ RideTripState applyRideTripEvent(
     throw InvalidRideTransitionException(state.phase, event);
   }
   return state.copyWith(phase: nextPhase);
+}
+
+/// Tries to apply a [RideTripEvent] to a [RideTripState] without throwing.
+///
+/// - Returns a **new** state with the updated phase when the transition is valid.
+/// - Returns **null** if the transition is not allowed (no-op behavior).
+///
+/// This is useful for handling duplicate/idempotent events gracefully,
+/// e.g., when a network callback fires multiple times.
+///
+/// Track B - Ticket #89: Safe transition for double events / Chaos resilience
+RideTripState? tryApplyRideTripEvent(
+  RideTripState state,
+  RideTripEvent event,
+) {
+  final nextPhase = _nextPhase(state.phase, event);
+  if (nextPhase == null) {
+    return null; // No-op: invalid transition
+  }
+  return state.copyWith(phase: nextPhase);
+}
+
+/// Checks if a transition from [phase] to [event] is valid.
+///
+/// Returns true if the transition would succeed, false otherwise.
+/// Track B - Ticket #89: Validation helper for UI guards
+bool isValidTransition(RideTripPhase phase, RideTripEvent event) {
+  return _nextPhase(phase, event) != null;
 }
 
 /// Internal transition table.

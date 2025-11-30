@@ -1,8 +1,9 @@
 /// Parcel Orders State + Controller
 /// Created by: Track C - Ticket #44
 /// Updated by: Track C - Ticket #49 (ParcelsRepository Port integration)
+/// Updated by: Track C - Ticket #81 (cancelParcel method)
 /// Purpose: Manage in-memory session state for parcel shipments
-/// Last updated: 2025-11-28
+/// Last updated: 2025-11-29
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -124,6 +125,29 @@ class ParcelOrdersController extends StateNotifier<ParcelOrdersState> {
   /// Clear active parcel (optional for future screens).
   void clearActiveParcel() {
     state = state.copyWith(clearActive: true);
+  }
+
+  /// Cancel a parcel by id (local state update only).
+  ///
+  /// Track C - Ticket #81: Updates parcel status to cancelled in session state.
+  /// This is a client-side only operation; backend integration would be in a future ticket.
+  void cancelParcel({required String parcelId}) {
+    final updatedParcels = state.parcels.map((parcel) {
+      if (parcel.id == parcelId) {
+        return parcel.copyWith(status: ParcelStatus.cancelled);
+      }
+      return parcel;
+    }).toList();
+
+    // Update activeParcel if it's the one being cancelled
+    final updatedActive = state.activeParcel?.id == parcelId
+        ? state.activeParcel?.copyWith(status: ParcelStatus.cancelled)
+        : state.activeParcel;
+
+    state = ParcelOrdersState(
+      activeParcel: updatedActive,
+      parcels: updatedParcels,
+    );
   }
 
   /// Reset all parcels (session reset - used in tests).

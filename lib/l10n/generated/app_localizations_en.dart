@@ -750,6 +750,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ordersFilterParcels => 'Parcels';
 
   @override
+  String get ordersFilterRides => 'Rides';
+
+  @override
+  String get ordersSectionRidesTitle => 'Rides';
+
+  @override
+  String ordersRideItemTitleToDestination(String destination) {
+    return 'Ride to $destination';
+  }
+
+  @override
+  String get ordersRideStatusCompleted => 'Completed';
+
+  @override
+  String get ordersRideStatusCancelled => 'Cancelled';
+
+  @override
+  String get ordersRideStatusFailed => 'Failed';
+
+  @override
   String get paymentMethodsTitle => 'Payment Methods';
 
   @override
@@ -1275,26 +1295,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rideActiveContactDriverCta => 'Contact driver';
 
   @override
-  String get rideActiveShareTripCta => 'Share trip';
+  String get rideActiveShareTripCta => 'Share trip status';
 
   @override
   String get rideActiveCancelTripCta => 'Cancel ride';
 
   @override
-  String get rideActiveContactDriverNotImplemented =>
-      'Contact driver is not implemented yet.';
+  String get rideActiveShareTripCopied =>
+      'Trip status copied. You can paste it into any app.';
 
   @override
-  String get rideActiveShareTripNotImplemented =>
-      'Share trip is not implemented yet.';
+  String get rideActiveContactNoPhoneError =>
+      'Driver contact details are not available yet.';
 
   @override
-  String get rideActiveCancelTripNotImplemented =>
-      'Cancel ride is not implemented yet.';
+  String get rideActiveShareGenericError =>
+      'Unable to prepare trip status right now. Please try again.';
+
+  @override
+  String rideActiveShareMessageTemplate(String destination, String link) {
+    return 'I\'m on a Delivery Ways ride to $destination. Track my trip status here: $link';
+  }
 
   @override
   String get rideActiveCancelErrorGeneric =>
       'Could not cancel the ride. Please try again.';
+
+  @override
+  String get rideCancelDialogTitle => 'Cancel this ride?';
+
+  @override
+  String get rideCancelDialogMessage =>
+      'If you cancel now, your driver will stop heading to your pickup location.';
+
+  @override
+  String get rideCancelDialogKeepRideCta => 'Keep ride';
+
+  @override
+  String get rideCancelDialogConfirmCta => 'Cancel ride';
+
+  @override
+  String get rideCancelSuccessSnackbar => 'Your ride has been cancelled.';
 
   @override
   String get rideActiveHeadlineFindingDriver => 'Finding a driver…';
@@ -1332,12 +1373,84 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rideActiveGoBackCta => 'Go back';
 
   @override
+  String get rideActiveCancelledTitle => 'Trip cancelled';
+
+  @override
+  String get rideActiveCancelledBody =>
+      'Your trip was cancelled. You can request a new ride at any time.';
+
+  @override
+  String get rideActiveFailedTitle => 'Something went wrong';
+
+  @override
+  String get rideActiveFailedBody =>
+      'We couldn\'t complete this trip. Please try again in a moment.';
+
+  @override
+  String get rideActiveBackToHomeCta => 'Back to home';
+
+  @override
+  String get rideActiveRequestNewRideCta => 'Request new ride';
+
+  @override
   String rideActiveDestinationLabel(String destination) {
     return 'To $destination';
   }
 
   @override
+  String get rideDebugFsmTitle => 'Debug FSM Controls';
+
+  @override
+  String rideDebugCurrentPhase(String phase) {
+    return 'Current phase: $phase';
+  }
+
+  @override
+  String get rideDebugDriverFound => 'Driver Found';
+
+  @override
+  String get rideDebugDriverArrived => 'Driver Arrived';
+
+  @override
+  String get rideDebugStartTrip => 'Start Trip';
+
+  @override
+  String get rideDebugCompleteTrip => 'Complete Trip';
+
+  @override
+  String get rideDebugConfirmPayment => 'Confirm Payment';
+
+  @override
+  String get rideStatusFindingDriver => 'Looking for a driver...';
+
+  @override
+  String get rideStatusDriverAccepted => 'Driver on the way';
+
+  @override
+  String get rideStatusDriverArrived => 'Driver has arrived';
+
+  @override
+  String get rideStatusInProgress => 'Trip in progress';
+
+  @override
+  String get rideStatusPaymentPending => 'Waiting for payment';
+
+  @override
+  String get rideStatusCompleted => 'Trip completed';
+
+  @override
+  String get rideStatusUnknown => 'Preparing your trip...';
+
+  @override
   String get homeActiveRideViewTripCta => 'View trip';
+
+  @override
+  String get homeActiveRideTitleGeneric => 'Active ride';
+
+  @override
+  String homeActiveRideSubtitleToDestination(String destination) {
+    return 'To $destination';
+  }
 
   @override
   String get rideDestinationTitle => 'Where to?';
@@ -1350,6 +1463,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rideDestinationRecentLocationsSection => 'Recent locations';
+
+  @override
+  String get rideLocationPickerTitle => 'Choose your trip';
+
+  @override
+  String get rideLocationPickerPickupLabel => 'Pickup';
+
+  @override
+  String get rideLocationPickerDestinationLabel => 'Destination';
+
+  @override
+  String get rideLocationPickerPickupPlaceholder =>
+      'Where should we pick you up?';
+
+  @override
+  String get rideLocationPickerDestinationPlaceholder => 'Where are you going?';
+
+  @override
+  String get rideLocationPickerMapHint =>
+      'Adjust the pin or use search to set your locations.';
+
+  @override
+  String get rideLocationPickerContinueCta => 'See prices';
 
   @override
   String get rideTripConfirmationTitle => 'Confirm your trip';
@@ -1413,6 +1549,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rideConfirmRetryCta => 'Retry';
+
+  @override
+  String get rideConfirmRecommendedBadge => 'Recommended';
+
+  @override
+  String get rideConfirmFromLabel => 'From';
+
+  @override
+  String get rideConfirmToLabel => 'To';
 
   @override
   String get onboardingWelcomeTitle => 'Welcome to Delivery Ways';
@@ -1552,7 +1697,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get parcelsDetailsFragileLabel => 'This parcel is fragile';
 
   @override
-  String get parcelsDetailsContinueCta => 'Continue to pricing';
+  String get parcelsDetailsContinueCta => 'Review price';
+
+  @override
+  String get parcelsDetailsErrorWeightRequired =>
+      'Please enter the parcel weight';
+
+  @override
+  String get parcelsDetailsErrorPositiveNumber =>
+      'Enter a valid positive number';
+
+  @override
+  String get parcelsDetailsErrorContentsRequired =>
+      'Please describe what you are sending';
+
+  @override
+  String get parcelsDetailsErrorSizeRequired => 'Please select a parcel size';
+
+  @override
+  String get parcelsDetailsSectionParcelTitle => 'Parcel details';
 
   @override
   String get parcelsQuoteTitle => 'Shipment pricing';
@@ -1585,6 +1748,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get parcelsQuoteConfirmCta => 'Confirm shipment';
 
   @override
+  String get parcelsQuoteSummaryTitle => 'Shipment summary';
+
+  @override
+  String get parcelsQuoteFromLabel => 'From';
+
+  @override
+  String get parcelsQuoteToLabel => 'To';
+
+  @override
+  String get parcelsQuoteWeightLabel => 'Weight';
+
+  @override
+  String get parcelsQuoteSizeLabel => 'Size';
+
+  @override
+  String parcelsQuoteTotalLabel(String amount) {
+    return 'Total: $amount';
+  }
+
+  @override
+  String get parcelsQuoteBreakdownStubNote =>
+      'This is an estimated price. Final price may change after integration with the live pricing service.';
+
+  @override
+  String get parcelsListTitle => 'Your shipments';
+
+  @override
   String get parcelsListSectionTitle => 'My shipments';
 
   @override
@@ -1593,6 +1783,20 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get parcelsListEmptySubtitle =>
       'When you create a shipment, it will appear here.';
+
+  @override
+  String get parcelsListEmptyCta => 'Create first shipment';
+
+  @override
+  String get parcelsListNewShipmentTooltip => 'New shipment';
+
+  @override
+  String parcelsListCreatedAtLabel(String date) {
+    return 'Created on $date';
+  }
+
+  @override
+  String get parcelsListUnknownDestinationLabel => 'Unknown destination';
 
   @override
   String get parcelsFilterAllLabel => 'All';
@@ -1689,6 +1893,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'Please enter a valid phone number';
 
   @override
+  String get parcelsCreateWeightInvalidError => 'Please enter a valid weight.';
+
+  @override
+  String get parcelsCreateEstimateComingSoonSnackbar =>
+      'Shipment estimate is coming soon.';
+
+  @override
+  String get parcelsCreateSizeSmallLabel => 'Small';
+
+  @override
+  String get parcelsCreateSizeMediumLabel => 'Medium';
+
+  @override
+  String get parcelsCreateSizeLargeLabel => 'Large';
+
+  @override
+  String get parcelsCreateSizeOversizeLabel => 'Oversize';
+
+  @override
   String get parcelsShipmentDetailsTitle => 'Shipment details';
 
   @override
@@ -1756,4 +1979,461 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get foodComingSoonPrimaryCta => 'Back to home';
+
+  @override
+  String get foodRestaurantsAppBarTitle => 'Food delivery';
+
+  @override
+  String get foodRestaurantsSearchPlaceholder =>
+      'Search restaurants or cuisines';
+
+  @override
+  String get foodRestaurantsFilterAll => 'All';
+
+  @override
+  String get foodRestaurantsFilterBurgers => 'Burgers';
+
+  @override
+  String get foodRestaurantsFilterItalian => 'Italian';
+
+  @override
+  String get foodRestaurantsEmptyTitle => 'No restaurants found';
+
+  @override
+  String get foodRestaurantsEmptySubtitle =>
+      'Try changing the filters or search for a different cuisine.';
+
+  @override
+  String get foodRestaurantMenuError =>
+      'Could not load menu. Please try again.';
+
+  @override
+  String foodCartSummaryCta(String itemCount, String totalPrice) {
+    return '$itemCount items · $totalPrice total';
+  }
+
+  @override
+  String foodCartCheckoutStub(String itemCount, String totalPrice) {
+    return 'Checkout not implemented yet. $itemCount items, total $totalPrice.';
+  }
+
+  @override
+  String get ordersSectionParcelsTitle => 'Parcels';
+
+  @override
+  String get ordersSectionFoodTitle => 'Food';
+
+  @override
+  String get ordersFilterFood => 'Food';
+
+  @override
+  String get ordersFoodStatusPending => 'Pending';
+
+  @override
+  String get ordersFoodStatusInPreparation => 'In preparation';
+
+  @override
+  String get ordersFoodStatusOnTheWay => 'On the way';
+
+  @override
+  String get ordersFoodStatusDelivered => 'Delivered';
+
+  @override
+  String get ordersFoodStatusCancelled => 'Cancelled';
+
+  @override
+  String ordersFoodCreatedAtLabel(String date) {
+    return 'Ordered on $date';
+  }
+
+  @override
+  String foodCartOrderCreatedSnackbar(String restaurant) {
+    return 'Your order from $restaurant has been created.';
+  }
+
+  @override
+  String get homeFoodComingSoonLabel => 'Coming soon';
+
+  @override
+  String get homeFoodComingSoonMessage =>
+      'Food delivery is not available yet in your area.';
+
+  @override
+  String get homeFoodCardTitle => 'Food';
+
+  @override
+  String get homeFoodCardSubtitle => 'Your favorite food, delivered.';
+
+  @override
+  String get onboardingRideTitle => 'Get a Ride, Instantly.';
+
+  @override
+  String get onboardingRideBody =>
+      'Tap, ride, and arrive. Fast, reliable, and affordable transport at your fingertips.';
+
+  @override
+  String get onboardingParcelsTitle => 'Deliver Anything, Effortlessly.';
+
+  @override
+  String get onboardingParcelsBody =>
+      'From documents to gifts, send and track your parcels with ease and confidence.';
+
+  @override
+  String get onboardingFoodTitle => 'Your Favorite Food, Delivered.';
+
+  @override
+  String get onboardingFoodBody =>
+      'Explore local restaurants and enjoy fast delivery right to your door.';
+
+  @override
+  String get onboardingButtonContinue => 'Continue';
+
+  @override
+  String get onboardingButtonGetStarted => 'Get Started';
+
+  @override
+  String get homeRideCardTitle => 'Ride';
+
+  @override
+  String get homeRideCardSubtitle => 'Get a ride, instantly.';
+
+  @override
+  String get rideDestinationDestinationLabel => 'Destination';
+
+  @override
+  String get rideDestinationDestinationPlaceholder => 'Where to?';
+
+  @override
+  String get rideDestinationRecentTitle => 'Recent destinations';
+
+  @override
+  String get rideDestinationRecentHomeLabel => 'Home';
+
+  @override
+  String get rideDestinationRecentHomeSubtitle => 'Saved home address';
+
+  @override
+  String get rideDestinationRecentWorkLabel => 'Work';
+
+  @override
+  String get rideDestinationRecentWorkSubtitle => 'Saved work address';
+
+  @override
+  String get rideDestinationRecentLastLabel => 'Last trip';
+
+  @override
+  String get rideDestinationRecentLastSubtitle =>
+      'Use the destination from your last ride';
+
+  @override
+  String get rideDestinationNextCta => 'Next';
+
+  @override
+  String get rideDestinationComingSoonSnackbar =>
+      'Trip summary is coming soon.';
+
+  @override
+  String get rideSummaryReceiptTitle => 'Receipt';
+
+  @override
+  String get rideSummaryReceiptFareLabel => 'Fare';
+
+  @override
+  String get rideSummaryReceiptFeesLabel => 'Fees';
+
+  @override
+  String get rideSummaryReceiptTotalLabel => 'Total';
+
+  @override
+  String get rideSummaryRatingTitle => 'Rate your driver';
+
+  @override
+  String get rideSummaryRatingSubtitle =>
+      'Your feedback helps keep rides safe and comfortable.';
+
+  @override
+  String get rideSummaryCommentPlaceholder => 'Add a comment (optional)';
+
+  @override
+  String rideReceiptTripIdLabel(String id) {
+    return 'Trip ID: $id';
+  }
+
+  @override
+  String rideReceiptCompletedAt(String date, String time) {
+    return '$date at $time';
+  }
+
+  @override
+  String get rideReceiptFromLabel => 'From';
+
+  @override
+  String get rideReceiptToLabel => 'To';
+
+  @override
+  String get rideReceiptFareSectionTitle => 'Trip fare';
+
+  @override
+  String get rideReceiptBaseFareLabel => 'Base fare';
+
+  @override
+  String get rideReceiptDistanceFareLabel => 'Distance';
+
+  @override
+  String get rideReceiptTimeFareLabel => 'Time';
+
+  @override
+  String get rideReceiptFeesLabel => 'Fees & surcharges';
+
+  @override
+  String get rideReceiptTotalLabel => 'Total';
+
+  @override
+  String get rideReceiptDriverSectionTitle => 'Driver & vehicle';
+
+  @override
+  String get rideReceiptRateDriverTitle => 'Rate your driver';
+
+  @override
+  String get rideReceiptRateDriverSubtitle =>
+      'Your feedback helps keep rides safe and comfortable.';
+
+  @override
+  String get rideReceiptDoneCta => 'Done';
+
+  @override
+  String get rideSummaryEndTripDebugCta => 'End trip';
+
+  @override
+  String get rideSummaryThankYouSnackbar => 'Thanks for your feedback.';
+
+  @override
+  String get homeActiveParcelTitleGeneric => 'Active shipment';
+
+  @override
+  String homeActiveParcelSubtitleToDestination(String destination) {
+    return 'To $destination';
+  }
+
+  @override
+  String get homeActiveParcelViewShipmentCta => 'View shipment';
+
+  @override
+  String get homeActiveParcelStatusPreparing => 'Preparing your shipment...';
+
+  @override
+  String get homeActiveParcelStatusScheduled => 'Pickup scheduled';
+
+  @override
+  String get homeActiveParcelStatusPickupPending => 'Waiting for pickup';
+
+  @override
+  String get homeActiveParcelStatusPickedUp => 'Picked up';
+
+  @override
+  String get homeActiveParcelStatusInTransit => 'In transit';
+
+  @override
+  String get homeActiveParcelStatusDelivered => 'Delivered';
+
+  @override
+  String get homeActiveParcelStatusCancelled => 'Shipment cancelled';
+
+  @override
+  String get homeActiveParcelStatusFailed => 'Delivery failed';
+
+  @override
+  String get parcelsActiveShipmentTitle => 'Active shipment';
+
+  @override
+  String get parcelsActiveShipmentNoActiveTitle => 'No active shipment';
+
+  @override
+  String get parcelsActiveShipmentNoActiveSubtitle =>
+      'You don\'t have any active shipments right now.';
+
+  @override
+  String get parcelsActiveShipmentMapStub => 'Map tracking (coming soon)';
+
+  @override
+  String parcelsActiveShipmentStatusLabel(String status) {
+    return 'Status: $status';
+  }
+
+  @override
+  String parcelsActiveShipmentIdLabel(String id) {
+    return 'Shipment ID: $id';
+  }
+
+  @override
+  String get parcelsActiveShipmentStubNote =>
+      'Full tracking will be available in a future update.';
+
+  @override
+  String get parcelsDetailsCancelShipmentCta => 'Cancel shipment';
+
+  @override
+  String get parcelsCancelDialogTitle => 'Cancel this shipment?';
+
+  @override
+  String get parcelsCancelDialogSubtitle =>
+      'If you cancel now, this shipment will be stopped and will no longer appear as active.';
+
+  @override
+  String get parcelsCancelDialogConfirmCta => 'Yes, cancel';
+
+  @override
+  String get parcelsCancelDialogDismissCta => 'Keep shipment';
+
+  @override
+  String get parcelsCancelSuccessMessage => 'Shipment has been cancelled.';
+
+  @override
+  String get bottomNavHomeLabel => 'Home';
+
+  @override
+  String get bottomNavOrdersLabel => 'Orders';
+
+  @override
+  String get bottomNavPaymentsLabel => 'Payments';
+
+  @override
+  String get bottomNavProfileLabel => 'Profile';
+
+  @override
+  String get paymentsEntryTitle => 'Payments';
+
+  @override
+  String get paymentsEntryStubBody =>
+      'Payments management will be available in a future update.';
+
+  @override
+  String get paymentsTitle => 'Payments';
+
+  @override
+  String get paymentsAddMethodCta => 'Add new payment method';
+
+  @override
+  String get paymentsEmptyTitle => 'No payment methods saved';
+
+  @override
+  String get paymentsEmptyBody =>
+      'Your saved cards and payment options will appear here.';
+
+  @override
+  String get paymentsMethodTypeCash => 'Cash';
+
+  @override
+  String get paymentsMethodTypeCard => 'Card';
+
+  @override
+  String get paymentsDefaultBadge => 'Default';
+
+  @override
+  String get paymentsAddMethodComingSoon =>
+      'Adding new payment methods will be available soon.';
+
+  @override
+  String get profileEntryTitle => 'Profile';
+
+  @override
+  String get profileEntryStubBody =>
+      'Profile and account settings will be available in a future update.';
+
+  @override
+  String get rideStatusShortDraft => 'Draft';
+
+  @override
+  String get rideStatusShortQuoting => 'Getting price';
+
+  @override
+  String get rideStatusShortRequesting => 'Requesting ride';
+
+  @override
+  String get rideStatusShortFindingDriver => 'Finding driver';
+
+  @override
+  String get rideStatusShortDriverAccepted => 'Driver accepted';
+
+  @override
+  String get rideStatusShortDriverArrived => 'Driver arrived';
+
+  @override
+  String get rideStatusShortInProgress => 'In progress';
+
+  @override
+  String get rideStatusShortPayment => 'Payment in progress';
+
+  @override
+  String get rideStatusShortCompleted => 'Completed';
+
+  @override
+  String get rideStatusShortCancelled => 'Cancelled';
+
+  @override
+  String get rideStatusShortFailed => 'Failed';
+
+  @override
+  String get homeActiveRideStatusPreparing => 'Preparing your trip...';
+
+  @override
+  String get homeActiveRideStatusFindingDriver => 'Looking for a driver...';
+
+  @override
+  String get homeActiveRideStatusDriverAccepted => 'Driver on the way';
+
+  @override
+  String get homeActiveRideStatusDriverArrived => 'Driver has arrived';
+
+  @override
+  String get homeActiveRideStatusInProgress => 'Trip in progress';
+
+  @override
+  String get homeActiveRideStatusPayment => 'Finalizing payment';
+
+  @override
+  String get homeActiveRideStatusCompleted => 'Trip completed';
+
+  @override
+  String get homeActiveRideStatusCancelled => 'Trip cancelled';
+
+  @override
+  String get homeActiveRideStatusFailed => 'Trip failed';
+
+  @override
+  String get rideActiveTripTitle => 'Active trip';
+
+  @override
+  String rideActiveTripFromLabel(String pickup) {
+    return 'From: $pickup';
+  }
+
+  @override
+  String rideActiveTripToLabel(String dropoff) {
+    return 'To: $dropoff';
+  }
+
+  @override
+  String rideActiveTripIdLabel(String id) {
+    return 'Trip ID: $id';
+  }
+
+  @override
+  String get rideActiveTripMapStub => 'Live map tracking (coming soon)';
+
+  @override
+  String get rideActiveTripStubNote =>
+      'Full live tracking will be available after integration with the mobility service.';
+
+  @override
+  String rideActiveTripStatusLabel(String status) {
+    return 'Status: $status';
+  }
+
+  @override
+  String get rideActiveTripDriverSectionTitle => 'Driver & vehicle';
+
+  @override
+  String get rideActiveTripDriverSectionStubBody =>
+      'Driver and vehicle details will be available once the mobility integration is connected.';
 }

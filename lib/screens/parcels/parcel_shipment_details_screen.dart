@@ -1,18 +1,29 @@
 /// Parcel Shipment Details Screen
 /// Created by: Track C - Ticket #47
 /// Updated by: Track C - Ticket #50 (Parcels Pricing Integration - price display)
-/// Purpose: Display full details of a parcel shipment from My Shipments list.
-/// Last updated: 2025-11-28
+/// Updated by: Track C - Ticket #74 (MVP UI + Map Stub + Home Hub navigation unification)
+/// Updated by: Track C - Ticket #81 (Cancel Flow + ConsumerWidget)
+/// Purpose: Display full details of a parcel shipment with tracking stub.
+/// Accessed from: Home Hub Active Parcel Card, Parcels List items.
+/// Last updated: 2025-11-29
 
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+// Track C - Ticket #78: Unified parcel status helpers
+// Track C - Ticket #81: isParcelStatusUserCancellable for cancel button visibility
+import '../../state/parcels/parcel_status_utils.dart';
+import '../../state/parcels/parcel_orders_state.dart';
 
 /// Screen to display detailed information about a parcel shipment.
 /// Accessed by tapping a shipment card in My Shipments list.
-class ParcelShipmentDetailsScreen extends StatelessWidget {
+///
+/// Track C - Ticket #81: Changed from StatelessWidget to ConsumerWidget
+/// to support Cancel Flow with Riverpod state updates.
+class ParcelShipmentDetailsScreen extends ConsumerWidget {
   const ParcelShipmentDetailsScreen({
     super.key,
     required this.parcel,
@@ -21,13 +32,17 @@ class ParcelShipmentDetailsScreen extends StatelessWidget {
   final Parcel parcel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final shortId = _shortParcelId(parcel.id);
 
+    // Track C - Ticket #81: Check if cancel is allowed
+    final canCancel = isParcelStatusUserCancellable(parcel.status);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n?.parcelsShipmentDetailsTitle ?? 'Shipment details'),
+        // Track C - Ticket #74: Use parcelsActiveShipmentTitle for unified naming
+        title: Text(l10n?.parcelsActiveShipmentTitle ?? 'Active shipment'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -40,6 +55,9 @@ class ParcelShipmentDetailsScreen extends StatelessWidget {
                 shortId: shortId,
               ),
               const SizedBox(height: DWSpacing.lg),
+              // Track C - Ticket #74: Map Stub Section for future live tracking
+              _ParcelMapStubSection(),
+              const SizedBox(height: DWSpacing.lg),
               _ParcelRouteSection(parcel: parcel),
               const SizedBox(height: DWSpacing.lg),
               _ParcelAddressSection(parcel: parcel),
@@ -49,6 +67,24 @@ class ParcelShipmentDetailsScreen extends StatelessWidget {
           ),
         ),
       ),
+      // Track C - Ticket #81: Cancel button in bottomNavigationBar
+      bottomNavigationBar: canCancel
+          ? SafeArea(
+              minimum: const EdgeInsets.all(DWSpacing.md),
+              child: OutlinedButton(
+                onPressed: () => _onCancelPressed(context, ref),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.error,
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+                child: Text(
+                  l10n?.parcelsDetailsCancelShipmentCta ?? 'Cancel shipment',
+                ),
+              ),
+            )
+          : null,
     );
   }
 
@@ -56,6 +92,60 @@ class ParcelShipmentDetailsScreen extends StatelessWidget {
   String _shortParcelId(String fullId) {
     if (fullId.length <= 6) return fullId;
     return fullId.substring(fullId.length - 6);
+  }
+
+  /// Track C - Ticket #81: Handle cancel button press with confirmation dialog.
+  Future<void> _onCancelPressed(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+
+    final shouldCancel = await showDialog<bool>(
+          context: context,
+          builder: (dialogContext) {
+            return AlertDialog(
+              title: Text(
+                l10n?.parcelsCancelDialogTitle ?? 'Cancel this shipment?',
+              ),
+              content: Text(
+                l10n?.parcelsCancelDialogSubtitle ??
+                    'If you cancel now, this shipment will be stopped and will no longer appear as active.',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(false),
+                  child: Text(
+                    l10n?.parcelsCancelDialogDismissCta ?? 'Keep shipment',
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(true),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.error,
+                  ),
+                  child: Text(
+                    l10n?.parcelsCancelDialogConfirmCta ?? 'Yes, cancel',
+                  ),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
+
+    if (!shouldCancel) return;
+
+    // Update state
+    ref.read(parcelOrdersProvider.notifier).cancelParcel(parcelId: parcel.id);
+
+    // Show feedback
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n?.parcelsCancelSuccessMessage ?? 'Shipment has been cancelled.',
+          ),
+        ),
+      );
+    }
   }
 }
 
@@ -135,7 +225,8 @@ class _ParcelStatusChip extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final label = _statusLabel(status, l10n);
+    // Track C - Ticket #78: Use unified parcel status helper
+    final label = localizedParcelStatusShort(l10n, status);
 
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -154,29 +245,59 @@ class _ParcelStatusChip extends StatelessWidget {
       ),
     );
   }
+}
 
-  /// Get localized status label - same mapping as ParcelsEntryScreen.
-  String _statusLabel(ParcelStatus status, AppLocalizations? l10n) {
-    switch (status) {
-      case ParcelStatus.draft:
-        return l10n?.parcelsStatusScheduled ?? 'Draft';
-      case ParcelStatus.quoting:
-        return l10n?.parcelsStatusScheduled ?? 'Quoting';
-      case ParcelStatus.scheduled:
-        return l10n?.parcelsStatusScheduled ?? 'Scheduled';
-      case ParcelStatus.pickupPending:
-        return l10n?.parcelsStatusPickupPending ?? 'Pickup pending';
-      case ParcelStatus.pickedUp:
-        return l10n?.parcelsStatusPickedUp ?? 'Picked up';
-      case ParcelStatus.inTransit:
-        return l10n?.parcelsStatusInTransit ?? 'In transit';
-      case ParcelStatus.delivered:
-        return l10n?.parcelsStatusDelivered ?? 'Delivered';
-      case ParcelStatus.cancelled:
-        return l10n?.parcelsStatusCancelled ?? 'Cancelled';
-      case ParcelStatus.failed:
-        return l10n?.parcelsStatusFailed ?? 'Failed';
-    }
+/// Map Stub Section showing placeholder for future live tracking.
+/// Track C - Ticket #74: MVP tracking UI with L10n stub texts.
+class _ParcelMapStubSection extends StatelessWidget {
+  const _ParcelMapStubSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Container(
+        height: 200,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(DWRadius.md),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.map_outlined,
+                size: 40,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(height: DWSpacing.sm),
+              Text(
+                l10n?.parcelsActiveShipmentMapStub ?? 'Map tracking (coming soon)',
+                style: textTheme.titleSmall,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: DWSpacing.xs),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: DWSpacing.lg),
+                child: Text(
+                  l10n?.parcelsActiveShipmentStubNote ??
+                      'Full tracking will be available in a future update.',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

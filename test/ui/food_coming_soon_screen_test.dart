@@ -1,7 +1,8 @@
 /// Food Coming Soon Screen Widget Tests - Track C Ticket #48
 /// Purpose: Test FoodComingSoonScreen UI components and behavior
 /// Created by: Track C - Ticket #48
-/// Last updated: 2025-11-28
+/// Updated by: Track C - Ticket #56 (Production-Ready UX with Empty State pattern)
+/// Last updated: 2025-11-29
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,16 +40,17 @@ void main() {
       );
     }
 
+    // Track C - Ticket #56: Updated texts to use homeFoodComingSoonLabel/Message
     testWidgets('displays title and subtitle (EN)', (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Check for title
-      expect(find.text('Food delivery is coming soon'), findsOneWidget);
+      // Check for title (homeFoodComingSoonLabel)
+      expect(find.text('Coming soon'), findsOneWidget);
 
-      // Check for subtitle
+      // Check for subtitle (homeFoodComingSoonMessage)
       expect(
-        find.text("We're working hard to bring food delivery to your area. Stay tuned!"),
+        find.text('Food delivery is not available yet in your area.'),
         findsOneWidget,
       );
     });
@@ -57,7 +59,7 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Check AppBar title
+      // Check AppBar title (foodComingSoonAppBarTitle)
       expect(find.text('Food delivery'), findsOneWidget);
     });
 
@@ -69,18 +71,21 @@ void main() {
       expect(find.byIcon(Icons.fastfood_outlined), findsOneWidget);
     });
 
-    testWidgets('displays CTA button with correct text (EN)', (WidgetTester tester) async {
+    // Track C - Ticket #56: CTA button removed per requirements
+    // Navigation back is now via AppBar back button only
+    testWidgets('does not display CTA button (MVP per Ticket #56)', (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Check for CTA button
-      expect(find.text('Back to home'), findsOneWidget);
+      // CTA button "Back to home" should NOT exist
+      expect(find.text('Back to home'), findsNothing);
 
-      // Verify it's a FilledButton
-      expect(find.byType(FilledButton), findsOneWidget);
+      // FilledButton should NOT exist
+      expect(find.byType(FilledButton), findsNothing);
     });
 
-    testWidgets('CTA button calls Navigator.pop when tapped', (WidgetTester tester) async {
+    // Track C - Ticket #56: AppBar back button is the primary navigation
+    testWidgets('AppBar back button works when pushed onto stack', (WidgetTester tester) async {
       bool didPop = false;
 
       await tester.pumpWidget(
@@ -121,10 +126,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify we're on FoodComingSoonScreen
-      expect(find.text('Food delivery is coming soon'), findsOneWidget);
+      expect(find.text('Coming soon'), findsOneWidget);
 
-      // Tap the CTA button
-      await tester.tap(find.text('Back to home'));
+      // Tap the AppBar back button
+      await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
 
       // Verify pop was called
@@ -132,6 +137,7 @@ void main() {
       expect(find.text('Open Food Screen'), findsOneWidget);
     });
 
+    // Track C - Ticket #56: Updated texts for Arabic
     testWidgets('displays Arabic translations when locale is ar', (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget(locale: const Locale('ar')));
       await tester.pumpAndSettle();
@@ -139,19 +145,17 @@ void main() {
       // Check for Arabic AppBar title
       expect(find.text('توصيل الطعام'), findsOneWidget);
 
-      // Check for Arabic title
-      expect(find.text('خدمة توصيل الطعام قادمة قريباً'), findsOneWidget);
+      // Check for Arabic title (homeFoodComingSoonLabel)
+      expect(find.text('قريباً'), findsOneWidget);
 
-      // Check for Arabic subtitle
+      // Check for Arabic subtitle (homeFoodComingSoonMessage)
       expect(
-        find.text('نعمل حالياً على إطلاق خدمة توصيل الطعام في منطقتك. ترقّب التحديث القادم!'),
+        find.text('خدمة توصيل الطعام غير متاحة بعد في منطقتك.'),
         findsOneWidget,
       );
-
-      // Check for Arabic CTA
-      expect(find.text('العودة إلى الرئيسية'), findsOneWidget);
     });
 
+    // Track C - Ticket #56: Updated texts for German
     testWidgets('displays German translations when locale is de', (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget(locale: const Locale('de')));
       await tester.pumpAndSettle();
@@ -159,17 +163,14 @@ void main() {
       // Check for German AppBar title
       expect(find.text('Essenslieferung'), findsOneWidget);
 
-      // Check for German title
-      expect(find.text('Essenslieferung kommt bald'), findsOneWidget);
+      // Check for German title (homeFoodComingSoonLabel)
+      expect(find.text('Kommt bald'), findsOneWidget);
 
-      // Check for German subtitle
+      // Check for German subtitle (homeFoodComingSoonMessage)
       expect(
-        find.text('Wir arbeiten daran, Essenslieferung in deine Region zu bringen. Bleib dran!'),
+        find.text('Essenslieferung ist in deiner Region noch nicht verfügbar.'),
         findsOneWidget,
       );
-
-      // Check for German CTA
-      expect(find.text('Zurück zur Startseite'), findsOneWidget);
     });
 
     testWidgets('can navigate back when pushed onto stack', (WidgetTester tester) async {
@@ -208,19 +209,20 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify we're on FoodComingSoonScreen
-      expect(find.text('Food delivery is coming soon'), findsOneWidget);
+      expect(find.text('Coming soon'), findsOneWidget);
 
       // Back button should exist now
-      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+      expect(find.byType(BackButton), findsOneWidget);
 
       // Go back via AppBar back button
-      await tester.tap(find.byIcon(Icons.arrow_back));
+      await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
 
       // Verify we're back
       expect(find.text('Go to Food'), findsOneWidget);
     });
 
+    // Track C - Ticket #56: Icon size updated to 64
     testWidgets('uses theme colors for icon', (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
@@ -232,8 +234,8 @@ void main() {
       // Get the Icon widget
       final icon = tester.widget<Icon>(iconFinder);
 
-      // Icon should have size 56 as specified
-      expect(icon.size, equals(56));
+      // Icon should have size 64 as specified in Ticket #56
+      expect(icon.size, equals(64));
     });
 
     testWidgets('has proper padding', (WidgetTester tester) async {
@@ -251,6 +253,14 @@ void main() {
       // Check that Center widget exists
       expect(find.byType(Center), findsAtLeastNWidgets(1));
     });
+
+    // Track C - Ticket #56: SafeArea added for Production-Ready UX
+    testWidgets('has SafeArea wrapper', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget());
+      await tester.pumpAndSettle();
+
+      // Check that SafeArea widget exists (may find more than one due to Scaffold)
+      expect(find.byType(SafeArea), findsAtLeastNWidgets(1));
+    });
   });
 }
-
