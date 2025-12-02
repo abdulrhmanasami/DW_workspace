@@ -15,8 +15,9 @@
 /// Updated by: Track B - Ticket #99 (Payments tab → PaymentsTabScreen)
 /// Updated by: Track B - Ticket #105 (Unified trip summary - price + payment in Home active card)
 /// Updated by: Track B - Ticket #114 (Map from activeTripMapCommands + ETA on Active Ride Card)
+/// Updated by: Track A - Ticket #135 (Design System alignment - explicit Theme colors for NavigationBar)
 /// Purpose: Unified AppShell with Bottom Navigation (Home, Orders, Payments, Profile)
-/// Last updated: 2025-11-30
+/// Last updated: 2025-12-02
 ///
 /// This widget serves as the main entry point for authenticated users,
 /// providing a consistent navigation structure across the app.
@@ -30,7 +31,7 @@ import 'package:flutter/material.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobility_shims/mobility_shims.dart';
-import 'package:parcels_shims/parcels_shims.dart' show Parcel;
+import 'package:parcels_shims/parcels_shims.dart' show Parcel, ParcelShipment, ParcelShipmentStatus, Address, ParcelDetails, ParcelDimensions;
 import 'package:design_system_shims/design_system_shims.dart'
     show DWButton, DWSpacing, DWRadius;
 
@@ -39,8 +40,7 @@ import '../router/app_router.dart';
 import '../screens/auth/phone_sign_in_screen.dart';
 import '../screens/food/food_coming_soon_screen.dart';
 import '../screens/food/food_restaurants_list_screen.dart';
-// Track A - Ticket #82, Updated Ticket #96: Orders tab now uses OrdersHistoryScreen
-import '../screens/orders/orders_history_screen.dart';
+// Track C - Ticket #152: Orders tab now uses custom _OrdersTab instead of OrdersHistoryScreen
 import '../state/auth/auth_state.dart';
 import '../state/infra/auth_providers.dart';
 import '../state/mobility/ride_trip_session.dart';
@@ -59,6 +59,7 @@ import '../state/payments/payment_methods_ui_state.dart';
 // Track B - Ticket #114: Map from RideMapCommands for Home Hub
 import '../widgets/ride_map_from_commands.dart';
 import '../state/mobility/ride_map_commands_builder.dart';
+import '../state/orders/orders_history_providers.dart';
 
 /// Root App Shell for Delivery Ways Super-App
 /// Tabs: Home, Orders, Payments, Profile
@@ -82,20 +83,27 @@ class _AppShellState extends State<AppShell> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
+    final theme = Theme.of(context);
+    
     return Scaffold(
+      // Track A - Ticket #135: Explicit background color from Theme
+      backgroundColor: theme.colorScheme.surface,
       body: IndexedStack(
         index: _selectedIndex,
         children: const <Widget>[
           _HomeTab(), // Home Hub
-          // Track A - Ticket #82, Updated #96: Orders tab → OrdersHistoryScreen (Rides + Parcels + Food)
-          OrdersHistoryScreen(),
+          // Track C - Ticket #152: Orders tab → Custom _OrdersTab (ParcelShipments-based)
+          _OrdersTab(),
           // Track B - Ticket #99: Payments tab → PaymentsTabScreen (Screen 16)
           PaymentsTabScreen(),
           _ProfileTab(), // Profile & Settings (Track D - Ticket #5)
         ],
       ),
       bottomNavigationBar: NavigationBar(
+        // Track A - Ticket #135: Explicit Theme colors for navigation bar
+        backgroundColor: theme.colorScheme.surface,
+        surfaceTintColor: theme.colorScheme.surfaceTint,
+        indicatorColor: theme.colorScheme.secondaryContainer,
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onItemTapped,
         // Design System: 4 tabs as per spec (Home, Orders, Payments, Profile)
@@ -769,6 +777,661 @@ class _ServiceCard extends StatelessWidget {
   }
 }
 
+/// Orders Tab - Track C - Ticket #152
+/// Orders History implementation using ParcelShipments from parcels_shims
+/// Prepared for future integration with Rides and Food orders
+enum OrdersFilter { all, rides, parcels, food }
+
+class _OrdersTab extends ConsumerStatefulWidget {
+  const _OrdersTab();
+
+  @override
+  ConsumerState<_OrdersTab> createState() => _OrdersTabState();
+}
+
+class _OrdersTabState extends ConsumerState<_OrdersTab> {
+  var _selectedFilter = OrdersFilter.all;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    final ordersAsync = ref.watch(ordersHistoryProvider);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          l10n.ordersHistoryTitle,
+          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        elevation: 0,
+        automaticallyImplyLeading: false,
+      ),
+      body: Column(
+        children: [
+          _OrdersFilterBar(
+            selected: _selectedFilter,
+            onChanged: (value) {
+              setState(() => _selectedFilter = value);
+            },
+            textTheme: textTheme,
+            colorScheme: colorScheme,
+            l10n: l10n,
+          ),
+          const SizedBox(height: DWSpacing.sm),
+          Expanded(
+            child: ordersAsync.when(
+              loading: () => const _OrdersLoadingState(),
+              error: (error, stackTrace) => _OrdersErrorState(
+                message: error.toString(),
+                onRetry: () {
+                  ref.invalidate(ordersHistoryProvider);
+                },
+              ),
+              data: (items) {
+                final filtered = _applyFilter(items, _selectedFilter);
+                if (filtered.isEmpty) {
+                  return _OrdersEmptyState(
+                    l10n: l10n,
+                    textTheme: textTheme,
+                    colorScheme: colorScheme,
+                    onCreateFirstParcel: () {
+                      // Navigate to parcels flow
+                      Navigator.of(context).pushNamed(RoutePaths.parcelsList);
+                    },
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: DWSpacing.md,
+                    vertical: DWSpacing.md,
+                  ),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, index) {
+                    final item = filtered[index];
+
+                    switch (item.serviceType) {
+                      case OrderHistoryServiceType.parcel:
+                        final parcelItem = item as ParcelOrderHistoryItem;
+                        return _ParcelOrderCard(
+                          shipment: parcelItem.shipment,
+                          l10n: l10n,
+                        );
+                      case OrderHistoryServiceType.ride:
+                        // TODO (future): Ride order card
+                        return const SizedBox.shrink();
+                      case OrderHistoryServiceType.food:
+                        // TODO (future): Food order card
+                        return const SizedBox.shrink();
+                    }
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<OrderHistoryItem> _applyFilter(
+    List<OrderHistoryItem> items,
+    OrdersFilter filter,
+  ) {
+    switch (filter) {
+      case OrdersFilter.all:
+        return items;
+      case OrdersFilter.rides:
+        return items
+            .where(
+              (i) => i.serviceType == OrderHistoryServiceType.ride,
+            )
+            .toList();
+      case OrdersFilter.parcels:
+        return items
+            .where(
+              (i) => i.serviceType == OrderHistoryServiceType.parcel,
+            )
+            .toList();
+      case OrdersFilter.food:
+        return items
+            .where(
+              (i) => i.serviceType == OrderHistoryServiceType.food,
+            )
+            .toList();
+    }
+  }
+}
+
+/// Segmented Control Filter Bar for Orders
+class _OrdersFilterBar extends StatelessWidget {
+  const _OrdersFilterBar({
+    required this.selected,
+    required this.onChanged,
+    required this.textTheme,
+    required this.colorScheme,
+    required this.l10n,
+  });
+
+  final OrdersFilter selected;
+  final ValueChanged<OrdersFilter> onChanged;
+  final TextTheme textTheme;
+  final ColorScheme colorScheme;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: DWSpacing.md,
+        vertical: DWSpacing.sm,
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(DWSpacing.xs),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(DWRadius.lg),
+        ),
+        child: Row(
+          children: [
+            _buildChip(
+              label: l10n.ordersFilterAll,
+              value: OrdersFilter.all,
+            ),
+            _buildChip(
+              label: l10n.ordersFilterRides,
+              value: OrdersFilter.rides,
+            ),
+            _buildChip(
+              label: l10n.ordersFilterParcels,
+              value: OrdersFilter.parcels,
+            ),
+            _buildChip(
+              label: l10n.ordersFilterFood,
+              value: OrdersFilter.food,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildChip({
+    required String label,
+    required OrdersFilter value,
+  }) {
+    final isSelected = value == selected;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onChanged(value),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: const EdgeInsets.symmetric(
+            vertical: DWSpacing.xs,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? colorScheme.primary
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(DWRadius.md),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: textTheme.labelMedium?.copyWith(
+                color: isSelected
+                    ? colorScheme.onPrimary
+                    : colorScheme.onSurfaceVariant,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Parcel Order Card for Orders Tab
+class _ParcelOrderCard extends StatelessWidget {
+  const _ParcelOrderCard({
+    required this.shipment,
+    required this.l10n,
+  });
+
+  final ParcelShipment shipment;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    final statusLabel = _mapParcelStatusToLabel(l10n, shipment.status);
+    final statusColor = _mapParcelStatusToColor(colorScheme, shipment.status);
+
+    final dateText = MaterialLocalizations.of(context)
+        .formatMediumDate(shipment.createdAt);
+
+    final priceText = _buildPriceText(shipment);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: DWSpacing.sm),
+      padding: const EdgeInsets.all(DWSpacing.md),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(DWRadius.lg),
+        boxShadow: kElevationToShadow[1],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Service icon
+          Container(
+            padding: const EdgeInsets.all(DWSpacing.sm),
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(DWRadius.md),
+            ),
+            child: Icon(
+              Icons.local_shipping_outlined,
+              size: 24,
+              color: colorScheme.onPrimaryContainer,
+            ),
+          ),
+          const SizedBox(width: DWSpacing.md),
+          // Main content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title + status chip
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        shipment.dropoffAddress.label,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: DWSpacing.xs),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: DWSpacing.sm,
+                        vertical: DWSpacing.xs,
+                      ),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(DWRadius.sm),
+                      ),
+                      child: Text(
+                        statusLabel,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: statusColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: DWSpacing.xs),
+                // Route
+                Text(
+                  '${shipment.pickupAddress.label} → ${shipment.dropoffAddress.label}',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: DWSpacing.xs),
+                // Date + price
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      dateText,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    if (priceText != null)
+                      Text(
+                        priceText,
+                        style: textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _mapParcelStatusToLabel(
+    AppLocalizations l10n,
+    ParcelShipmentStatus status,
+  ) {
+    // Use same l10n used in details screen
+    switch (status) {
+      case ParcelShipmentStatus.created:
+        return l10n.parcelsShipmentStatusCreated;
+      case ParcelShipmentStatus.inTransit:
+        return l10n.parcelsShipmentStatusInTransit;
+      case ParcelShipmentStatus.delivered:
+        return l10n.parcelsShipmentStatusDelivered;
+      case ParcelShipmentStatus.cancelled:
+        return l10n.parcelsShipmentStatusCancelled;
+    }
+  }
+
+  Color _mapParcelStatusToColor(
+    ColorScheme colorScheme,
+    ParcelShipmentStatus status,
+  ) {
+    switch (status) {
+      case ParcelShipmentStatus.created:
+        return colorScheme.primary;
+      case ParcelShipmentStatus.inTransit:
+        return colorScheme.tertiary;
+      case ParcelShipmentStatus.delivered:
+        return colorScheme.secondary;
+      case ParcelShipmentStatus.cancelled:
+        return colorScheme.error;
+    }
+  }
+
+  String? _buildPriceText(ParcelShipment shipment) {
+    if (shipment.estimatedPrice == null ||
+        shipment.currencyCode == null) {
+      return null;
+    }
+    // Very simple formatting
+    return '${shipment.estimatedPrice!.toStringAsFixed(2)} ${shipment.currencyCode}';
+  }
+}
+
+/// Loading State for Orders Tab
+/// Track C - Ticket #153: Enhanced with skeleton loader matching Card/Order design
+class _OrdersLoadingState extends StatelessWidget {
+  const _OrdersLoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(DWSpacing.md),
+      itemCount: 4, // Show 4 skeleton items
+      itemBuilder: (context, index) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: DWSpacing.sm),
+          padding: const EdgeInsets.all(DWSpacing.md),
+          decoration: BoxDecoration(
+            color: colorScheme.surface,
+            borderRadius: BorderRadius.circular(DWRadius.lg),
+            boxShadow: kElevationToShadow[1],
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Skeleton icon placeholder
+              _SkeletonBox(
+                width: 48,
+                height: 48,
+                borderRadius: DWRadius.md,
+                colorScheme: colorScheme,
+              ),
+              const SizedBox(width: DWSpacing.md),
+              // Skeleton content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _SkeletonBox(
+                            width: double.infinity,
+                            height: 20,
+                            colorScheme: colorScheme,
+                          ),
+                        ),
+                        const SizedBox(width: DWSpacing.xs),
+                        _SkeletonBox(
+                          width: 60,
+                          height: 24,
+                          borderRadius: DWRadius.sm,
+                          colorScheme: colorScheme,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: DWSpacing.xs),
+                    _SkeletonBox(
+                      width: 200,
+                      height: 14,
+                      colorScheme: colorScheme,
+                    ),
+                    const SizedBox(height: DWSpacing.xs),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _SkeletonBox(
+                          width: 80,
+                          height: 14,
+                          colorScheme: colorScheme,
+                        ),
+                        _SkeletonBox(
+                          width: 60,
+                          height: 16,
+                          colorScheme: colorScheme,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Skeleton box widget for loading state
+class _SkeletonBox extends StatelessWidget {
+  const _SkeletonBox({
+    required this.width,
+    required this.height,
+    required this.colorScheme,
+    this.borderRadius = DWRadius.xs,
+  });
+
+  final double width;
+  final double height;
+  final ColorScheme colorScheme;
+  final double borderRadius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: colorScheme.onSurface.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(borderRadius),
+      ),
+    );
+  }
+}
+
+/// Error State for Orders Tab
+/// Track C - Ticket #153: Enhanced with retry capability and better styling
+class _OrdersErrorState extends StatelessWidget {
+  const _OrdersErrorState({
+    required this.message,
+    this.onRetry,
+  });
+
+  final String message;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    // Simplify error message for user display
+    final displayMessage = message.contains('Exception:') 
+        ? 'Something went wrong. Please try again.'
+        : message;
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(DWSpacing.lg),
+        child: Container(
+          padding: const EdgeInsets.all(DWSpacing.lg),
+          decoration: BoxDecoration(
+            color: colorScheme.errorContainer.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(DWRadius.lg),
+            border: Border.all(
+              color: colorScheme.error.withValues(alpha: 0.2),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 48,
+                color: colorScheme.error,
+              ),
+              const SizedBox(height: DWSpacing.md),
+              Text(
+                'Unable to load orders',
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.error,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: DWSpacing.xs),
+              Text(
+                displayMessage,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              if (onRetry != null) ...[
+                const SizedBox(height: DWSpacing.lg),
+                TextButton(
+                  onPressed: onRetry,
+                  child: Text(
+                    'Retry',
+                    style: textTheme.labelLarge?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Empty State for Orders Tab
+/// Track C - Ticket #153: Enhanced to match Utility/EmptyState design pattern
+class _OrdersEmptyState extends StatelessWidget {
+  const _OrdersEmptyState({
+    required this.l10n,
+    required this.textTheme,
+    required this.colorScheme,
+    required this.onCreateFirstParcel,
+  });
+
+  final AppLocalizations l10n;
+  final TextTheme textTheme;
+  final ColorScheme colorScheme;
+  final VoidCallback onCreateFirstParcel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(DWSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Icon in a subtle circular background
+            Container(
+              padding: const EdgeInsets.all(DWSpacing.lg),
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.history,
+                size: 64,
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+              ),
+            ),
+            const SizedBox(height: DWSpacing.lg),
+            // Title
+            Text(
+              l10n.ordersHistoryEmptyTitle,
+              style: textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: DWSpacing.sm),
+            // Description
+            Text(
+              l10n.ordersHistoryEmptySubtitle,
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: DWSpacing.xl),
+            // Primary CTA
+            DWButton.primary(
+              label: 'Create first shipment',
+              onPressed: onCreateFirstParcel,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 /// Profile Tab - Track D - Ticket #5
 /// Full Profile/Settings implementation with DSR integration
 /// Updated by: Ticket #32 (DWSpacing/DWRadius consistency)
@@ -1054,7 +1717,7 @@ class _AccountBottomSheet extends ConsumerWidget {
     final phoneNumber = authState.phoneNumber;
 
     return Padding(
-      padding: const EdgeInsets.all(DWSpacing.lg),
+      padding: EdgeInsets.all(DWSpacing.lg),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

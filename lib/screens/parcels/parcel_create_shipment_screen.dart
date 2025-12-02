@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/dw_app_shell.dart';
 import '../../state/parcels/parcel_orders_state.dart';
 
 /// Internal enum for UI service type selection.
@@ -98,22 +99,23 @@ class _ParcelCreateShipmentScreenState
     final l10n = AppLocalizations.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Scaffold(
+    return DWAppShell(
       appBar: AppBar(
         title: Text(l10n?.parcelsCreateShipmentTitle ?? 'New Shipment'),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: DWSpacing.md,
-            vertical: DWSpacing.lg,
-          ),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+      applyPadding: false, // Custom padding in body
+      useSafeArea: true,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: DWSpacing.md,
+          vertical: DWSpacing.lg,
+        ),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                   // ========== SENDER SECTION ==========
                   _buildSectionHeader(
                     l10n?.parcelsCreateSenderSectionTitle ?? 'Sender',
@@ -243,9 +245,8 @@ class _ParcelCreateShipmentScreenState
             ),
           ),
         ),
-      ),
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.all(DWSpacing.md),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(DWSpacing.md),
         child: SizedBox(
           width: double.infinity,
           child: DWButton.primary(

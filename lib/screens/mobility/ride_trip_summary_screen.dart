@@ -29,6 +29,7 @@ import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/dw_app_shell.dart';
 import '../../state/mobility/ride_draft_state.dart';
 import '../../state/mobility/ride_trip_session.dart';
 import '../../state/mobility/ride_quote_controller.dart';
@@ -139,10 +140,11 @@ class _RideTripSummaryScreenState extends ConsumerState<RideTripSummaryScreen> {
 
     // Defensive fallback: if no entry available yet (waiting for completion)
     if (effectiveEntry == null) {
-      return Scaffold(
+      return DWAppShell(
         appBar: AppBar(
           title: Text(l10n.rideTripSummaryTitle),
         ),
+        applyPadding: false,
         body: const Center(
           child: CircularProgressIndicator(),
         ),
@@ -152,7 +154,7 @@ class _RideTripSummaryScreenState extends ConsumerState<RideTripSummaryScreen> {
     final draft = ref.watch(rideDraftProvider);
     final quoteState = ref.watch(rideQuoteControllerProvider);
 
-    return Scaffold(
+    return DWAppShell(
       appBar: AppBar(
         title: Text(l10n.rideTripSummaryTitle),
         automaticallyImplyLeading: fromHistory, // Show back button when from history
@@ -163,9 +165,10 @@ class _RideTripSummaryScreenState extends ConsumerState<RideTripSummaryScreen> {
               )
             : null,
       ),
-      body: SafeArea(
-        child: _RideTripSummaryBody(
-          trip: effectiveEntry.trip,
+      applyPadding: false,
+      useSafeArea: true,
+      body: _RideTripSummaryBody(
+        trip: effectiveEntry.trip,
           draft: draft,
           quoteState: quoteState,
           fromHistory: fromHistory,
@@ -179,7 +182,6 @@ class _RideTripSummaryScreenState extends ConsumerState<RideTripSummaryScreen> {
           // Track B - Ticket #124: Pass driver rating from history entry
           historyDriverRating: effectiveEntry.driverRating,
         ),
-      ),
     );
   }
 }
@@ -248,7 +250,7 @@ class _RideTripSummaryBodyState extends ConsumerState<_RideTripSummaryBody> {
     final colorScheme = theme.colorScheme;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(DWSpacing.lg),
+      padding: const EdgeInsets.all(DWSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -260,7 +262,7 @@ class _RideTripSummaryBodyState extends ConsumerState<_RideTripSummaryBody> {
             colorScheme: colorScheme,
             completedAt: widget.historyCompletedAt,
           ),
-          SizedBox(height: DWSpacing.lg),
+          const SizedBox(height: DWSpacing.lg),
 
           // Route Summary Card
           _RouteSummaryCard(
@@ -270,7 +272,7 @@ class _RideTripSummaryBodyState extends ConsumerState<_RideTripSummaryBody> {
             colorScheme: colorScheme,
             historyDestinationLabel: widget.historyDestinationLabel,
           ),
-          SizedBox(height: DWSpacing.md),
+          const SizedBox(height: DWSpacing.md),
 
           // Fare Summary Card with full breakdown (Ticket #92, #107, #118)
           _FareSummaryCard(
@@ -284,7 +286,7 @@ class _RideTripSummaryBodyState extends ConsumerState<_RideTripSummaryBody> {
             historyServiceName: widget.historyServiceName,
             historyPaymentMethodLabel: widget.historyPaymentMethodLabel,
           ),
-          SizedBox(height: DWSpacing.md),
+          const SizedBox(height: DWSpacing.md),
 
           // Driver Rating Card (Ticket #62: Added comment field)
           _DriverRatingCard(
@@ -295,19 +297,17 @@ class _RideTripSummaryBodyState extends ConsumerState<_RideTripSummaryBody> {
             textTheme: textTheme,
             colorScheme: colorScheme,
           ),
-          SizedBox(height: DWSpacing.xl),
+          const SizedBox(height: DWSpacing.xl),
 
           // Done CTA Button (Ticket #25: DWButton)
           // Track B - Ticket #98: Different behavior for history vs active flow
-          SafeArea(
-            child: SizedBox(
+          SizedBox(
               width: double.infinity,
               child: DWButton.primary(
                 label: l10n.rideTripSummaryDoneCta,
                 onPressed: () => widget.fromHistory
-                    ? _onDonePressedFromHistory(context)
-                    : _onDonePressed(context),
-              ),
+                  ? _onDonePressedFromHistory(context)
+                  : _onDonePressed(context),
             ),
           ),
         ],
@@ -407,7 +407,7 @@ class _CompletedHeader extends StatelessWidget {
       headerTitle = l10n.rideTripSummaryCompletedTitle;
       headerSubtitle = l10n.rideTripSummaryCompletedSubtitle;
       headerIcon = Icons.check_circle_outline;
-      headerIconColor = Colors.green;
+      headerIconColor = colorScheme.primary;
     }
     
     final Color headerBackgroundColor = isCancelled || isFailed
@@ -421,11 +421,11 @@ class _CompletedHeader extends StatelessWidget {
         borderRadius: BorderRadius.circular(DWRadius.lg),
       ),
       child: Padding(
-        padding: EdgeInsets.all(DWSpacing.md),
+        padding: const EdgeInsets.all(DWSpacing.md),
         child: Row(
           children: [
             Container(
-              padding: EdgeInsets.all(DWSpacing.sm),
+              padding: const EdgeInsets.all(DWSpacing.sm),
               decoration: BoxDecoration(
                 color: headerIconColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(DWRadius.md),
@@ -436,7 +436,7 @@ class _CompletedHeader extends StatelessWidget {
                 color: headerIconColor,
               ),
             ),
-            SizedBox(width: DWSpacing.md),
+            const SizedBox(width: DWSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -447,14 +447,14 @@ class _CompletedHeader extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  SizedBox(height: DWSpacing.xxs),
+                  const SizedBox(height: DWSpacing.xxs),
                   Text(
                     headerSubtitle,
                     style: textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  SizedBox(height: DWSpacing.xs),
+                  const SizedBox(height: DWSpacing.xs),
                   // Trip ID and timestamp (Ticket #92)
                   Text(
                     l10n.rideReceiptTripIdLabel(trip.tripId),
@@ -462,7 +462,7 @@ class _CompletedHeader extends StatelessWidget {
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  SizedBox(height: DWSpacing.xxs),
+                  const SizedBox(height: DWSpacing.xxs),
                   Text(
                     l10n.rideReceiptCompletedAt(formattedDate, formattedTime),
                     style: textTheme.bodySmall?.copyWith(
@@ -511,7 +511,7 @@ class _RouteSummaryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(DWRadius.lg),
       ),
       child: Padding(
-        padding: EdgeInsets.all(DWSpacing.md),
+        padding: const EdgeInsets.all(DWSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -521,7 +521,7 @@ class _RouteSummaryCard extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: DWSpacing.sm),
+            const SizedBox(height: DWSpacing.sm),
 
             // Pickup row with label (Ticket #92)
             _RouteRow(
@@ -581,7 +581,7 @@ class _RouteRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, size: 10, color: iconColor),
-        SizedBox(width: DWSpacing.sm),
+        const SizedBox(width: DWSpacing.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -592,7 +592,7 @@ class _RouteRow extends StatelessWidget {
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
-              SizedBox(height: DWSpacing.xxs),
+              const SizedBox(height: DWSpacing.xxs),
               Text(
                 value,
                 style: textTheme.bodyMedium,
@@ -691,7 +691,7 @@ class _FareSummaryCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(DWRadius.lg),
       ),
       child: Padding(
-        padding: EdgeInsets.all(DWSpacing.md),
+        padding: const EdgeInsets.all(DWSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -704,7 +704,7 @@ class _FareSummaryCard extends ConsumerWidget {
                     size: 18,
                     color: colorScheme.primary,
                   ),
-                  SizedBox(width: DWSpacing.xs),
+                  const SizedBox(width: DWSpacing.xs),
                   Text(
                     l10n.rideTripCompletionServiceLabel(historyServiceName!),
                     style: textTheme.titleMedium?.copyWith(
@@ -713,7 +713,7 @@ class _FareSummaryCard extends ConsumerWidget {
                   ),
                 ],
               ),
-              SizedBox(height: DWSpacing.md),
+              const SizedBox(height: DWSpacing.md),
             ],
             
             Text(
@@ -722,7 +722,7 @@ class _FareSummaryCard extends ConsumerWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: DWSpacing.md),
+            const SizedBox(height: DWSpacing.md),
 
             // Base fare row (Ticket #92)
             _ReceiptRow(
@@ -731,7 +731,7 @@ class _FareSummaryCard extends ConsumerWidget {
               textTheme: textTheme,
               colorScheme: colorScheme,
             ),
-            SizedBox(height: DWSpacing.xs),
+            const SizedBox(height: DWSpacing.xs),
 
             // Distance row (Ticket #92)
             _ReceiptRow(
@@ -740,7 +740,7 @@ class _FareSummaryCard extends ConsumerWidget {
               textTheme: textTheme,
               colorScheme: colorScheme,
             ),
-            SizedBox(height: DWSpacing.xs),
+            const SizedBox(height: DWSpacing.xs),
 
             // Time row (Ticket #92)
             _ReceiptRow(
@@ -749,7 +749,7 @@ class _FareSummaryCard extends ConsumerWidget {
               textTheme: textTheme,
               colorScheme: colorScheme,
             ),
-            SizedBox(height: DWSpacing.xs),
+            const SizedBox(height: DWSpacing.xs),
 
             // Fees row
             _ReceiptRow(
@@ -801,7 +801,7 @@ class _FareSummaryCard extends ConsumerWidget {
                       size: 18,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    SizedBox(width: DWSpacing.xs),
+                    const SizedBox(width: DWSpacing.xs),
                     Text(
                       paymentDisplayName,
                       style: textTheme.bodyMedium?.copyWith(
@@ -882,7 +882,7 @@ class _DriverRatingCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(DWRadius.lg),
       ),
       child: Padding(
-        padding: EdgeInsets.all(DWSpacing.md),
+        padding: const EdgeInsets.all(DWSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -893,7 +893,7 @@ class _DriverRatingCard extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: DWSpacing.md),
+            const SizedBox(height: DWSpacing.md),
 
             // Driver info row
             Row(
@@ -907,7 +907,7 @@ class _DriverRatingCard extends StatelessWidget {
                     size: 28,
                   ),
                 ),
-                SizedBox(width: DWSpacing.md),
+                const SizedBox(width: DWSpacing.md),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -918,7 +918,7 @@ class _DriverRatingCard extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      SizedBox(height: DWSpacing.xxs),
+                      const SizedBox(height: DWSpacing.xxs),
                       Text(
                         'Toyota Camry • ABC 1234', // TODO: Real car info
                         style: textTheme.bodyMedium?.copyWith(
@@ -930,7 +930,7 @@ class _DriverRatingCard extends StatelessWidget {
                 ),
                 // Driver rating badge
                 Container(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: DWSpacing.xs,
                     vertical: DWSpacing.xxs,
                   ),
@@ -941,8 +941,8 @@ class _DriverRatingCard extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.star, size: 14, color: Colors.amber),
-                      SizedBox(width: DWSpacing.xxs),
+                      Icon(Icons.star, size: 14, color: colorScheme.tertiary),
+                      const SizedBox(width: DWSpacing.xxs),
                       Text(
                         '4.9', // TODO: Real rating from backend
                         style: textTheme.labelMedium?.copyWith(
@@ -955,7 +955,7 @@ class _DriverRatingCard extends StatelessWidget {
               ],
             ),
 
-            SizedBox(height: DWSpacing.lg),
+            const SizedBox(height: DWSpacing.lg),
 
             // Rating section title (Ticket #92)
             Text(
@@ -964,14 +964,14 @@ class _DriverRatingCard extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: DWSpacing.xxs),
+            const SizedBox(height: DWSpacing.xxs),
             Text(
               l10n.rideReceiptRateDriverSubtitle,
               style: textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
-            SizedBox(height: DWSpacing.md),
+            const SizedBox(height: DWSpacing.md),
 
             // Star rating row
             Row(
@@ -982,12 +982,12 @@ class _DriverRatingCard extends StatelessWidget {
                 return GestureDetector(
                   onTap: () => onRatingChanged(starIndex),
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: DWSpacing.xxs),
+                    padding: const EdgeInsets.symmetric(horizontal: DWSpacing.xxs),
                     child: Icon(
                       isSelected ? Icons.star : Icons.star_border,
                       size: 44,
                       color: isSelected
-                          ? Colors.amber
+                          ? colorScheme.tertiary
                           : colorScheme.onSurfaceVariant,
                     ),
                   ),
@@ -995,7 +995,7 @@ class _DriverRatingCard extends StatelessWidget {
               }),
             ),
 
-            SizedBox(height: DWSpacing.md),
+            const SizedBox(height: DWSpacing.md),
 
             // Optional comment field (Ticket #62)
             TextField(
@@ -1027,7 +1027,7 @@ class _DriverRatingCard extends StatelessWidget {
                     width: 2,
                   ),
                 ),
-                contentPadding: EdgeInsets.all(DWSpacing.sm),
+                contentPadding: const EdgeInsets.all(DWSpacing.sm),
               ),
             ),
             // TODO(Track B): Wire up rating submission to mobility_shims backend adapter (Stub only).

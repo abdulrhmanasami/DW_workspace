@@ -1,4 +1,4 @@
-/// Ride Active Trip Screen - Track B Ticket #15 (Updated: Ticket #22, #62, #64, #67, #68, #88, #89, #95, #105, #112, #113, #122)
+/// Ride Active Trip Screen - Track B Ticket #15 (Updated: Ticket #22, #62, #64, #67, #68, #88, #89, #95, #105, #112, #113, #122, #134, #142)
 /// Purpose: Display active trip status with real map and driver card
 /// Created by: Track B - Ticket #15
 /// Updated by: Track B - Ticket #22 (Polished UI, real Map, FSM-wired Cancel)
@@ -14,6 +14,7 @@
 /// Updated by: Track B - Ticket #113 (Request Ride -> Active Trip navigation destination)
 /// Updated by: Track B - Ticket #122 (No Driver Found failure path)
 /// Updated by: Track A - Ticket #134 (DWAppShell unified Scaffold)
+/// Updated by: Track B - Ticket #142 (Hi-Fi Screen 10 alignment, proper map/card ratio, clean action buttons)
 /// Last updated: 2025-12-02
 ///
 /// This screen shows the active trip interface (Screen 10 in Hi-Fi Mockups):
@@ -364,11 +365,12 @@ class _ActiveDriverCard extends ConsumerWidget {
         : l10n.rideActiveDestinationLabel(destination);
 
     // Design Tokens (Track B - Ticket #88)
-    // Ticket #106: Use LayoutBuilder to constrain card height and prevent overflow
+    // Ticket #142: Updated layout to match Hi-Fi Screen 10
+    // Card should take ~40% of screen height, leaving 60% for map
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Limit card height to 70% of available space to prevent overflow
-        final maxCardHeight = constraints.maxHeight * 0.7;
+        // Limit card height to ~40% of available space for Hi-Fi match
+        final maxCardHeight = constraints.maxHeight * 0.45;
         
         return ConstrainedBox(
           constraints: BoxConstraints(maxHeight: maxCardHeight),
@@ -437,8 +439,9 @@ class _ActiveDriverCard extends ConsumerWidget {
                         // DS: type.headline.h2 (24pt Bold)
                         Text(
                           headline,
-                          style: textTheme.headlineMedium?.copyWith(
+                          style: textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w700,
+                            fontSize: 24,  // Explicit 24pt as per DS
                           ),
                         ),
                         if (subtitle.isNotEmpty) ...[
@@ -503,7 +506,8 @@ class _ActiveDriverCard extends ConsumerWidget {
                           Text(
                             'Ahmad M.', // TODO: Real driver name from domain model
                             style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18,  // Explicit 18pt as per DS
                             ),
                           ),
                           SizedBox(height: DWSpacing.xxs), // DS: 4pt
@@ -582,22 +586,54 @@ class _ActiveDriverCard extends ConsumerWidget {
               ),
 
             SizedBox(height: DWSpacing.lg), // DS: 24pt
+            
+            // Divider for cleaner separation
+            Divider(
+              height: 1,
+              color: colorScheme.outlineVariant,
+            ),
+            SizedBox(height: DWSpacing.md), // DS: 16pt
 
-            // Primary action buttons row - Tertiary style (Track B - Ticket #68, #88)
+            // Track B - Ticket #142: Cleaner action buttons layout matching Hi-Fi
+            // Primary actions in a row (Contact Driver + Share Trip)
             Row(
               children: [
-                // Contact driver button (Button/Tertiary)
+                // Contact driver button - Icon + Text for better UX
                 Expanded(
-                  child: DWButton.tertiary(
-                    label: l10n.rideActiveContactDriverCta,
+                  child: TextButton.icon(
+                    icon: Icon(
+                      Icons.phone_outlined,
+                      size: 20,
+                      color: colorScheme.primary,
+                    ),
+                    label: Text(
+                      l10n.rideActiveContactDriverCta,
+                      style: textTheme.labelLarge?.copyWith(
+                        color: colorScheme.primary,
+                      ),
+                    ),
                     onPressed: () => _onContactDriver(context, ref),
                   ),
                 ),
-                SizedBox(width: DWSpacing.xs), // DS: 8pt
-                // Share trip button (Button/Tertiary)
+                Container(
+                  width: 1,
+                  height: 24,
+                  color: colorScheme.outlineVariant,
+                ),
+                // Share trip button - Icon + Text for better UX  
                 Expanded(
-                  child: DWButton.tertiary(
-                    label: l10n.rideActiveShareTripCta,
+                  child: TextButton.icon(
+                    icon: Icon(
+                      Icons.share_outlined,
+                      size: 20,
+                      color: colorScheme.primary,
+                    ),
+                    label: Text(
+                      l10n.rideActiveShareTripCta,
+                      style: textTheme.labelLarge?.copyWith(
+                        color: colorScheme.primary,
+                      ),
+                    ),
                     onPressed: () => _onShareTrip(context, ref),
                   ),
                 ),
@@ -605,30 +641,36 @@ class _ActiveDriverCard extends ConsumerWidget {
             ),
 
             SizedBox(height: DWSpacing.sm), // DS: 12pt
-
-            // Secondary action buttons row (Ticket #62, #67, #88, #95, #122)
-            Row(
-              children: [
-                // Cancel ride button (Button/Tertiary - Track B #22, Ticket #67, #95)
-                // Only enabled when phase.isCancellable is true
-                Expanded(
-                  child: DWButton.tertiary(
-                    label: l10n.rideActiveCancelTripCta,
-                    onPressed: activeTrip.phase.isCancellable
-                        ? () => _onCancelRide(context, ref)
-                        : null,
+            
+            // Cancel ride button - Red accent for warning action
+            // Only enabled when phase.isCancellable is true
+            if (activeTrip.phase.isCancellable) ...[
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: colorScheme.error,
+                  minimumSize: Size(double.infinity, 44),
+                ),
+                onPressed: () => _onCancelRide(context, ref),
+                child: Text(
+                  l10n.rideActiveCancelTripCta,
+                  style: textTheme.labelLarge?.copyWith(
+                    color: colorScheme.error,
                   ),
                 ),
-                SizedBox(width: DWSpacing.sm), // DS: 12pt
-                // End trip button (Debug/Stub CTA - Ticket #62)
-                Expanded(
-                  child: DWButton.secondary(
-                    label: l10n.rideSummaryEndTripDebugCta,
-                    onPressed: () => _onEndTrip(context, ref),
-                  ),
+              ),
+            ],
+            
+            // Debug: End trip button (only in debug mode)
+            if (kDebugMode) ...[  
+              SizedBox(height: DWSpacing.sm), // DS: 12pt
+              SizedBox(
+                width: double.infinity,
+                child: DWButton.secondary(
+                  label: l10n.rideSummaryEndTripDebugCta,
+                  onPressed: () => _onEndTrip(context, ref),
                 ),
-              ],
-            ),
+              ),
+            ],
 
             // Track B - Ticket #122: No driver found CTA
             // Shown during findingDriver phase as secondary option
@@ -650,13 +692,15 @@ class _ActiveDriverCard extends ConsumerWidget {
 
             // Debug FSM transition buttons (Ticket #64)
             // Only shown in debug mode for testing FSM transitions
-            if (kDebugMode) ...[
-              SizedBox(height: DWSpacing.md), // DS: 16pt
-              _DebugFsmButtons(
-                activeTrip: activeTrip,
-                l10n: l10n,
-              ),
-            ],
+            // Track B - Ticket #142: Removed debug buttons for cleaner production code
+            // Uncomment the following if needed for debugging:
+            // if (kDebugMode) ...[
+            //   SizedBox(height: DWSpacing.md), // DS: 16pt
+            //   _DebugFsmButtons(
+            //     activeTrip: activeTrip,
+            //     l10n: l10n,
+            //   ),
+            // ],
                     ],
                   ),
                 ),

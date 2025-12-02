@@ -1919,7 +1919,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get parcelsStatusFailed => 'Failed';
 
   @override
-  String get parcelsCreateShipmentTitle => 'New Shipment';
+  String get parcelsCreateShipmentTitle => 'Create shipment';
 
   @override
   String get parcelsCreateSenderSectionTitle => 'Sender';
@@ -2013,16 +2013,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get parcelsShipmentDetailsPickupLabel => 'Pickup';
 
   @override
-  String get parcelsShipmentDetailsDropoffLabel => 'Drop-off';
+  String get parcelsShipmentDetailsDropoffLabel => 'Dropoff';
 
   @override
   String get parcelsShipmentDetailsAddressSectionTitle => 'Addresses';
 
   @override
-  String get parcelsShipmentDetailsSenderLabel => 'From (Sender)';
+  String get parcelsShipmentDetailsSenderLabel => 'Sender';
 
   @override
-  String get parcelsShipmentDetailsReceiverLabel => 'To (Receiver)';
+  String get parcelsShipmentDetailsReceiverLabel => 'Receiver';
 
   @override
   String get parcelsShipmentDetailsMetaSectionTitle => 'Parcel details';
@@ -2560,4 +2560,106 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ordersServiceFoodSemanticLabel => 'Food order';
+
+  @override
+  String get parcelsShipmentsTitle => 'My Shipments';
+
+  @override
+  String get parcelsShipmentsNewShipmentTooltip => 'New shipment';
+
+  @override
+  String get parcelsShipmentsEmptyTitle => 'No shipments yet';
+
+  @override
+  String get parcelsShipmentsEmptyDescription =>
+      'You don\'t have any shipments yet. Create your first shipment to start sending parcels.';
+
+  @override
+  String get parcelsShipmentsEmptyCta => 'Create first shipment';
+
+  @override
+  String get parcelsShipmentStatusCreated => 'Created';
+
+  @override
+  String get parcelsShipmentStatusInTransit => 'In Transit';
+
+  @override
+  String get parcelsShipmentStatusDelivered => 'Delivered';
+
+  @override
+  String get parcelsShipmentStatusCancelled => 'Cancelled';
+
+  @override
+  String get parcelsCreateShipmentCta => 'Create shipment';
+
+  @override
+  String get parcelsCreateShipmentSenderSectionTitle => 'Sender details';
+
+  @override
+  String get parcelsCreateShipmentReceiverSectionTitle => 'Receiver details';
+
+  @override
+  String get parcelsCreateShipmentParcelDetailsSectionTitle => 'Parcel details';
+
+  @override
+  String get parcelsCreateShipmentSenderNameLabel => 'Sender name';
+
+  @override
+  String get parcelsCreateShipmentSenderPhoneLabel => 'Sender phone';
+
+  @override
+  String get parcelsCreateShipmentReceiverNameLabel => 'Receiver name';
+
+  @override
+  String get parcelsCreateShipmentReceiverPhoneLabel => 'Receiver phone';
+
+  @override
+  String get parcelsCreateShipmentPickupAddressLabel => 'Pickup address';
+
+  @override
+  String get parcelsCreateShipmentDropoffAddressLabel => 'Dropoff address';
+
+  @override
+  String get parcelsCreateShipmentWeightLabel => 'Weight (kg)';
+
+  @override
+  String get parcelsCreateShipmentSizeLabel => 'Size';
+
+  @override
+  String get parcelsCreateShipmentNotesLabel => 'Notes';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeLabel => 'Service type';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeExpress => 'Express';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeStandard => 'Standard';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeError =>
+      'Please select a service type';
+
+  @override
+  String get parcelsCreateShipmentSuccessMessage =>
+      'Shipment created successfully';
+
+  @override
+  String get commonErrorFieldRequired => 'This field is required';
+
+  @override
+  String get commonAddressesTitle => 'Addresses';
+
+  @override
+  String get parcelsShipmentDetailsContactsSectionTitle => 'Contacts';
+
+  @override
+  String get parcelsShipmentDetailsDetailsSectionTitle => 'Parcel details';
+
+  @override
+  String get parcelsShipmentDetailsServiceTypeLabel => 'Service type';
+
+  @override
+  String get commonTotalLabel => 'Total';
 }

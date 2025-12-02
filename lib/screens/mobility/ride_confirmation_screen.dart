@@ -46,25 +46,8 @@ import '../../state/mobility/ride_map_commands_builder.dart';
 import '../../state/payments/payment_methods_ui_state.dart';
 // Track B - Ticket #112: Map from RideMapCommands
 import '../../widgets/ride_map_from_commands.dart';
-
-/// UI-only model for ride options (maps from domain RideQuoteOption)
-class RideOptionUiModel {
-  const RideOptionUiModel({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.etaText,
-    required this.priceText,
-    required this.isRecommended,
-  });
-
-  final String id;
-  final String title;
-  final String description;
-  final String etaText;
-  final String priceText;
-  final bool isRecommended;
-}
+// Track B - Ticket #141: Use RideQuoteOptionsSheet
+import 'ride_quote_options_sheet.dart';
 
 /// RideConfirmationScreen - Trip confirmation with vehicle options
 class RideConfirmationScreen extends ConsumerWidget {
@@ -172,15 +155,17 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
     final rideDraft = ref.watch(rideDraftProvider);
     final activeTrip = widget.activeTrip;
 
-    // Build UI options from quote
-    final options = _buildUiOptions(
-      l10n: l10n,
-      quoteState: quoteState,
-    );
-
+    // Get the quote and options directly from domain model
+    final quote = quoteState.quote;
+    
     // Effective selected option: use state or fallback to first option
     final effectiveSelectedId = rideDraft.selectedOptionId ??
-        (options.isNotEmpty ? options.first.id : null);
+        (quote != null && quote.options.isNotEmpty ? quote.options.first.id : null);
+    
+    final selectedOption = quote?.options.firstWhere(
+      (opt) => opt.id == effectiveSelectedId,
+      orElse: () => quote.options.first,
+    );
 
     // Ticket #26: Derive quote states for robust UI handling
     // Note: RideQuote domain model enforces options.isNotEmpty via assertion
@@ -188,7 +173,7 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
     final isLoading = quoteState.isLoading;
     final hasError = quoteState.hasError;
     final hasQuote = quoteState.hasQuote;
-    final hasOptions = hasQuote && options.isNotEmpty;
+    final hasOptions = hasQuote && (quote?.options.isNotEmpty ?? false);
     // Empty state: not loading, no error, but also no quote (rare edge case)
     final isEmptyState = !isLoading && !hasError && !hasQuote;
 
@@ -335,25 +320,17 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
           _QuoteEmptyCard(l10n: l10n, textTheme: textTheme, colorScheme: colorScheme),
         ]
         // 4. Success state (vehicle options available)
-        else if (hasOptions) ...[
+        else if (hasOptions && quote != null) ...[
           Flexible(
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: options.length,
-              itemBuilder: (context, index) {
-                final option = options[index];
-                return _RideOptionCard(
-                  option: option,
-                  isSelected: effectiveSelectedId != null &&
-                      option.id == effectiveSelectedId,
-                  onSelected: () {
-                    ref
-                        .read(rideDraftProvider.notifier)
-                        .updateSelectedOption(option.id);
-                  },
-                );
+            child: RideQuoteOptionsSheet(
+              quote: quote,
+              selectedOption: selectedOption,
+              onOptionSelected: (option) {
+                ref
+                    .read(rideDraftProvider.notifier)
+                    .updateSelectedOption(option.id);
               },
+              showHandle: false, // Not a bottom sheet
             ),
           ),
         ],
@@ -429,181 +406,7 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
   }
 }
 
-/// Converts RideQuote options to UI models
-List<RideOptionUiModel> _buildUiOptions({
-  required AppLocalizations l10n,
-  required RideQuoteUiState quoteState,
-}) {
-  final quote = quoteState.quote;
-  if (quote == null) return const [];
 
-  return quote.options.map((o) {
-    final String subtitle;
-    switch (o.category) {
-      case RideVehicleCategory.economy:
-        subtitle = l10n.rideConfirmOptionEconomySubtitle;
-      case RideVehicleCategory.xl:
-        subtitle = l10n.rideConfirmOptionXlSubtitle;
-      case RideVehicleCategory.premium:
-        subtitle = l10n.rideConfirmOptionPremiumSubtitle;
-    }
-
-    final etaText = l10n.rideConfirmOptionEtaFormat(o.etaMinutes.toString());
-    final priceText = l10n.rideConfirmOptionPriceApprox(o.formattedPrice);
-
-    return RideOptionUiModel(
-      id: o.id,
-      title: o.displayName,
-      description: subtitle,
-      etaText: etaText,
-      priceText: priceText,
-      isRecommended: o.isRecommended,
-    );
-  }).toList();
-}
-
-/// Vehicle option card widget
-/// Updated by: Ticket #91 - Recommended badge + DWSpacing/DWRadius tokens
-class _RideOptionCard extends StatelessWidget {
-  const _RideOptionCard({
-    required this.option,
-    required this.isSelected,
-    required this.onSelected,
-  });
-
-  final RideOptionUiModel option;
-  final bool isSelected;
-  final VoidCallback onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context)!;
-
-    return Card(
-      margin: EdgeInsets.symmetric(vertical: DWSpacing.xxs),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(DWRadius.md),
-        side: BorderSide(
-          color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
-          width: isSelected ? 2 : 1,
-        ),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(DWRadius.md),
-        onTap: onSelected,
-        child: Padding(
-          padding: EdgeInsets.all(DWSpacing.md),
-          child: Row(
-            children: [
-              // Leading icon
-              Icon(
-                Icons.directions_car_filled,
-                color: isSelected
-                    ? colorScheme.primary
-                    : colorScheme.onSurfaceVariant,
-                size: 28,
-              ),
-              SizedBox(width: DWSpacing.md),
-              // Title + subtitle + recommended badge
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          option.title,
-                          style: textTheme.bodyLarge?.copyWith(
-                            fontWeight:
-                                isSelected ? FontWeight.w600 : FontWeight.normal,
-                          ),
-                        ),
-                        if (option.isRecommended) ...[
-                          SizedBox(width: DWSpacing.xs),
-                          _RecommendedBadge(label: l10n.rideConfirmRecommendedBadge),
-                        ],
-                      ],
-                    ),
-                    SizedBox(height: DWSpacing.xxs),
-                    Text(
-                      option.description,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: DWSpacing.sm),
-              // Price + ETA
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    option.priceText,
-                    style: textTheme.titleMedium?.copyWith(
-                      color: isSelected ? colorScheme.primary : null,
-                    ),
-                  ),
-                  SizedBox(height: DWSpacing.xxs),
-                  Text(
-                    option.etaText,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-              // Selection indicator
-              if (isSelected) ...[
-                SizedBox(width: DWSpacing.xs),
-                Icon(
-                  Icons.check_circle,
-                  color: colorScheme.primary,
-                  size: 20,
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Recommended badge widget (Ticket #91)
-class _RecommendedBadge extends StatelessWidget {
-  const _RecommendedBadge({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: DWSpacing.xs,
-        vertical: DWSpacing.xxs / 2,
-      ),
-      decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(DWRadius.xs),
-      ),
-      child: Text(
-        label,
-        style: theme.textTheme.labelSmall?.copyWith(
-          color: colorScheme.onPrimaryContainer,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
 
 /// Payment method section widget
 /// Track B - Ticket #100: Shows selected payment method from PaymentMethodsUiState

@@ -1942,7 +1942,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get parcelsStatusFailed => 'Fehlgeschlagen';
 
   @override
-  String get parcelsCreateShipmentTitle => 'Neue Sendung';
+  String get parcelsCreateShipmentTitle => 'Sendung erstellen';
 
   @override
   String get parcelsCreateSenderSectionTitle => 'Absender';
@@ -2035,19 +2035,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get parcelsShipmentDetailsRouteSectionTitle => 'Route';
 
   @override
-  String get parcelsShipmentDetailsPickupLabel => 'Abholung';
+  String get parcelsShipmentDetailsPickupLabel => 'Abholadresse';
 
   @override
-  String get parcelsShipmentDetailsDropoffLabel => 'Zustellung';
+  String get parcelsShipmentDetailsDropoffLabel => 'Lieferadresse';
 
   @override
   String get parcelsShipmentDetailsAddressSectionTitle => 'Adressen';
 
   @override
-  String get parcelsShipmentDetailsSenderLabel => 'Von (Absender)';
+  String get parcelsShipmentDetailsSenderLabel => 'Absender';
 
   @override
-  String get parcelsShipmentDetailsReceiverLabel => 'An (Empfänger)';
+  String get parcelsShipmentDetailsReceiverLabel => 'Empfänger';
 
   @override
   String get parcelsShipmentDetailsMetaSectionTitle => 'Paketdetails';
@@ -2587,4 +2587,107 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ordersServiceFoodSemanticLabel => 'Essensbestellung';
+
+  @override
+  String get parcelsShipmentsTitle => 'Meine Sendungen';
+
+  @override
+  String get parcelsShipmentsNewShipmentTooltip => 'Neue Sendung';
+
+  @override
+  String get parcelsShipmentsEmptyTitle => 'Noch keine Sendungen';
+
+  @override
+  String get parcelsShipmentsEmptyDescription =>
+      'Du hast noch keine Sendungen. Erstelle deine erste Sendung, um zu starten.';
+
+  @override
+  String get parcelsShipmentsEmptyCta => 'Erste Sendung erstellen';
+
+  @override
+  String get parcelsShipmentStatusCreated => 'Erstellt';
+
+  @override
+  String get parcelsShipmentStatusInTransit => 'Unterwegs';
+
+  @override
+  String get parcelsShipmentStatusDelivered => 'Zugestellt';
+
+  @override
+  String get parcelsShipmentStatusCancelled => 'Storniert';
+
+  @override
+  String get parcelsCreateShipmentCta => 'Sendung erstellen';
+
+  @override
+  String get parcelsCreateShipmentSenderSectionTitle => 'Absender';
+
+  @override
+  String get parcelsCreateShipmentReceiverSectionTitle => 'Empfänger';
+
+  @override
+  String get parcelsCreateShipmentParcelDetailsSectionTitle => 'Paketdetails';
+
+  @override
+  String get parcelsCreateShipmentSenderNameLabel => 'Name des Absenders';
+
+  @override
+  String get parcelsCreateShipmentSenderPhoneLabel => 'Telefon des Absenders';
+
+  @override
+  String get parcelsCreateShipmentReceiverNameLabel => 'Name des Empfängers';
+
+  @override
+  String get parcelsCreateShipmentReceiverPhoneLabel =>
+      'Telefon des Empfängers';
+
+  @override
+  String get parcelsCreateShipmentPickupAddressLabel => 'Abholadresse';
+
+  @override
+  String get parcelsCreateShipmentDropoffAddressLabel => 'Lieferadresse';
+
+  @override
+  String get parcelsCreateShipmentWeightLabel => 'Gewicht (kg)';
+
+  @override
+  String get parcelsCreateShipmentSizeLabel => 'Größe';
+
+  @override
+  String get parcelsCreateShipmentNotesLabel => 'Notizen';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeLabel => 'Service-Typ';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeExpress => 'Express';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeStandard => 'Standard';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeError =>
+      'Bitte einen Service-Typ auswählen';
+
+  @override
+  String get parcelsCreateShipmentSuccessMessage =>
+      'Sendung erfolgreich erstellt';
+
+  @override
+  String get commonErrorFieldRequired => 'Dieses Feld ist erforderlich';
+
+  @override
+  String get commonAddressesTitle => 'Adressen';
+
+  @override
+  String get parcelsShipmentDetailsContactsSectionTitle => 'Kontakte';
+
+  @override
+  String get parcelsShipmentDetailsDetailsSectionTitle => 'Paketdetails';
+
+  @override
+  String get parcelsShipmentDetailsServiceTypeLabel => 'Service-Typ';
+
+  @override
+  String get commonTotalLabel => 'Gesamt';
 }

@@ -47,3 +47,6 @@ export 'src/pricing/mock_ride_pricing_service.dart';
 
 // Ride Map Configuration - Track B Ticket #28: Map Shim for Ride
 export 'src/ride_map/ride_map_config.dart';
+
+// Recent Locations Repository - Track B Ticket #145: Real Recent Locations
+export 'src/recent_locations/recent_locations_repository.dart';

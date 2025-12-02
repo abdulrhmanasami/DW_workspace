@@ -1891,7 +1891,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get parcelsStatusFailed => 'فشل في التسليم';
 
   @override
-  String get parcelsCreateShipmentTitle => 'شحنة جديدة';
+  String get parcelsCreateShipmentTitle => 'إنشاء شحنة';
 
   @override
   String get parcelsCreateSenderSectionTitle => 'المرسل';
@@ -1981,19 +1981,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get parcelsShipmentDetailsRouteSectionTitle => 'المسار';
 
   @override
-  String get parcelsShipmentDetailsPickupLabel => 'الاستلام';
+  String get parcelsShipmentDetailsPickupLabel => 'عنوان الاستلام';
 
   @override
-  String get parcelsShipmentDetailsDropoffLabel => 'التسليم';
+  String get parcelsShipmentDetailsDropoffLabel => 'عنوان التسليم';
 
   @override
   String get parcelsShipmentDetailsAddressSectionTitle => 'العناوين';
 
   @override
-  String get parcelsShipmentDetailsSenderLabel => 'من (المرسل)';
+  String get parcelsShipmentDetailsSenderLabel => 'المرسل';
 
   @override
-  String get parcelsShipmentDetailsReceiverLabel => 'إلى (المستلم)';
+  String get parcelsShipmentDetailsReceiverLabel => 'المستلم';
 
   @override
   String get parcelsShipmentDetailsMetaSectionTitle => 'تفاصيل الطرد';
@@ -2524,4 +2524,104 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ordersServiceFoodSemanticLabel => 'طلب طعام';
+
+  @override
+  String get parcelsShipmentsTitle => 'شحناتي';
+
+  @override
+  String get parcelsShipmentsNewShipmentTooltip => 'شحنة جديدة';
+
+  @override
+  String get parcelsShipmentsEmptyTitle => 'لا توجد شحنات بعد';
+
+  @override
+  String get parcelsShipmentsEmptyDescription =>
+      'ليس لديك أي شحنات حتى الآن. أنشئ أول شحنة للبدء في إرسال الطرود.';
+
+  @override
+  String get parcelsShipmentsEmptyCta => 'إنشاء أول شحنة';
+
+  @override
+  String get parcelsShipmentStatusCreated => 'تم الإنشاء';
+
+  @override
+  String get parcelsShipmentStatusInTransit => 'قيد التوصيل';
+
+  @override
+  String get parcelsShipmentStatusDelivered => 'تم التوصيل';
+
+  @override
+  String get parcelsShipmentStatusCancelled => 'ملغاة';
+
+  @override
+  String get parcelsCreateShipmentCta => 'إنشاء شحنة';
+
+  @override
+  String get parcelsCreateShipmentSenderSectionTitle => 'بيانات المرسل';
+
+  @override
+  String get parcelsCreateShipmentReceiverSectionTitle => 'بيانات المستلم';
+
+  @override
+  String get parcelsCreateShipmentParcelDetailsSectionTitle => 'تفاصيل الشحنة';
+
+  @override
+  String get parcelsCreateShipmentSenderNameLabel => 'اسم المرسل';
+
+  @override
+  String get parcelsCreateShipmentSenderPhoneLabel => 'هاتف المرسل';
+
+  @override
+  String get parcelsCreateShipmentReceiverNameLabel => 'اسم المستلم';
+
+  @override
+  String get parcelsCreateShipmentReceiverPhoneLabel => 'هاتف المستلم';
+
+  @override
+  String get parcelsCreateShipmentPickupAddressLabel => 'عنوان الاستلام';
+
+  @override
+  String get parcelsCreateShipmentDropoffAddressLabel => 'عنوان التسليم';
+
+  @override
+  String get parcelsCreateShipmentWeightLabel => 'الوزن (كجم)';
+
+  @override
+  String get parcelsCreateShipmentSizeLabel => 'الحجم';
+
+  @override
+  String get parcelsCreateShipmentNotesLabel => 'ملاحظات';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeLabel => 'نوع الخدمة';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeExpress => 'سريعة';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeStandard => 'عادية';
+
+  @override
+  String get parcelsCreateShipmentServiceTypeError => 'يرجى اختيار نوع الخدمة';
+
+  @override
+  String get parcelsCreateShipmentSuccessMessage => 'تم إنشاء الشحنة بنجاح';
+
+  @override
+  String get commonErrorFieldRequired => 'هذا الحقل مطلوب';
+
+  @override
+  String get commonAddressesTitle => 'العناوين';
+
+  @override
+  String get parcelsShipmentDetailsContactsSectionTitle => 'جهات الاتصال';
+
+  @override
+  String get parcelsShipmentDetailsDetailsSectionTitle => 'تفاصيل الشحنة';
+
+  @override
+  String get parcelsShipmentDetailsServiceTypeLabel => 'نوع الخدمة';
+
+  @override
+  String get commonTotalLabel => 'المجموع';
 }

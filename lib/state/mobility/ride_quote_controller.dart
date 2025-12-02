@@ -23,7 +23,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 
 // From app:
-import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
+import 'ride_draft_state.dart';
 
 // ============================================================================
 // Track B - Ticket #121: Structured Error Model
@@ -292,13 +292,21 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
         );
       }
     } on RidePricingException catch (e) {
-      // Track B - Ticket #121: Pricing service specific error
-      state = RideQuoteUiState(
-        isLoading: false,
-        error: RideQuoteError.pricingFailed(e.message),
-        // Keep legacy errorMessage for backward compatibility
-        errorMessage: e.message,
-      );
+      // Track B - Ticket #139: Check for no vehicles available case
+      if (e.message.contains('No vehicles available')) {
+        state = const RideQuoteUiState(
+          isLoading: false,
+          error: RideQuoteError.noOptionsAvailable(),
+        );
+      } else {
+        // Track B - Ticket #121: Pricing service specific error
+        state = RideQuoteUiState(
+          isLoading: false,
+          error: RideQuoteError.pricingFailed(e.message),
+          // Keep legacy errorMessage for backward compatibility
+          errorMessage: e.message,
+        );
+      }
     } catch (e) {
       // Track B - Ticket #121: Generic/unexpected error
       state = RideQuoteUiState(

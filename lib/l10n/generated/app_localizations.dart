@@ -3484,10 +3484,10 @@ abstract class AppLocalizations {
   /// **'Failed'**
   String get parcelsStatusFailed;
 
-  /// Title for Create Shipment screen (Track C - Ticket #46)
+  /// Title for create shipment screen (Track C - Ticket #150)
   ///
   /// In en, this message translates to:
-  /// **'New Shipment'**
+  /// **'Create shipment'**
   String get parcelsCreateShipmentTitle;
 
   /// Section title for sender information
@@ -3640,7 +3640,7 @@ abstract class AppLocalizations {
   /// **'Oversize'**
   String get parcelsCreateSizeOversizeLabel;
 
-  /// Title for Shipment Details screen (Track C - Ticket #47)
+  /// Shipment details screen title (Track C - Ticket #151)
   ///
   /// In en, this message translates to:
   /// **'Shipment details'**
@@ -3652,22 +3652,22 @@ abstract class AppLocalizations {
   /// **'Created on {date}'**
   String parcelsShipmentDetailsCreatedAt(String date);
 
-  /// Section title for route information
+  /// Route section title (Track C - Ticket #151)
   ///
   /// In en, this message translates to:
   /// **'Route'**
   String get parcelsShipmentDetailsRouteSectionTitle;
 
-  /// Label for pickup address
+  /// Pickup address label (Track C - Ticket #151)
   ///
   /// In en, this message translates to:
   /// **'Pickup'**
   String get parcelsShipmentDetailsPickupLabel;
 
-  /// Label for drop-off address
+  /// Dropoff address label (Track C - Ticket #151)
   ///
   /// In en, this message translates to:
-  /// **'Drop-off'**
+  /// **'Dropoff'**
   String get parcelsShipmentDetailsDropoffLabel;
 
   /// Section title for sender/receiver addresses
@@ -3676,16 +3676,16 @@ abstract class AppLocalizations {
   /// **'Addresses'**
   String get parcelsShipmentDetailsAddressSectionTitle;
 
-  /// Label for sender address
+  /// Sender label (Track C - Ticket #151)
   ///
   /// In en, this message translates to:
-  /// **'From (Sender)'**
+  /// **'Sender'**
   String get parcelsShipmentDetailsSenderLabel;
 
-  /// Label for receiver address
+  /// Receiver label (Track C - Ticket #151)
   ///
   /// In en, this message translates to:
-  /// **'To (Receiver)'**
+  /// **'Receiver'**
   String get parcelsShipmentDetailsReceiverLabel;
 
   /// Section title for parcel meta information
@@ -3694,19 +3694,19 @@ abstract class AppLocalizations {
   /// **'Parcel details'**
   String get parcelsShipmentDetailsMetaSectionTitle;
 
-  /// Label for weight
+  /// Weight label (Track C - Ticket #151)
   ///
   /// In en, this message translates to:
   /// **'Weight'**
   String get parcelsShipmentDetailsWeightLabel;
 
-  /// Label for size
+  /// Size label (Track C - Ticket #151)
   ///
   /// In en, this message translates to:
   /// **'Size'**
   String get parcelsShipmentDetailsSizeLabel;
 
-  /// Label for notes
+  /// Notes label (Track C - Ticket #151)
   ///
   /// In en, this message translates to:
   /// **'Notes'**
@@ -4659,6 +4659,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Food order'**
   String get ordersServiceFoodSemanticLabel;
+
+  /// Title for parcels shipments list screen (Track C - Ticket #149)
+  ///
+  /// In en, this message translates to:
+  /// **'My Shipments'**
+  String get parcelsShipmentsTitle;
+
+  /// Tooltip for new shipment button (Track C - Ticket #149)
+  ///
+  /// In en, this message translates to:
+  /// **'New shipment'**
+  String get parcelsShipmentsNewShipmentTooltip;
+
+  /// Empty state title for shipments list (Track C - Ticket #149)
+  ///
+  /// In en, this message translates to:
+  /// **'No shipments yet'**
+  String get parcelsShipmentsEmptyTitle;
+
+  /// Empty state description for shipments list (Track C - Ticket #149)
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any shipments yet. Create your first shipment to start sending parcels.'**
+  String get parcelsShipmentsEmptyDescription;
+
+  /// CTA button for empty shipments state (Track C - Ticket #149)
+  ///
+  /// In en, this message translates to:
+  /// **'Create first shipment'**
+  String get parcelsShipmentsEmptyCta;
+
+  /// Shipment status: created (Track C - Ticket #149)
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get parcelsShipmentStatusCreated;
+
+  /// Shipment status: in transit (Track C - Ticket #149)
+  ///
+  /// In en, this message translates to:
+  /// **'In Transit'**
+  String get parcelsShipmentStatusInTransit;
+
+  /// Shipment status: delivered (Track C - Ticket #149)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get parcelsShipmentStatusDelivered;
+
+  /// Shipment status: cancelled (Track C - Ticket #149)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get parcelsShipmentStatusCancelled;
+
+  /// Create shipment button label (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Create shipment'**
+  String get parcelsCreateShipmentCta;
+
+  /// Sender section title (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Sender details'**
+  String get parcelsCreateShipmentSenderSectionTitle;
+
+  /// Receiver section title (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver details'**
+  String get parcelsCreateShipmentReceiverSectionTitle;
+
+  /// Parcel details section title (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Parcel details'**
+  String get parcelsCreateShipmentParcelDetailsSectionTitle;
+
+  /// Sender name field label (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Sender name'**
+  String get parcelsCreateShipmentSenderNameLabel;
+
+  /// Sender phone field label (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Sender phone'**
+  String get parcelsCreateShipmentSenderPhoneLabel;
+
+  /// Receiver name field label (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver name'**
+  String get parcelsCreateShipmentReceiverNameLabel;
+
+  /// Receiver phone field label (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver phone'**
+  String get parcelsCreateShipmentReceiverPhoneLabel;
+
+  /// Pickup address field label (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup address'**
+  String get parcelsCreateShipmentPickupAddressLabel;
+
+  /// Dropoff address field label (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Dropoff address'**
+  String get parcelsCreateShipmentDropoffAddressLabel;
+
+  /// Weight field label (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (kg)'**
+  String get parcelsCreateShipmentWeightLabel;
+
+  /// Size field label (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get parcelsCreateShipmentSizeLabel;
+
+  /// Notes field label (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get parcelsCreateShipmentNotesLabel;
+
+  /// Service type section label (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Service type'**
+  String get parcelsCreateShipmentServiceTypeLabel;
+
+  /// Express service type (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Express'**
+  String get parcelsCreateShipmentServiceTypeExpress;
+
+  /// Standard service type (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get parcelsCreateShipmentServiceTypeStandard;
+
+  /// Service type validation error (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a service type'**
+  String get parcelsCreateShipmentServiceTypeError;
+
+  /// Success message after creating shipment (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment created successfully'**
+  String get parcelsCreateShipmentSuccessMessage;
+
+  /// Generic field required error (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get commonErrorFieldRequired;
+
+  /// Addresses section title (Track C - Ticket #150)
+  ///
+  /// In en, this message translates to:
+  /// **'Addresses'**
+  String get commonAddressesTitle;
+
+  /// Contacts section title (Track C - Ticket #151)
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get parcelsShipmentDetailsContactsSectionTitle;
+
+  /// Details section title (Track C - Ticket #151)
+  ///
+  /// In en, this message translates to:
+  /// **'Parcel details'**
+  String get parcelsShipmentDetailsDetailsSectionTitle;
+
+  /// Service type label (Track C - Ticket #151)
+  ///
+  /// In en, this message translates to:
+  /// **'Service type'**
+  String get parcelsShipmentDetailsServiceTypeLabel;
+
+  /// Total price label (Track C - Ticket #151)
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get commonTotalLabel;
 }
 
 class _AppLocalizationsDelegate

@@ -20,8 +20,8 @@ import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 
 // From app state
-import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
-import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
+import 'ride_draft_state.dart';
+import 'ride_trip_session.dart';
 
 // =============================================================================
 // Track B - Ticket #110: Result Value Object

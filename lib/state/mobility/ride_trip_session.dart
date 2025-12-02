@@ -29,8 +29,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 
 // From app:
-import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
-import 'package:delivery_ways_clean/state/mobility/ride_map_commands_builder.dart';
+import 'ride_draft_state.dart';
+import 'ride_map_commands_builder.dart';
+import 'ride_recent_locations_providers.dart';
 
 /// Entry in the ride history list.
 ///
@@ -329,7 +330,9 @@ class RideTripSessionUiState {
 /// - [RideTripEvent] - events that transition the FSM
 /// - [applyRideTripEvent] - pure transition function
 class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
-  RideTripSessionController() : super(const RideTripSessionUiState());
+  RideTripSessionController(this._ref) : super(const RideTripSessionUiState());
+
+  final Ref _ref;
 
   /// Starts a new trip from the current draft.
   ///
@@ -723,6 +726,9 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
     // Step 4: Clear temporary state while preserving history
     state = RideTripSessionUiState(historyTrips: updatedHistory);
 
+    // Track B - Ticket #145: Add destination to recent locations
+    _addToRecentLocations();
+
     return true;
   }
 
@@ -806,12 +812,40 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
 
     return true;
   }
+
+  /// Track B - Ticket #145: Helper to add current destination to recent locations
+  void _addToRecentLocations() {
+    final draftSnapshot = state.draftSnapshot;
+    if (draftSnapshot == null) return;
+
+    // Get destination from draft
+    final destinationPlace = draftSnapshot.destinationPlace;
+    if (destinationPlace == null) return;
+
+    // Create RecentLocation from the destination
+    final recentLocation = RecentLocation(
+      id: 'loc_${DateTime.now().microsecondsSinceEpoch}',
+      title: destinationPlace.label,
+      subtitle: destinationPlace.address,
+      type: MobilityPlaceType.recent,
+      location: destinationPlace.location,
+    );
+
+    // Add to recent locations repository
+    try {
+      final repo = _ref.read(recentLocationsRepositoryProvider);
+      repo.upsertRecentLocation(recentLocation);
+    } catch (e) {
+      // Fail silently - recent locations is not critical
+      debugPrint('Failed to add recent location: $e');
+    }
+  }
 }
 
 /// Global provider for ride trip session state.
 final rideTripSessionProvider =
     StateNotifierProvider<RideTripSessionController, RideTripSessionUiState>(
         (ref) {
-  return RideTripSessionController();
+  return RideTripSessionController(ref);
 });
 

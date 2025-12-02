@@ -2456,5 +2456,180 @@
   "ordersServiceFoodSemanticLabel": "Food order",
   "@ordersServiceFoodSemanticLabel": {
     "description": "Accessibility label for food order service icon (Track B - Ticket #127)"
+  },
+
+  "parcelsShipmentsTitle": "My Shipments",
+  "@parcelsShipmentsTitle": {
+    "description": "Title for parcels shipments list screen (Track C - Ticket #149)"
+  },
+  "parcelsShipmentsNewShipmentTooltip": "New shipment",
+  "@parcelsShipmentsNewShipmentTooltip": {
+    "description": "Tooltip for new shipment button (Track C - Ticket #149)"
+  },
+  "parcelsShipmentsEmptyTitle": "No shipments yet",
+  "@parcelsShipmentsEmptyTitle": {
+    "description": "Empty state title for shipments list (Track C - Ticket #149)"
+  },
+  "parcelsShipmentsEmptyDescription": "You don't have any shipments yet. Create your first shipment to start sending parcels.",
+  "@parcelsShipmentsEmptyDescription": {
+    "description": "Empty state description for shipments list (Track C - Ticket #149)"
+  },
+  "parcelsShipmentsEmptyCta": "Create first shipment",
+  "@parcelsShipmentsEmptyCta": {
+    "description": "CTA button for empty shipments state (Track C - Ticket #149)"
+  },
+  "parcelsShipmentStatusCreated": "Created",
+  "@parcelsShipmentStatusCreated": {
+    "description": "Shipment status: created (Track C - Ticket #149)"
+  },
+  "parcelsShipmentStatusInTransit": "In Transit",
+  "@parcelsShipmentStatusInTransit": {
+    "description": "Shipment status: in transit (Track C - Ticket #149)"
+  },
+  "parcelsShipmentStatusDelivered": "Delivered",
+  "@parcelsShipmentStatusDelivered": {
+    "description": "Shipment status: delivered (Track C - Ticket #149)"
+  },
+  "parcelsShipmentStatusCancelled": "Cancelled",
+  "@parcelsShipmentStatusCancelled": {
+    "description": "Shipment status: cancelled (Track C - Ticket #149)"
+  },
+  
+  "parcelsCreateShipmentTitle": "Create shipment",
+  "@parcelsCreateShipmentTitle": {
+    "description": "Title for create shipment screen (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentCta": "Create shipment",
+  "@parcelsCreateShipmentCta": {
+    "description": "Create shipment button label (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentSenderSectionTitle": "Sender details",
+  "@parcelsCreateShipmentSenderSectionTitle": {
+    "description": "Sender section title (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentReceiverSectionTitle": "Receiver details",
+  "@parcelsCreateShipmentReceiverSectionTitle": {
+    "description": "Receiver section title (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentParcelDetailsSectionTitle": "Parcel details",
+  "@parcelsCreateShipmentParcelDetailsSectionTitle": {
+    "description": "Parcel details section title (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentSenderNameLabel": "Sender name",
+  "@parcelsCreateShipmentSenderNameLabel": {
+    "description": "Sender name field label (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentSenderPhoneLabel": "Sender phone",
+  "@parcelsCreateShipmentSenderPhoneLabel": {
+    "description": "Sender phone field label (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentReceiverNameLabel": "Receiver name",
+  "@parcelsCreateShipmentReceiverNameLabel": {
+    "description": "Receiver name field label (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentReceiverPhoneLabel": "Receiver phone",
+  "@parcelsCreateShipmentReceiverPhoneLabel": {
+    "description": "Receiver phone field label (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentPickupAddressLabel": "Pickup address",
+  "@parcelsCreateShipmentPickupAddressLabel": {
+    "description": "Pickup address field label (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentDropoffAddressLabel": "Dropoff address",
+  "@parcelsCreateShipmentDropoffAddressLabel": {
+    "description": "Dropoff address field label (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentWeightLabel": "Weight (kg)",
+  "@parcelsCreateShipmentWeightLabel": {
+    "description": "Weight field label (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentSizeLabel": "Size",
+  "@parcelsCreateShipmentSizeLabel": {
+    "description": "Size field label (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentNotesLabel": "Notes",
+  "@parcelsCreateShipmentNotesLabel": {
+    "description": "Notes field label (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentServiceTypeLabel": "Service type",
+  "@parcelsCreateShipmentServiceTypeLabel": {
+    "description": "Service type section label (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentServiceTypeExpress": "Express",
+  "@parcelsCreateShipmentServiceTypeExpress": {
+    "description": "Express service type (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentServiceTypeStandard": "Standard",
+  "@parcelsCreateShipmentServiceTypeStandard": {
+    "description": "Standard service type (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentServiceTypeError": "Please select a service type",
+  "@parcelsCreateShipmentServiceTypeError": {
+    "description": "Service type validation error (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentSuccessMessage": "Shipment created successfully",
+  "@parcelsCreateShipmentSuccessMessage": {
+    "description": "Success message after creating shipment (Track C - Ticket #150)"
+  },
+  "commonErrorFieldRequired": "This field is required",
+  "@commonErrorFieldRequired": {
+    "description": "Generic field required error (Track C - Ticket #150)"
+  },
+  "commonAddressesTitle": "Addresses",
+  "@commonAddressesTitle": {
+    "description": "Addresses section title (Track C - Ticket #150)"
+  },
+
+  "parcelsShipmentDetailsTitle": "Shipment details",
+  "@parcelsShipmentDetailsTitle": {
+    "description": "Shipment details screen title (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsRouteSectionTitle": "Route",
+  "@parcelsShipmentDetailsRouteSectionTitle": {
+    "description": "Route section title (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsContactsSectionTitle": "Contacts",
+  "@parcelsShipmentDetailsContactsSectionTitle": {
+    "description": "Contacts section title (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsDetailsSectionTitle": "Parcel details",
+  "@parcelsShipmentDetailsDetailsSectionTitle": {
+    "description": "Details section title (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsSenderLabel": "Sender",
+  "@parcelsShipmentDetailsSenderLabel": {
+    "description": "Sender label (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsReceiverLabel": "Receiver",
+  "@parcelsShipmentDetailsReceiverLabel": {
+    "description": "Receiver label (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsWeightLabel": "Weight",
+  "@parcelsShipmentDetailsWeightLabel": {
+    "description": "Weight label (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsSizeLabel": "Size",
+  "@parcelsShipmentDetailsSizeLabel": {
+    "description": "Size label (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsServiceTypeLabel": "Service type",
+  "@parcelsShipmentDetailsServiceTypeLabel": {
+    "description": "Service type label (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsNotesLabel": "Notes",
+  "@parcelsShipmentDetailsNotesLabel": {
+    "description": "Notes label (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsPickupLabel": "Pickup",
+  "@parcelsShipmentDetailsPickupLabel": {
+    "description": "Pickup address label (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsDropoffLabel": "Dropoff",
+  "@parcelsShipmentDetailsDropoffLabel": {
+    "description": "Dropoff address label (Track C - Ticket #151)"
+  },
+  "commonTotalLabel": "Total",
+  "@commonTotalLabel": {
+    "description": "Total price label (Track C - Ticket #151)"
   }
 }

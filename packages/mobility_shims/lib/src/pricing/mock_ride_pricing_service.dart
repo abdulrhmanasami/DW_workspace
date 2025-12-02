@@ -119,12 +119,11 @@ class MockRidePricingService implements RidePricingService {
     // 3) Create the quote request for backward compatibility
     final request = _buildRequest(pickup, destination);
 
-    // Track B - Ticket #121: Return empty options if configured
+    // Track B - Ticket #139: Throw exception for empty options scenario
+    // (RideQuote now enforces non-empty options)
     if (returnEmptyOptions) {
-      return RideQuote(
-        quoteId: 'mock-empty-${DateTime.now().microsecondsSinceEpoch}',
-        request: request,
-        options: const [],
+      throw const RidePricingException(
+        'No vehicles available for this route',
       );
     }
 

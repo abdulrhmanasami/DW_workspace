@@ -1,9 +1,10 @@
-/// Ride Location Picker Screen - Track B Ticket #20, #93
+/// Ride Location Picker Screen - Track B Ticket #20, #93, #143
 /// Purpose: Location picker screen for ride booking flow (Screen 8 in Hi-Fi Mockups)
 /// Created by: Track B - Ticket #20
 /// Updated by: Track B - Ticket #21 (Direct navigation to Trip Confirmation)
 /// Updated by: Ticket #93 (Full Location Picker with editable Pickup/Dropoff + Design System)
-/// Last updated: 2025-11-30
+/// Updated by: Track B - Ticket #143 (DWAppShell, proper Layout ratios, Empty State for recent locations)
+/// Last updated: 2025-12-02
 ///
 /// This screen provides:
 /// - Map background (from maps_shims) with pickup/destination markers
@@ -26,6 +27,8 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
 import '../../state/mobility/ride_draft_state.dart';
 import '../../state/mobility/ride_quote_controller.dart';
+import '../../state/mobility/ride_recent_locations_providers.dart';
+import '../../widgets/dw_app_shell.dart';
 
 /// RideDestinationScreen - Location picker for ride booking from Home Hub
 /// Shows map background with bottom sheet for pickup/destination input.
@@ -39,8 +42,11 @@ class RideDestinationScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
+    // Track B - Ticket #143: Use DWAppShell for consistency
+    return DWAppShell(
       extendBodyBehindAppBar: true,
+      applyPadding: false, // Full screen map
+      useSafeArea: false, // Map extends to edges
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -305,9 +311,11 @@ class _LocationPickerBottomSheetState
     final rideDraftController = ref.read(rideDraftProvider.notifier);
     final isValidDraft = _isValidDraft(rideDraft);
 
+    // Track B - Ticket #143: Adjusted to ~45% height to match Hi-Fi
     return Container(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.65,
+        maxHeight: MediaQuery.of(context).size.height * 0.45,
+        minHeight: MediaQuery.of(context).size.height * 0.40,
       ),
       decoration: BoxDecoration(
         color: colorScheme.surface,
@@ -799,51 +807,167 @@ class _DestinationInputField extends StatelessWidget {
   }
 }
 
-/// Recent locations list with mock data
-class _RecentLocationsList extends StatelessWidget {
+/// Recent locations list with empty state
+/// Track B - Ticket #145: Using real recent locations provider
+class _RecentLocationsList extends ConsumerWidget {
   const _RecentLocationsList({required this.onLocationSelected});
 
   final ValueChanged<RecentLocation> onLocationSelected;
 
   @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    // Track B - Ticket #145: Now using real recent locations provider
+    final recentLocationsAsync = ref.watch(recentLocationsProvider);
+
+    return recentLocationsAsync.when(
+      loading: () => _RecentLocationsLoadingState(colorScheme: colorScheme),
+      error: (error, stackTrace) => _RecentLocationsErrorState(
+        colorScheme: colorScheme,
+        textTheme: textTheme,
+        error: error.toString(),
+      ),
+      data: (recentLocations) {
+        if (recentLocations.isEmpty) {
+      // Empty state UI
+      return Container(
+        padding: EdgeInsets.symmetric(
+          vertical: DWSpacing.lg,
+          horizontal: DWSpacing.md,
+        ),
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(DWRadius.md),
+          border: Border.all(
+            color: colorScheme.outline.withValues(alpha: 0.1),
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              Icons.history_outlined,
+              size: 48,
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+            ),
+            SizedBox(height: DWSpacing.sm),
+            Text(
+              'No recent locations yet',
+              style: textTheme.titleMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: DWSpacing.xs),
+            Text(
+              'Your recent destinations will appear here',
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+        }
+
+        // If we have locations, show them
+        return Column(
+          children: recentLocations
+              .map((location) => _RecentLocationCard(
+                    location: location,
+                    onTap: () => onLocationSelected(location),
+                  ))
+              .toList(),
+        );
+      },
+    );
+  }
+}
+
+/// Loading state widget for recent locations
+class _RecentLocationsLoadingState extends StatelessWidget {
+  const _RecentLocationsLoadingState({required this.colorScheme});
+  
+  final ColorScheme colorScheme;
+
+  @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: DWSpacing.lg,
+        horizontal: DWSpacing.md,
+      ),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(DWRadius.md),
+        border: Border.all(
+          color: colorScheme.outline.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              colorScheme.primary.withValues(alpha: 0.6),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
-    // Mock recent locations (Track B - will be replaced with real data later)
-    final recentLocations = [
-      RecentLocation(
-        id: 'home',
-        title: l10n.rideBookingRecentHome,
-        subtitle: l10n.rideBookingRecentHomeSubtitle,
-        type: MobilityPlaceType.saved,
-      ),
-      RecentLocation(
-        id: 'work',
-        title: l10n.rideBookingRecentWork,
-        subtitle: l10n.rideBookingRecentWorkSubtitle,
-        type: MobilityPlaceType.saved,
-      ),
-      RecentLocation(
-        id: 'recent_1',
-        title: 'King Fahd Road',
-        subtitle: 'Riyadh, Saudi Arabia',
-        type: MobilityPlaceType.recent,
-      ),
-      RecentLocation(
-        id: 'recent_2',
-        title: 'Mall of Arabia',
-        subtitle: 'Jeddah, Saudi Arabia',
-        type: MobilityPlaceType.recent,
-      ),
-    ];
+/// Error state widget for recent locations
+class _RecentLocationsErrorState extends StatelessWidget {
+  const _RecentLocationsErrorState({
+    required this.colorScheme,
+    required this.textTheme,
+    required this.error,
+  });
+  
+  final ColorScheme colorScheme;
+  final TextTheme textTheme;
+  final String error;
 
-    return Column(
-      children: recentLocations
-          .map((location) => _RecentLocationCard(
-                location: location,
-                onTap: () => onLocationSelected(location),
-              ))
-          .toList(),
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: DWSpacing.lg,
+        horizontal: DWSpacing.md,
+      ),
+      decoration: BoxDecoration(
+        color: colorScheme.errorContainer.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(DWRadius.md),
+        border: Border.all(
+          color: colorScheme.error.withValues(alpha: 0.2),
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 48,
+            color: colorScheme.error.withValues(alpha: 0.6),
+          ),
+          SizedBox(height: DWSpacing.sm),
+          Text(
+            'Failed to load recent locations',
+            style: textTheme.titleMedium?.copyWith(
+              color: colorScheme.error,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }

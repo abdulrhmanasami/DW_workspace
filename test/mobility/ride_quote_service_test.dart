@@ -167,7 +167,6 @@ void main() {
 
         expect(createEmptyQuote, throwsA(isA<AssertionError>()));
       },
-      skip: 'Track B - Ticket #123: Legacy behavior after Ride pricing refactor; pending rewrite',
     );
 
     test('recommendedOption returns first recommended option', () {

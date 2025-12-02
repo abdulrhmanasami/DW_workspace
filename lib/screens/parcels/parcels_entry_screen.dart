@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/dw_app_shell.dart';
 import '../../state/parcels/parcel_orders_state.dart';
 import '../orders/widgets/order_list_skeleton.dart';
 import 'parcel_create_shipment_screen.dart';
@@ -35,16 +36,17 @@ class ParcelsEntryScreen extends ConsumerWidget {
     // Track B - Ticket #127: Get loading state for skeleton
     final isLoading = ordersState.isLoading;
 
-    return Scaffold(
+    return DWAppShell(
       appBar: AppBar(
         title: Text(l10n?.parcelsEntryTitle ?? 'Parcels'),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(DWSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+      applyPadding: false, // We'll handle padding in the body
+      useSafeArea: true,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(DWSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
               const SizedBox(height: DWSpacing.lg),
               Icon(
                 Icons.local_shipping_outlined,
@@ -101,8 +103,7 @@ class ParcelsEntryScreen extends ConsumerWidget {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
 

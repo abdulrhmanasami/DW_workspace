@@ -257,16 +257,18 @@ class RideQuoteOption {
 ///
 /// Contains the original request and the available options.
 ///
-/// Track B - Ticket #121: Now allows empty options to represent "no vehicles
-/// available" scenarios. The UI should check `options.isEmpty` and display
-/// an appropriate empty state.
+/// Track B - Ticket #139: Enforces non-empty options.
+/// Empty options should be handled at the service/controller level as errors.
 @immutable
 class RideQuote {
-  const RideQuote({
+  RideQuote({
     required this.quoteId,
     required this.request,
     required this.options,
-  });
+  }) : assert(
+          options.isNotEmpty,
+          'RideQuote.options must not be empty. Handle empty options as error state.',
+        );
 
   /// Client-side identifier for this quote.
   final String quoteId;

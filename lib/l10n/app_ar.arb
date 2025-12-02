@@ -2225,5 +2225,180 @@
   "ordersServiceFoodSemanticLabel": "طلب طعام",
   "@ordersServiceFoodSemanticLabel": {
     "description": "تسمية الوصول لأيقونة خدمة الطعام (Track B - Ticket #127)"
+  },
+
+  "parcelsShipmentsTitle": "شحناتي",
+  "@parcelsShipmentsTitle": {
+    "description": "عنوان شاشة قائمة الشحنات (Track C - Ticket #149)"
+  },
+  "parcelsShipmentsNewShipmentTooltip": "شحنة جديدة",
+  "@parcelsShipmentsNewShipmentTooltip": {
+    "description": "تلميح زر الشحنة الجديدة (Track C - Ticket #149)"
+  },
+  "parcelsShipmentsEmptyTitle": "لا توجد شحنات بعد",
+  "@parcelsShipmentsEmptyTitle": {
+    "description": "عنوان الحالة الفارغة لقائمة الشحنات (Track C - Ticket #149)"
+  },
+  "parcelsShipmentsEmptyDescription": "ليس لديك أي شحنات حتى الآن. أنشئ أول شحنة للبدء في إرسال الطرود.",
+  "@parcelsShipmentsEmptyDescription": {
+    "description": "وصف الحالة الفارغة لقائمة الشحنات (Track C - Ticket #149)"
+  },
+  "parcelsShipmentsEmptyCta": "إنشاء أول شحنة",
+  "@parcelsShipmentsEmptyCta": {
+    "description": "زر CTA للحالة الفارغة للشحنات (Track C - Ticket #149)"
+  },
+  "parcelsShipmentStatusCreated": "تم الإنشاء",
+  "@parcelsShipmentStatusCreated": {
+    "description": "حالة الشحنة: تم الإنشاء (Track C - Ticket #149)"
+  },
+  "parcelsShipmentStatusInTransit": "قيد التوصيل",
+  "@parcelsShipmentStatusInTransit": {
+    "description": "حالة الشحنة: قيد التوصيل (Track C - Ticket #149)"
+  },
+  "parcelsShipmentStatusDelivered": "تم التوصيل",
+  "@parcelsShipmentStatusDelivered": {
+    "description": "حالة الشحنة: تم التوصيل (Track C - Ticket #149)"
+  },
+  "parcelsShipmentStatusCancelled": "ملغاة",
+  "@parcelsShipmentStatusCancelled": {
+    "description": "حالة الشحنة: ملغاة (Track C - Ticket #149)"
+  },
+
+  "parcelsCreateShipmentTitle": "إنشاء شحنة",
+  "@parcelsCreateShipmentTitle": {
+    "description": "عنوان شاشة إنشاء الشحنة (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentCta": "إنشاء شحنة",
+  "@parcelsCreateShipmentCta": {
+    "description": "نص زر إنشاء الشحنة (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentSenderSectionTitle": "بيانات المرسل",
+  "@parcelsCreateShipmentSenderSectionTitle": {
+    "description": "عنوان قسم المرسل (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentReceiverSectionTitle": "بيانات المستلم",
+  "@parcelsCreateShipmentReceiverSectionTitle": {
+    "description": "عنوان قسم المستلم (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentParcelDetailsSectionTitle": "تفاصيل الشحنة",
+  "@parcelsCreateShipmentParcelDetailsSectionTitle": {
+    "description": "عنوان قسم تفاصيل الشحنة (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentSenderNameLabel": "اسم المرسل",
+  "@parcelsCreateShipmentSenderNameLabel": {
+    "description": "حقل اسم المرسل (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentSenderPhoneLabel": "هاتف المرسل",
+  "@parcelsCreateShipmentSenderPhoneLabel": {
+    "description": "حقل هاتف المرسل (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentReceiverNameLabel": "اسم المستلم",
+  "@parcelsCreateShipmentReceiverNameLabel": {
+    "description": "حقل اسم المستلم (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentReceiverPhoneLabel": "هاتف المستلم",
+  "@parcelsCreateShipmentReceiverPhoneLabel": {
+    "description": "حقل هاتف المستلم (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentPickupAddressLabel": "عنوان الاستلام",
+  "@parcelsCreateShipmentPickupAddressLabel": {
+    "description": "حقل عنوان الاستلام (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentDropoffAddressLabel": "عنوان التسليم",
+  "@parcelsCreateShipmentDropoffAddressLabel": {
+    "description": "حقل عنوان التسليم (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentWeightLabel": "الوزن (كجم)",
+  "@parcelsCreateShipmentWeightLabel": {
+    "description": "حقل الوزن (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentSizeLabel": "الحجم",
+  "@parcelsCreateShipmentSizeLabel": {
+    "description": "حقل الحجم (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentNotesLabel": "ملاحظات",
+  "@parcelsCreateShipmentNotesLabel": {
+    "description": "حقل الملاحظات (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentServiceTypeLabel": "نوع الخدمة",
+  "@parcelsCreateShipmentServiceTypeLabel": {
+    "description": "عنوان نوع الخدمة (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentServiceTypeExpress": "سريعة",
+  "@parcelsCreateShipmentServiceTypeExpress": {
+    "description": "خدمة سريعة (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentServiceTypeStandard": "عادية",
+  "@parcelsCreateShipmentServiceTypeStandard": {
+    "description": "خدمة عادية (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentServiceTypeError": "يرجى اختيار نوع الخدمة",
+  "@parcelsCreateShipmentServiceTypeError": {
+    "description": "خطأ اختيار نوع الخدمة (Track C - Ticket #150)"
+  },
+  "parcelsCreateShipmentSuccessMessage": "تم إنشاء الشحنة بنجاح",
+  "@parcelsCreateShipmentSuccessMessage": {
+    "description": "رسالة النجاح بعد إنشاء الشحنة (Track C - Ticket #150)"
+  },
+  "commonErrorFieldRequired": "هذا الحقل مطلوب",
+  "@commonErrorFieldRequired": {
+    "description": "خطأ حقل مطلوب (Track C - Ticket #150)"
+  },
+  "commonAddressesTitle": "العناوين",
+  "@commonAddressesTitle": {
+    "description": "عنوان قسم العناوين (Track C - Ticket #150)"
+  },
+
+  "parcelsShipmentDetailsTitle": "تفاصيل الشحنة",
+  "@parcelsShipmentDetailsTitle": {
+    "description": "عنوان شاشة تفاصيل الشحنة (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsRouteSectionTitle": "المسار",
+  "@parcelsShipmentDetailsRouteSectionTitle": {
+    "description": "عنوان قسم المسار (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsContactsSectionTitle": "جهات الاتصال",
+  "@parcelsShipmentDetailsContactsSectionTitle": {
+    "description": "عنوان قسم جهات الاتصال (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsDetailsSectionTitle": "تفاصيل الشحنة",
+  "@parcelsShipmentDetailsDetailsSectionTitle": {
+    "description": "عنوان قسم التفاصيل (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsSenderLabel": "المرسل",
+  "@parcelsShipmentDetailsSenderLabel": {
+    "description": "المرسل (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsReceiverLabel": "المستلم",
+  "@parcelsShipmentDetailsReceiverLabel": {
+    "description": "المستلم (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsWeightLabel": "الوزن",
+  "@parcelsShipmentDetailsWeightLabel": {
+    "description": "الوزن (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsSizeLabel": "الحجم",
+  "@parcelsShipmentDetailsSizeLabel": {
+    "description": "الحجم (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsServiceTypeLabel": "نوع الخدمة",
+  "@parcelsShipmentDetailsServiceTypeLabel": {
+    "description": "نوع الخدمة (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsNotesLabel": "ملاحظات",
+  "@parcelsShipmentDetailsNotesLabel": {
+    "description": "ملاحظات (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsPickupLabel": "عنوان الاستلام",
+  "@parcelsShipmentDetailsPickupLabel": {
+    "description": "عنوان الاستلام (Track C - Ticket #151)"
+  },
+  "parcelsShipmentDetailsDropoffLabel": "عنوان التسليم",
+  "@parcelsShipmentDetailsDropoffLabel": {
+    "description": "عنوان التسليم (Track C - Ticket #151)"
+  },
+  "commonTotalLabel": "المجموع",
+  "@commonTotalLabel": {
+    "description": "المجموع (Track C - Ticket #151)"
   }
 }

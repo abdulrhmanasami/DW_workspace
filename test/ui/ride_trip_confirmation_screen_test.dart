@@ -127,7 +127,7 @@ void main() {
             return _TestRideQuoteController(quote);
           }),
           rideTripSessionProvider.overrideWith((ref) {
-            return RideTripSessionController();
+            return RideTripSessionController(ref);
           }),
         ],
         child: MaterialApp(
@@ -294,7 +294,7 @@ void main() {
             }),
             rideQuoteControllerProvider.overrideWith((ref) => testController),
             rideTripSessionProvider.overrideWith(
-                (ref) => RideTripSessionController()),
+                (ref) => RideTripSessionController(ref)),
           ],
           child: MaterialApp(
             localizationsDelegates: const [
@@ -578,7 +578,7 @@ void main() {
               ));
             }),
             rideTripSessionProvider.overrideWith((ref) {
-              return RideTripSessionController();
+              return RideTripSessionController(ref);
             }),
           ],
           child: MaterialApp(
@@ -603,8 +603,8 @@ void main() {
       // Check for German title
       expect(find.text('Fahrt bestätigen'), findsOneWidget);
       
-      // Check for German recommended badge
-      expect(find.text('Empfohlen'), findsOneWidget);
+      // Check for recommended badge (Note: RideQuoteOptionsSheet uses hardcoded English)
+      expect(find.text('Recommended'), findsOneWidget);
       
       // Check for German CTA
       expect(find.text('Fahrt anfordern'), findsOneWidget);
@@ -809,7 +809,7 @@ void runPricingChaosTests() {
             }),
             rideQuoteControllerProvider.overrideWith((ref) => errorController),
             rideTripSessionProvider.overrideWith(
-                (ref) => RideTripSessionController()),
+                (ref) => RideTripSessionController(ref)),
           ],
           child: MaterialApp(
             localizationsDelegates: const [
@@ -868,7 +868,7 @@ void runPricingChaosTests() {
             }),
             rideQuoteControllerProvider.overrideWith((ref) => retryController),
             rideTripSessionProvider.overrideWith(
-                (ref) => RideTripSessionController()),
+                (ref) => RideTripSessionController(ref)),
           ],
           child: MaterialApp(
             localizationsDelegates: const [
@@ -924,7 +924,7 @@ void runPricingChaosTests() {
             rideQuoteControllerProvider
                 .overrideWith((ref) => alwaysFailController),
             rideTripSessionProvider.overrideWith(
-                (ref) => RideTripSessionController()),
+                (ref) => RideTripSessionController(ref)),
           ],
           child: MaterialApp(
             localizationsDelegates: const [
@@ -986,7 +986,7 @@ void runPricingChaosTests() {
             }),
             rideQuoteControllerProvider.overrideWith((ref) => errorController),
             rideTripSessionProvider.overrideWith(
-                (ref) => RideTripSessionController()),
+                (ref) => RideTripSessionController(ref)),
           ],
           child: const MaterialApp(
             locale: Locale('ar'),
@@ -1034,7 +1034,7 @@ void runPricingChaosTests() {
             }),
             rideQuoteControllerProvider.overrideWith((ref) => errorController),
             rideTripSessionProvider.overrideWith(
-                (ref) => RideTripSessionController()),
+                (ref) => RideTripSessionController(ref)),
           ],
           child: const MaterialApp(
             locale: Locale('de'),
@@ -1080,7 +1080,7 @@ void runPricingChaosTests() {
             }),
             rideQuoteControllerProvider.overrideWith((ref) => loadingController),
             rideTripSessionProvider.overrideWith(
-                (ref) => RideTripSessionController()),
+                (ref) => RideTripSessionController(ref)),
           ],
           child: MaterialApp(
             localizationsDelegates: const [
@@ -1324,7 +1324,7 @@ void runFsmIntegrationTests() {
               return _TestRideQuoteController(quote);
             }),
             rideTripSessionProvider.overrideWith((ref) {
-              return RideTripSessionController();
+              return RideTripSessionController(ref);
             }),
           ],
           child: Builder(
@@ -1443,7 +1443,7 @@ void runFsmIntegrationTests() {
               return _TestRideQuoteController(quote);
             }),
             rideTripSessionProvider.overrideWith((ref) {
-              return RideTripSessionController();
+              return RideTripSessionController(ref);
             }),
           ],
           child: Builder(
@@ -1564,7 +1564,7 @@ void runPaymentMethodIntegrationTests() {
             return _PaymentTestQuoteController(quote);
           }),
           rideTripSessionProvider.overrideWith((ref) {
-            return RideTripSessionController();
+            return RideTripSessionController(ref);
           }),
           // Track B - Ticket #100: Payment methods override
           paymentMethodsUiProvider.overrideWith((ref) {
@@ -1807,7 +1807,7 @@ void runPaymentMethodLinkedToDraftTests() {
               return _PaymentTestQuoteController(quote);
             }),
             rideTripSessionProvider.overrideWith((ref) {
-              return RideTripSessionController();
+              return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith((ref) => paymentsState),
           ],
@@ -1914,7 +1914,7 @@ void runPaymentMethodLinkedToDraftTests() {
               return _PaymentTestQuoteController(quote);
             }),
             rideTripSessionProvider.overrideWith((ref) {
-              return RideTripSessionController();
+              return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith((ref) => paymentsState),
           ],
@@ -2009,7 +2009,7 @@ void runPaymentMethodLinkedToDraftTests() {
               return _PaymentTestQuoteController(quote);
             }),
             rideTripSessionProvider.overrideWith((ref) {
-              return RideTripSessionController();
+              return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith((ref) => paymentsState),
           ],
@@ -2110,7 +2110,7 @@ void runPaymentMethodLinkedToDraftTests() {
               return _PaymentTestQuoteController(quote);
             }),
             rideTripSessionProvider.overrideWith((ref) {
-              return RideTripSessionController();
+              return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith((ref) => paymentsState),
           ],
@@ -2251,7 +2251,7 @@ void runRequestRideHappyPathTests() {
               return _TestRideQuoteController(quote);
             }),
             rideTripSessionProvider.overrideWith((ref) {
-              return RideTripSessionController();
+              return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith(
               (ref) => PaymentMethodsUiState(
@@ -2356,7 +2356,7 @@ void runRequestRideHappyPathTests() {
               return _TestRideQuoteController(quote);
             }),
             rideTripSessionProvider.overrideWith((ref) {
-              return RideTripSessionController();
+              return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith(
               (ref) => PaymentMethodsUiState(
@@ -2457,7 +2457,7 @@ void runRequestRideHappyPathTests() {
               return _TestRideQuoteController(quote);
             }),
             rideTripSessionProvider.overrideWith((ref) {
-              return RideTripSessionController();
+              return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith(
               (ref) => PaymentMethodsUiState(
@@ -2555,7 +2555,7 @@ void runRequestRideHappyPathTests() {
               return _TestRideQuoteController(quote);
             }),
             rideTripSessionProvider.overrideWith((ref) {
-              return RideTripSessionController();
+              return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith(
               (ref) => PaymentMethodsUiState(

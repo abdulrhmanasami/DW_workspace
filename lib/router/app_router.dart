@@ -6,6 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:parcels_shims/parcels_shims.dart';
 import 'package:foundation_shims/foundation_shims.dart' as fnd;
 import 'package:payments/payments.dart' as payments;
 import 'package:core/rbac/rbac_models.dart';
@@ -33,6 +34,9 @@ import '../screens/parcels/parcel_quote_screen.dart';
 import '../screens/parcels/parcels_active_shipment_screen.dart';
 import '../screens/parcels/parcels_entry_screen.dart';
 import '../screens/parcels/parcels_list_screen.dart'; // Track C - Ticket #72
+import '../screens/parcels/parcels_shipments_list_screen.dart'; // Track C - Ticket #149
+import '../screens/parcels/parcels_create_shipment_screen.dart'; // Track C - Ticket #150
+import '../screens/parcels/parcels_shipment_details_screen.dart'; // Track C - Ticket #151
 import '../screens/order_tracking_screen.dart';
 import '../screens/orders_history_screen.dart';
 import '../screens/orders_screen.dart';
@@ -78,6 +82,9 @@ class RoutePaths {
   // Track C - Parcels routes (Ticket #40+)
   static const String parcelsHome = '/parcels';
   static const String parcelsList = '/parcels/list'; // Ticket #72: My Shipments list
+  static const String parcelsShipmentsList = '/parcels/shipments'; // Ticket #149: New shipments list
+  static const String parcelsCreateShipment = '/parcels/create-shipment'; // Ticket #150: Create shipment
+  static const String parcelsShipmentDetails = '/parcels/shipment-details'; // Ticket #151: Shipment details
   static const String parcelsDestination = '/parcels/destination'; // Ticket #41
   static const String parcelsDetails = '/parcels/details'; // Ticket #42
   static const String parcelsQuote = '/parcels/quote'; // Ticket #43
@@ -212,9 +219,22 @@ class AppRouter {
         return const RideTripSummaryScreen();
       },
 
-      // Track C - Parcels routes (Ticket #40, #41, #42, #43, #70, #72)
+      // Track C - Parcels routes (Ticket #40, #41, #42, #43, #70, #72, #149, #150)
       RoutePaths.parcelsHome: (c) => const ParcelsEntryScreen(),
       RoutePaths.parcelsList: (c) => const ParcelsListScreen(), // Ticket #72
+      RoutePaths.parcelsShipmentsList: (c) => ParcelsShipmentsListScreen(
+        onCreateShipment: () {
+          // Navigate to create shipment screen
+          Navigator.of(c).pushNamed(RoutePaths.parcelsCreateShipment);
+        },
+      ), // Ticket #149
+      RoutePaths.parcelsCreateShipment: (c) => 
+          const ParcelsCreateShipmentScreen(), // Ticket #150
+      RoutePaths.parcelsShipmentDetails: (c) {
+        final args = ModalRoute.of(c)!.settings.arguments;
+        final shipment = args as ParcelShipment;
+        return ParcelsShipmentDetailsScreen(shipment: shipment);
+      }, // Ticket #151
       RoutePaths.parcelsDestination: (c) => const ParcelDestinationScreen(),
       RoutePaths.parcelsDetails: (c) => const ParcelDetailsScreen(),
       RoutePaths.parcelsQuote: (c) => const ParcelQuoteScreen(),

@@ -15,16 +15,36 @@ import 'package:flutter_test/flutter_test.dart';
 
 // App imports
 import 'package:delivery_ways_clean/screens/mobility/ride_active_trip_screen.dart';
+import 'package:delivery_ways_clean/screens/mobility/ride_trip_summary_screen.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_quote_controller.dart';
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
 // Track B - Ticket #105: Payment methods for trip summary tests
 import 'package:delivery_ways_clean/state/payments/payment_methods_ui_state.dart';
 
 // Shims
 import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
+
+/// Mock navigator observer for tracking navigation
+class MockNavigatorObserver extends NavigatorObserver {
+  final List<Route<dynamic>?> pushedRoutes = [];
+  final List<Route<dynamic>?> poppedRoutes = [];
+  
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    pushedRoutes.add(route);
+  }
+  
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    poppedRoutes.add(route);
+  }
+  
+  void verify() {}
+}
 
 void main() {
   group('RideActiveTripScreen', () {
@@ -113,7 +133,7 @@ void main() {
       expect(find.text('ABC 1234'), findsOneWidget);
     });
 
-    testWidgets('shows Cancel ride button', (tester) async {
+    testWidgets('shows Cancel ride button for cancellable phases', (tester) async {
       final activeTrip = RideTripState(
         tripId: 'test-trip-789',
         phase: RideTripPhase.findingDriver,
@@ -164,6 +184,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      // Scroll to make Cancel button visible if needed
+      await tester.ensureVisible(find.text('Cancel ride'));
+      await tester.pumpAndSettle();
+      
       // Tap cancel button to open dialog
       await tester.tap(find.text('Cancel ride'));
       await tester.pumpAndSettle();
@@ -776,8 +800,9 @@ void main() {
       // -----------------------------------------------------------------------
       // Cancel button visibility tests
       // -----------------------------------------------------------------------
-      testWidgets('shows Cancel ride button for inProgress phase',
+      testWidgets('does NOT show Cancel ride button for inProgress phase (non-cancellable)',
           (tester) async {
+        // Track B - Ticket #142: inProgress phase is NOT cancellable per domain model
         final activeTrip = RideTripState(
           tripId: 'test-cancel-visible',
           phase: RideTripPhase.inProgress,
@@ -788,7 +813,8 @@ void main() {
         ));
         await tester.pumpAndSettle();
 
-        expect(find.text('Cancel ride'), findsOneWidget);
+        // Cancel button should NOT be shown for inProgress phase
+        expect(find.text('Cancel ride'), findsNothing);
       });
 
       testWidgets('shows Cancel ride button for findingDriver phase',
@@ -2246,8 +2272,9 @@ void main() {
         expect(find.text('Cancel this ride?'), findsOneWidget);
       });
 
-      testWidgets('cancel_button_disabled_when_phase_is_inProgress',
+      testWidgets('cancel_button_NOT_shown_when_phase_is_inProgress',
           (tester) async {
+        // Track B - Ticket #142: inProgress phase is NOT cancellable per domain model
         final activeTrip = RideTripState(
           tripId: 'test-cancel-progress',
           phase: RideTripPhase.inProgress,
@@ -2258,9 +2285,9 @@ void main() {
         ));
         await tester.pumpAndSettle();
 
-        // Cancel button should be visible but disabled
+        // Cancel button should NOT be shown for non-cancellable phase
         final cancelButton = find.text('Cancel ride');
-        expect(cancelButton, findsOneWidget);
+        expect(cancelButton, findsNothing);
 
         // Tap should NOT open dialog (button disabled)
         await tester.tap(cancelButton);
@@ -2268,8 +2295,9 @@ void main() {
         expect(find.text('Cancel this ride?'), findsNothing);
       });
 
-      testWidgets('cancel_button_disabled_when_phase_is_payment',
+      testWidgets('cancel_button_NOT_shown_when_phase_is_payment',
           (tester) async {
+        // Track B - Ticket #142: payment phase is NOT cancellable per domain model
         final activeTrip = RideTripState(
           tripId: 'test-cancel-payment',
           phase: RideTripPhase.payment,
@@ -2280,9 +2308,9 @@ void main() {
         ));
         await tester.pumpAndSettle();
 
-        // Cancel button should be visible but disabled
+        // Cancel button should NOT be shown for non-cancellable phase
         final cancelButton = find.text('Cancel ride');
-        expect(cancelButton, findsOneWidget);
+        expect(cancelButton, findsNothing);
 
         // Tap should NOT open dialog (button disabled)
         await tester.tap(cancelButton);
@@ -3085,6 +3113,105 @@ void main() {
         // Verify payment method label is shown
         expect(find.textContaining('Visa'), findsAtLeastNWidgets(1));
         expect(find.textContaining('4242'), findsAtLeastNWidgets(1));
+      });
+
+      // Track B - Ticket #144: Test navigation to summary screen when phase changes to completed
+      testWidgets('navigates to summary screen when trip completes', (tester) async {
+        // Create a mock navigator observer to track navigation
+        final navigatorObserver = MockNavigatorObserver();
+        
+        // Initial state with trip in progress
+        final activeTrip = RideTripState(
+          tripId: 'test-navigation-to-summary',
+          phase: RideTripPhase.inProgress,
+        );
+
+        final tripController = _FakeRideTripSessionController(
+          initialState: RideTripSessionUiState(
+            activeTrip: activeTrip,
+            tripSummary: const RideTripSummary(
+              selectedServiceName: 'Economy',
+              fareDisplayText: 'SAR 24.50',
+            ),
+            draftSnapshot: const RideDraftUiState(
+              pickupLabel: 'Test Pickup',
+              destinationQuery: 'Test Destination',
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideTripSessionProvider.overrideWith((ref) => tripController),
+              rideDraftProvider.overrideWith(
+                (ref) => _FakeRideDraftController(
+                  initialState: const RideDraftUiState(),
+                ),
+              ),
+              rideQuoteControllerProvider.overrideWith(
+                (ref) => _FakeRideQuoteController(
+                  initialState: const RideQuoteUiState(),
+                ),
+              ),
+            ],
+            child: MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: const Locale('en'),
+              navigatorObservers: [navigatorObserver],
+              routes: {
+                '/': (context) => const RideActiveTripScreen(),
+                RoutePaths.rideTripSummary: (context) => const RideTripSummaryScreen(),
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Verify initial state shows trip in progress
+        expect(find.text('Trip in progress'), findsOneWidget);
+
+        // Simulate trip completion by updating the state to completed phase
+        final completedTrip = RideTripState(
+          tripId: 'test-navigation-to-summary',
+          phase: RideTripPhase.completed,
+        );
+        
+        tripController.state = RideTripSessionUiState(
+          activeTrip: completedTrip,
+          tripSummary: const RideTripSummary(
+            selectedServiceName: 'Economy',
+            fareDisplayText: 'SAR 24.50',
+          ),
+          draftSnapshot: const RideDraftUiState(
+            pickupLabel: 'Test Pickup',
+            destinationQuery: 'Test Destination',
+          ),
+          historyTrips: [
+            RideHistoryEntry(
+              trip: completedTrip,
+              destinationLabel: 'Test Destination',
+              completedAt: DateTime.now(),
+              amountFormatted: 'SAR 24.50',
+              serviceName: 'Economy',
+              originLabel: 'Test Pickup',
+            ),
+          ],
+        );
+        
+        // Use pump multiple times instead of pumpAndSettle to avoid timeout
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump(const Duration(milliseconds: 100));
+
+        // Verify navigation to summary screen occurred
+        // The listener should have triggered navigation when phase changed to completed
+        expect(navigatorObserver.pushedRoutes.length, greaterThanOrEqualTo(1));
+        
+        // Since we're using pushReplacementNamed, check that summary screen is shown
+        expect(find.byType(RideTripSummaryScreen), findsOneWidget);
+        expect(find.text('Trip in progress'), findsNothing);
       });
 
       testWidgets('l10n_ar_active_trip_summary', (tester) async {
