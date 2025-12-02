@@ -6,15 +6,26 @@
 /// Updated by: Track B - Ticket #14 (RideQuote integration)
 /// Updated by: Ticket #26 (Robust quote states: Loading/Error/Empty)
 /// Updated by: Track B - Ticket #100 (Payment method integration)
-/// Last updated: 2025-11-30
+/// Updated by: Track B - Ticket #101 (Link payment method to RideDraft)
+/// Updated by: Track B - Ticket #112 (Map from RideMapCommands state)
+/// Updated by: Track B - Ticket #113 (Request Ride CTA -> Active Trip navigation)
+/// Updated by: Track B - Ticket #121 (RideQuoteError + InlineNotice/EmptyState)
+/// Last updated: 2025-12-01
 ///
 /// This screen provides the Ride trip confirmation interface with:
-/// - Map stub (placeholder for future maps_shims integration)
+/// - Map via RideMapCommands (from session state or draft state)
 /// - Vehicle options list (dynamic from RideQuoteService)
 /// - Payment method section (from PaymentMethodsUiState)
-/// - Request Ride CTA button
+/// - Request Ride CTA button (calls startFromDraft + navigates to Active Trip)
 /// - Trip status display (FSM phase)
 /// - Robust Loading/Error/Empty states for quote fetching (Ticket #26)
+///
+/// Track B - Ticket #113: Happy Path Flow:
+/// 1. User presses "Request Ride" CTA
+/// 2. Payment method is linked to draft (Ticket #101)
+/// 3. startFromDraft is called on RideTripSessionController
+/// 4. FSM transitions: draft -> quoting -> requesting -> findingDriver
+/// 5. Navigation to Active Trip screen (RoutePaths.rideActive)
 ///
 /// NOTE: Uses MockRideQuoteService - real backend integration pending.
 
@@ -22,7 +33,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Canonical types from shims packages (Track B - Ticket #28)
-import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
@@ -31,8 +41,11 @@ import '../../router/app_router.dart';
 import '../../state/mobility/ride_draft_state.dart';
 import '../../state/mobility/ride_trip_session.dart';
 import '../../state/mobility/ride_quote_controller.dart';
+import '../../state/mobility/ride_map_commands_builder.dart';
 // Track B - Ticket #100: Payment method integration
 import '../../state/payments/payment_methods_ui_state.dart';
+// Track B - Ticket #112: Map from RideMapCommands
+import '../../widgets/ride_map_from_commands.dart';
 
 /// UI-only model for ride options (maps from domain RideQuoteOption)
 class RideOptionUiModel {
@@ -297,22 +310,23 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
           ),
         const SizedBox(height: 16),
 
-        // Ticket #26: Robust quote state handling
+        // Ticket #26 + #121: Robust quote state handling with structured errors
         // 1. Loading state
         if (isLoading && !hasOptions) ...[
           _QuoteLoadingCard(l10n: l10n, textTheme: textTheme, colorScheme: colorScheme),
         ]
-        // 2. Error state
+        // 2. Error state (Track B - Ticket #121: Use structured RideQuoteError)
         else if (hasError) ...[
           _QuoteErrorCard(
             l10n: l10n,
             textTheme: textTheme,
             colorScheme: colorScheme,
+            error: quoteState.error,
             onRetry: () {
               final draft = ref.read(rideDraftProvider);
               ref
                   .read(rideQuoteControllerProvider.notifier)
-                  .refreshFromDraft(draft);
+                  .retryFromDraft(draft);
             },
           ),
         ]
@@ -370,18 +384,42 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
                       return;
                     }
 
-                    // Start trip session from draft (uses FSM)
+                    // Track B - Ticket #101: Link selected payment method to draft
+                    // before starting the trip session.
+                    final paymentsState = ref.read(paymentMethodsUiProvider);
+                    final selectedPaymentMethod = paymentsState.selectedMethod;
                     ref
-                        .read(rideTripSessionProvider.notifier)
-                        .startFromDraft(rideDraft);
+                        .read(rideDraftProvider.notifier)
+                        .setPaymentMethodId(selectedPaymentMethod?.id);
 
-                    // Show confirmation message
+                    // Read updated draft with payment method
+                    final updatedDraft = ref.read(rideDraftProvider);
+
+                    // Track B - Ticket #105: Get selected option for trip summary
+                    final quoteState = ref.read(rideQuoteControllerProvider);
+                    final quote = quoteState.quote;
+                    // effectiveSelectedId is guaranteed non-null at this point
+                    // (canRequestRide requires it), but quote.optionById may return null
+                    final selectedOpt = quote == null
+                        ? null
+                        : quote.optionById(effectiveSelectedId!) ??
+                            quote.recommendedOption;
+
+                    // Track B - Ticket #113: Start trip session from draft (Happy Path)
+                    // FSM transitions: draft -> quoting -> requesting -> findingDriver
+                    // Track B - Ticket #105: Pass selectedOption for unified summary
+                    ref.read(rideTripSessionProvider.notifier).startFromDraft(
+                          updatedDraft,
+                          selectedOption: selectedOpt,
+                        );
+
+                    // Track B - Ticket #113: Show confirmation message
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                           content: Text(l10n.rideConfirmRequestedStubMessage)),
                     );
 
-                    // Navigate to active trip screen
+                    // Track B - Ticket #113: Navigate to Active Trip screen
                     Navigator.of(context).pushNamed(RoutePaths.rideActive);
                   },
           ),
@@ -699,21 +737,30 @@ class _QuoteLoadingCard extends StatelessWidget {
 }
 
 /// Error state card shown when quote loading fails
+///
+/// Track B - Ticket #121: Updated to use structured [RideQuoteError] and
+/// new localization keys for granular error messages.
 class _QuoteErrorCard extends StatelessWidget {
   const _QuoteErrorCard({
     required this.l10n,
     required this.textTheme,
     required this.colorScheme,
     required this.onRetry,
+    this.error,
   });
 
   final AppLocalizations l10n;
   final TextTheme textTheme;
   final ColorScheme colorScheme;
   final VoidCallback onRetry;
+  final RideQuoteError? error;
 
   @override
   Widget build(BuildContext context) {
+    // Track B - Ticket #121: Map error type to localized message
+    final errorMessage = _mapErrorToMessage(error, l10n);
+    final errorTitle = _mapErrorToTitle(error, l10n);
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4),
       shape: RoundedRectangleBorder(
@@ -732,7 +779,7 @@ class _QuoteErrorCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              l10n.rideConfirmErrorTitle,
+              errorTitle,
               style: textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: colorScheme.error,
@@ -741,7 +788,7 @@ class _QuoteErrorCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              l10n.rideConfirmErrorSubtitle,
+              errorMessage,
               style: textTheme.bodySmall?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -749,7 +796,7 @@ class _QuoteErrorCard extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             DWButton.secondary(
-              label: l10n.rideConfirmRetryCta,
+              label: l10n.rideQuoteRetryCta,
               onPressed: onRetry,
             ),
           ],
@@ -757,9 +804,35 @@ class _QuoteErrorCard extends StatelessWidget {
       ),
     );
   }
+
+  /// Maps [RideQuoteError] to a localized title.
+  String _mapErrorToTitle(RideQuoteError? error, AppLocalizations l10n) {
+    if (error == null) return l10n.rideConfirmErrorTitle;
+
+    return switch (error) {
+      RideQuoteErrorNoOptionsAvailable() => l10n.rideQuoteEmptyTitle,
+      RideQuoteErrorPricingFailed() => l10n.rideQuoteErrorTitle,
+      RideQuoteErrorUnexpected() => l10n.rideConfirmErrorTitle,
+    };
+  }
+
+  /// Maps [RideQuoteError] to a localized message.
+  String _mapErrorToMessage(RideQuoteError? error, AppLocalizations l10n) {
+    if (error == null) return l10n.rideConfirmErrorSubtitle;
+
+    return switch (error) {
+      RideQuoteErrorNoOptionsAvailable() => l10n.rideQuoteErrorNoOptions,
+      RideQuoteErrorPricingFailed() => l10n.rideQuoteErrorGeneric,
+      RideQuoteErrorUnexpected() => l10n.rideConfirmErrorSubtitle,
+    };
+  }
 }
 
 /// Empty state card shown when no ride options are available
+/// Empty state card shown when no ride options are available
+///
+/// Track B - Ticket #121: Updated to use new localization keys for
+/// empty state messaging.
 class _QuoteEmptyCard extends StatelessWidget {
   const _QuoteEmptyCard({
     required this.l10n,
@@ -790,7 +863,8 @@ class _QuoteEmptyCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              l10n.rideConfirmEmptyTitle,
+              // Track B - Ticket #121: Use new localization key
+              l10n.rideQuoteEmptyTitle,
               style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -798,7 +872,8 @@ class _QuoteEmptyCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              l10n.rideConfirmEmptySubtitle,
+              // Track B - Ticket #121: Use new localization key
+              l10n.rideQuoteEmptyDescription,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
@@ -872,27 +947,42 @@ IconData _phaseIcon(RideTripPhase phase) {
 }
 
 // ============================================================================
-// Map Widget (Track B - Ticket #28)
+// Map Widget (Track B - Ticket #28, Updated: Ticket #112)
 // ============================================================================
 
 /// Map widget showing route between pickup and destination.
-class _ConfirmationMap extends StatelessWidget {
+///
+/// Track B - Ticket #112: Now uses RideMapCommands from state when available,
+/// with fallback to draft-based commands for backward compatibility.
+class _ConfirmationMap extends ConsumerWidget {
   const _ConfirmationMap({required this.rideDraft});
 
   final RideDraftUiState rideDraft;
 
   @override
-  Widget build(BuildContext context) {
-    // Build map config using domain helper (Track B - Ticket #28)
-    final mapConfig = buildDestinationPreviewMap(
-      pickup: rideDraft.pickupPlace,
-      destination: rideDraft.destinationPlace,
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Track B - Ticket #112: Try to get map commands from session state first
+    final tripSession = ref.watch(rideTripSessionProvider);
+    final sessionCommands = tripSession.draftMapCommands;
 
-    return MapWidget(
-      initialPosition: mapConfig.cameraTarget,
-      markers: mapConfig.markers,
-      polylines: mapConfig.polylines,
+    // If session has draftSnapshot (via startFromDraft), use it
+    if (sessionCommands != null) {
+      return RideMapFromCommands(commands: sessionCommands);
+    }
+
+    // Fallback: Build commands directly from current draft
+    // This handles the case before trip starts (no frozen snapshot yet)
+    final draftCommands = buildDraftMapCommands(rideDraft);
+
+    // If commands have markers, show the map
+    if (draftCommands.setContent.markers.isNotEmpty) {
+      return RideMapFromCommands(commands: draftCommands);
+    }
+
+    // No location data: show placeholder without loading indicator
+    // (to avoid duplicate spinners with quote loading card)
+    return const RideMapPlaceholder(
+      showLoadingIndicator: false,
     );
   }
 }

@@ -1,7 +1,8 @@
-/// Widget tests for RideTripSummaryScreen (Track B - Ticket #92)
+/// Widget tests for RideTripSummaryScreen (Track B - Ticket #92, #124)
 /// Purpose: Verify trip receipt/summary screen UI with receipt breakdown and rating
 /// Created by: Ticket #92
-/// Last updated: 2025-11-30
+/// Updated by: Ticket #124 (Driver rating persistence tests)
+/// Last updated: 2025-12-01
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -70,18 +71,23 @@ void main() {
     }
 
     /// Helper to build the test widget with provider overrides
+    /// Track B - Ticket #118: Updated to include draftSnapshot for completeCurrentTrip
     Widget buildTestWidget({
       RideTripSessionUiState? tripSession,
       RideDraftUiState? rideDraft,
       RideQuoteUiState? quoteState,
       Locale locale = const Locale('en'),
     }) {
-      final session = tripSession ??
-          RideTripSessionUiState(activeTrip: createCompletedTrip());
       final draft = rideDraft ??
           const RideDraftUiState(
             pickupLabel: 'Current location',
             destinationQuery: 'Mall of Arabia',
+          );
+      // Track B - Ticket #118: Include draftSnapshot so completeCurrentTrip has data
+      final session = tripSession ??
+          RideTripSessionUiState(
+            activeTrip: createCompletedTrip(),
+            draftSnapshot: draft,
           );
       final quote = quoteState ??
           RideQuoteUiState(
@@ -279,17 +285,23 @@ void main() {
     // Test: displays_route_summary_with_pickup_and_destination
     // ========================================================================
 
+    // Track B - Ticket #118: Updated to use draftSnapshot in session
     testWidgets('displays route summary with pickup and destination',
         (tester) async {
+      const draft = RideDraftUiState(
+        pickupLabel: 'Home Address',
+        destinationQuery: 'Airport Terminal 1',
+      );
       await tester.pumpWidget(buildTestWidget(
-        rideDraft: const RideDraftUiState(
-          pickupLabel: 'Home Address',
-          destinationQuery: 'Airport Terminal 1',
+        rideDraft: draft,
+        tripSession: RideTripSessionUiState(
+          activeTrip: createCompletedTrip(),
+          draftSnapshot: draft,
         ),
       ));
       await tester.pumpAndSettle();
 
-      // Verify pickup and destination are displayed
+      // Verify pickup and destination are displayed (from historyEntry after completeCurrentTrip)
       expect(find.text('Home Address'), findsOneWidget);
       expect(find.text('Airport Terminal 1'), findsOneWidget);
     });
@@ -362,6 +374,145 @@ void main() {
 
       expect(find.text('Great driver!'), findsOneWidget);
     });
+
+    // ========================================================================
+    // Track B - Ticket #124: Driver Rating Persistence Tests
+    // ========================================================================
+
+    testWidgets('tapping_rating_stars_calls_setRatingForMostRecentTrip', (tester) async {
+      final completedTrip = RideTripState(
+        tripId: 'rating-test-123',
+        phase: RideTripPhase.completed,
+      );
+      const draft = RideDraftUiState(
+        pickupLabel: 'Home',
+        destinationQuery: 'Mall',
+      );
+      final historyEntry = RideHistoryEntry(
+        trip: completedTrip,
+        destinationLabel: 'Mall',
+        completedAt: DateTime.now(),
+      );
+
+      // Create fake controller to track setRatingForMostRecentTrip calls
+      final fakeController = _FakeRideTripSessionController(
+        initialState: RideTripSessionUiState(
+          historyTrips: [historyEntry],
+          draftSnapshot: draft,
+        ),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideTripSessionProvider.overrideWith(
+              (ref) => fakeController,
+            ),
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel('Home');
+              controller.updateDestination('Mall');
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith(
+              (ref) => _FakeRideQuoteController(
+                initialState: RideQuoteUiState(
+                  isLoading: false,
+                  quote: createMockQuoteWithBreakdown(),
+                ),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en')],
+            home: const RideTripSummaryScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Find star icons
+      final starBorderIcons = find.byIcon(Icons.star_border);
+      expect(starBorderIcons, findsAtLeastNWidgets(1));
+
+      // Scroll to make stars visible
+      await tester.ensureVisible(starBorderIcons.first);
+      await tester.pumpAndSettle();
+
+      // Tap on 4th star (index 3) to give 4-star rating
+      await tester.tap(find.byIcon(Icons.star_border).at(3), warnIfMissed: false);
+      await tester.pumpAndSettle();
+
+      // Verify setRatingForMostRecentTrip was called with 4.0
+      expect(fakeController.setRatingCallCount, greaterThan(0));
+      expect(fakeController.lastSetRating, 4.0);
+    });
+
+    testWidgets('rating_from_history_entry_shows_initial_stars', (tester) async {
+      final completedTrip = RideTripState(
+        tripId: 'initial-rating-test',
+        phase: RideTripPhase.completed,
+      );
+      const draft = RideDraftUiState(
+        pickupLabel: 'Office',
+        destinationQuery: 'Airport',
+      );
+      final historyEntry = RideHistoryEntry(
+        trip: completedTrip,
+        destinationLabel: 'Airport',
+        completedAt: DateTime.now(),
+        driverRating: 4.0, // Pre-existing rating
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideTripSessionProvider.overrideWith(
+              (ref) => _FakeRideTripSessionController(
+                initialState: RideTripSessionUiState(
+                  historyTrips: [historyEntry],
+                  draftSnapshot: draft,
+                ),
+              ),
+            ),
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel('Office');
+              controller.updateDestination('Airport');
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith(
+              (ref) => _FakeRideQuoteController(
+                initialState: RideQuoteUiState(
+                  isLoading: false,
+                  quote: createMockQuoteWithBreakdown(),
+                ),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en')],
+            home: const RideTripSummaryScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // With initial rating of 4, we should have 4 filled stars
+      expect(find.byIcon(Icons.star), findsAtLeastNWidgets(4));
+    });
   });
 }
 
@@ -376,14 +527,147 @@ class _FakeRideTripSessionController extends RideTripSessionController {
     state = initialState;
   }
 
+  /// Track B - Ticket #124: Track calls to setRatingForMostRecentTrip
+  double? lastSetRating;
+  int setRatingCallCount = 0;
+
   @override
   void rateCurrentTrip(int rating) {
     // No-op for tests (rating stored in-memory)
   }
 
+  /// Track B - Ticket #124: Override to track calls and update history
+  @override
+  bool setRatingForMostRecentTrip(double rating) {
+    lastSetRating = rating;
+    setRatingCallCount++;
+    
+    // Also update the actual state for verification
+    if (state.historyTrips.isEmpty) return false;
+    if (rating < 1.0 || rating > 5.0) return false;
+    
+    final entries = List<RideHistoryEntry>.from(state.historyTrips);
+    entries[0] = entries[0].copyWith(driverRating: rating);
+    state = state.copyWith(historyTrips: entries);
+    return true;
+  }
+
   @override
   void clear() {
     state = const RideTripSessionUiState();
+  }
+
+  // Track B - Ticket #118: Override completeCurrentTrip to simulate behavior
+  @override
+  bool completeCurrentTrip({
+    String? destinationLabel,
+    String? amountFormatted,
+    String? serviceName,
+    String? originLabel,
+    String? paymentMethodLabel,
+  }) {
+    final current = state.activeTrip;
+    if (current == null) return false;
+    
+    // Create completed trip
+    final completedTrip = RideTripState(
+      tripId: current.tripId,
+      phase: RideTripPhase.completed,
+    );
+    
+    // Create history entry using passed labels or defaults
+    final entry = RideHistoryEntry(
+      trip: completedTrip,
+      destinationLabel: destinationLabel ?? 'Unknown',
+      completedAt: DateTime.now(),
+      amountFormatted: amountFormatted,
+      serviceName: serviceName,
+      originLabel: originLabel,
+      paymentMethodLabel: paymentMethodLabel,
+    );
+    
+    // Add to history and clear active trip
+    state = RideTripSessionUiState(
+      historyTrips: [entry, ...state.historyTrips],
+    );
+    
+    return true;
+  }
+
+  // Track B - Ticket #120
+  @override
+  bool cancelCurrentTrip({
+    String? reasonLabel,
+    String? destinationLabel,
+    String? originLabel,
+    String? serviceName,
+    String? amountFormatted,
+    String? paymentMethodLabel,
+  }) {
+    final current = state.activeTrip;
+    if (current == null) return false;
+    
+    // Create cancelled trip
+    final cancelledTrip = RideTripState(
+      tripId: current.tripId,
+      phase: RideTripPhase.cancelled,
+    );
+    
+    // Create history entry
+    final entry = RideHistoryEntry(
+      trip: cancelledTrip,
+      destinationLabel: destinationLabel ?? 'Unknown',
+      completedAt: DateTime.now(),
+      amountFormatted: amountFormatted,
+      serviceName: serviceName,
+      originLabel: originLabel,
+      paymentMethodLabel: paymentMethodLabel,
+    );
+    
+    // Add to history and clear active trip
+    state = RideTripSessionUiState(
+      historyTrips: [entry, ...state.historyTrips],
+    );
+    
+    return true;
+  }
+
+  // Track B - Ticket #122
+  @override
+  bool failCurrentTrip({
+    String? reasonLabel,
+    String? destinationLabel,
+    String? originLabel,
+    String? serviceName,
+    String? amountFormatted,
+    String? paymentMethodLabel,
+  }) {
+    final current = state.activeTrip;
+    if (current == null) return false;
+    
+    // Create failed trip
+    final failedTrip = RideTripState(
+      tripId: current.tripId,
+      phase: RideTripPhase.failed,
+    );
+    
+    // Create history entry
+    final entry = RideHistoryEntry(
+      trip: failedTrip,
+      destinationLabel: destinationLabel ?? 'Unknown',
+      completedAt: DateTime.now(),
+      amountFormatted: amountFormatted,
+      serviceName: serviceName,
+      originLabel: originLabel,
+      paymentMethodLabel: paymentMethodLabel,
+    );
+    
+    // Add to history and clear active trip
+    state = RideTripSessionUiState(
+      historyTrips: [entry, ...state.historyTrips],
+    );
+    
+    return true;
   }
 }
 
@@ -400,6 +684,11 @@ class _FakeRideQuoteController extends RideQuoteController {
 
   @override
   Future<void> refreshFromDraft(RideDraftUiState draft) async {
+    // No-op for tests
+  }
+
+  @override
+  Future<void> retryFromDraft(RideDraftUiState draft) async {
     // No-op for tests
   }
 }

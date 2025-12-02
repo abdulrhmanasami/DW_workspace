@@ -2,8 +2,9 @@
 /// Created by: Track C - Ticket #44
 /// Updated by: Track C - Ticket #49 (ParcelsRepository Port integration)
 /// Updated by: Track C - Ticket #81 (cancelParcel method)
+/// Updated by: Track B - Ticket #127 (Added isLoading for Skeleton Loader support)
 /// Purpose: Manage in-memory session state for parcel shipments
-/// Last updated: 2025-11-29
+/// Last updated: 2025-12-01
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +22,7 @@ class ParcelOrdersState {
   const ParcelOrdersState({
     this.activeParcel,
     this.parcels = const [],
+    this.isLoading = false,
   });
 
   /// Currently active parcel (e.g. last created).
@@ -29,14 +31,19 @@ class ParcelOrdersState {
   /// All parcels created in this session.
   final List<Parcel> parcels;
 
+  /// Track B - Ticket #127: Loading state for skeleton display.
+  final bool isLoading;
+
   ParcelOrdersState copyWith({
     Parcel? activeParcel,
     List<Parcel>? parcels,
+    bool? isLoading,
     bool clearActive = false,
   }) {
     return ParcelOrdersState(
       activeParcel: clearActive ? null : (activeParcel ?? this.activeParcel),
       parcels: parcels ?? this.parcels,
+      isLoading: isLoading ?? this.isLoading,
     );
   }
 
@@ -45,15 +52,16 @@ class ParcelOrdersState {
     if (identical(this, other)) return true;
     return other is ParcelOrdersState &&
         other.activeParcel == activeParcel &&
-        listEquals(other.parcels, parcels);
+        listEquals(other.parcels, parcels) &&
+        other.isLoading == isLoading;
   }
 
   @override
-  int get hashCode => Object.hash(activeParcel, parcels);
+  int get hashCode => Object.hash(activeParcel, parcels, isLoading);
 
   @override
   String toString() => 'ParcelOrdersState('
-      'activeParcel: $activeParcel, parcels: ${parcels.length})';
+      'activeParcel: $activeParcel, parcels: ${parcels.length}, isLoading: $isLoading)';
 }
 
 /// Controller for managing parcel orders session state.

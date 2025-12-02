@@ -1,4 +1,4 @@
-/// Ride Active Trip Screen - Track B Ticket #15 (Updated: Ticket #22, #62, #64, #67, #68, #88, #89, #95)
+/// Ride Active Trip Screen - Track B Ticket #15 (Updated: Ticket #22, #62, #64, #67, #68, #88, #89, #95, #105, #112, #113, #122)
 /// Purpose: Display active trip status with real map and driver card
 /// Created by: Track B - Ticket #15
 /// Updated by: Track B - Ticket #22 (Polished UI, real Map, FSM-wired Cancel)
@@ -9,13 +9,23 @@
 /// Updated by: Track B - Ticket #88 (Design System alignment + DWSpacing/DWRadius)
 /// Updated by: Track B - Ticket #89 (FSM Integration + Domain Helpers)
 /// Updated by: Track B - Ticket #95 (Terminal UI for cancelled/failed + isCancellable guard)
-/// Last updated: 2025-11-30
+/// Updated by: Track B - Ticket #105 (Unified trip summary - service, price, payment method)
+/// Updated by: Track B - Ticket #112 (Map from activeTripMapCommands state)
+/// Updated by: Track B - Ticket #113 (Request Ride -> Active Trip navigation destination)
+/// Updated by: Track B - Ticket #122 (No Driver Found failure path)
+/// Updated by: Track A - Ticket #134 (DWAppShell unified Scaffold)
+/// Last updated: 2025-12-02
 ///
 /// This screen shows the active trip interface (Screen 10 in Hi-Fi Mockups):
-/// - Map background via maps_shims (showing pickup/destination markers)
+/// - Map background via RideMapCommands (showing pickup/destination markers)
 /// - Bottom Driver Card with Status/ETA, driver info, and Cancel action
 /// - Cancel Ride functionality wired to FSM
 /// - Contact driver and Share trip actions (Ticket #68)
+///
+/// Track B - Ticket #113: This screen is the destination after Request Ride CTA.
+/// - Reads RideTripSessionUiState.activeTrip for trip status
+/// - Uses activeTripMapCommands for live map display
+/// - Shows placeholder if no active trip (edge case guard)
 ///
 /// NOTE: Driver details are mock placeholders until backend integration.
 
@@ -34,6 +44,12 @@ import '../../router/app_router.dart';
 import '../../state/mobility/ride_draft_state.dart';
 import '../../state/mobility/ride_trip_session.dart';
 import '../../state/mobility/ride_quote_controller.dart';
+// Track B - Ticket #105: Payment method integration for trip summary
+import '../../state/payments/payment_methods_ui_state.dart';
+// Track B - Ticket #112: Map from RideMapCommands
+import '../../widgets/ride_map_from_commands.dart';
+// Track A - Ticket #134: Unified App Shell
+import '../../widgets/dw_app_shell.dart';
 
 /// Active Trip Screen - Shows trip status, map, and driver card (Screen 10)
 class RideActiveTripScreen extends ConsumerWidget {
@@ -87,8 +103,9 @@ class RideActiveTripScreen extends ConsumerWidget {
             : quote.recommendedOption);
 
     // No active trip fallback (Design Tokens - Ticket #88)
+    // Track A - Ticket #134: Updated to use DWAppShell
     if (activeTrip == null) {
-      return Scaffold(
+      return DWAppShell(
         appBar: AppBar(
           title: Text(
             l10n.rideActiveNoTripTitle,
@@ -156,8 +173,11 @@ class RideActiveTripScreen extends ConsumerWidget {
     }
 
     // Design Tokens (Track B - Ticket #88)
-    return Scaffold(
+    // Track A - Ticket #134: Updated to use DWAppShell (map-centric layout)
+    return DWAppShell(
       extendBodyBehindAppBar: true,
+      applyPadding: false, // Map fills entire screen
+      useSafeArea: false, // Map extends to edges
       appBar: AppBar(
         backgroundColor: colorScheme.surface.withValues(alpha: 0), // DS: transparent
         elevation: 0,
@@ -230,8 +250,12 @@ class RideActiveTripScreen extends ConsumerWidget {
   }
 }
 
-/// Map widget for active trip using maps_shims and RideMapConfig (Track B - Ticket #28)
-class _ActiveTripMap extends StatelessWidget {
+/// Map widget for active trip using RideMapCommands from session state (Track B - Ticket #28, #112)
+///
+/// Track B - Ticket #112: Now uses activeTripMapCommands from RideTripSessionUiState
+/// instead of building map config directly. This ensures single source of truth
+/// and consistency with the frozen draftSnapshot.
+class _ActiveTripMap extends ConsumerWidget {
   const _ActiveTripMap({
     required this.activeTrip,
     required this.pickupPlace,
@@ -243,33 +267,57 @@ class _ActiveTripMap extends StatelessWidget {
   final MobilityPlace? destinationPlace;
 
   @override
-  Widget build(BuildContext context) {
-    // Mock driver location (would be real-time from backend in production)
-    // Place driver slightly offset from pickup for visual effect
-    final pickupLocation = pickupPlace?.location;
-    LocationPoint? mockDriverLocation;
-    
-    if (pickupLocation != null && _shouldShowDriverMarker(activeTrip.phase)) {
-      mockDriverLocation = LocationPoint(
-        latitude: pickupLocation.latitude,
-        longitude: pickupLocation.longitude + 0.005,
-        accuracyMeters: 10,
-        timestamp: DateTime.now(),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Track B - Ticket #112: Get map commands from session state
+    final tripSession = ref.watch(rideTripSessionProvider);
+    final commands = tripSession.activeTripMapCommands;
+
+    // If commands are available, render the map
+    if (commands != null) {
+      return RideMapFromCommands(commands: commands);
+    }
+
+    // Terminal phase or no draftSnapshot: show appropriate placeholder
+    if (activeTrip.phase.isTerminal) {
+      // Terminal phases: no map needed, parent widget handles terminal UI
+      return RideMapPlaceholder(
+        message: l10n.rideActiveNoTripBody,
+        showLoadingIndicator: false,
       );
     }
 
-    // Build map config using domain helper (Track B - Ticket #28)
+    // Fallback: Build map using legacy method for backward compatibility
+    // This handles edge cases where draftSnapshot isn't available
     final mapConfig = buildActiveTripMap(
       activeTrip: activeTrip,
       pickup: pickupPlace,
       destination: destinationPlace,
-      driverLocation: mockDriverLocation,
+      driverLocation: _getMockDriverLocation(),
     );
 
     return MapWidget(
       initialPosition: mapConfig.cameraTarget,
       markers: mapConfig.markers,
       polylines: mapConfig.polylines,
+    );
+  }
+
+  /// Gets a mock driver location for demo purposes.
+  /// In production, this would come from real-time driver tracking.
+  LocationPoint? _getMockDriverLocation() {
+    final pickupLocation = pickupPlace?.location;
+    if (pickupLocation == null) return null;
+
+    // Only show driver marker for appropriate phases
+    if (!_shouldShowDriverMarker(activeTrip.phase)) return null;
+
+    return LocationPoint(
+      latitude: pickupLocation.latitude,
+      longitude: pickupLocation.longitude + 0.005,
+      accuracyMeters: 10,
+      timestamp: DateTime.now(),
     );
   }
 
@@ -316,32 +364,42 @@ class _ActiveDriverCard extends ConsumerWidget {
         : l10n.rideActiveDestinationLabel(destination);
 
     // Design Tokens (Track B - Ticket #88)
-    return Container(
-      margin: EdgeInsets.all(DWSpacing.md), // DS: 16pt
-      decoration: BoxDecoration(
-        color: colorScheme.surface, // DS: color.surface.default
-        borderRadius: BorderRadius.circular(DWRadius.lg), // DS: 24pt
-        boxShadow: [
-          BoxShadow(
-            blurRadius: DWSpacing.md, // DS: 16pt
-            offset: const Offset(0, -4),
-            color: colorScheme.shadow.withValues(alpha: 0.15),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            DWSpacing.lg, // DS: 24pt - left
-            DWSpacing.lg, // DS: 24pt - top
-            DWSpacing.lg, // DS: 24pt - right
-            DWSpacing.lg, // DS: 24pt - bottom
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+    // Ticket #106: Use LayoutBuilder to constrain card height and prevent overflow
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Limit card height to 70% of available space to prevent overflow
+        final maxCardHeight = constraints.maxHeight * 0.7;
+        
+        return ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: maxCardHeight),
+          child: Container(
+            margin: EdgeInsets.all(DWSpacing.md), // DS: 16pt
+            decoration: BoxDecoration(
+              color: colorScheme.surface, // DS: color.surface.default
+              borderRadius: BorderRadius.circular(DWRadius.lg), // DS: 24pt
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: DWSpacing.md, // DS: 16pt
+                  offset: const Offset(0, -4),
+                  color: colorScheme.shadow.withValues(alpha: 0.15),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  DWSpacing.lg, // DS: 24pt - left
+                  DWSpacing.lg, // DS: 24pt - top
+                  DWSpacing.lg, // DS: 24pt - right
+                  DWSpacing.lg, // DS: 24pt - bottom
+                ),
+                // Ticket #106: SingleChildScrollView to handle overflow gracefully
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
               // Drag handle
               Center(
                 child: Container(
@@ -516,6 +574,13 @@ class _ActiveDriverCard extends ConsumerWidget {
                 ),
               ),
 
+              SizedBox(height: DWSpacing.md), // DS: 16pt
+
+              // Track B - Ticket #105: Trip Summary Section (Service + Price + Payment)
+              _TripSummarySection(
+                tripSummary: ref.watch(rideTripSessionProvider).tripSummary,
+              ),
+
             SizedBox(height: DWSpacing.lg), // DS: 24pt
 
             // Primary action buttons row - Tertiary style (Track B - Ticket #68, #88)
@@ -541,7 +606,7 @@ class _ActiveDriverCard extends ConsumerWidget {
 
             SizedBox(height: DWSpacing.sm), // DS: 12pt
 
-            // Secondary action buttons row (Ticket #62, #67, #88, #95)
+            // Secondary action buttons row (Ticket #62, #67, #88, #95, #122)
             Row(
               children: [
                 // Cancel ride button (Button/Tertiary - Track B #22, Ticket #67, #95)
@@ -565,6 +630,24 @@ class _ActiveDriverCard extends ConsumerWidget {
               ],
             ),
 
+            // Track B - Ticket #122: No driver found CTA
+            // Shown during findingDriver phase as secondary option
+            if (activeTrip.phase == RideTripPhase.findingDriver) ...[
+              SizedBox(height: DWSpacing.sm), // DS: 12pt
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => _onNoDriverFound(context, ref),
+                  child: Text(
+                    l10n.rideFailNoDriverFoundCta,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+
             // Debug FSM transition buttons (Ticket #64)
             // Only shown in debug mode for testing FSM transitions
             if (kDebugMode) ...[
@@ -574,18 +657,27 @@ class _ActiveDriverCard extends ConsumerWidget {
                 l10n: l10n,
               ),
             ],
-          ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  /// Cancel ride flow with confirmation dialog (Track B - Ticket #67, #95)
+  /// Cancel ride flow with confirmation dialog (Track B - Ticket #67, #95, #120)
   ///
   /// Shows a confirmation dialog before cancelling the ride.
-  /// If confirmed, cancels the trip via FSM. The UI will rebuild automatically
-  /// showing the Terminal UI for cancelled state (Ticket #95).
+  /// If confirmed, uses cancelCurrentTrip() to cancel, archive, and navigate home.
+  ///
+  /// Track B - Ticket #120: Updated to use cancelCurrentTrip() API which:
+  /// 1. Cancels the trip via FSM
+  /// 2. Archives it to historyTrips with metadata
+  /// 3. Clears the session state
+  /// 4. Navigates back to home
   Future<void> _onCancelRide(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
@@ -617,18 +709,33 @@ class _ActiveDriverCard extends ConsumerWidget {
     // User dismissed dialog or chose to keep ride
     if (shouldCancel != true) return;
 
-    // Call FSM cancel method (Track B - Ticket #22, #95)
+    // Track B - Ticket #120: Use cancelCurrentTrip() for full cancellation flow
+    final sessionState = ref.read(rideTripSessionProvider);
     final tripController = ref.read(rideTripSessionProvider.notifier);
-    final success = await tripController.cancelActiveTrip();
+    
+    // Get payment method label if available
+    final paymentsState = ref.read(paymentMethodsUiProvider);
+    final paymentMethodId = sessionState.tripSummary?.selectedPaymentMethodId;
+    final paymentMethod = paymentMethodId != null
+        ? paymentsState.methods.where((m) => m.id == paymentMethodId).firstOrNull
+        : paymentsState.selectedMethod;
+    
+    final success = tripController.cancelCurrentTrip(
+      reasonLabel: l10n.rideCancelReasonByRider,
+      destinationLabel: sessionState.draftSnapshot?.destinationQuery,
+      originLabel: sessionState.draftSnapshot?.pickupLabel,
+      serviceName: sessionState.tripSummary?.selectedServiceName,
+      amountFormatted: sessionState.tripSummary?.fareDisplayText,
+      paymentMethodLabel: paymentMethod?.displayName,
+    );
 
     if (success) {
-      // Ticket #95: Don't navigate away. The widget will rebuild
-      // automatically showing _TerminalTripStateView for cancelled phase.
-      // User can then choose "Back to home" or "Request new ride".
+      // Track B - Ticket #120: Show success message and navigate home
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.rideCancelSuccessSnackbar)),
         );
+        Navigator.of(context).popUntil((route) => route.isFirst);
       }
     } else {
       // Show error snackbar
@@ -644,16 +751,61 @@ class _ActiveDriverCard extends ConsumerWidget {
   /// This is a Debug/Stub CTA that simulates trip completion.
   /// In production, trip completion will be triggered by the FSM when
   /// the driver marks the trip as completed.
+  ///
+  /// Track B - Ticket #107: Updated to use completeTrip() method which
+  /// freezes the trip summary as completionSummary for the completion screen.
   void _onEndTrip(BuildContext context, WidgetRef ref) {
     final tripController = ref.read(rideTripSessionProvider.notifier);
     
-    // Simulate trip completion by applying the complete event
-    // Note: FSM requires going through payment phase first, then complete
-    tripController.applyEvent(RideTripEvent.startPayment);
-    tripController.applyEvent(RideTripEvent.complete);
+    // Use completeTrip() which handles FSM transitions and freezes summary
+    // Track B - Ticket #107: This ensures completionSummary is set
+    tripController.completeTrip();
     
     // Navigation to summary screen is handled by the listener in build()
     // which watches for phase transition to completed
+  }
+
+  /// Track B - Ticket #122: Handle "No driver found" failure scenario.
+  ///
+  /// This is called when no driver was found during the findingDriver phase.
+  /// Uses failCurrentTrip() to:
+  /// 1. Mark the trip as failed via FSM
+  /// 2. Archive it to historyTrips with metadata
+  /// 3. Clear the session state
+  /// 4. Navigate back to home with feedback
+  Future<void> _onNoDriverFound(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Get current session state and controller
+    final sessionState = ref.read(rideTripSessionProvider);
+    final tripController = ref.read(rideTripSessionProvider.notifier);
+    
+    // Get payment method label if available
+    final paymentsState = ref.read(paymentMethodsUiProvider);
+    final paymentMethodId = sessionState.tripSummary?.selectedPaymentMethodId;
+    final paymentMethod = paymentMethodId != null
+        ? paymentsState.methods.where((m) => m.id == paymentMethodId).firstOrNull
+        : paymentsState.selectedMethod;
+
+    // Call failCurrentTrip to mark as failed, archive, and clear session
+    final success = tripController.failCurrentTrip(
+      reasonLabel: l10n.rideFailReasonNoDriverFound,
+      destinationLabel: sessionState.draftSnapshot?.destinationQuery,
+      originLabel: sessionState.draftSnapshot?.pickupLabel,
+      serviceName: sessionState.tripSummary?.selectedServiceName,
+      amountFormatted: sessionState.tripSummary?.fareDisplayText,
+      paymentMethodLabel: paymentMethod?.displayName,
+    );
+
+    if (!success || !context.mounted) return;
+
+    // Show feedback SnackBar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.rideFailNoDriverFoundSnackbar)),
+    );
+
+    // Navigate back to home
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   /// Contact driver flow (Track B - Ticket #68)
@@ -768,6 +920,123 @@ class _ActiveDriverCard extends ConsumerWidget {
         );
       }
     }
+  }
+}
+
+// ============================================================================
+// Trip Summary Section (Track B - Ticket #105)
+// ============================================================================
+
+/// Displays the unified trip summary: service name, price, and payment method.
+///
+/// Track B - Ticket #105: Single source of truth from RideTripSummary.
+/// Shows:
+/// - Service name + estimated price
+/// - Selected payment method
+class _TripSummarySection extends ConsumerWidget {
+  const _TripSummarySection({
+    required this.tripSummary,
+  });
+
+  final RideTripSummary? tripSummary;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    // Get payment method details
+    final paymentsState = ref.watch(paymentMethodsUiProvider);
+    final paymentMethodId = tripSummary?.selectedPaymentMethodId;
+    final paymentMethod = paymentMethodId != null
+        ? paymentsState.methods
+            .where((m) => m.id == paymentMethodId)
+            .firstOrNull
+        : paymentsState.selectedMethod;
+
+    // Build service + price text
+    final serviceName = tripSummary?.selectedServiceName;
+    final fareText = tripSummary?.fareDisplayText;
+    
+    // Format the service and price line
+    String? serviceAndPriceText;
+    if (serviceName != null && fareText != null) {
+      serviceAndPriceText = l10n.rideActiveSummaryServiceAndPrice(
+        serviceName,
+        '≈ $fareText',
+      );
+    } else if (serviceName != null) {
+      serviceAndPriceText = serviceName;
+    } else if (fareText != null) {
+      serviceAndPriceText = '≈ $fareText';
+    }
+
+    // Format payment method text
+    final paymentDisplayName = paymentMethod?.displayName ?? l10n.paymentsMethodTypeCash;
+    final paymentText = l10n.rideActivePayingWith(paymentDisplayName);
+
+    // If no summary data, show nothing (graceful fallback)
+    if (serviceAndPriceText == null && tripSummary?.selectedPaymentMethodId == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: EdgeInsets.all(DWSpacing.sm), // DS: 12pt
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest, // DS: color.surface.elevated
+        borderRadius: BorderRadius.circular(DWRadius.md), // DS: 12pt
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Service + Price row
+          if (serviceAndPriceText != null) ...[
+            Row(
+              children: [
+                Icon(
+                  Icons.directions_car_filled,
+                  size: 18,
+                  color: colorScheme.primary,
+                ),
+                SizedBox(width: DWSpacing.xs), // DS: 8pt
+                Expanded(
+                  child: Text(
+                    serviceAndPriceText,
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: DWSpacing.xs), // DS: 8pt
+          ],
+          // Payment method row
+          Row(
+            children: [
+              Icon(
+                paymentMethod?.type == PaymentMethodUiType.card
+                    ? Icons.credit_card
+                    : Icons.payments_outlined,
+                size: 18,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              SizedBox(width: DWSpacing.xs), // DS: 8pt
+              Expanded(
+                child: Text(
+                  paymentText,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -936,14 +1205,14 @@ class _DebugFsmButtons extends ConsumerWidget {
         actions.add(_DebugAction(
           label: l10n.rideDebugCompleteTrip,
           event: RideTripEvent.startPayment,
-          color: Colors.green,
+          color: colorScheme.tertiary, // DS: color.state.success
           chainedEvent: RideTripEvent.complete,
         ));
       case RideTripPhase.payment:
         actions.add(_DebugAction(
           label: l10n.rideDebugConfirmPayment,
           event: RideTripEvent.complete,
-          color: Colors.green,
+          color: colorScheme.tertiary, // DS: color.state.success
         ));
       default:
         // No debug actions for other phases
@@ -1008,7 +1277,7 @@ class _DebugFsmButtons extends ConsumerWidget {
                 ),
                 child: Text(
                   action.label,
-                  style: const TextStyle(fontSize: 12),
+                  style: theme.textTheme.bodySmall, // DS: type.caption.default (12pt)
                 ),
               );
             }).toList(),
@@ -1083,27 +1352,28 @@ class _TerminalTripStateView extends StatelessWidget {
     final IconData icon;
     final Color iconColor;
     final String title;
-    final String body;
+    final String bodyText;
 
     if (isCancelled) {
       icon = Icons.cancel_outlined;
       iconColor = colorScheme.error;
       title = l10n.rideActiveCancelledTitle;
-      body = l10n.rideActiveCancelledBody;
+      bodyText = l10n.rideActiveCancelledBody;
     } else if (isFailed) {
       icon = Icons.error_outline;
       iconColor = colorScheme.error;
       title = l10n.rideActiveFailedTitle;
-      body = l10n.rideActiveFailedBody;
+      bodyText = l10n.rideActiveFailedBody;
     } else {
       // Fallback for other terminal phases (completed - should not reach here)
       icon = Icons.check_circle_outline;
       iconColor = colorScheme.tertiary;
       title = l10n.rideActiveHeadlineCompleted;
-      body = '';
+      bodyText = '';
     }
 
-    return Scaffold(
+    // Track A - Ticket #134: Updated to use DWAppShell
+    return DWAppShell(
       appBar: AppBar(
         title: Text(
           l10n.rideActiveAppBarTitle,
@@ -1111,8 +1381,9 @@ class _TerminalTripStateView extends StatelessWidget {
         ),
         automaticallyImplyLeading: false,
       ),
-      body: SafeArea(
-        child: Padding(
+      // Use custom padding for terminal view (24pt instead of default 16pt)
+      applyPadding: false,
+      body: Padding(
           padding: EdgeInsets.all(DWSpacing.lg), // DS: 24pt
           child: Column(
             children: [
@@ -1149,7 +1420,7 @@ class _TerminalTripStateView extends StatelessWidget {
 
               // Body (type.body.regular)
               Text(
-                body,
+              bodyText,
                 style: textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -1218,7 +1489,6 @@ class _TerminalTripStateView extends StatelessWidget {
 
               SizedBox(height: DWSpacing.md), // DS: 16pt
             ],
-          ),
         ),
       ),
     );

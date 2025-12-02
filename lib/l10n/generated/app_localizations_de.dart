@@ -774,6 +774,19 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String ordersRideItemTitleWithService(
+    String serviceName,
+    String destination,
+  ) {
+    return '$serviceName nach $destination';
+  }
+
+  @override
+  String ordersRideItemSubtitleWithOrigin(String origin, String date) {
+    return 'Von $origin · $date';
+  }
+
+  @override
   String get ordersRideStatusCompleted => 'Abgeschlossen';
 
   @override
@@ -1354,6 +1367,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rideCancelSuccessSnackbar => 'Deine Fahrt wurde storniert.';
 
   @override
+  String get rideCancelReasonByRider => 'Vom Fahrgast storniert';
+
+  @override
   String get rideActiveHeadlineFindingDriver => 'Fahrer wird gesucht…';
 
   @override
@@ -1410,7 +1426,25 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String rideActiveDestinationLabel(String destination) {
-    return 'To $destination';
+    return 'Nach $destination';
+  }
+
+  @override
+  String rideActiveSummaryServiceAndPrice(String serviceName, String price) {
+    return '$serviceName · $price';
+  }
+
+  @override
+  String rideActivePayingWith(String method) {
+    return 'Bezahlen mit $method';
+  }
+
+  @override
+  String get rideActivePriceNotAvailable => 'Preis noch nicht verfügbar';
+
+  @override
+  String homeActiveRidePriceAndPayment(String price, String paymentMethod) {
+    return '$price · $paymentMethod';
   }
 
   @override
@@ -1462,6 +1496,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeActiveRideTitleGeneric => 'Aktive Fahrt';
+
+  @override
+  String homeActiveRideEtaTitle(int minutes) {
+    return 'Ankunft in $minutes Min.';
+  }
 
   @override
   String homeActiveRideSubtitleToDestination(String destination) {
@@ -1527,6 +1566,30 @@ class AppLocalizationsDe extends AppLocalizations {
       'Thanks for riding with Delivery Ways';
 
   @override
+  String get rideTripSummaryCancelledTitle => 'Trip cancelled';
+
+  @override
+  String get rideTripSummaryCancelledSubtitle => 'Your ride was cancelled';
+
+  @override
+  String get rideTripSummaryFailedTitle => 'Fahrt fehlgeschlagen';
+
+  @override
+  String get rideTripSummaryFailedSubtitle =>
+      'Diese Fahrt konnte nicht abgeschlossen werden';
+
+  @override
+  String get rideFailReasonNoDriverFound => 'Kein Fahrer gefunden';
+
+  @override
+  String get rideFailNoDriverFoundSnackbar =>
+      'Es konnte kein Fahrer für diese Fahrt gefunden werden.';
+
+  @override
+  String get rideFailNoDriverFoundCta =>
+      'Keine Fahrer verfügbar? Später versuchen';
+
+  @override
   String get rideTripSummaryRouteSectionTitle => 'Route';
 
   @override
@@ -1543,6 +1606,11 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get rideTripSummaryDoneCta => 'Done';
+
+  @override
+  String rideTripCompletionServiceLabel(String serviceName) {
+    return '$serviceName Fahrt';
+  }
 
   @override
   String get rideConfirmLoadingTitle => 'Fahrtoptionen werden geladen...';
@@ -1571,6 +1639,27 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get rideConfirmRecommendedBadge => 'Empfohlen';
+
+  @override
+  String get rideQuoteErrorTitle => 'Preise konnten nicht geladen werden';
+
+  @override
+  String get rideQuoteErrorGeneric =>
+      'Beim Abrufen der Fahrpreise ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.';
+
+  @override
+  String get rideQuoteErrorNoOptions =>
+      'Für diese Strecke sind derzeit keine Fahrtoptionen verfügbar.';
+
+  @override
+  String get rideQuoteRetryCta => 'Erneut versuchen';
+
+  @override
+  String get rideQuoteEmptyTitle => 'Keine Fahrten verfügbar';
+
+  @override
+  String get rideQuoteEmptyDescription =>
+      'Versuchen Sie eine andere Zeit oder passen Sie Abholort und Ziel an.';
 
   @override
   String get rideConfirmFromLabel => 'Von';
@@ -2461,4 +2550,41 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get rideActiveTripDriverSectionStubBody =>
       'Details zu Fahrer und Fahrzeug werden nach der Integration mit dem Mobilitätsdienst verfügbar sein.';
+
+  @override
+  String get ordersHistoryEmptyAllTitle => 'Noch keine Bestellungen';
+
+  @override
+  String get ordersHistoryEmptyAllDescription =>
+      'Ihre Fahrten, Pakete und Essensbestellungen werden hier angezeigt.';
+
+  @override
+  String get ordersHistoryEmptyRidesTitle => 'Noch keine Fahrten';
+
+  @override
+  String get ordersHistoryEmptyRidesDescription =>
+      'Ihre abgeschlossenen Fahrten werden hier angezeigt.';
+
+  @override
+  String get ordersHistoryEmptyParcelsTitle => 'Noch keine Pakete';
+
+  @override
+  String get ordersHistoryEmptyParcelsDescription =>
+      'Ihre Sendungen werden hier angezeigt.';
+
+  @override
+  String get ordersHistoryEmptyFoodTitle => 'Noch keine Essensbestellungen';
+
+  @override
+  String get ordersHistoryEmptyFoodDescription =>
+      'Ihre Essenslieferungen werden hier angezeigt.';
+
+  @override
+  String get ordersServiceRideSemanticLabel => 'Fahrtbestellung';
+
+  @override
+  String get ordersServiceParcelSemanticLabel => 'Paketversand';
+
+  @override
+  String get ordersServiceFoodSemanticLabel => 'Essensbestellung';
 }

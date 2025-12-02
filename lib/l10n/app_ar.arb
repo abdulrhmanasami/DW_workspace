@@ -307,6 +307,28 @@
       }
     }
   },
+  "ordersRideItemTitleWithService": "{serviceName} إلى {destination}",
+  "@ordersRideItemTitleWithService": {
+    "placeholders": {
+      "serviceName": {
+        "type": "String"
+      },
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "ordersRideItemSubtitleWithOrigin": "من {origin} · {date}",
+  "@ordersRideItemSubtitleWithOrigin": {
+    "placeholders": {
+      "origin": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "ordersRideStatusCompleted": "مكتملة",
   "ordersRideStatusCancelled": "ملغاة",
   "ordersRideStatusFailed": "فشلت",
@@ -633,6 +655,10 @@
   "@rideCancelSuccessSnackbar": {
     "description": "رسالة snackbar بعد إلغاء الرحلة بنجاح (Track B - Ticket #67)"
   },
+  "rideCancelReasonByRider": "تم الإلغاء من قِبل الراكب",
+  "@rideCancelReasonByRider": {
+    "description": "سبب الإلغاء عندما يلغي الراكب الرحلة (Track B - Ticket #120)"
+  },
 
   "rideActiveHeadlineFindingDriver": "جارٍ البحث عن سائق…",
   "rideActiveHeadlineDriverEta": "السائق يبعد {minutes} دقيقة",
@@ -665,6 +691,38 @@
   "@rideActiveDestinationLabel": {
     "placeholders": {
       "destination": {
+        "type": "String"
+      }
+    }
+  },
+
+  "rideActiveSummaryServiceAndPrice": "{serviceName} · {price}",
+  "@rideActiveSummaryServiceAndPrice": {
+    "placeholders": {
+      "serviceName": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActivePayingWith": "الدفع عبر {method}",
+  "@rideActivePayingWith": {
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActivePriceNotAvailable": "السعر غير متاح بعد",
+  "homeActiveRidePriceAndPayment": "{price} · {paymentMethod}",
+  "@homeActiveRidePriceAndPayment": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "paymentMethod": {
         "type": "String"
       }
     }
@@ -703,6 +761,15 @@
   "homeActiveRideTitleGeneric": "رحلة نشطة",
   "@homeActiveRideTitleGeneric": {
     "description": "عنوان عام لكرت الرحلة النشطة على الشاشة الرئيسية (Track B - Ticket #65)"
+  },
+  "homeActiveRideEtaTitle": "يصل خلال {minutes} دقيقة",
+  "@homeActiveRideEtaTitle": {
+    "description": "عنوان مع وقت الوصول المتوقع لكرت الرحلة النشطة (Track B - Ticket #114)",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   },
   "homeActiveRideSubtitleToDestination": "إلى {destination}",
   "@homeActiveRideSubtitleToDestination": {
@@ -789,6 +856,34 @@
   "@rideTripSummaryCompletedSubtitle": {
     "description": "نص فرعي يظهر بعد اكتمال الرحلة"
   },
+  "rideTripSummaryCancelledTitle": "تم إلغاء الرحلة",
+  "@rideTripSummaryCancelledTitle": {
+    "description": "عنوان الرأس عند إلغاء الرحلة (Track B - Ticket #120)"
+  },
+  "rideTripSummaryCancelledSubtitle": "تم إلغاء رحلتك",
+  "@rideTripSummaryCancelledSubtitle": {
+    "description": "نص فرعي يظهر عند عرض رحلة ملغاة (Track B - Ticket #120)"
+  },
+  "rideTripSummaryFailedTitle": "فشلت الرحلة",
+  "@rideTripSummaryFailedTitle": {
+    "description": "عنوان يظهر عند عرض رحلة فاشلة (Track B - Ticket #122)"
+  },
+  "rideTripSummaryFailedSubtitle": "تعذّر إكمال هذه الرحلة",
+  "@rideTripSummaryFailedSubtitle": {
+    "description": "نص فرعي يظهر عند عرض رحلة فاشلة (Track B - Ticket #122)"
+  },
+  "rideFailReasonNoDriverFound": "لم يتم العثور على سائق",
+  "@rideFailReasonNoDriverFound": {
+    "description": "سبب الفشل عندما لا يوجد سائق متاح (Track B - Ticket #122)"
+  },
+  "rideFailNoDriverFoundSnackbar": "تعذّر العثور على سائق لهذه الرحلة.",
+  "@rideFailNoDriverFoundSnackbar": {
+    "description": "رسالة SnackBar عند عدم العثور على سائق (Track B - Ticket #122)"
+  },
+  "rideFailNoDriverFoundCta": "لا يوجد سائقون متاحون؟ حاول لاحقاً",
+  "@rideFailNoDriverFoundCta": {
+    "description": "زر إجراء عند عدم العثور على سائق (Track B - Ticket #122)"
+  },
   "rideTripSummaryRouteSectionTitle": "المسار",
   "@rideTripSummaryRouteSectionTitle": {
     "description": "عنوان قسم ملخص المسار"
@@ -812,6 +907,17 @@
   "rideTripSummaryDoneCta": "إنهاء",
   "@rideTripSummaryDoneCta": {
     "description": "زر للإنهاء والعودة للرئيسية"
+  },
+
+  "rideTripCompletionServiceLabel": "رحلة {serviceName}",
+  "@rideTripCompletionServiceLabel": {
+    "description": "تسمية نوع الخدمة في شاشة إتمام الرحلة (تذكرة #107)",
+    "placeholders": {
+      "serviceName": {
+        "type": "String",
+        "example": "اقتصادية"
+      }
+    }
   },
 
   "rideConfirmLoadingTitle": "جاري جلب خيارات الرحلة...",
@@ -845,6 +951,31 @@
   "rideConfirmRecommendedBadge": "موصى به",
   "@rideConfirmRecommendedBadge": {
     "description": "شارة تظهر على خيار الرحلة الموصى به (Ticket #91)"
+  },
+
+  "rideQuoteErrorTitle": "تعذّر تحميل الأسعار",
+  "@rideQuoteErrorTitle": {
+    "description": "عنوان حالة الخطأ عند فشل التسعير (Track B - Ticket #121)"
+  },
+  "rideQuoteErrorGeneric": "حدث خطأ أثناء جلب أسعار الرحلات. يرجى المحاولة مرة أخرى.",
+  "@rideQuoteErrorGeneric": {
+    "description": "رسالة خطأ عامة لفشل التسعير (Track B - Ticket #121)"
+  },
+  "rideQuoteErrorNoOptions": "لا تتوفر خيارات رحلات لهذا المسار في الوقت الحالي.",
+  "@rideQuoteErrorNoOptions": {
+    "description": "رسالة خطأ عند عدم إرجاع خيارات رحلات (Track B - Ticket #121)"
+  },
+  "rideQuoteRetryCta": "إعادة المحاولة",
+  "@rideQuoteRetryCta": {
+    "description": "نص زر إعادة محاولة جلب الأسعار (Track B - Ticket #121)"
+  },
+  "rideQuoteEmptyTitle": "لا توجد رحلات متاحة",
+  "@rideQuoteEmptyTitle": {
+    "description": "عنوان الحالة الفارغة عند عدم وجود خيارات رحلات (Track B - Ticket #121)"
+  },
+  "rideQuoteEmptyDescription": "جرّب وقتًا مختلفًا أو عدّل نقطة الانطلاق والوجهة.",
+  "@rideQuoteEmptyDescription": {
+    "description": "وصف الحالة الفارغة عند عدم وجود خيارات رحلات (Track B - Ticket #121)"
   },
   "rideConfirmFromLabel": "من",
   "@rideConfirmFromLabel": {
@@ -2048,5 +2179,51 @@
   "rideActiveTripDriverSectionStubBody": "تفاصيل السائق والمركبة ستظهر بعد الربط مع خدمة الرحلات الفعلية.",
   "@rideActiveTripDriverSectionStubBody": {
     "description": "[محجوز - Ticket #88] بديل عند عدم توفر بيانات السائق. حالياً يستخدم بيانات تجريبية."
+  },
+
+  "ordersHistoryEmptyAllTitle": "لا توجد طلبات بعد",
+  "@ordersHistoryEmptyAllTitle": {
+    "description": "عنوان الحالة الفارغة عند عدم وجود طلبات (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyAllDescription": "ستظهر رحلاتك وطرودك وطلبات الطعام هنا.",
+  "@ordersHistoryEmptyAllDescription": {
+    "description": "وصف الحالة الفارغة عند عدم وجود طلبات (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyRidesTitle": "لا توجد رحلات بعد",
+  "@ordersHistoryEmptyRidesTitle": {
+    "description": "عنوان الحالة الفارغة عند عدم وجود رحلات (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyRidesDescription": "ستظهر رحلاتك المكتملة هنا.",
+  "@ordersHistoryEmptyRidesDescription": {
+    "description": "وصف الحالة الفارغة عند عدم وجود رحلات (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyParcelsTitle": "لا توجد طرود بعد",
+  "@ordersHistoryEmptyParcelsTitle": {
+    "description": "عنوان الحالة الفارغة عند عدم وجود طرود (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyParcelsDescription": "ستظهر شحناتك هنا.",
+  "@ordersHistoryEmptyParcelsDescription": {
+    "description": "وصف الحالة الفارغة عند عدم وجود طرود (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyFoodTitle": "لا توجد طلبات طعام بعد",
+  "@ordersHistoryEmptyFoodTitle": {
+    "description": "عنوان الحالة الفارغة عند عدم وجود طلبات طعام (Track B - Ticket #125)"                                                                       
+  },
+  "ordersHistoryEmptyFoodDescription": "ستظهر طلبات الطعام هنا.",
+  "@ordersHistoryEmptyFoodDescription": {
+    "description": "وصف الحالة الفارغة عند عدم وجود طلبات طعام (Track B - Ticket #125)"                                                                         
+  },
+
+  "ordersServiceRideSemanticLabel": "طلب رحلة",
+  "@ordersServiceRideSemanticLabel": {
+    "description": "تسمية الوصول لأيقونة خدمة الرحلات (Track B - Ticket #127)"
+  },
+  "ordersServiceParcelSemanticLabel": "شحنة طرد",
+  "@ordersServiceParcelSemanticLabel": {
+    "description": "تسمية الوصول لبطاقة الطرد (Track B - Ticket #127)"
+  },
+  "ordersServiceFoodSemanticLabel": "طلب طعام",
+  "@ordersServiceFoodSemanticLabel": {
+    "description": "تسمية الوصول لأيقونة خدمة الطعام (Track B - Ticket #127)"
   }
 }

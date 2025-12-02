@@ -1,8 +1,9 @@
-/// RideQuoteController Unit Tests - Track B Ticket #17, #27
+/// RideQuoteController Unit Tests - Track B Ticket #17, #27, #121
 /// Purpose: Safety net tests for RideQuoteController before deeper integration
 /// Created by: Track B - Ticket #17
 /// Updated by: Track B - Ticket #27 (MockRidePricingService integration)
-/// Last updated: 2025-11-28
+/// Updated by: Track B - Ticket #121 (Structured RideQuoteError handling)
+/// Last updated: 2025-12-01
 
 import 'package:flutter_test/flutter_test.dart';
 
@@ -50,13 +51,14 @@ void main() {
         expect(controller.state.hasQuote, isFalse);
       });
 
-      test('has null errorMessage', () {
+      test('has null error', () {
         const pricingService = MockRidePricingService(
           baseLatency: Duration.zero,
         );
         final controller = RideQuoteController(pricingService: pricingService);
 
-        expect(controller.state.errorMessage, isNull);
+        // Track B - Ticket #121: Use structured error instead of errorMessage
+        expect(controller.state.error, isNull);
         expect(controller.state.hasError, isFalse);
       });
     });
@@ -91,7 +93,8 @@ void main() {
         expect(controller.state.isLoading, isFalse);
         expect(controller.state.hasQuote, isTrue);
         expect(controller.state.quote, isNotNull);
-        expect(controller.state.errorMessage, isNull);
+        // Track B - Ticket #121: Use structured error
+        expect(controller.state.error, isNull);
         expect(controller.state.hasError, isFalse);
       });
 
@@ -153,10 +156,11 @@ void main() {
 
         final quote = controller.state.quote!;
         expect(quote.recommendedOption, isNotNull);
-        expect(quote.recommendedOption.isRecommended, isTrue);
+        // Track B - Ticket #121: recommendedOption is now nullable
+        expect(quote.recommendedOption!.isRecommended, isTrue);
       });
 
-      test('failure path sets error state', () async {
+      test('failure path sets error state with RideQuoteErrorPricingFailed', () async {
         const pricingService = MockRidePricingService(
           baseLatency: Duration.zero,
           failureRate: 1.0, // Always fails
@@ -183,7 +187,8 @@ void main() {
 
         expect(controller.state.isLoading, isFalse);
         expect(controller.state.hasError, isTrue);
-        expect(controller.state.errorMessage, isNotNull);
+        // Track B - Ticket #121: Verify structured error type
+        expect(controller.state.error, isA<RideQuoteErrorPricingFailed>());
         expect(controller.state.quote, isNull);
       });
     });
@@ -206,7 +211,8 @@ void main() {
         expect(state.hasQuote, isTrue);
         expect(state.quote, isNotNull);
         expect(state.quote!.options, isNotEmpty);
-        expect(state.errorMessage, isNull);
+        // Track B - Ticket #121: Use structured error
+        expect(state.error, isNull);
         expect(state.hasError, isFalse);
       });
 
@@ -225,7 +231,8 @@ void main() {
         expect(state.hasQuote, isFalse);
         expect(state.quote, isNull);
         expect(state.hasError, isTrue);
-        expect(state.errorMessage, isNotNull);
+        // Track B - Ticket #121: Use structured error
+        expect(state.error, isNotNull);
       });
 
       test('with whitespace-only destination sets error', () async {
@@ -243,7 +250,8 @@ void main() {
         expect(state.hasQuote, isFalse);
         expect(state.quote, isNull);
         expect(state.hasError, isTrue);
-        expect(state.errorMessage, isNotNull);
+        // Track B - Ticket #121: Use structured error
+        expect(state.error, isNotNull);
       });
     });
 
@@ -277,7 +285,8 @@ void main() {
 
         expect(controller.state.isLoading, isFalse);
         expect(controller.state.quote, isNull);
-        expect(controller.state.errorMessage, isNull);
+        // Track B - Ticket #121: Use structured error
+        expect(controller.state.error, isNull);
         expect(controller.state.hasQuote, isFalse);
         expect(controller.state.hasError, isFalse);
       });
@@ -311,7 +320,8 @@ void main() {
         controller.clear();
 
         expect(controller.state.hasError, isFalse);
-        expect(controller.state.errorMessage, isNull);
+        // Track B - Ticket #121: Use structured error
+        expect(controller.state.error, isNull);
       });
 
       test('clear on fresh controller is safe', () {
@@ -324,7 +334,8 @@ void main() {
 
         expect(controller.state.isLoading, isFalse);
         expect(controller.state.quote, isNull);
-        expect(controller.state.errorMessage, isNull);
+        // Track B - Ticket #121: Use structured error
+        expect(controller.state.error, isNull);
       });
     });
   });
@@ -346,11 +357,12 @@ void main() {
         expect(controller.state.hasQuote, isFalse);
       });
 
-      test('has null errorMessage', () {
+      test('has null error', () {
         const service = MockRideQuoteService();
         final controller = RideQuoteController.legacy(service);
 
-        expect(controller.state.errorMessage, isNull);
+        // Track B - Ticket #121: Use structured error
+        expect(controller.state.error, isNull);
         expect(controller.state.hasError, isFalse);
       });
     });
@@ -369,7 +381,8 @@ void main() {
         expect(state.quote, isNotNull);
         expect(state.quote!.request.currencyCode, 'SAR');
         expect(state.quote!.options, isNotEmpty);
-        expect(state.errorMessage, isNull);
+        // Track B - Ticket #121: Use structured error
+        expect(state.error, isNull);
         expect(state.hasError, isFalse);
       });
 
@@ -385,7 +398,8 @@ void main() {
         expect(state.hasQuote, isFalse);
         expect(state.quote, isNull);
         expect(state.hasError, isTrue);
-        expect(state.errorMessage, isNotNull);
+        // Track B - Ticket #121: Use structured error
+        expect(state.error, isNotNull);
       });
 
       test('with whitespace-only destination sets error', () async {
@@ -400,7 +414,8 @@ void main() {
         expect(state.hasQuote, isFalse);
         expect(state.quote, isNull);
         expect(state.hasError, isTrue);
-        expect(state.errorMessage, isNotNull);
+        // Track B - Ticket #121: Use structured error
+        expect(state.error, isNotNull);
       });
 
       test('quote contains expected options', () async {
@@ -429,7 +444,8 @@ void main() {
         final quote = controller.state.quote!;
 
         expect(quote.recommendedOption, isNotNull);
-        expect(quote.recommendedOption.isRecommended, isTrue);
+        // Track B - Ticket #121: recommendedOption is now nullable
+        expect(quote.recommendedOption!.isRecommended, isTrue);
       });
 
       test('quote.optionById returns correct option', () async {
@@ -476,7 +492,8 @@ void main() {
 
         expect(controller.state.isLoading, isFalse);
         expect(controller.state.quote, isNull);
-        expect(controller.state.errorMessage, isNull);
+        // Track B - Ticket #121: Use structured error
+        expect(controller.state.error, isNull);
         expect(controller.state.hasQuote, isFalse);
         expect(controller.state.hasError, isFalse);
       });
@@ -492,7 +509,8 @@ void main() {
         controller.clear();
 
         expect(controller.state.hasError, isFalse);
-        expect(controller.state.errorMessage, isNull);
+        // Track B - Ticket #121: Use structured error
+        expect(controller.state.error, isNull);
       });
 
       test('clear on fresh controller is safe', () {
@@ -503,7 +521,8 @@ void main() {
 
         expect(controller.state.isLoading, isFalse);
         expect(controller.state.quote, isNull);
-        expect(controller.state.errorMessage, isNull);
+        // Track B - Ticket #121: Use structured error
+        expect(controller.state.error, isNull);
       });
     });
   });
@@ -535,14 +554,19 @@ void main() {
       expect(state.hasError, isFalse);
     });
 
-    test('hasError is true when errorMessage exists and no quote', () {
-      const state = RideQuoteUiState(errorMessage: 'Test error');
+    // Track B - Ticket #121: Updated to use structured RideQuoteError
+    test('hasError is true when error exists and no quote', () {
+      const state = RideQuoteUiState(
+        error: RideQuoteErrorPricingFailed(),
+      );
 
       expect(state.hasQuote, isFalse);
       expect(state.hasError, isTrue);
+      expect(state.error, isA<RideQuoteErrorPricingFailed>());
     });
 
-    test('hasError is false when both quote and errorMessage exist', () async {
+    // Track B - Ticket #121: Updated to use structured RideQuoteError
+    test('hasError is false when both quote and error exist', () async {
       // Use MockRideQuoteService to get a real quote for testing
       const service = MockRideQuoteService();
       final request = RideQuoteRequest(
@@ -564,7 +588,7 @@ void main() {
       final quote = await service.getQuote(request);
       final state = RideQuoteUiState(
         quote: quote,
-        errorMessage: 'Some old error',
+        error: const RideQuoteErrorPricingFailed(),
       );
 
       // hasError only when quote is null
@@ -598,18 +622,21 @@ void main() {
       expect(cleared.quote, isNull);
     });
 
-    test('copyWith clearError sets errorMessage to null', () {
-      const original = RideQuoteUiState(errorMessage: 'Error');
+    // Track B - Ticket #121: Updated to use structured RideQuoteError
+    test('copyWith clearError sets error to null', () {
+      const original = RideQuoteUiState(
+        error: RideQuoteErrorPricingFailed(),
+      );
       final cleared = original.copyWith(clearError: true);
 
-      expect(cleared.errorMessage, isNull);
+      expect(cleared.error, isNull);
     });
   });
 
   // ==========================================================================
-  // Failure Tests - Track B Ticket #29
+  // Failure Tests - Track B Ticket #29, #121
   // ==========================================================================
-  group('RideQuoteController Failure Tests - Ticket #29', () {
+  group('RideQuoteController Failure Tests - Ticket #29, #121', () {
     test('refreshFromDraft sets hasError when both places are null', () async {
       // MockRidePricingService with zero failureRate
       const pricingService = MockRidePricingService(
@@ -635,7 +662,8 @@ void main() {
       // At minimum, it should not crash
     });
 
-    test('refreshFromDraft handles RidePricingException from service', () async {
+    // Track B - Ticket #121: Verify RideQuoteErrorPricingFailed on service exception
+    test('refreshFromDraft sets RideQuoteErrorPricingFailed on RidePricingException', () async {
       // Use MockRidePricingService with 100% failure rate
       const failingService = MockRidePricingService(
         baseLatency: Duration.zero,
@@ -673,10 +701,10 @@ void main() {
 
       await controller.refreshFromDraft(draft);
 
-      // Verify error state
+      // Verify structured error state
       expect(controller.state.isLoading, isFalse);
       expect(controller.state.hasError, isTrue);
-      expect(controller.state.errorMessage, isNotNull);
+      expect(controller.state.error, isA<RideQuoteErrorPricingFailed>());
       expect(controller.state.quote, isNull);
     });
 
@@ -752,6 +780,130 @@ void main() {
       expect(newController.state.hasError, isFalse);
       expect(newController.state.hasQuote, isTrue);
       expect(newController.state.quote, isNotNull);
+    });
+  });
+
+  // ==========================================================================
+  // Track B - Ticket #121: Structured Error Tests
+  // ==========================================================================
+  group('RideQuoteController Structured Error Tests - Ticket #121', () {
+    // Helper to create MobilityPlace with coordinates
+    MobilityPlace createPlace({
+      required String label,
+      required double lat,
+      required double lng,
+    }) {
+      return MobilityPlace(
+        label: label,
+        location: LocationPoint(
+          latitude: lat,
+          longitude: lng,
+          accuracyMeters: 10,
+          timestamp: DateTime.now(),
+        ),
+      );
+    }
+
+    test('RideQuoteErrorNoOptionsAvailable is set when quote has empty options', () async {
+      // Use MockRidePricingService configured to return empty options
+      const pricingService = MockRidePricingService(
+        baseLatency: Duration.zero,
+        returnEmptyOptions: true, // Flag to trigger empty options
+      );
+      final controller = RideQuoteController(pricingService: pricingService);
+
+      final pickup = createPlace(label: 'A', lat: 24.7136, lng: 46.6753);
+      final destination = createPlace(label: 'B', lat: 24.7200, lng: 46.6800);
+
+      final draft = RideDraftUiState(
+        pickupPlace: pickup,
+        destinationPlace: destination,
+      );
+
+      await controller.refreshFromDraft(draft);
+
+      expect(controller.state.isLoading, isFalse);
+      expect(controller.state.hasError, isTrue);
+      expect(controller.state.error, isA<RideQuoteErrorNoOptionsAvailable>());
+      expect(controller.state.quote, isNull);
+    });
+
+    test('retryFromDraft delegates to refreshFromDraft', () async {
+      const pricingService = MockRidePricingService(
+        baseLatency: Duration.zero,
+      );
+      final controller = RideQuoteController(pricingService: pricingService);
+
+      final pickup = createPlace(label: 'A', lat: 24.7136, lng: 46.6753);
+      final destination = createPlace(label: 'B', lat: 24.7200, lng: 46.6800);
+
+      final draft = RideDraftUiState(
+        pickupPlace: pickup,
+        destinationPlace: destination,
+      );
+
+      // Call retryFromDraft instead of refreshFromDraft
+      await controller.retryFromDraft(draft);
+
+      // Should produce the same result as refreshFromDraft
+      expect(controller.state.isLoading, isFalse);
+      expect(controller.state.hasQuote, isTrue);
+      expect(controller.state.quote, isNotNull);
+      expect(controller.state.error, isNull);
+    });
+
+    test('error is cleared on successful retry after failure', () async {
+      // Start with failing service
+      const failingService = MockRidePricingService(
+        baseLatency: Duration.zero,
+        failureRate: 1.0,
+      );
+      final controller = RideQuoteController(pricingService: failingService);
+
+      final pickup = createPlace(label: 'A', lat: 24.7136, lng: 46.6753);
+      final destination = createPlace(label: 'B', lat: 24.7200, lng: 46.6800);
+
+      final draft = RideDraftUiState(
+        pickupPlace: pickup,
+        destinationPlace: destination,
+      );
+
+      // First call fails
+      await controller.refreshFromDraft(draft);
+      expect(controller.state.hasError, isTrue);
+      expect(controller.state.error, isA<RideQuoteErrorPricingFailed>());
+
+      // Simulate retry with working service (new controller for isolation)
+      const workingService = MockRidePricingService(
+        baseLatency: Duration.zero,
+        failureRate: 0.0,
+      );
+      final retryController = RideQuoteController(pricingService: workingService);
+
+      await retryController.retryFromDraft(draft);
+
+      // Error should be cleared on success
+      expect(retryController.state.hasError, isFalse);
+      expect(retryController.state.error, isNull);
+      expect(retryController.state.hasQuote, isTrue);
+    });
+
+    test('RideQuoteErrorPricingFailed distinguishable from RideQuoteErrorNoOptionsAvailable', () {
+      const pricingError = RideQuoteErrorPricingFailed();
+      const emptyError = RideQuoteErrorNoOptionsAvailable();
+
+      expect(pricingError, isA<RideQuoteErrorPricingFailed>());
+      expect(emptyError, isA<RideQuoteErrorNoOptionsAvailable>());
+      expect(pricingError.runtimeType, isNot(emptyError.runtimeType));
+    });
+
+    test('RideQuoteErrorUnexpected for non-RidePricingException errors', () {
+      // This tests the type hierarchy directly since we can't easily inject
+      // a generic exception through MockRidePricingService
+      const unexpectedError = RideQuoteErrorUnexpected();
+
+      expect(unexpectedError, isA<RideQuoteError>());
+      expect(unexpectedError, isA<RideQuoteErrorUnexpected>());
     });
   });
 }

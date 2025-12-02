@@ -195,7 +195,8 @@ void main() {
         ],
       );
 
-      expect(quote.recommendedOption.id, equals('b'));
+      // Track B - Ticket #121: recommendedOption is now nullable
+      expect(quote.recommendedOption?.id, equals('b'));
     });
 
     test('optionById returns correct option', () {

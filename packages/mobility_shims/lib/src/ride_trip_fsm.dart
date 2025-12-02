@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 /// It is intentionally SDK-agnostic and backend-agnostic.
 ///
 /// Updated by: Track B - Ticket #89 (FSM Integration + Domain Helpers)
+/// Updated by: Track B - Ticket #116 (Complete FSM validation + additional helpers)
 enum RideTripPhase {
   /// No quote requested yet. User is still editing pickup/destination.
   draft,
@@ -83,6 +84,38 @@ enum RideTripPhase {
     return this == RideTripPhase.draft ||
         this == RideTripPhase.quoting ||
         this == RideTripPhase.requesting;
+  }
+
+  // ===========================================================================
+  // Track B - Ticket #116: Additional Domain Helpers
+  // ===========================================================================
+
+  /// Returns true if this phase is before driver is assigned.
+  ///
+  /// Pre-driver phases: draft, quoting, requesting, findingDriver
+  /// Track B - Ticket #116
+  bool get isPreDriver {
+    return this == RideTripPhase.draft ||
+        this == RideTripPhase.quoting ||
+        this == RideTripPhase.requesting ||
+        this == RideTripPhase.findingDriver;
+  }
+
+  /// Returns true if driver is involved (assigned and actively participating).
+  ///
+  /// With-driver phases: driverAccepted, driverArrived, inProgress
+  /// Track B - Ticket #116
+  bool get isWithDriver {
+    return this == RideTripPhase.driverAccepted ||
+        this == RideTripPhase.driverArrived ||
+        this == RideTripPhase.inProgress;
+  }
+
+  /// Returns true if this is the payment phase.
+  ///
+  /// Track B - Ticket #116
+  bool get isPaymentPhase {
+    return this == RideTripPhase.payment;
   }
 }
 

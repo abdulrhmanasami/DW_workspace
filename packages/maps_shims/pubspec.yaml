@@ -8,3 +8,5 @@ dependencies:
   meta: any
 dev_dependencies:
   lints: any
+  flutter_test:
+    sdk: flutter

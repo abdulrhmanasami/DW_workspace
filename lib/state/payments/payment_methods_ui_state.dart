@@ -94,9 +94,6 @@ class PaymentMethodsUiState {
   /// Default stub state with Cash + sample Card
   /// Track B - Ticket #100: Default selection is the default method (Cash)
   static PaymentMethodsUiState defaultStub() {
-    const methods = [
-      PaymentMethodUiModel.cash,
-    ];
     // Add card separately since stubCard is not const
     final allMethods = [
       PaymentMethodUiModel.cash,

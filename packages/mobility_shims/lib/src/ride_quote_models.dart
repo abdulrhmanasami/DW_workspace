@@ -256,13 +256,17 @@ class RideQuoteOption {
 /// Result of a quote request.
 ///
 /// Contains the original request and the available options.
+///
+/// Track B - Ticket #121: Now allows empty options to represent "no vehicles
+/// available" scenarios. The UI should check `options.isEmpty` and display
+/// an appropriate empty state.
 @immutable
 class RideQuote {
   const RideQuote({
     required this.quoteId,
     required this.request,
     required this.options,
-  }) : assert(options.length > 0, 'RideQuote.options must not be empty');
+  });
 
   /// Client-side identifier for this quote.
   final String quoteId;
@@ -271,10 +275,18 @@ class RideQuote {
   final RideQuoteRequest request;
 
   /// Available ride options (sorted from "best" to "worst" for display).
+  ///
+  /// Track B - Ticket #121: May be empty if no vehicles are available.
   final List<RideQuoteOption> options;
 
+  /// Whether any options are available.
+  bool get hasOptions => options.isNotEmpty;
+
   /// Returns the recommended option, or the first option if none is recommended.
-  RideQuoteOption get recommendedOption {
+  ///
+  /// Track B - Ticket #121: Returns null if options is empty.
+  RideQuoteOption? get recommendedOption {
+    if (options.isEmpty) return null;
     return options.firstWhere(
       (o) => o.isRecommended,
       orElse: () => options.first,

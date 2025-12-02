@@ -1,12 +1,15 @@
-/// Mock Ride Pricing Service - Track B Ticket #27, #63
+/// Mock Ride Pricing Service - Track B Ticket #27, #63, #115, #121
 /// Purpose: Simulated backend pricing engine for development and testing
 /// Created by: Track B - Ticket #27
 /// Updated by: Track B - Ticket #63 (RidePriceBreakdown integration)
-/// Last updated: 2025-11-29
+/// Reviewed by: Track B - Ticket #115 (MockPricingService architecture validation)
+/// Updated by: Track B - Ticket #121 (returnEmptyOptions for testing empty quote scenarios)
+/// Last updated: 2025-12-01
 ///
 /// This implementation simulates a backend pricing engine:
 /// - Configurable network latency
 /// - Configurable failure rate for chaos testing
+/// - Configurable empty options for empty state testing
 /// - Distance-based pricing calculation
 /// - Multiple vehicle options (Economy, XL, Premium)
 ///
@@ -29,6 +32,7 @@ import 'ride_pricing_service.dart';
 /// Simulates a backend pricing engine with:
 /// - Configurable latency to simulate network delay
 /// - Configurable failure rate for testing error handling
+/// - Configurable empty options for testing no-options scenarios
 /// - Distance-based pricing with realistic fare calculation
 ///
 /// Example usage:
@@ -45,6 +49,11 @@ import 'ride_pricing_service.dart';
 /// const failingService = MockRidePricingService(
 ///   failureRate: 1.0,
 /// );
+///
+/// // Track B - Ticket #121: Returns empty options (for empty state testing)
+/// const emptyService = MockRidePricingService(
+///   returnEmptyOptions: true,
+/// );
 /// ```
 @immutable
 class MockRidePricingService implements RidePricingService {
@@ -53,10 +62,12 @@ class MockRidePricingService implements RidePricingService {
   /// Parameters:
   /// - [baseLatency]: Simulated network delay (default: 600ms)
   /// - [failureRate]: Probability of failure (0.0 to 1.0, default: 0.0)
+  /// - [returnEmptyOptions]: If true, returns a quote with empty options (default: false)
   /// - [random]: Optional random instance for deterministic testing
   const MockRidePricingService({
     this.baseLatency = const Duration(milliseconds: 600),
     this.failureRate = 0.0,
+    this.returnEmptyOptions = false,
     Random? random,
   }) : _random = random;
 
@@ -65,6 +76,11 @@ class MockRidePricingService implements RidePricingService {
 
   /// Probability of throwing [RidePricingException] (0.0 = never, 1.0 = always).
   final double failureRate;
+
+  /// Track B - Ticket #121: If true, returns a quote with empty options.
+  ///
+  /// Use this to test the "no options available" UI state.
+  final bool returnEmptyOptions;
 
   /// Random instance for failure simulation (injectable for testing).
   final Random? _random;
@@ -100,24 +116,33 @@ class MockRidePricingService implements RidePricingService {
       throw const RidePricingException('Mock pricing service failure');
     }
 
-    // 3) Calculate distance between pickup and destination
+    // 3) Create the quote request for backward compatibility
+    final request = _buildRequest(pickup, destination);
+
+    // Track B - Ticket #121: Return empty options if configured
+    if (returnEmptyOptions) {
+      return RideQuote(
+        quoteId: 'mock-empty-${DateTime.now().microsecondsSinceEpoch}',
+        request: request,
+        options: const [],
+      );
+    }
+
+    // 4) Calculate distance between pickup and destination
     final distanceKm = _estimateDistanceKm(
       pickup.location,
       destination.location,
     );
 
-    // 4) Estimate trip duration (assume average speed of 25 km/h for city driving)
+    // 5) Estimate trip duration (assume average speed of 25 km/h for city driving)
     final durationMinutes = (distanceKm / 25.0 * 60).round().clamp(5, 45);
 
-    // 5) Build options based on service type (includes price breakdown)
+    // 6) Build options based on service type (includes price breakdown)
     final options = _buildOptions(
       distanceKm: distanceKm,
       durationMinutes: durationMinutes,
       serviceType: serviceType,
     );
-
-    // 6) Create the quote request for backward compatibility
-    final request = _buildRequest(pickup, destination);
 
     return RideQuote(
       quoteId: 'mock-${DateTime.now().microsecondsSinceEpoch}',

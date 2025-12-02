@@ -1,5 +1,7 @@
 /// Parcel Order Card Widget
 /// Created by: Track C - Ticket #51
+/// Updated by: Track B - Ticket #126 (Added OrderStatusChip)
+/// Updated by: Track B - Ticket #127 (Semantics for accessibility)
 /// Purpose: Reusable card widget for displaying parcel shipments
 /// Used in: ParcelsEntryScreen, OrdersHistoryScreen
 
@@ -10,6 +12,8 @@ import 'package:parcels_shims/parcels_shims.dart';
 import '../../../l10n/generated/app_localizations.dart';
 // Track C - Ticket #78: Unified parcel status helpers
 import '../../../state/parcels/parcel_status_utils.dart';
+// Track B - Ticket #126: Unified OrderStatusChip
+import '../../orders/widgets/order_status_chip.dart';
 
 /// Reusable parcel order card showing shipment summary.
 /// Displays: ID, Status, Route, Price, and Created Date.
@@ -38,33 +42,34 @@ class ParcelOrderCard extends StatelessWidget {
     // Extract price for display
     final price = parcel.price;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: DWSpacing.sm),
-      child: Card(
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(DWRadius.md),
-          child: Padding(
-            padding: const EdgeInsets.all(DWSpacing.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title row: ID + Status + Price
-                Row(
-                  children: [
-                    Text(
-                      '#$shortId',
-                      style: textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+    // Track B - Ticket #127: Wrap card in Semantics for accessibility
+    return Semantics(
+      label: l10n?.ordersServiceParcelSemanticLabel ?? 'Parcel shipment',
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: DWSpacing.sm),
+        child: Card(
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(DWRadius.md),
+            child: Padding(
+              padding: const EdgeInsets.all(DWSpacing.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title row: ID + Status Chip + Price
+                  // Track B - Ticket #126: Use OrderStatusChip instead of inline text
+                  Row(
+                    children: [
+                      Text(
+                        '#$shortId',
+                        style: textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
                     const SizedBox(width: DWSpacing.xs),
-                    Text(
-                      // Track C - Ticket #78: Use unified parcel status helper
-                      '• ${localizedParcelStatusShort(l10n, parcel.status)}',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
+                    // Track B - Ticket #126: OrderStatusChip for parcel status
+                    OrderStatusChip(
+                      status: _mapParcelStatusToUiModel(parcel.status, l10n),
                     ),
                     const Spacer(),
                     // Display final price
@@ -101,6 +106,7 @@ class ParcelOrderCard extends StatelessWidget {
           ),
         ),
       ),
+      ),
     );
   }
 
@@ -119,7 +125,32 @@ class ParcelOrderCard extends StatelessWidget {
     return '$year-$month-$day $hour:$minute';
   }
 
-  // Track C - Ticket #78: _statusLabel moved to parcel_status_utils.dart
-  // Use localizedParcelStatusShort(l10n, status) instead.
+  /// Maps a parcel status to the unified OrderStatusUiModel.
+  ///
+  /// Track B - Ticket #126: Centralized mapping for consistent status display.
+  /// Uses localized labels from parcel_status_utils.dart.
+  OrderStatusUiModel _mapParcelStatusToUiModel(
+    ParcelStatus status,
+    AppLocalizations? l10n,
+  ) {
+    final label = localizedParcelStatusShort(l10n, status);
+
+    // Determine tone based on status
+    final OrderStatusTone tone;
+    if (status == ParcelStatus.delivered) {
+      tone = OrderStatusTone.success;
+    } else if (status == ParcelStatus.cancelled || status == ParcelStatus.failed) {
+      tone = OrderStatusTone.error;
+    } else if (status == ParcelStatus.inTransit ||
+        status == ParcelStatus.pickedUp ||
+        status == ParcelStatus.pickupPending) {
+      tone = OrderStatusTone.info;
+    } else {
+      // draft, quoting, scheduled - early/pending states
+      tone = OrderStatusTone.warning;
+    }
+
+    return OrderStatusUiModel(label: label, tone: tone);
+  }
 }
 

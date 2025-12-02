@@ -5,6 +5,7 @@ import 'package:parcels_shims/parcels_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../state/parcels/parcel_orders_state.dart';
+import '../orders/widgets/order_list_skeleton.dart';
 import 'parcel_create_shipment_screen.dart';
 import 'parcel_shipment_details_screen.dart';
 import 'widgets/parcel_order_card.dart';
@@ -15,6 +16,7 @@ import 'widgets/parcel_order_card.dart';
 /// Updated by: Track C - Ticket #46 (Create Shipment navigation)
 /// Updated by: Track C - Ticket #47 (Navigate to Shipment Details)
 /// Updated by: Track C - Ticket #50 (Parcels Pricing Integration - price display)
+/// Updated by: Track B - Ticket #127 (Skeleton Loader support)
 /// Purpose: Initial entry point for Parcels vertical from Home Hub.
 /// This screen now includes My Shipments section with filtering and price display.
 class ParcelsEntryScreen extends ConsumerWidget {
@@ -30,6 +32,8 @@ class ParcelsEntryScreen extends ConsumerWidget {
     // Watch parcel orders state for My Shipments section
     final ordersState = ref.watch(parcelOrdersProvider);
     final parcels = ordersState.parcels;
+    // Track B - Ticket #127: Get loading state for skeleton
+    final isLoading = ordersState.isLoading;
 
     return Scaffold(
       appBar: AppBar(
@@ -81,7 +85,8 @@ class ParcelsEntryScreen extends ConsumerWidget {
               const SizedBox(height: DWSpacing.xl),
 
               // Track C - Ticket #45: My Shipments Section
-              _ParcelsListSection(parcels: parcels),
+              // Track B - Ticket #127: Pass loading state for skeleton
+              _ParcelsListSection(parcels: parcels, isLoading: isLoading),
 
               const SizedBox(height: DWSpacing.xl),
               Text(
@@ -129,10 +134,17 @@ bool _matchesFilter(Parcel parcel, _ParcelsFilter filter) {
 
 /// My Shipments Section Widget
 /// Shows either empty state or list of parcels with filtering.
+/// Track B - Ticket #127: Added isLoading support for skeleton.
 class _ParcelsListSection extends StatefulWidget {
-  const _ParcelsListSection({required this.parcels});
+  const _ParcelsListSection({
+    required this.parcels,
+    this.isLoading = false,
+  });
 
   final List<Parcel> parcels;
+
+  /// Track B - Ticket #127: Loading state for skeleton display.
+  final bool isLoading;
 
   @override
   State<_ParcelsListSection> createState() => _ParcelsListSectionState();
@@ -147,6 +159,14 @@ class _ParcelsListSectionState extends State<_ParcelsListSection> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+
+    // Track B - Ticket #127: Show skeleton while loading
+    if (widget.isLoading) {
+      return const SizedBox(
+        height: 300, // Constrained height for skeleton in this context
+        child: OrderListSkeleton(itemCount: 3),
+      );
+    }
 
     // Empty state
     if (widget.parcels.isEmpty) {

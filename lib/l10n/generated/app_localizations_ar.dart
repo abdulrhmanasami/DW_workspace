@@ -747,6 +747,19 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String ordersRideItemTitleWithService(
+    String serviceName,
+    String destination,
+  ) {
+    return '$serviceName إلى $destination';
+  }
+
+  @override
+  String ordersRideItemSubtitleWithOrigin(String origin, String date) {
+    return 'من $origin · $date';
+  }
+
+  @override
   String get ordersRideStatusCompleted => 'مكتملة';
 
   @override
@@ -1319,6 +1332,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rideCancelSuccessSnackbar => 'تم إلغاء رحلتك.';
 
   @override
+  String get rideCancelReasonByRider => 'تم الإلغاء من قِبل الراكب';
+
+  @override
   String get rideActiveHeadlineFindingDriver => 'جارٍ البحث عن سائق…';
 
   @override
@@ -1379,6 +1395,24 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String rideActiveSummaryServiceAndPrice(String serviceName, String price) {
+    return '$serviceName · $price';
+  }
+
+  @override
+  String rideActivePayingWith(String method) {
+    return 'الدفع عبر $method';
+  }
+
+  @override
+  String get rideActivePriceNotAvailable => 'السعر غير متاح بعد';
+
+  @override
+  String homeActiveRidePriceAndPayment(String price, String paymentMethod) {
+    return '$price · $paymentMethod';
+  }
+
+  @override
   String get rideDebugFsmTitle => 'أدوات تصحيح FSM';
 
   @override
@@ -1427,6 +1461,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeActiveRideTitleGeneric => 'رحلة نشطة';
+
+  @override
+  String homeActiveRideEtaTitle(int minutes) {
+    return 'يصل خلال $minutes دقيقة';
+  }
 
   @override
   String homeActiveRideSubtitleToDestination(String destination) {
@@ -1490,6 +1529,28 @@ class AppLocalizationsAr extends AppLocalizations {
       'شكرًا لاستخدامك Delivery Ways';
 
   @override
+  String get rideTripSummaryCancelledTitle => 'تم إلغاء الرحلة';
+
+  @override
+  String get rideTripSummaryCancelledSubtitle => 'تم إلغاء رحلتك';
+
+  @override
+  String get rideTripSummaryFailedTitle => 'فشلت الرحلة';
+
+  @override
+  String get rideTripSummaryFailedSubtitle => 'تعذّر إكمال هذه الرحلة';
+
+  @override
+  String get rideFailReasonNoDriverFound => 'لم يتم العثور على سائق';
+
+  @override
+  String get rideFailNoDriverFoundSnackbar =>
+      'تعذّر العثور على سائق لهذه الرحلة.';
+
+  @override
+  String get rideFailNoDriverFoundCta => 'لا يوجد سائقون متاحون؟ حاول لاحقاً';
+
+  @override
   String get rideTripSummaryRouteSectionTitle => 'المسار';
 
   @override
@@ -1506,6 +1567,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get rideTripSummaryDoneCta => 'إنهاء';
+
+  @override
+  String rideTripCompletionServiceLabel(String serviceName) {
+    return 'رحلة $serviceName';
+  }
 
   @override
   String get rideConfirmLoadingTitle => 'جاري جلب خيارات الرحلة...';
@@ -1532,6 +1598,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get rideConfirmRecommendedBadge => 'موصى به';
+
+  @override
+  String get rideQuoteErrorTitle => 'تعذّر تحميل الأسعار';
+
+  @override
+  String get rideQuoteErrorGeneric =>
+      'حدث خطأ أثناء جلب أسعار الرحلات. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get rideQuoteErrorNoOptions =>
+      'لا تتوفر خيارات رحلات لهذا المسار في الوقت الحالي.';
+
+  @override
+  String get rideQuoteRetryCta => 'إعادة المحاولة';
+
+  @override
+  String get rideQuoteEmptyTitle => 'لا توجد رحلات متاحة';
+
+  @override
+  String get rideQuoteEmptyDescription =>
+      'جرّب وقتًا مختلفًا أو عدّل نقطة الانطلاق والوجهة.';
 
   @override
   String get rideConfirmFromLabel => 'من';
@@ -2403,4 +2490,38 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get rideActiveTripDriverSectionStubBody =>
       'تفاصيل السائق والمركبة ستظهر بعد الربط مع خدمة الرحلات الفعلية.';
+
+  @override
+  String get ordersHistoryEmptyAllTitle => 'لا توجد طلبات بعد';
+
+  @override
+  String get ordersHistoryEmptyAllDescription =>
+      'ستظهر رحلاتك وطرودك وطلبات الطعام هنا.';
+
+  @override
+  String get ordersHistoryEmptyRidesTitle => 'لا توجد رحلات بعد';
+
+  @override
+  String get ordersHistoryEmptyRidesDescription => 'ستظهر رحلاتك المكتملة هنا.';
+
+  @override
+  String get ordersHistoryEmptyParcelsTitle => 'لا توجد طرود بعد';
+
+  @override
+  String get ordersHistoryEmptyParcelsDescription => 'ستظهر شحناتك هنا.';
+
+  @override
+  String get ordersHistoryEmptyFoodTitle => 'لا توجد طلبات طعام بعد';
+
+  @override
+  String get ordersHistoryEmptyFoodDescription => 'ستظهر طلبات الطعام هنا.';
+
+  @override
+  String get ordersServiceRideSemanticLabel => 'طلب رحلة';
+
+  @override
+  String get ordersServiceParcelSemanticLabel => 'شحنة طرد';
+
+  @override
+  String get ordersServiceFoodSemanticLabel => 'طلب طعام';
 }

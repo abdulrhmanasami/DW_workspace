@@ -1,7 +1,8 @@
-/// RideTrip FSM Unit Tests - Track B Ticket #24, #89
+/// RideTrip FSM Unit Tests - Track B Ticket #24, #89, #116
 /// Purpose: Comprehensive domain-level tests for the Ride FSM
 /// Created by: Track B - Ticket #24
 /// Updated by: Track B - Ticket #89 (Domain helpers + tryApply + double events)
+/// Updated by: Track B - Ticket #116 (Complete FSM validation + additional helpers)
 /// Last updated: 2025-11-30
 ///
 /// This file tests the canonical FSM for ride lifecycle transitions.
@@ -666,6 +667,93 @@ void main() {
           for (final phase in driverPhases) {
             expect(phase.isPreTrip, isFalse,
                 reason: '$phase should not be pre-trip');
+          }
+        });
+      });
+
+      // =========================================================================
+      // Track B - Ticket #116: Additional Domain Helpers Tests
+      // =========================================================================
+
+      group('isPreDriver (Ticket #116)', () {
+        test('returns true for phases before driver assignment', () {
+          final preDriverPhases = [
+            RideTripPhase.draft,
+            RideTripPhase.quoting,
+            RideTripPhase.requesting,
+            RideTripPhase.findingDriver,
+          ];
+
+          for (final phase in preDriverPhases) {
+            expect(phase.isPreDriver, isTrue,
+                reason: '$phase should be pre-driver');
+          }
+        });
+
+        test('returns false for driver-assigned phases', () {
+          final withDriverPhases = [
+            RideTripPhase.driverAccepted,
+            RideTripPhase.driverArrived,
+            RideTripPhase.inProgress,
+            RideTripPhase.payment,
+            RideTripPhase.completed,
+            RideTripPhase.cancelled,
+            RideTripPhase.failed,
+          ];
+
+          for (final phase in withDriverPhases) {
+            expect(phase.isPreDriver, isFalse,
+                reason: '$phase should not be pre-driver');
+          }
+        });
+      });
+
+      group('isWithDriver (Ticket #116)', () {
+        test('returns true for phases with active driver', () {
+          final withDriverPhases = [
+            RideTripPhase.driverAccepted,
+            RideTripPhase.driverArrived,
+            RideTripPhase.inProgress,
+          ];
+
+          for (final phase in withDriverPhases) {
+            expect(phase.isWithDriver, isTrue,
+                reason: '$phase should be with-driver');
+          }
+        });
+
+        test('returns false for phases without active driver', () {
+          final notWithDriverPhases = [
+            RideTripPhase.draft,
+            RideTripPhase.quoting,
+            RideTripPhase.requesting,
+            RideTripPhase.findingDriver,
+            RideTripPhase.payment,
+            RideTripPhase.completed,
+            RideTripPhase.cancelled,
+            RideTripPhase.failed,
+          ];
+
+          for (final phase in notWithDriverPhases) {
+            expect(phase.isWithDriver, isFalse,
+                reason: '$phase should not be with-driver');
+          }
+        });
+      });
+
+      group('isPaymentPhase (Ticket #116)', () {
+        test('returns true only for payment phase', () {
+          expect(RideTripPhase.payment.isPaymentPhase, isTrue);
+        });
+
+        test('returns false for all other phases', () {
+          final otherPhases = RideTripPhase.values
+              .where((p) => p != RideTripPhase.payment)
+              .toList();
+
+          for (final phase in otherPhases) {
+            expect(phase.isPaymentPhase, isFalse,
+                reason: '$phase should not be payment phase');
           }
         });
       });

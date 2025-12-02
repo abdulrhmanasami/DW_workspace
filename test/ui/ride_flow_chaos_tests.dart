@@ -1,6 +1,7 @@
 /// Ride Flow Chaos Tests - Track B Ticket #97
 /// Purpose: Chaos & Resilience testing for Ride flow
 /// Created by: Track B - Ticket #97
+/// Updated by: Track B - Ticket #102 (Payment method lifecycle chaos tests)
 /// Last updated: 2025-11-30
 ///
 /// This test file focuses on chaos/failure scenarios in the ride flow:
@@ -383,6 +384,183 @@ void main() {
         expect(find.text('Economy'), findsOneWidget);
       },
     );
+
+    // =========================================================================
+    // Track B - Ticket #102: Payment method lifecycle chaos tests
+    // =========================================================================
+
+    testWidgets(
+      'cancelled_ride_does_not_leak_paymentMethodId_into_new_draft',
+      (WidgetTester tester) async {
+        // Use a real controller to track state changes
+        final draftController = RideDraftController();
+        final sessionController = _CancellableRideTripSessionController();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideDraftProvider.overrideWith((ref) => draftController),
+              rideQuoteControllerProvider.overrideWith(
+                  (ref) => _SuccessQuoteController()),
+              rideTripSessionProvider.overrideWith((ref) => sessionController),
+            ],
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: const RideConfirmationScreen(),
+              routes: {
+                '/ride/active': (context) => const RideActiveTripScreen(),
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Step 1: First ride - set Card as payment method
+        draftController.updateDestination('Airport');
+        draftController.setPaymentMethodId('visa_4242');
+        expect(draftController.state.paymentMethodId, 'visa_4242',
+            reason: 'First ride should have Visa card set');
+
+        // Step 2: Start the trip
+        sessionController.simulateStartTrip();
+        await tester.pumpAndSettle();
+
+        // Step 3: Cancel the trip
+        await sessionController.cancelActiveTrip();
+        expect(sessionController.state.activeTrip?.phase, RideTripPhase.cancelled,
+            reason: 'Trip should be cancelled');
+
+        // Step 4: Clear draft (as would happen when user returns to home)
+        draftController.clear();
+
+        // Step 5: Verify no leakage
+        expect(draftController.state.paymentMethodId, isNull,
+            reason: 'After cancellation and clear, paymentMethodId should be null');
+
+        // Step 6: Start a new ride and verify fresh state
+        draftController.updateDestination('Mall');
+        expect(draftController.state.paymentMethodId, isNull,
+            reason: 'New ride should not have old paymentMethodId');
+
+        // Step 7: Set new payment method (simulating user selection)
+        draftController.setPaymentMethodId('cash');
+        expect(draftController.state.paymentMethodId, 'cash',
+            reason: 'New ride should use Cash (set fresh, not leaked Visa)');
+      },
+    );
+
+    testWidgets(
+      'completed_ride_clears_paymentMethodId_on_draft_reset',
+      (WidgetTester tester) async {
+        final draftController = RideDraftController();
+        final sessionController = _CompletableRideTripSessionController();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideDraftProvider.overrideWith((ref) => draftController),
+              rideQuoteControllerProvider.overrideWith(
+                  (ref) => _SuccessQuoteController()),
+              rideTripSessionProvider.overrideWith((ref) => sessionController),
+            ],
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: const RideConfirmationScreen(),
+              routes: {
+                '/ride/active': (context) => const RideActiveTripScreen(),
+                '/ride/trip_summary': (context) => const Scaffold(
+                      body: Center(child: Text('Trip Summary')),
+                    ),
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // First ride with premium payment
+        draftController.updateDestination('Office');
+        draftController.setPaymentMethodId('mastercard_5555');
+
+        // Start and complete the trip
+        sessionController.simulateStartTrip();
+        await tester.pumpAndSettle();
+
+        sessionController.completeTrip();
+        await tester.pumpAndSettle();
+
+        // Clear draft after completion
+        draftController.clear();
+
+        // Verify clean state
+        expect(draftController.state.paymentMethodId, isNull,
+            reason: 'After completion and clear, paymentMethodId should be null');
+        expect(draftController.state.destinationQuery, '',
+            reason: 'Destination should be reset');
+      },
+    );
+
+    testWidgets(
+      'clearPaymentMethodId_only_clears_payment_preserves_other_fields',
+      (WidgetTester tester) async {
+        final draftController = RideDraftController();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideDraftProvider.overrideWith((ref) => draftController),
+              rideQuoteControllerProvider.overrideWith(
+                  (ref) => _SuccessQuoteController()),
+              rideTripSessionProvider.overrideWith(
+                  (ref) => RideTripSessionController()),
+            ],
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: const RideConfirmationScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Set up full draft state
+        draftController.updateDestination('Airport');
+        draftController.updateSelectedOption('xl');
+        draftController.setPaymentMethodId('visa_4242');
+
+        // Verify initial state
+        expect(draftController.state.destinationQuery, 'Airport');
+        expect(draftController.state.selectedOptionId, 'xl');
+        expect(draftController.state.paymentMethodId, 'visa_4242');
+
+        // Clear only payment method
+        draftController.clearPaymentMethodId();
+
+        // Verify only paymentMethodId is cleared
+        expect(draftController.state.paymentMethodId, isNull,
+            reason: 'Only paymentMethodId should be cleared');
+        expect(draftController.state.destinationQuery, 'Airport',
+            reason: 'Destination should be preserved');
+        expect(draftController.state.selectedOptionId, 'xl',
+            reason: 'Selected option should be preserved');
+      },
+    );
   });
 }
 
@@ -458,6 +636,11 @@ class _ChaosRideQuoteController extends StateNotifier<RideQuoteUiState>
   }
 
   @override
+  Future<void> retryFromDraft(RideDraftUiState draft) async {
+    await refreshFromDraft(draft);
+  }
+
+  @override
   void clear() {
     state = const RideQuoteUiState();
   }
@@ -485,6 +668,11 @@ class _PersistentFailController extends StateNotifier<RideQuoteUiState>
   }
 
   @override
+  Future<void> retryFromDraft(RideDraftUiState draft) async {
+    await refreshFromDraft(draft);
+  }
+
+  @override
   void clear() {
     state = const RideQuoteUiState();
   }
@@ -503,6 +691,11 @@ class _EmptyQuoteController extends StateNotifier<RideQuoteUiState>
   @override
   Future<void> refreshFromDraft(RideDraftUiState draft) async {
     state = const RideQuoteUiState(isLoading: false);
+  }
+
+  @override
+  Future<void> retryFromDraft(RideDraftUiState draft) async {
+    await refreshFromDraft(draft);
   }
 
   @override
@@ -559,7 +752,7 @@ class _RapidPhaseChangeController extends StateNotifier<RideTripSessionUiState>
   }
 
   @override
-  void startFromDraft(RideDraftUiState draft) {}
+  void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {}
 
   @override
   void applyEvent(RideTripEvent event) {}
@@ -579,7 +772,21 @@ class _RapidPhaseChangeController extends StateNotifier<RideTripSessionUiState>
   void rateCurrentTrip(int rating) {}
 
   @override
-  void archiveTrip({required String destinationLabel, String? amountFormatted}) {}
+  // Track B - Ticket #108: Extended with serviceName, originLabel, paymentMethodLabel
+  void archiveTrip({
+    required String destinationLabel,
+    String? amountFormatted,
+    String? serviceName,
+    String? originLabel,
+    String? paymentMethodLabel,
+  }) {}
+
+  // Track B - Ticket #107
+  @override
+  bool completeTrip() => true;
+
+  @override
+  void clearCompletionSummary() {}
 }
 
 /// Fake RideDraftController
@@ -605,6 +812,14 @@ class _FakeRideDraftController extends StateNotifier<RideDraftUiState>
 
   @override
   void updateDestinationPlace(MobilityPlace place) {}
+
+  // Track B - Ticket #101
+  @override
+  void setPaymentMethodId(String? paymentMethodId) {}
+
+  // Track B - Ticket #102
+  @override
+  void clearPaymentMethodId() {}
 }
 
 /// Fake RideQuoteController
@@ -617,6 +832,190 @@ class _FakeRideQuoteController extends StateNotifier<RideQuoteUiState>
   Future<void> refreshFromDraft(RideDraftUiState draft) async {}
 
   @override
+  Future<void> retryFromDraft(RideDraftUiState draft) async {}
+
+  @override
   void clear() {}
+}
+
+// ============================================================================
+// Track B - Ticket #102: Additional Controllers for Payment Lifecycle Tests
+// ============================================================================
+
+/// Controller that always returns success quote
+class _SuccessQuoteController extends StateNotifier<RideQuoteUiState>
+    implements RideQuoteController {
+  _SuccessQuoteController()
+      : super(RideQuoteUiState(
+          isLoading: false,
+          quote: RideQuote(
+            quoteId: 'success-quote',
+            request: RideQuoteRequest(
+              pickup: LocationPoint(
+                latitude: 24.7136,
+                longitude: 46.6753,
+                accuracyMeters: 10,
+                timestamp: DateTime.now(),
+              ),
+              dropoff: LocationPoint(
+                latitude: 24.7743,
+                longitude: 46.7386,
+                accuracyMeters: 10,
+                timestamp: DateTime.now(),
+              ),
+              currencyCode: 'SAR',
+            ),
+            options: const [
+              RideQuoteOption(
+                id: 'economy',
+                category: RideVehicleCategory.economy,
+                displayName: 'Economy',
+                etaMinutes: 5,
+                priceMinorUnits: 1800,
+                currencyCode: 'SAR',
+                isRecommended: true,
+              ),
+            ],
+          ),
+        ));
+
+  @override
+  Future<void> refreshFromDraft(RideDraftUiState draft) async {}
+
+  @override
+  Future<void> retryFromDraft(RideDraftUiState draft) async {}
+
+  @override
+  void clear() {}
+}
+
+/// Controller that can simulate trip cancellation
+class _CancellableRideTripSessionController
+    extends StateNotifier<RideTripSessionUiState>
+    implements RideTripSessionController {
+  _CancellableRideTripSessionController()
+      : super(const RideTripSessionUiState());
+
+  void simulateStartTrip() {
+    state = RideTripSessionUiState(
+      activeTrip: RideTripState(
+        tripId: 'cancellable-test',
+        phase: RideTripPhase.findingDriver,
+      ),
+    );
+  }
+
+  @override
+  void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {
+    simulateStartTrip();
+  }
+
+  @override
+  void applyEvent(RideTripEvent event) {}
+
+  @override
+  void clear() {
+    state = const RideTripSessionUiState();
+  }
+
+  @override
+  bool get hasActiveTrip => state.activeTrip != null;
+
+  @override
+  Future<bool> cancelActiveTrip() async {
+    if (state.activeTrip == null) return false;
+    state = RideTripSessionUiState(
+      activeTrip: RideTripState(
+        tripId: state.activeTrip!.tripId,
+        phase: RideTripPhase.cancelled,
+      ),
+    );
+    return true;
+  }
+
+  @override
+  void rateCurrentTrip(int rating) {}
+
+  @override
+  // Track B - Ticket #108: Extended with serviceName, originLabel, paymentMethodLabel
+  void archiveTrip({
+    required String destinationLabel,
+    String? amountFormatted,
+    String? serviceName,
+    String? originLabel,
+    String? paymentMethodLabel,
+  }) {}
+
+  // Track B - Ticket #107
+  @override
+  bool completeTrip() => true;
+
+  @override
+  void clearCompletionSummary() {}
+}
+
+/// Controller that can simulate trip completion
+class _CompletableRideTripSessionController
+    extends StateNotifier<RideTripSessionUiState>
+    implements RideTripSessionController {
+  _CompletableRideTripSessionController()
+      : super(const RideTripSessionUiState());
+
+  void simulateStartTrip() {
+    state = RideTripSessionUiState(
+      activeTrip: RideTripState(
+        tripId: 'completable-test',
+        phase: RideTripPhase.inProgress,
+      ),
+    );
+  }
+
+  // Track B - Ticket #107: Changed signature to match interface
+  @override
+  bool completeTrip() {
+    if (state.activeTrip == null) return false;
+    state = RideTripSessionUiState(
+      activeTrip: RideTripState(
+        tripId: state.activeTrip!.tripId,
+        phase: RideTripPhase.completed,
+      ),
+    );
+    return true;
+  }
+
+  @override
+  void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {
+    simulateStartTrip();
+  }
+
+  @override
+  void applyEvent(RideTripEvent event) {}
+
+  @override
+  void clear() {
+    state = const RideTripSessionUiState();
+  }
+
+  @override
+  bool get hasActiveTrip => state.activeTrip != null;
+
+  @override
+  Future<bool> cancelActiveTrip() async => false;
+
+  @override
+  void rateCurrentTrip(int rating) {}
+
+  @override
+  // Track B - Ticket #108: Extended with serviceName, originLabel, paymentMethodLabel
+  void archiveTrip({
+    required String destinationLabel,
+    String? amountFormatted,
+    String? serviceName,
+    String? originLabel,
+    String? paymentMethodLabel,
+  }) {}
+
+  @override
+  void clearCompletionSummary() {}
 }
 

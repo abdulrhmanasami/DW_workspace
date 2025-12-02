@@ -1408,6 +1408,18 @@ abstract class AppLocalizations {
   /// **'Ride to {destination}'**
   String ordersRideItemTitleToDestination(String destination);
 
+  /// Title for ride order item with service name (Track B - Ticket #108)
+  ///
+  /// In en, this message translates to:
+  /// **'{serviceName} to {destination}'**
+  String ordersRideItemTitleWithService(String serviceName, String destination);
+
+  /// Subtitle for ride order item with origin (Track B - Ticket #108)
+  ///
+  /// In en, this message translates to:
+  /// **'From {origin} · {date}'**
+  String ordersRideItemSubtitleWithOrigin(String origin, String date);
+
   /// Ride order status: completed (Track B - Ticket #96)
   ///
   /// In en, this message translates to:
@@ -2440,6 +2452,12 @@ abstract class AppLocalizations {
   /// **'Your ride has been cancelled.'**
   String get rideCancelSuccessSnackbar;
 
+  /// Cancel reason label when rider cancels the trip (Track B - Ticket #120)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled by rider'**
+  String get rideCancelReasonByRider;
+
   /// No description provided for @rideActiveHeadlineFindingDriver.
   ///
   /// In en, this message translates to:
@@ -2548,6 +2566,30 @@ abstract class AppLocalizations {
   /// **'To {destination}'**
   String rideActiveDestinationLabel(String destination);
 
+  /// Service name and price display in active trip (Track B - Ticket #105)
+  ///
+  /// In en, this message translates to:
+  /// **'{serviceName} · {price}'**
+  String rideActiveSummaryServiceAndPrice(String serviceName, String price);
+
+  /// Payment method label in active trip (Track B - Ticket #105)
+  ///
+  /// In en, this message translates to:
+  /// **'Paying with {method}'**
+  String rideActivePayingWith(String method);
+
+  /// Fallback when price is not available in active trip (Track B - Ticket #105)
+  ///
+  /// In en, this message translates to:
+  /// **'Price not available yet'**
+  String get rideActivePriceNotAvailable;
+
+  /// Price and payment method in home active ride card (Track B - Ticket #105)
+  ///
+  /// In en, this message translates to:
+  /// **'{price} · {paymentMethod}'**
+  String homeActiveRidePriceAndPayment(String price, String paymentMethod);
+
   /// Title for debug FSM section (only shown in debug mode)
   ///
   /// In en, this message translates to:
@@ -2643,6 +2685,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Active ride'**
   String get homeActiveRideTitleGeneric;
+
+  /// Title with ETA for active ride card on Home Hub (Track B - Ticket #114)
+  ///
+  /// In en, this message translates to:
+  /// **'Arriving in {minutes} min'**
+  String homeActiveRideEtaTitle(int minutes);
 
   /// Subtitle showing destination on active ride card
   ///
@@ -2758,6 +2806,48 @@ abstract class AppLocalizations {
   /// **'Thanks for riding with Delivery Ways'**
   String get rideTripSummaryCompletedSubtitle;
 
+  /// Header title when trip is cancelled (Track B - Ticket #120)
+  ///
+  /// In en, this message translates to:
+  /// **'Trip cancelled'**
+  String get rideTripSummaryCancelledTitle;
+
+  /// Subtitle shown when viewing a cancelled trip (Track B - Ticket #120)
+  ///
+  /// In en, this message translates to:
+  /// **'Your ride was cancelled'**
+  String get rideTripSummaryCancelledSubtitle;
+
+  /// Title shown when viewing a failed trip (Track B - Ticket #122)
+  ///
+  /// In en, this message translates to:
+  /// **'Ride failed'**
+  String get rideTripSummaryFailedTitle;
+
+  /// Subtitle shown when viewing a failed trip (Track B - Ticket #122)
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t complete this ride'**
+  String get rideTripSummaryFailedSubtitle;
+
+  /// Reason label when no driver was available (Track B - Ticket #122)
+  ///
+  /// In en, this message translates to:
+  /// **'No driver found'**
+  String get rideFailReasonNoDriverFound;
+
+  /// SnackBar message shown when no driver is found (Track B - Ticket #122)
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find a driver for this ride.'**
+  String get rideFailNoDriverFoundSnackbar;
+
+  /// CTA button text for no driver found action (Track B - Ticket #122)
+  ///
+  /// In en, this message translates to:
+  /// **'No drivers available? Try later'**
+  String get rideFailNoDriverFoundCta;
+
   /// Section title for route summary
   ///
   /// In en, this message translates to:
@@ -2793,6 +2883,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Done'**
   String get rideTripSummaryDoneCta;
+
+  /// Service name label in trip completion screen (Track B - Ticket #107)
+  ///
+  /// In en, this message translates to:
+  /// **'{serviceName} ride'**
+  String rideTripCompletionServiceLabel(String serviceName);
 
   /// Title shown while loading ride options (Ticket #26)
   ///
@@ -2841,6 +2937,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recommended'**
   String get rideConfirmRecommendedBadge;
+
+  /// Title for the error state when ride pricing fails (Track B - Ticket #121)
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load prices'**
+  String get rideQuoteErrorTitle;
+
+  /// Generic error message for pricing failures (Track B - Ticket #121)
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong while fetching ride prices. Please try again.'**
+  String get rideQuoteErrorGeneric;
+
+  /// Error message when no ride options are returned (Track B - Ticket #121)
+  ///
+  /// In en, this message translates to:
+  /// **'No ride options are available for this route right now.'**
+  String get rideQuoteErrorNoOptions;
+
+  /// CTA button text to retry fetching ride prices (Track B - Ticket #121)
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get rideQuoteRetryCta;
+
+  /// Title for empty state when no ride options (Track B - Ticket #121)
+  ///
+  /// In en, this message translates to:
+  /// **'No rides available'**
+  String get rideQuoteEmptyTitle;
+
+  /// Description for empty state when no ride options (Track B - Ticket #121)
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different time or adjust your pickup and destination.'**
+  String get rideQuoteEmptyDescription;
 
   /// Label for pickup location in trip summary (Ticket #91)
   ///
@@ -4461,6 +4593,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Driver and vehicle details will be available once the mobility integration is connected.'**
   String get rideActiveTripDriverSectionStubBody;
+
+  /// Empty state title when no orders at all (Track B - Ticket #125)
+  ///
+  /// In en, this message translates to:
+  /// **'No orders yet'**
+  String get ordersHistoryEmptyAllTitle;
+
+  /// Empty state description when no orders at all (Track B - Ticket #125)
+  ///
+  /// In en, this message translates to:
+  /// **'Your rides, parcels and food orders will appear here.'**
+  String get ordersHistoryEmptyAllDescription;
+
+  /// Empty state title when no ride orders (Track B - Ticket #125)
+  ///
+  /// In en, this message translates to:
+  /// **'No rides yet'**
+  String get ordersHistoryEmptyRidesTitle;
+
+  /// Empty state description when no ride orders (Track B - Ticket #125)
+  ///
+  /// In en, this message translates to:
+  /// **'Your completed rides will appear here.'**
+  String get ordersHistoryEmptyRidesDescription;
+
+  /// Empty state title when no parcel orders (Track B - Ticket #125)
+  ///
+  /// In en, this message translates to:
+  /// **'No parcels yet'**
+  String get ordersHistoryEmptyParcelsTitle;
+
+  /// Empty state description when no parcel orders (Track B - Ticket #125)
+  ///
+  /// In en, this message translates to:
+  /// **'Your shipments will appear here.'**
+  String get ordersHistoryEmptyParcelsDescription;
+
+  /// Empty state title when no food orders (Track B - Ticket #125)
+  ///
+  /// In en, this message translates to:
+  /// **'No food orders yet'**
+  String get ordersHistoryEmptyFoodTitle;
+
+  /// Empty state description when no food orders (Track B - Ticket #125)
+  ///
+  /// In en, this message translates to:
+  /// **'Your food delivery orders will appear here.'**
+  String get ordersHistoryEmptyFoodDescription;
+
+  /// Accessibility label for ride order service icon (Track B - Ticket #127)
+  ///
+  /// In en, this message translates to:
+  /// **'Ride order'**
+  String get ordersServiceRideSemanticLabel;
+
+  /// Accessibility label for parcel order card (Track B - Ticket #127)
+  ///
+  /// In en, this message translates to:
+  /// **'Parcel shipment'**
+  String get ordersServiceParcelSemanticLabel;
+
+  /// Accessibility label for food order service icon (Track B - Ticket #127)
+  ///
+  /// In en, this message translates to:
+  /// **'Food order'**
+  String get ordersServiceFoodSemanticLabel;
 }
 
 class _AppLocalizationsDelegate

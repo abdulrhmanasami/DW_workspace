@@ -1,7 +1,8 @@
-/// Ride Pricing Service Interface - Track B Ticket #27
+/// Ride Pricing Service Interface - Track B Ticket #27, #115
 /// Purpose: Abstract contract for ride pricing & quoting with MobilityPlace support
 /// Created by: Track B - Ticket #27
-/// Last updated: 2025-11-28
+/// Reviewed by: Track B - Ticket #115 (MockPricingService architecture validation)
+/// Last updated: 2025-11-30
 ///
 /// This interface provides:
 /// - Pricing computation based on MobilityPlace (domain models)

@@ -1,3 +1,9 @@
+/// RideTrip FSM Unit Tests (App Layer) - Track B Ticket #24, #116
+/// Purpose: App-level FSM tests complementing the shims-level tests
+/// Created by: Track B - Ticket #24
+/// Updated by: Track B - Ticket #116 (Complete FSM validation + isTerminal tests)
+/// Last updated: 2025-11-30
+
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -195,6 +201,90 @@ void main() {
 
         expect(exception.from, RideTripPhase.quoting);
         expect(exception.event, RideTripEvent.startTrip);
+      });
+    });
+
+    // =========================================================================
+    // Track B - Ticket #116: isTerminal Tests
+    // =========================================================================
+
+    group('isTerminal (Ticket #116)', () {
+      test('returns true only for terminal phases', () {
+        expect(RideTripPhase.completed.isTerminal, isTrue);
+        expect(RideTripPhase.cancelled.isTerminal, isTrue);
+        expect(RideTripPhase.failed.isTerminal, isTrue);
+      });
+
+      test('returns false for all non-terminal phases', () {
+        final nonTerminal = <RideTripPhase>[
+          RideTripPhase.draft,
+          RideTripPhase.quoting,
+          RideTripPhase.requesting,
+          RideTripPhase.findingDriver,
+          RideTripPhase.driverAccepted,
+          RideTripPhase.driverArrived,
+          RideTripPhase.inProgress,
+          RideTripPhase.payment,
+        ];
+
+        for (final phase in nonTerminal) {
+          expect(phase.isTerminal, isFalse, reason: '$phase must not be terminal');
+        }
+      });
+    });
+
+    // =========================================================================
+    // Track B - Ticket #116: Additional Domain Helpers Tests
+    // =========================================================================
+
+    group('isPreDriver (Ticket #116)', () {
+      test('returns true for phases before driver assignment', () {
+        expect(RideTripPhase.draft.isPreDriver, isTrue);
+        expect(RideTripPhase.quoting.isPreDriver, isTrue);
+        expect(RideTripPhase.requesting.isPreDriver, isTrue);
+        expect(RideTripPhase.findingDriver.isPreDriver, isTrue);
+      });
+
+      test('returns false after driver is assigned', () {
+        expect(RideTripPhase.driverAccepted.isPreDriver, isFalse);
+        expect(RideTripPhase.driverArrived.isPreDriver, isFalse);
+        expect(RideTripPhase.inProgress.isPreDriver, isFalse);
+        expect(RideTripPhase.payment.isPreDriver, isFalse);
+        expect(RideTripPhase.completed.isPreDriver, isFalse);
+      });
+    });
+
+    group('isWithDriver (Ticket #116)', () {
+      test('returns true when driver is actively participating', () {
+        expect(RideTripPhase.driverAccepted.isWithDriver, isTrue);
+        expect(RideTripPhase.driverArrived.isWithDriver, isTrue);
+        expect(RideTripPhase.inProgress.isWithDriver, isTrue);
+      });
+
+      test('returns false when driver is not actively participating', () {
+        expect(RideTripPhase.draft.isWithDriver, isFalse);
+        expect(RideTripPhase.quoting.isWithDriver, isFalse);
+        expect(RideTripPhase.requesting.isWithDriver, isFalse);
+        expect(RideTripPhase.findingDriver.isWithDriver, isFalse);
+        expect(RideTripPhase.payment.isWithDriver, isFalse);
+        expect(RideTripPhase.completed.isWithDriver, isFalse);
+      });
+    });
+
+    group('isPaymentPhase (Ticket #116)', () {
+      test('returns true only for payment phase', () {
+        expect(RideTripPhase.payment.isPaymentPhase, isTrue);
+      });
+
+      test('returns false for all other phases', () {
+        final otherPhases = RideTripPhase.values
+            .where((p) => p != RideTripPhase.payment)
+            .toList();
+
+        for (final phase in otherPhases) {
+          expect(phase.isPaymentPhase, isFalse,
+              reason: '$phase should not be payment phase');
+        }
       });
     });
   });

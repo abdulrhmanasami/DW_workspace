@@ -1,7 +1,11 @@
 /// Ride Order Card Widget
 /// Created by: Track B - Ticket #96
+/// Updated by: Track B - Ticket #108 (Extended display with service name, origin, payment)
+/// Updated by: Track B - Ticket #124 (Display driver rating if available)
+/// Updated by: Track B - Ticket #126 (Use unified OrderStatusChip)
+/// Updated by: Track B - Ticket #127 (Semantics for service icon accessibility)
 /// Purpose: Display a ride order item in the orders history list
-/// Last updated: 2025-11-30
+/// Last updated: 2025-12-01
 
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +14,7 @@ import 'package:mobility_shims/mobility_shims.dart' show RideTripPhase;
 
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../state/mobility/ride_trip_session.dart';
+import 'order_status_chip.dart';
 
 /// Card widget for displaying a ride order in the history list.
 ///
@@ -38,21 +43,38 @@ class RideOrderCard extends StatelessWidget {
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
-    // Build title
+    // Build title - Track B - Ticket #108: Show service name if available
     final destination = entry.destinationLabel.isNotEmpty
         ? entry.destinationLabel
         : '...';
-    final title = l10n?.ordersRideItemTitleToDestination(destination) ??
-        'Ride to $destination';
+    final serviceName = entry.serviceName;
+    final String title;
+    if (serviceName != null && serviceName.isNotEmpty) {
+      title = l10n?.ordersRideItemTitleWithService(serviceName, destination) ??
+          '$serviceName to $destination';
+    } else {
+      title = l10n?.ordersRideItemTitleToDestination(destination) ??
+          'Ride to $destination';
+    }
 
-    // Build status label
-    final statusLabel = _statusLabel(entry.trip.phase, l10n);
+    // Build status UI model for chip and subtitle
+    // Track B - Ticket #126: Use unified mapping
+    final statusUiModel = _mapRidePhaseToUiModel(entry.trip.phase, l10n);
     final statusColor = _statusColor(entry.trip.phase, colorScheme);
 
     // Format date/time
     final dateFormatter = DateFormat('dd MMM, h:mm a');
     final formattedDate = dateFormatter.format(entry.completedAt);
-    final subtitle = '$statusLabel · $formattedDate';
+    
+    // Track B - Ticket #108: Build subtitle with origin if available
+    final origin = entry.originLabel;
+    String subtitle;
+    if (origin != null && origin.isNotEmpty) {
+      subtitle = l10n?.ordersRideItemSubtitleWithOrigin(origin, formattedDate) ??
+          'From $origin · $formattedDate';
+    } else {
+      subtitle = '${statusUiModel.label} · $formattedDate';
+    }
 
     return Card(
       margin: const EdgeInsets.only(bottom: DWSpacing.sm),
@@ -63,18 +85,22 @@ class RideOrderCard extends StatelessWidget {
           padding: const EdgeInsets.all(DWSpacing.md),
           child: Row(
             children: [
-              // Icon
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(DWRadius.sm),
-                ),
-                child: Icon(
-                  _phaseIcon(entry.trip.phase),
-                  color: statusColor,
-                  size: 24,
+              // Icon - Track B - Ticket #127: Semantics for accessibility
+              Semantics(
+                label: l10n?.ordersServiceRideSemanticLabel ?? 'Ride order',
+                excludeSemantics: true,
+                child: Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(DWRadius.sm),
+                  ),
+                  child: Icon(
+                    _phaseIcon(entry.trip.phase),
+                    color: statusColor,
+                    size: 24,
+                  ),
                 ),
               ),
               const SizedBox(width: DWSpacing.sm),
@@ -84,7 +110,7 @@ class RideOrderCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Title
+                    // Title (with service name)
                     Text(
                       title,
                       style: textTheme.titleMedium?.copyWith(
@@ -95,13 +121,56 @@ class RideOrderCard extends StatelessWidget {
                     ),
                     const SizedBox(height: DWSpacing.xxs),
 
-                    // Subtitle
+                    // Subtitle (with origin)
                     Text(
                       subtitle,
                       style: textTheme.bodySmall?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
+                    
+                    // Track B - Ticket #108: Show payment method if available
+                    if (entry.paymentMethodLabel != null) ...[
+                      const SizedBox(height: DWSpacing.xxs),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.payment,
+                            size: 12,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            entry.paymentMethodLabel!,
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    // Track B - Ticket #124: Show driver rating if available
+                    if (entry.driverRating != null) ...[
+                      const SizedBox(height: DWSpacing.xxs),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.star,
+                            size: 14,
+                            color: Colors.amber,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            entry.driverRating!.toStringAsFixed(1),
+                            style: textTheme.labelSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -117,12 +186,9 @@ class RideOrderCard extends StatelessWidget {
                 ),
               ],
 
-              // Status chip
+              // Status chip - Track B - Ticket #126: Use unified OrderStatusChip
               const SizedBox(width: DWSpacing.sm),
-              _StatusChip(
-                label: statusLabel,
-                color: statusColor,
-              ),
+              OrderStatusChip(status: statusUiModel),
             ],
           ),
         ),
@@ -130,16 +196,45 @@ class RideOrderCard extends StatelessWidget {
     );
   }
 
-  String _statusLabel(RideTripPhase phase, AppLocalizations? l10n) {
+  /// Maps a ride phase to the unified OrderStatusUiModel.
+  ///
+  /// Track B - Ticket #126: Centralized mapping for consistent status display.
+  OrderStatusUiModel _mapRidePhaseToUiModel(
+    RideTripPhase phase,
+    AppLocalizations? l10n,
+  ) {
     switch (phase) {
       case RideTripPhase.completed:
-        return l10n?.ordersRideStatusCompleted ?? 'Completed';
+        return OrderStatusUiModel(
+          label: l10n?.ordersRideStatusCompleted ?? 'Completed',
+          tone: OrderStatusTone.success,
+        );
       case RideTripPhase.cancelled:
-        return l10n?.ordersRideStatusCancelled ?? 'Cancelled';
+        return OrderStatusUiModel(
+          label: l10n?.ordersRideStatusCancelled ?? 'Cancelled',
+          tone: OrderStatusTone.error,
+        );
       case RideTripPhase.failed:
-        return l10n?.ordersRideStatusFailed ?? 'Failed';
+        return OrderStatusUiModel(
+          label: l10n?.ordersRideStatusFailed ?? 'Failed',
+          tone: OrderStatusTone.error,
+        );
+      // Active/in-progress phases
+      case RideTripPhase.findingDriver:
+      case RideTripPhase.driverAccepted:
+      case RideTripPhase.driverArrived:
+      case RideTripPhase.inProgress:
+      case RideTripPhase.payment:
+        return OrderStatusUiModel(
+          label: l10n?.rideStatusShortInProgress ?? 'In progress',
+          tone: OrderStatusTone.info,
+        );
+      // Early phases (draft, quoting, requesting)
       default:
-        return phase.name;
+        return OrderStatusUiModel(
+          label: phase.name,
+          tone: OrderStatusTone.warning,
+        );
     }
   }
 
@@ -166,40 +261,6 @@ class RideOrderCard extends StatelessWidget {
       default:
         return Icons.directions_car;
     }
-  }
-}
-
-/// Small status chip widget
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({
-    required this.label,
-    required this.color,
-  });
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: DWSpacing.xs,
-        vertical: DWSpacing.xxs,
-      ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(DWRadius.sm),
-      ),
-      child: Text(
-        label,
-        style: textTheme.labelSmall?.copyWith(
-          color: color,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
   }
 }
 

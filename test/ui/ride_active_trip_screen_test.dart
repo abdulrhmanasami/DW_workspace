@@ -1,4 +1,4 @@
-/// Widget tests for RideActiveTripScreen (Track B - Ticket #22, #66, #87, #88, #89, #97)
+/// Widget tests for RideActiveTripScreen (Track B - Ticket #22, #66, #87, #88, #89, #97, #105)
 /// Purpose: Verify active trip screen UI and FSM cancel logic
 /// Created by: Track B - Ticket #22
 /// Updated by: Track B - Ticket #66 (FSM status L10n tests for EN/AR/DE)
@@ -6,6 +6,7 @@
 /// Updated by: Track B - Ticket #88 (Design System alignment + ETA/Status tests)
 /// Updated by: Track B - Ticket #89 (FSM Integration + Phase-aware UI tests)
 /// Updated by: Track B - Ticket #97 (Chaos & Resilience FSM Tests)
+/// Updated by: Track B - Ticket #105 (Unified trip summary - service, price, payment method)
 /// Last updated: 2025-11-30
 
 import 'package:flutter/material.dart';
@@ -18,6 +19,8 @@ import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_quote_controller.dart';
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+// Track B - Ticket #105: Payment methods for trip summary tests
+import 'package:delivery_ways_clean/state/payments/payment_methods_ui_state.dart';
 
 // Shims
 import 'package:maps_shims/maps_shims.dart';
@@ -125,7 +128,8 @@ void main() {
       expect(find.text('Cancel ride'), findsOneWidget);
     });
 
-    testWidgets('tapping Cancel ride and confirming calls cancelActiveTrip on controller',
+    // Track B - Ticket #120: Updated to reflect cancelCurrentTrip usage
+    testWidgets('tapping Cancel ride and confirming calls cancelCurrentTrip on controller',
         (tester) async {
       // Track B - Ticket #67: Updated to include dialog confirmation flow
       final fakeController = _FakeRideTripSessionController(
@@ -169,7 +173,7 @@ void main() {
       await tester.tap(cancelButtons.last);
       await tester.pumpAndSettle();
 
-      // Verify cancelActiveTrip was called
+      // Track B - Ticket #120: Verify cancelCurrentTrip was called
       expect(fakeController.cancelCalledCount, equals(1));
     });
 
@@ -376,6 +380,104 @@ void main() {
 
       // Should not crash, MapWidget should still be present
       expect(find.byType(MapWidget), findsOneWidget);
+    });
+
+    // =========================================================================
+    // Track B - Ticket #122: No Driver Found CTA Tests
+    // =========================================================================
+
+    group('No Driver Found CTA (Ticket #122)', () {
+      testWidgets('shows "No drivers available" CTA during findingDriver phase',
+          (tester) async {
+        final activeTrip = RideTripState(
+          tripId: 'test-no-driver-cta',
+          phase: RideTripPhase.findingDriver,
+        );
+
+        await tester.pumpWidget(buildTestWidget(
+          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          rideDraft: const RideDraftUiState(
+            destinationQuery: 'Downtown Mall',
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        // Verify "No drivers available? Try later" CTA is visible
+        expect(find.text('No drivers available? Try later'), findsOneWidget);
+      });
+
+      testWidgets('tapping no-driver CTA calls failCurrentTrip and clears session',
+          (tester) async {
+        final fakeController = _FakeRideTripSessionController(
+          initialState: RideTripSessionUiState(
+            activeTrip: RideTripState(
+              tripId: 'test-fail-trip',
+              phase: RideTripPhase.findingDriver,
+            ),
+            draftSnapshot: const RideDraftUiState(
+              pickupLabel: 'Home',
+              destinationQuery: 'Downtown Mall',
+            ),
+          ),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideTripSessionProvider.overrideWith((ref) => fakeController),
+              rideDraftProvider.overrideWith(
+                (ref) => _FakeRideDraftController(
+                  initialState: const RideDraftUiState(
+                    pickupLabel: 'Home',
+                    destinationQuery: 'Downtown Mall',
+                  ),
+                ),
+              ),
+              rideQuoteControllerProvider.overrideWith(
+                (ref) =>
+                    _FakeRideQuoteController(initialState: const RideQuoteUiState()),
+              ),
+            ],
+            child: MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: const Locale('en'),
+              home: const RideActiveTripScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Find and scroll to "No drivers available" CTA
+        final noDriverCta = find.text('No drivers available? Try later');
+        expect(noDriverCta, findsOneWidget);
+        await tester.ensureVisible(noDriverCta);
+        await tester.pumpAndSettle();
+
+        // Tap the CTA
+        await tester.tap(noDriverCta);
+        await tester.pumpAndSettle();
+
+        // Verify failCurrentTrip was called
+        expect(fakeController.failCalledCount, equals(1));
+        expect(fakeController.lastFailReasonLabel, equals('No driver found'));
+      });
+
+      testWidgets('no-driver CTA is hidden for non-findingDriver phases',
+          (tester) async {
+        final activeTrip = RideTripState(
+          tripId: 'test-driver-accepted',
+          phase: RideTripPhase.driverAccepted,
+        );
+
+        await tester.pumpWidget(buildTestWidget(
+          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        ));
+        await tester.pumpAndSettle();
+
+        // Verify "No drivers available" CTA is NOT visible
+        expect(find.text('No drivers available? Try later'), findsNothing);
+      });
     });
 
     // =========================================================================
@@ -848,7 +950,7 @@ void main() {
         await tester.tap(cancelButtons.last);
         await tester.pumpAndSettle();
 
-        // Verify cancelActiveTrip was called
+        // Track B - Ticket #120: Verify cancelCurrentTrip was called
         expect(fakeController.cancelCalledCount, equals(1));
 
         // Verify success snackbar appears
@@ -2553,6 +2655,8 @@ void main() {
       // -----------------------------------------------------------------------
       // Test 2: Cancelling trip twice does not crash
       // -----------------------------------------------------------------------
+      // Track B - Ticket #120: Updated to reflect new cancellation flow.
+      // Now cancelCurrentTrip() archives trip and clears session, navigating home.
       testWidgets('cancelling_trip_twice_does_not_crash', (tester) async {
         // Create a controller that tracks cancel calls and simulates the flow
         final cancelTrackingController = _CancelTrackingController(
@@ -2600,19 +2704,18 @@ void main() {
         await tester.tap(cancelButtons.last);
         await tester.pumpAndSettle();
 
-        // Verify first cancel was called
-        expect(cancelTrackingController.cancelCallCount, equals(1));
+        // Track B - Ticket #120: Verify cancelCurrentTrip was called
+        // (cancelCallCount now tracks cancelCurrentTrip calls)
+        expect(cancelTrackingController.cancelCallCount, equals(1),
+            reason: 'cancelCurrentTrip should be called once');
 
-        // Now trip should be in cancelled state (Terminal View)
-        // Try to trigger another cancel programmatically
-        await cancelTrackingController.cancelActiveTrip();
+        // Track B - Ticket #120: After cancellation, session is cleared.
+        // Trying to cancel again should be a no-op (no active trip).
+        final secondResult = cancelTrackingController.cancelCurrentTrip();
         
-        // Second call should be handled gracefully
-        expect(cancelTrackingController.cancelCallCount, equals(2));
-
-        // Verify no crash - terminal view should be shown
-        expect(find.text('Trip cancelled'), findsOneWidget,
-            reason: 'Terminal UI should be stable after double cancel attempt');
+        // Second call returns false because no active trip exists
+        expect(secondResult, isFalse,
+            reason: 'Second cancel should return false (no active trip)');
       });
 
       // -----------------------------------------------------------------------
@@ -2855,6 +2958,241 @@ void main() {
             reason: 'Cancel dialog should open for cancellable phase');
       });
     });
+
+    // =========================================================================
+    // Ticket #105: Unified Trip Summary Tests
+    // =========================================================================
+    group('Trip Summary (Ticket #105)', () {
+      testWidgets(
+          'active_trip_screen_shows_selected_service_and_price_from_confirmation',
+          (tester) async {
+        final activeTrip = RideTripState(
+          tripId: 'test-summary-123',
+          phase: RideTripPhase.driverAccepted,
+        );
+
+        // Create trip summary with service and price
+        const tripSummary = RideTripSummary(
+          selectedServiceId: 'economy',
+          selectedServiceName: 'Economy',
+          fareDisplayText: '18.00 SAR',
+          selectedPaymentMethodId: 'visa_4242',
+          etaMinutes: 5,
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideTripSessionProvider.overrideWith(
+                (ref) => _FakeRideTripSessionController(
+                  initialState: RideTripSessionUiState(
+                    activeTrip: activeTrip,
+                    tripSummary: tripSummary,
+                  ),
+                ),
+              ),
+              rideDraftProvider.overrideWith(
+                (ref) => _FakeRideDraftController(
+                  initialState: const RideDraftUiState(
+                    destinationQuery: 'Test Destination',
+                  ),
+                ),
+              ),
+              rideQuoteControllerProvider.overrideWith(
+                (ref) => _FakeRideQuoteController(
+                  initialState: const RideQuoteUiState(),
+                ),
+              ),
+              paymentMethodsUiProvider.overrideWith(
+                (ref) => PaymentMethodsUiState(
+                  methods: [
+                    PaymentMethodUiModel.stubCard(brand: 'Visa', last4: '4242'),
+                  ],
+                  selectedMethodId: 'visa_4242',
+                ),
+              ),
+            ],
+            child: const MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: Locale('en'),
+              home: RideActiveTripScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Verify service name and price are shown
+        expect(find.textContaining('Economy'), findsAtLeastNWidgets(1));
+        expect(find.textContaining('18.00'), findsAtLeastNWidgets(1));
+      });
+
+      testWidgets('active_trip_screen_shows_selected_payment_method_label',
+          (tester) async {
+        final activeTrip = RideTripState(
+          tripId: 'test-payment-method',
+          phase: RideTripPhase.inProgress,
+        );
+
+        // Create trip summary with payment method
+        const tripSummary = RideTripSummary(
+          selectedServiceId: 'economy',
+          selectedServiceName: 'Economy',
+          fareDisplayText: '25.00 SAR',
+          selectedPaymentMethodId: 'visa_4242',
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideTripSessionProvider.overrideWith(
+                (ref) => _FakeRideTripSessionController(
+                  initialState: RideTripSessionUiState(
+                    activeTrip: activeTrip,
+                    tripSummary: tripSummary,
+                  ),
+                ),
+              ),
+              rideDraftProvider.overrideWith(
+                (ref) => _FakeRideDraftController(
+                  initialState: const RideDraftUiState(),
+                ),
+              ),
+              rideQuoteControllerProvider.overrideWith(
+                (ref) => _FakeRideQuoteController(
+                  initialState: const RideQuoteUiState(),
+                ),
+              ),
+              paymentMethodsUiProvider.overrideWith(
+                (ref) => PaymentMethodsUiState(
+                  methods: [
+                    PaymentMethodUiModel.stubCard(brand: 'Visa', last4: '4242'),
+                  ],
+                  selectedMethodId: 'visa_4242',
+                ),
+              ),
+            ],
+            child: const MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: Locale('en'),
+              home: RideActiveTripScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Verify payment method label is shown
+        expect(find.textContaining('Visa'), findsAtLeastNWidgets(1));
+        expect(find.textContaining('4242'), findsAtLeastNWidgets(1));
+      });
+
+      testWidgets('l10n_ar_active_trip_summary', (tester) async {
+        final activeTrip = RideTripState(
+          tripId: 'test-ar-summary',
+          phase: RideTripPhase.driverAccepted,
+        );
+
+        const tripSummary = RideTripSummary(
+          selectedServiceId: 'economy',
+          selectedServiceName: 'Economy',
+          fareDisplayText: '18.00 SAR',
+          selectedPaymentMethodId: 'cash',
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideTripSessionProvider.overrideWith(
+                (ref) => _FakeRideTripSessionController(
+                  initialState: RideTripSessionUiState(
+                    activeTrip: activeTrip,
+                    tripSummary: tripSummary,
+                  ),
+                ),
+              ),
+              rideDraftProvider.overrideWith(
+                (ref) => _FakeRideDraftController(
+                  initialState: const RideDraftUiState(),
+                ),
+              ),
+              rideQuoteControllerProvider.overrideWith(
+                (ref) => _FakeRideQuoteController(
+                  initialState: const RideQuoteUiState(),
+                ),
+              ),
+              paymentMethodsUiProvider.overrideWith(
+                (ref) => PaymentMethodsUiState(
+                  methods: const [PaymentMethodUiModel.cash],
+                  selectedMethodId: 'cash',
+                ),
+              ),
+            ],
+            child: const MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: Locale('ar'), // Arabic locale
+              home: RideActiveTripScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Verify Arabic headline is shown
+        // homeActiveRideStatusDriverAccepted in Arabic: السائق في الطريق
+        expect(find.textContaining('السائق'), findsAtLeastNWidgets(1));
+
+        // Verify payment method label in Arabic (الدفع عبر)
+        expect(find.textContaining('الدفع'), findsAtLeastNWidgets(1));
+      });
+
+      testWidgets('trip_summary_graceful_fallback_when_no_summary',
+          (tester) async {
+        final activeTrip = RideTripState(
+          tripId: 'test-no-summary',
+          phase: RideTripPhase.findingDriver,
+        );
+
+        // No trip summary provided
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideTripSessionProvider.overrideWith(
+                (ref) => _FakeRideTripSessionController(
+                  initialState: RideTripSessionUiState(
+                    activeTrip: activeTrip,
+                    tripSummary: null,
+                  ),
+                ),
+              ),
+              rideDraftProvider.overrideWith(
+                (ref) => _FakeRideDraftController(
+                  initialState: const RideDraftUiState(
+                    destinationQuery: 'Test Destination',
+                  ),
+                ),
+              ),
+              rideQuoteControllerProvider.overrideWith(
+                (ref) => _FakeRideQuoteController(
+                  initialState: const RideQuoteUiState(),
+                ),
+              ),
+            ],
+            child: const MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: Locale('en'),
+              home: RideActiveTripScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Screen should still render without errors
+        expect(find.text('Finding a driver…'), findsOneWidget);
+        // No crash expected - graceful fallback
+      });
+    });
   });
 }
 
@@ -2872,7 +3210,7 @@ class _FakeRideTripSessionController
   int cancelCalledCount = 0;
 
   @override
-  void startFromDraft(RideDraftUiState draft) {
+  void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {
     // No-op for tests
   }
 
@@ -2897,9 +3235,7 @@ class _FakeRideTripSessionController
 
   @override
   Future<bool> cancelActiveTrip() async {
-    cancelCalledCount++;
-    // Simulate successful cancellation
-    state = state.copyWith(clearActiveTrip: true);
+    // Legacy method - no longer used by UI (Track B - Ticket #120)
     return true;
   }
 
@@ -2909,8 +3245,86 @@ class _FakeRideTripSessionController
   }
 
   @override
-  void archiveTrip({required String destinationLabel, String? amountFormatted}) {
-    // No-op for tests - Track B Ticket #96
+  // Track B - Ticket #108: Extended with serviceName, originLabel, paymentMethodLabel
+  void archiveTrip({
+    required String destinationLabel,
+    String? amountFormatted,
+    String? serviceName,
+    String? originLabel,
+    String? paymentMethodLabel,
+  }) {
+    // No-op for tests - Track B Ticket #96, #108
+  }
+
+  // Track B - Ticket #107
+  @override
+  bool completeTrip() => true;
+
+  @override
+  void clearCompletionSummary() {
+    state = state.copyWith(clearCompletionSummary: true);
+  }
+
+  // Track B - Ticket #117
+  @override
+  bool completeCurrentTrip({
+    String? destinationLabel,
+    String? amountFormatted,
+    String? serviceName,
+    String? originLabel,
+    String? paymentMethodLabel,
+  }) => true;
+
+  // Track B - Ticket #120: cancelCurrentTrip is now the primary cancel API
+  @override
+  bool cancelCurrentTrip({
+    String? reasonLabel,
+    String? destinationLabel,
+    String? originLabel,
+    String? serviceName,
+    String? amountFormatted,
+    String? paymentMethodLabel,
+  }) {
+    cancelCalledCount++;
+    // Simulate successful cancellation - archives and clears session
+    state = const RideTripSessionUiState();
+    return true;
+  }
+
+  // Track B - Ticket #122: failCurrentTrip marks trip as failed
+  int failCalledCount = 0;
+  String? lastFailReasonLabel;
+  bool failCurrentTripResult = true;
+
+  @override
+  bool failCurrentTrip({
+    String? reasonLabel,
+    String? destinationLabel,
+    String? originLabel,
+    String? serviceName,
+    String? amountFormatted,
+    String? paymentMethodLabel,
+  }) {
+    failCalledCount++;
+    lastFailReasonLabel = reasonLabel;
+    if (failCurrentTripResult) {
+      // Simulate successful failure - archives and clears session
+      state = const RideTripSessionUiState();
+    }
+    return failCurrentTripResult;
+  }
+
+  // Track B - Ticket #124
+  @override
+  bool setRatingForMostRecentTrip(double rating) {
+    if (rating < 1.0 || rating > 5.0) return false;
+    if (state.historyTrips.isEmpty) return false;
+    final entries = List<RideHistoryEntry>.from(state.historyTrips);
+    final latest = entries.first;
+    if (!latest.trip.phase.isTerminal) return false;
+    entries[0] = latest.copyWith(driverRating: rating);
+    state = state.copyWith(historyTrips: entries);
+    return true;
   }
 }
 
@@ -2937,6 +3351,14 @@ class _FakeRideDraftController extends StateNotifier<RideDraftUiState>
 
   @override
   void updateDestinationPlace(MobilityPlace place) {}
+
+  // Track B - Ticket #101
+  @override
+  void setPaymentMethodId(String? paymentMethodId) {}
+
+  // Track B - Ticket #102
+  @override
+  void clearPaymentMethodId() {}
 }
 
 /// Fake RideQuoteController for testing
@@ -2947,6 +3369,9 @@ class _FakeRideQuoteController extends StateNotifier<RideQuoteUiState>
 
   @override
   Future<void> refreshFromDraft(RideDraftUiState draft) async {}
+
+  @override
+  Future<void> retryFromDraft(RideDraftUiState draft) async {}
 
   @override
   void clear() {}
@@ -2961,7 +3386,7 @@ class _CancelTrackingController extends StateNotifier<RideTripSessionUiState>
   int cancelCallCount = 0;
 
   @override
-  void startFromDraft(RideDraftUiState draft) {}
+  void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {}
 
   @override
   void applyEvent(RideTripEvent event) {}
@@ -3006,5 +3431,84 @@ class _CancelTrackingController extends StateNotifier<RideTripSessionUiState>
   void rateCurrentTrip(int rating) {}
 
   @override
-  void archiveTrip({required String destinationLabel, String? amountFormatted}) {}
+  // Track B - Ticket #108: Extended with serviceName, originLabel, paymentMethodLabel
+  void archiveTrip({
+    required String destinationLabel,
+    String? amountFormatted,
+    String? serviceName,
+    String? originLabel,
+    String? paymentMethodLabel,
+  }) {}
+
+  // Track B - Ticket #107
+  @override
+  bool completeTrip() => true;
+
+  @override
+  void clearCompletionSummary() {}
+
+  // Track B - Ticket #117
+  @override
+  bool completeCurrentTrip({
+    String? destinationLabel,
+    String? amountFormatted,
+    String? serviceName,
+    String? originLabel,
+    String? paymentMethodLabel,
+  }) => true;
+
+  // Track B - Ticket #120: cancelCurrentTrip archives and clears session
+  @override
+  bool cancelCurrentTrip({
+    String? reasonLabel,
+    String? destinationLabel,
+    String? originLabel,
+    String? serviceName,
+    String? amountFormatted,
+    String? paymentMethodLabel,
+  }) {
+    cancelCallCount++;
+    
+    // If no active trip, return false (idempotent)
+    if (state.activeTrip == null) {
+      return false;
+    }
+    
+    // Clear the active trip (simulates archiving + clearing)
+    state = const RideTripSessionUiState();
+    return true;
+  }
+
+  // Track B - Ticket #122: failCurrentTrip marks trip as failed
+  @override
+  bool failCurrentTrip({
+    String? reasonLabel,
+    String? destinationLabel,
+    String? originLabel,
+    String? serviceName,
+    String? amountFormatted,
+    String? paymentMethodLabel,
+  }) {
+    // If no active trip, return false (idempotent)
+    if (state.activeTrip == null) {
+      return false;
+    }
+    
+    // Clear the active trip (simulates archiving + clearing)
+    state = const RideTripSessionUiState();
+    return true;
+  }
+
+  // Track B - Ticket #124
+  @override
+  bool setRatingForMostRecentTrip(double rating) {
+    if (rating < 1.0 || rating > 5.0) return false;
+    if (state.historyTrips.isEmpty) return false;
+    final entries = List<RideHistoryEntry>.from(state.historyTrips);
+    final latest = entries.first;
+    if (!latest.trip.phase.isTerminal) return false;
+    entries[0] = latest.copyWith(driverRating: rating);
+    state = state.copyWith(historyTrips: entries);
+    return true;
+  }
 }

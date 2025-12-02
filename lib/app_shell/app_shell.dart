@@ -13,12 +13,18 @@
 /// Updated by: Track A - Ticket #82 (L10n for BottomNav + Orders→ParcelsListScreen)
 /// Updated by: Track B - Ticket #94 (Ride End-to-End Flow Wiring - Ride card active trip check)
 /// Updated by: Track B - Ticket #99 (Payments tab → PaymentsTabScreen)
+/// Updated by: Track B - Ticket #105 (Unified trip summary - price + payment in Home active card)
+/// Updated by: Track B - Ticket #114 (Map from activeTripMapCommands + ETA on Active Ride Card)
 /// Purpose: Unified AppShell with Bottom Navigation (Home, Orders, Payments, Profile)
 /// Last updated: 2025-11-30
 ///
 /// This widget serves as the main entry point for authenticated users,
 /// providing a consistent navigation structure across the app.
-/// NOTE: Map integration & real data will be wired in Tracks B/C, this is a UI shell only.
+///
+/// Track B - Ticket #114: Home Hub Map Integration (Screen 7)
+/// - When active trip exists, map shows activeTripMapCommands via RideMapFromCommands
+/// - Active Ride Card shows ETA from tripSummary.etaMinutes
+/// - Fallback to placeholder map when no active trip
 
 import 'package:flutter/material.dart';
 import '../l10n/generated/app_localizations.dart';
@@ -48,6 +54,11 @@ import '../state/parcels/parcel_status_utils.dart';
 import '../state/mobility/ride_status_utils.dart';
 // Track B - Ticket #99: Payments tab screen
 import '../screens/payments/payments_tab_screen.dart';
+// Track B - Ticket #105: Payment methods for active ride card summary
+import '../state/payments/payment_methods_ui_state.dart';
+// Track B - Ticket #114: Map from RideMapCommands for Home Hub
+import '../widgets/ride_map_from_commands.dart';
+import '../state/mobility/ride_map_commands_builder.dart';
 
 /// Root App Shell for Delivery Ways Super-App
 /// Tabs: Home, Orders, Payments, Profile
@@ -121,11 +132,15 @@ class _AppShellState extends State<AppShell> {
 /// Updated by: Track C - Ticket #70 (Home Hub Active Parcel Card)
 /// Updated by: Track C - Ticket #71 (Active Order State Layout per Screen 7 design)
 /// Updated by: Track B - Ticket #85 (Unified ride_status_utils)
+/// Updated by: Track B - Ticket #114 (Map from activeTripMapCommands)
 ///
 /// Layout behavior (Ticket #71):
 /// - Default State: Map at full size (16:9), service cards below
 /// - Active Order State: Map reduced (16:5), Hero card(s) prominent, then services
-/// NOTE: Map integration & real data will be wired in Tracks B/C, this is a UI shell only.
+///
+/// Track B - Ticket #114: Map Integration
+/// - When active trip exists with valid activeTripMapCommands → RideMapFromCommands
+/// - Otherwise → placeholder map (stub)
 class _HomeTab extends ConsumerWidget {
   const _HomeTab();
 
@@ -173,6 +188,45 @@ class _HomeTab extends ConsumerWidget {
     // Screen 7 Design: Map ≈30% when active order, Hero card prominent below
     final hasActiveOrder = hasActiveParcel || hasActiveTrip;
     final aspectRatio = hasActiveOrder ? (16 / 5) : (16 / 9);
+
+    // Track B - Ticket #114: Build map area based on active trip state
+    Widget buildHomeMapArea({
+      required RideMapCommands? activeTripCommands,
+      required ColorScheme colorScheme,
+      required TextTheme textTheme,
+    }) {
+      // When active trip has map commands, show real map
+      if (activeTripCommands != null) {
+        return RideMapFromCommands(commands: activeTripCommands);
+      }
+
+      // Fallback: placeholder map (stub)
+      return Container(
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest,
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.map_outlined,
+                size: 48,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              SizedBox(height: DWSpacing.xs),
+              Text(
+                'Map area',
+                textAlign: TextAlign.center,
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
 
     return SafeArea(
       child: Column(
@@ -226,44 +280,19 @@ class _HomeTab extends ConsumerWidget {
             ),
           ),
 
-          // Map area (placeholder for now – real Map will come from maps_shims in Track B)
-          // واضح أنه Placeholder حتى لا يُعتبر ميزة جاهزة.
+          // Map area - Track B - Ticket #114: Real map when active trip exists
+          // Screen 7 design: Shows activeTripMapCommands when ride is in progress
           // Aspect ratio adjusts when active trip exists (Track B - Ticket #19)
           Padding(
             padding: EdgeInsets.symmetric(horizontal: DWSpacing.md),
             child: AspectRatio(
               aspectRatio: aspectRatio,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(DWRadius.md),
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.map_outlined,
-                        size: 48,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                      SizedBox(height: DWSpacing.xs),
-                      Text(
-                        'Map area (stub)',
-                        textAlign: TextAlign.center,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      Text(
-                        'To be replaced with maps_shims integration',
-                        textAlign: TextAlign.center,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(DWRadius.md),
+                child: buildHomeMapArea(
+                  activeTripCommands: tripSession.activeTripMapCommands,
+                  colorScheme: colorScheme,
+                  textTheme: textTheme,
                 ),
               ),
             ),
@@ -287,14 +316,16 @@ class _HomeTab extends ConsumerWidget {
                     ),
                     if (hasActiveTrip) SizedBox(height: DWSpacing.sm),
                   ],
-                  // Active Ride Card (Track B - Ticket #19, #86)
+                  // Active Ride Card (Track B - Ticket #19, #86, #105)
                   // Track B - Ticket #86: Uses localizedRidePhaseStatusLong for status
+                  // Track B - Ticket #105: Shows price + payment method from tripSummary
                   if (activeTripState != null && hasActiveTrip)
                     _ActiveRideHomeCard(
                       phase: activeTripState.phase,
                       destinationLabel: destination.isEmpty
                           ? null
                           : l10n.rideActiveDestinationLabel(destination),
+                      tripSummary: tripSession.tripSummary,
                       onViewTrip: () {
                         Navigator.of(context).pushNamed(RoutePaths.rideActive);
                       },
@@ -511,6 +542,8 @@ class _ActiveParcelHomeCard extends StatelessWidget {
 /// Track B - Ticket #19
 /// Updated by: Ticket #32 (DWSpacing/DWRadius consistency)
 /// Updated by: Track B - Ticket #86 (Design System alignment + ride_status_utils)
+/// Updated by: Track B - Ticket #105 (Unified trip summary - price + payment method)
+/// Updated by: Track B - Ticket #114 (ETA title from tripSummary.etaMinutes)
 ///
 /// Design System Alignment (Ticket #86):
 /// - Card: uses Card/Generic style (radius.md, elevation.medium from CardTheme)
@@ -518,26 +551,44 @@ class _ActiveParcelHomeCard extends StatelessWidget {
 /// - Spacing: DWSpacing tokens (space.md, space.sm, space.xxs)
 /// - CTA: DWButton.tertiary for "View trip" action
 /// - Layout: Same as _ActiveParcelHomeCard (InkWell + Row structure)
-class _ActiveRideHomeCard extends StatelessWidget {
+///
+/// Track B - Ticket #105:
+/// - Now shows price + payment method from RideTripSummary
+/// - Uses ConsumerWidget to access payment methods provider
+///
+/// Track B - Ticket #114:
+/// - Title prioritizes ETA from tripSummary.etaMinutes when available
+/// - Falls back to status label (localizedRidePhaseStatusLong) when no ETA
+class _ActiveRideHomeCard extends ConsumerWidget {
   const _ActiveRideHomeCard({
     required this.phase,
     required this.destinationLabel,
     required this.onViewTrip,
+    this.tripSummary,
   });
 
   final RideTripPhase phase;
   final String? destinationLabel;
   final VoidCallback onViewTrip;
+  /// Track B - Ticket #105: Unified trip summary from FSM
+  final RideTripSummary? tripSummary;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    // Track B - Ticket #86: Use centralized localizedRidePhaseStatusLong
-    final statusLabel = localizedRidePhaseStatusLong(l10n, phase);
+    // Track B - Ticket #114: Prioritize ETA title when available
+    // Falls back to status label when no ETA
+    final etaMinutes = tripSummary?.etaMinutes;
+    final titleText = etaMinutes != null
+        ? l10n.homeActiveRideEtaTitle(etaMinutes)
+        : localizedRidePhaseStatusLong(l10n, phase);
+
+    // Track B - Ticket #105: Build price + payment method subtitle
+    final priceAndPaymentLabel = _buildPriceAndPaymentLabel(ref, l10n);
 
     return Card(
       // Card/Generic style: radius.md + elevation.medium (from CardTheme in DWTheme)
@@ -566,14 +617,15 @@ class _ActiveRideHomeCard extends StatelessWidget {
                 ),
               ),
               SizedBox(width: DWSpacing.md),
-              // Text content: Title + Subtitle
+              // Text content: Title + Subtitle + Price/Payment (Ticket #105, #114)
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // type.title.default → titleMedium
+                    // Track B - Ticket #114: Uses ETA title when available
                     Text(
-                      statusLabel,
+                      titleText,
                       style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
@@ -587,6 +639,18 @@ class _ActiveRideHomeCard extends StatelessWidget {
                       Text(
                         destinationLabel!,
                         style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                    // Track B - Ticket #105: Price + Payment method line
+                    if (priceAndPaymentLabel != null) ...[
+                      SizedBox(height: DWSpacing.xxs),
+                      Text(
+                        priceAndPaymentLabel,
+                        style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
                         maxLines: 1,
@@ -607,6 +671,29 @@ class _ActiveRideHomeCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Build the price + payment method label from tripSummary.
+  /// Track B - Ticket #105
+  String? _buildPriceAndPaymentLabel(WidgetRef ref, AppLocalizations l10n) {
+    if (tripSummary == null) return null;
+
+    final paymentsState = ref.watch(paymentMethodsUiProvider);
+    final paymentMethodId = tripSummary!.selectedPaymentMethodId;
+    final paymentMethod = paymentMethodId != null
+        ? paymentsState.methods.where((m) => m.id == paymentMethodId).firstOrNull
+        : paymentsState.selectedMethod;
+
+    final fareText = tripSummary!.fareDisplayText;
+    final paymentName = paymentMethod?.displayName ?? l10n.paymentsMethodTypeCash;
+
+    // Build combined label: "≈ 18.00 SAR · Visa ••4242"
+    if (fareText != null && fareText.isNotEmpty) {
+      return l10n.homeActiveRidePriceAndPayment('≈ $fareText', paymentName);
+    }
+    
+    // Fallback: just payment method if no fare
+    return paymentName;
   }
 }
 

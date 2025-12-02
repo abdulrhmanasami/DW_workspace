@@ -5,7 +5,9 @@
 /// Updated by: Track C - Ticket #45 (My Shipments list + filtering tests)
 /// Updated by: Track C - Ticket #49 (ParcelsRepository Port integration)
 /// Updated by: Track C - Ticket #50 (Parcels Pricing Integration tests)
-/// Last updated: 2025-11-28
+/// Updated by: Track B - Ticket #128 (Skeleton Pulsing animation tests)
+/// Updated by: Track B - Ticket #129 (Fix status label tests - OrderStatusChip uses no bullet)
+/// Last updated: 2025-12-01
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,6 +16,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 import 'package:delivery_ways_clean/screens/parcels/parcel_create_shipment_screen.dart';
 import 'package:delivery_ways_clean/screens/parcels/parcels_entry_screen.dart';
+import 'package:delivery_ways_clean/screens/orders/widgets/order_list_skeleton.dart';
+import 'package:delivery_ways_clean/screens/orders/widgets/order_status_chip.dart';
 import 'package:delivery_ways_clean/state/parcels/app_parcels_repository.dart';
 import 'package:delivery_ways_clean/state/parcels/parcel_orders_state.dart';
 import 'package:design_system_shims/design_system_shims.dart';
@@ -391,10 +395,16 @@ void main() {
       expect(find.text('Warehouse → Store'), findsOneWidget);
       expect(find.text('Factory → Customer'), findsOneWidget);
 
-      // Check for status labels
-      expect(find.text('• Scheduled'), findsOneWidget);
-      expect(find.text('• Delivered'), findsOneWidget);
-      expect(find.text('• Cancelled'), findsOneWidget);
+      // Track B - Ticket #129: OrderStatusChip displays status without bullet prefix
+      // Check for OrderStatusChip widgets (one per card)
+      expect(find.byType(OrderStatusChip), findsNWidgets(3));
+      // Check for status labels (without bullet prefix per Design System Utility/Chip)
+      // Note: "Scheduled" appears only in status chip
+      expect(find.text('Scheduled'), findsOneWidget);
+      // "Delivered" and "Cancelled" appear in both filter chips AND status chips
+      // So we expect 2 widgets each (filter + status)
+      expect(find.text('Delivered'), findsNWidgets(2));
+      expect(find.text('Cancelled'), findsNWidgets(2));
 
       // Check for timestamps
       expect(find.text('2024-01-15 10:30'), findsOneWidget);
@@ -429,8 +439,11 @@ void main() {
       // Check for filter labels
       expect(find.text('All'), findsOneWidget);
       expect(find.text('In progress'), findsOneWidget);
-      expect(find.text('Delivered'), findsOneWidget);
-      expect(find.text('Cancelled'), findsOneWidget);
+      // Track B - Ticket #129: "Delivered" appears in both filter chip AND status chip
+      // Filter chip + one parcel status chip = 2 widgets
+      expect(find.text('Delivered'), findsNWidgets(2));
+      // Filter chip + one parcel status chip = 2 widgets
+      expect(find.text('Cancelled'), findsNWidgets(2));
     });
 
     testWidgets('displays Arabic section title when locale is ar',
@@ -460,8 +473,9 @@ void main() {
       // Check Arabic filter labels
       expect(find.text('الكل'), findsOneWidget);
       expect(find.text('قيد التنفيذ'), findsOneWidget);
-      expect(find.text('تم التسليم'), findsOneWidget);
-      expect(find.text('ملغاة'), findsOneWidget);
+      // Track B - Ticket #129: Filter chip + status chip = 2 widgets
+      expect(find.text('تم التسليم'), findsNWidgets(2));
+      expect(find.text('ملغاة'), findsNWidgets(2));
     });
 
     testWidgets('displays Arabic status labels when locale is ar',
@@ -474,10 +488,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Check Arabic status labels
-      expect(find.text('• مجدولة'), findsOneWidget);
-      expect(find.text('• تم التسليم'), findsOneWidget);
-      expect(find.text('• ملغاة'), findsOneWidget);
+      // Track B - Ticket #129: OrderStatusChip uses no bullet prefix per Design System
+      // Check Arabic status labels (without bullet prefix)
+      expect(find.text('مجدولة'), findsOneWidget);
+      // Note: "تم التسليم" appears in both filter and status, so it's already verified above
+      // Here we verify OrderStatusChip widgets are present
+      expect(find.byType(OrderStatusChip), findsNWidgets(3));
     });
   });
 
@@ -615,8 +631,10 @@ void main() {
       await tester.pumpWidget(createTestWidgetWithParcels(parcels: parcels));
       await tester.pumpAndSettle();
 
-      // Tap "Delivered" filter
-      await tester.tap(find.text('Delivered'));
+      // Track B - Ticket #129: Use .first since "Delivered" appears in both
+      // filter chip and status chips
+      // Tap "Delivered" filter (first occurrence is the FilterChip)
+      await tester.tap(find.text('Delivered').first);
       await tester.pumpAndSettle();
 
       // Should show only 1 delivered parcel
@@ -632,8 +650,10 @@ void main() {
       await tester.pumpWidget(createTestWidgetWithParcels(parcels: parcels));
       await tester.pumpAndSettle();
 
-      // Tap "Cancelled" filter
-      await tester.tap(find.text('Cancelled'));
+      // Track B - Ticket #129: Use .first since "Cancelled" appears in both
+      // filter chip and status chips
+      // Tap "Cancelled" filter (first occurrence is the FilterChip)
+      await tester.tap(find.text('Cancelled').first);
       await tester.pumpAndSettle();
 
       // Should show 2 parcels: cancelled + failed
@@ -653,8 +673,9 @@ void main() {
       // Initially all 6 shown
       expect(find.byType(Card), findsNWidgets(6));
 
+      // Track B - Ticket #129: Use .first since "Delivered" appears in filter + status
       // Tap "Delivered" filter
-      await tester.tap(find.text('Delivered'));
+      await tester.tap(find.text('Delivered').first);
       await tester.pumpAndSettle();
       expect(find.byType(Card), findsNWidgets(1));
 
@@ -681,16 +702,18 @@ void main() {
       );
       expect(allChip.selected, isTrue);
 
+      // Track B - Ticket #129: "Delivered" appears in both filter and status chips,
+      // so use .first to get the FilterChip
       FilterChip deliveredChip = tester.widget<FilterChip>(
         find.ancestor(
-          of: find.text('Delivered'),
+          of: find.text('Delivered').first,
           matching: find.byType(FilterChip),
         ),
       );
       expect(deliveredChip.selected, isFalse);
 
-      // Tap "Delivered" filter
-      await tester.tap(find.text('Delivered'));
+      // Tap "Delivered" filter (first occurrence is the FilterChip)
+      await tester.tap(find.text('Delivered').first);
       await tester.pumpAndSettle();
 
       // Now "Delivered" should be selected
@@ -704,7 +727,7 @@ void main() {
 
       deliveredChip = tester.widget<FilterChip>(
         find.ancestor(
-          of: find.text('Delivered'),
+          of: find.text('Delivered').first,
           matching: find.byType(FilterChip),
         ),
       );
@@ -732,7 +755,8 @@ void main() {
 
       // pickedUp parcel should be visible
       expect(find.byType(Card), findsNWidgets(1));
-      expect(find.text('• Picked up'), findsOneWidget);
+      // Track B - Ticket #129: OrderStatusChip uses no bullet prefix
+      expect(find.text('Picked up'), findsOneWidget);
     });
   });
 
@@ -777,6 +801,9 @@ void main() {
       );
     }
 
+    // Track B - Ticket #129: All status label tests updated to match OrderStatusChip
+    // which displays status text without bullet prefix per Design System Utility/Chip.
+
     testWidgets('scheduled status displays correct label',
         (WidgetTester tester) async {
       await tester.pumpWidget(
@@ -784,7 +811,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• Scheduled'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      expect(find.text('Scheduled'), findsOneWidget);
     });
 
     testWidgets('pickupPending status displays correct label',
@@ -794,7 +822,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• Pickup pending'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      expect(find.text('Pickup pending'), findsOneWidget);
     });
 
     testWidgets('pickedUp status displays correct label',
@@ -804,7 +833,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• Picked up'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      expect(find.text('Picked up'), findsOneWidget);
     });
 
     testWidgets('inTransit status displays correct label',
@@ -814,7 +844,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• In transit'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      expect(find.text('In transit'), findsOneWidget);
     });
 
     testWidgets('delivered status displays correct label',
@@ -824,7 +855,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• Delivered'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      // "Delivered" appears in filter chip + status chip
+      expect(find.text('Delivered'), findsNWidgets(2));
     });
 
     testWidgets('cancelled status displays correct label',
@@ -834,7 +867,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• Cancelled'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      // "Cancelled" appears in filter chip + status chip
+      expect(find.text('Cancelled'), findsNWidgets(2));
     });
 
     testWidgets('failed status displays correct label',
@@ -844,10 +879,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• Failed'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      expect(find.text('Failed'), findsOneWidget);
     });
 
     // Arabic status label tests
+    // Track B - Ticket #129: Updated to match OrderStatusChip (no bullet prefix)
     testWidgets('scheduled status displays correct Arabic label',
         (WidgetTester tester) async {
       await tester.pumpWidget(
@@ -858,7 +895,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• مجدولة'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      expect(find.text('مجدولة'), findsOneWidget);
     });
 
     testWidgets('pickupPending status displays correct Arabic label',
@@ -871,7 +909,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• في انتظار الاستلام'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      expect(find.text('في انتظار الاستلام'), findsOneWidget);
     });
 
     testWidgets('inTransit status displays correct Arabic label',
@@ -884,7 +923,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• في الطريق'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      expect(find.text('في الطريق'), findsOneWidget);
     });
 
     testWidgets('delivered status displays correct Arabic label',
@@ -897,7 +937,9 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• تم التسليم'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      // "تم التسليم" appears in filter chip + status chip
+      expect(find.text('تم التسليم'), findsNWidgets(2));
     });
 
     testWidgets('failed status displays correct Arabic label',
@@ -910,7 +952,102 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('• فشل في التسليم'), findsOneWidget);
+      expect(find.byType(OrderStatusChip), findsOneWidget);
+      // Track B - Ticket #129: No bullet prefix
+      expect(find.text('فشل في التسليم'), findsOneWidget);
+    });
+  });
+
+  // ===========================================================================
+  // Track B - Ticket #128: Skeleton Pulsing Animation Tests
+  // ===========================================================================
+
+  group('Track B - Ticket #128: Skeleton Pulsing Animation', () {
+    Widget createTestWidgetWithLoadingState({
+      required bool isLoading,
+      List<Parcel> parcels = const [],
+    }) {
+      return ProviderScope(
+        overrides: [
+          parcelOrdersProvider.overrideWith(
+            (ref) => ParcelOrdersController(repository: AppParcelsRepository())
+              ..state = ParcelOrdersState(
+                isLoading: isLoading,
+                parcels: parcels,
+              ),
+          ),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en')],
+          home: const ParcelsEntryScreen(),
+        ),
+      );
+    }
+
+    testWidgets('skeleton_shows_pulsing_animation_when_loading',
+        (WidgetTester tester) async {
+      // Arrange: Create loading state
+      await tester.pumpWidget(createTestWidgetWithLoadingState(isLoading: true));
+      await tester.pump();
+
+      // Assert: OrderListSkeleton should be present
+      expect(find.byType(OrderListSkeleton), findsOneWidget);
+
+      // Assert: DWSkeletonPulse widgets should be present
+      expect(find.byType(DWSkeletonPulse), findsWidgets);
+    });
+
+    testWidgets('skeleton_pulse_exists_in_loading_parcels_list',
+        (WidgetTester tester) async {
+      // Arrange
+      await tester.pumpWidget(createTestWidgetWithLoadingState(isLoading: true));
+      await tester.pump();
+
+      // Assert: Verify DWSkeletonPulse count matches skeleton itemCount (3 in ParcelsEntry)
+      expect(find.byType(DWSkeletonPulse), findsNWidgets(3));
+    });
+
+    testWidgets('skeleton_pulse_disappears_when_data_loads',
+        (WidgetTester tester) async {
+      // Arrange: Loading complete with parcels
+      final parcels = [
+        Parcel(
+          id: 'pulse-test-parcel',
+          createdAt: DateTime.now(),
+          pickupAddress: const ParcelAddress(label: 'Origin'),
+          dropoffAddress: const ParcelAddress(label: 'Dest'),
+          details: const ParcelDetails(size: ParcelSize.small, weightKg: 1.0),
+          status: ParcelStatus.delivered,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        createTestWidgetWithLoadingState(isLoading: false, parcels: parcels),
+      );
+      await tester.pumpAndSettle();
+
+      // Assert: No skeleton or pulse should exist
+      expect(find.byType(OrderListSkeleton), findsNothing);
+      expect(find.byType(DWSkeletonPulse), findsNothing);
+    });
+
+    testWidgets('skeleton_pulse_not_shown_when_empty_state',
+        (WidgetTester tester) async {
+      // Arrange: No parcels, not loading
+      await tester.pumpWidget(
+        createTestWidgetWithLoadingState(isLoading: false, parcels: const []),
+      );
+      await tester.pumpAndSettle();
+
+      // Assert: Empty state shown, no skeleton pulse
+      expect(find.byType(DWSkeletonPulse), findsNothing);
+      expect(find.text('No shipments yet'), findsOneWidget);
     });
   });
 }

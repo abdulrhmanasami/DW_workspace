@@ -2,11 +2,15 @@
 /// Created by: Track C - Ticket #51, updated Ticket #54, #55
 /// Updated by: Track B - Ticket #96 (Added Rides integration)
 /// Updated by: Track B - Ticket #98 (Added navigation to Trip Summary)
+/// Updated by: Track B - Ticket #125 (Segmented Control filter + Empty States per Mockups)
+/// Updated by: Track B - Ticket #127 (Skeleton Loader + Accessibility)
 /// Purpose: Unified orders history screen displaying Rides, Parcels, and Food orders
 /// Track C - Ticket #54: Added Food Orders integration
 /// Track C - Ticket #55: Feature Flag integration for Food
 /// Track B - Ticket #96: Added Rides Orders integration
 /// Track B - Ticket #98: Added deep link to Trip Summary for Rides
+/// Track B - Ticket #125: Segmented Control + Empty State per filter
+/// Track B - Ticket #127: Skeleton Loader while data is loading
 
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
@@ -24,17 +28,16 @@ import '../../state/parcels/parcel_orders_state.dart';
 import '../parcels/parcel_shipment_details_screen.dart';
 import '../parcels/widgets/parcel_order_card.dart';
 import 'widgets/food_order_card.dart';
+import 'widgets/order_list_skeleton.dart';
+import 'widgets/orders_history_filter_bar.dart';
 import 'widgets/ride_order_card.dart';
 
-/// Filter enum for orders list.
-/// Track C - Ticket #54: Added food filter.
-/// Track B - Ticket #96: Added rides filter.
-enum _OrdersFilter { all, rides, parcels, food }
-
-/// Orders History Screen - Parcels Only MVP
+/// Orders History Screen - Unified Orders MVP
 ///
-/// Displays a list of parcel shipments with filtering capability.
-/// Follows the existing design patterns from ParcelsEntryScreen.
+/// Displays a list of orders (Rides, Parcels, Food) with filtering capability.
+/// Follows Design System patterns with Segmented Control per Mockups Screen 15.
+///
+/// Track B - Ticket #125: Updated to use Segmented Control filter bar
 class OrdersHistoryScreen extends ConsumerStatefulWidget {
   const OrdersHistoryScreen({super.key});
 
@@ -44,7 +47,8 @@ class OrdersHistoryScreen extends ConsumerStatefulWidget {
 }
 
 class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
-  _OrdersFilter _selectedFilter = _OrdersFilter.all;
+  // Track B - Ticket #125: Use exported enum from filter bar widget
+  OrdersHistoryFilter _selectedFilter = OrdersHistoryFilter.all;
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +68,9 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
     final parcelsState = ref.watch(parcelOrdersProvider);
     final parcels = parcelsState.parcels;
 
+    // Track B - Ticket #127: Check if any data source is loading
+    final isLoading = rideSessionState.isLoading || parcelsState.isLoading;
+
     // Watch food orders state - Track C - Ticket #54
     // Track C - Ticket #55: Only load food orders if feature is enabled
     final List<FoodOrder> foodOrders;
@@ -74,25 +81,25 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
       foodOrders = const [];
     }
 
-    // Filter visible items based on selected filter
+    // Track B - Ticket #125: Filter visible items based on selected filter
     final List<RideHistoryEntry> visibleRides;
     final List<Parcel> visibleParcels;
     final List<FoodOrder> visibleFoodOrders;
 
     switch (_selectedFilter) {
-      case _OrdersFilter.all:
+      case OrdersHistoryFilter.all:
         visibleRides = rideHistory;
         visibleParcels = parcels;
         visibleFoodOrders = isFoodEnabled ? foodOrders : const [];
-      case _OrdersFilter.rides:
+      case OrdersHistoryFilter.rides:
         visibleRides = rideHistory;
         visibleParcels = const [];
         visibleFoodOrders = const [];
-      case _OrdersFilter.parcels:
+      case OrdersHistoryFilter.parcels:
         visibleRides = const [];
         visibleParcels = parcels;
         visibleFoodOrders = const [];
-      case _OrdersFilter.food:
+      case OrdersHistoryFilter.food:
         visibleRides = const [];
         visibleParcels = const [];
         visibleFoodOrders = isFoodEnabled ? foodOrders : const [];
@@ -109,70 +116,48 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Filter bar
+            // Track B - Ticket #125: Segmented Control filter bar
             // Track C - Ticket #55: Food filter only shown when feature is enabled
-            // Track B - Ticket #96: Added Rides filter
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: DWSpacing.md,
-                vertical: DWSpacing.sm,
+            OrdersHistoryFilterBar(
+              currentFilter: _selectedFilter,
+              onFilterChanged: (filter) {
+                if (_selectedFilter != filter) {
+                  setState(() {
+                    _selectedFilter = filter;
+                  });
+                }
+              },
+              labels: OrdersHistoryFilterLabels(
+                all: l10n?.ordersFilterAll ?? 'All',
+                rides: l10n?.ordersFilterRides ?? 'Rides',
+                parcels: l10n?.ordersFilterParcels ?? 'Parcels',
+                food: l10n?.ordersFilterFood ?? 'Food',
               ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    ChoiceChip(
-                      label: Text(l10n?.ordersFilterAll ?? 'All'),
-                      selected: _selectedFilter == _OrdersFilter.all,
-                      onSelected: (_) => setState(() {
-                        _selectedFilter = _OrdersFilter.all;
-                      }),
-                    ),
-                    const SizedBox(width: DWSpacing.xs),
-                    // Track B - Ticket #96: Rides filter
-                    ChoiceChip(
-                      label: Text(l10n?.ordersFilterRides ?? 'Rides'),
-                      selected: _selectedFilter == _OrdersFilter.rides,
-                      onSelected: (_) => setState(() {
-                        _selectedFilter = _OrdersFilter.rides;
-                      }),
-                    ),
-                    const SizedBox(width: DWSpacing.xs),
-                    ChoiceChip(
-                      label: Text(l10n?.ordersFilterParcels ?? 'Parcels'),
-                      selected: _selectedFilter == _OrdersFilter.parcels,
-                      onSelected: (_) => setState(() {
-                        _selectedFilter = _OrdersFilter.parcels;
-                      }),
-                    ),
-                    // Track C - Ticket #55: Only show Food filter when feature is enabled
-                    if (isFoodEnabled) ...[
-                      const SizedBox(width: DWSpacing.xs),
-                      ChoiceChip(
-                        label: Text(l10n?.ordersFilterFood ?? 'Food'),
-                        selected: _selectedFilter == _OrdersFilter.food,
-                        onSelected: (_) => setState(() {
-                          _selectedFilter = _OrdersFilter.food;
-                        }),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
+              showFoodFilter: isFoodEnabled,
             ),
 
             // Content area
+            // Track B - Ticket #125: Empty state per filter
+            // Track B - Ticket #127: Skeleton loader while loading
             Expanded(
-              child: isEmpty
-                  ? _buildEmptyState(context, l10n, colorScheme, textTheme)
-                  : _buildOrdersList(
-                      context,
-                      visibleRides,
-                      visibleParcels,
-                      visibleFoodOrders,
-                      l10n,
-                      textTheme,
-                    ),
+              child: isLoading
+                  ? const OrderListSkeleton(itemCount: 4)
+                  : isEmpty
+                      ? _buildEmptyState(
+                          context,
+                          _selectedFilter,
+                          l10n,
+                          colorScheme,
+                          textTheme,
+                        )
+                      : _buildOrdersList(
+                          context,
+                          visibleRides,
+                          visibleParcels,
+                          visibleFoodOrders,
+                          l10n,
+                          textTheme,
+                        ),
             ),
           ],
         ),
@@ -180,13 +165,43 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
     );
   }
 
-  /// Build empty state widget
+  /// Build empty state widget per filter
+  /// Track B - Ticket #125: Empty state per filter with specific messages
   Widget _buildEmptyState(
     BuildContext context,
+    OrdersHistoryFilter filter,
     AppLocalizations? l10n,
     ColorScheme colorScheme,
     TextTheme textTheme,
   ) {
+    // Get title and description based on current filter
+    final (String title, String description, IconData icon) = switch (filter) {
+      OrdersHistoryFilter.all => (
+          l10n?.ordersHistoryEmptyAllTitle ?? 'No orders yet',
+          l10n?.ordersHistoryEmptyAllDescription ??
+              'Your rides, parcels and food orders will appear here.',
+          Icons.receipt_long_outlined,
+        ),
+      OrdersHistoryFilter.rides => (
+          l10n?.ordersHistoryEmptyRidesTitle ?? 'No rides yet',
+          l10n?.ordersHistoryEmptyRidesDescription ??
+              'Your completed rides will appear here.',
+          Icons.directions_car_outlined,
+        ),
+      OrdersHistoryFilter.parcels => (
+          l10n?.ordersHistoryEmptyParcelsTitle ?? 'No parcels yet',
+          l10n?.ordersHistoryEmptyParcelsDescription ??
+              'Your shipments will appear here.',
+          Icons.inventory_2_outlined,
+        ),
+      OrdersHistoryFilter.food => (
+          l10n?.ordersHistoryEmptyFoodTitle ?? 'No food orders yet',
+          l10n?.ordersHistoryEmptyFoodDescription ??
+              'Your food delivery orders will appear here.',
+          Icons.restaurant_outlined,
+        ),
+    };
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(DWSpacing.lg),
@@ -194,20 +209,19 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.receipt_long_outlined,
+              icon,
               size: 64,
               color: colorScheme.outline,
             ),
             const SizedBox(height: DWSpacing.md),
             Text(
-              l10n?.ordersHistoryEmptyTitle ?? 'No orders yet',
+              title,
               style: textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: DWSpacing.xs),
             Text(
-              l10n?.ordersHistoryEmptySubtitle ??
-                  'You don\'t have any orders yet. Start by creating a new shipment.',
+              description,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),

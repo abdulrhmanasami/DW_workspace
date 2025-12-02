@@ -1,7 +1,45 @@
 // Maps Shims - Main Library Export
 // Created by: Cursor B-mobility
 // Purpose: Unified export for maps shims package
-// Last updated: 2025-11-11
+// Last updated: 2025-11-30
+// Updated by: Track B - Ticket #109 (DW Map Shim v1 with Streams/Sinks)
+
+// =============================================================================
+// Track B - Ticket #109: New Pure Dart Map Shim v1 (Streams/Sinks)
+// =============================================================================
+
+// Core types (Pure Dart - no Flutter dependencies)
+export 'src/core/dw_lat_lng.dart' show DWLatLng, DWLatLngBounds;
+export 'src/core/dw_map_marker.dart' show DWMapMarker, DWMapMarkerType;
+export 'src/core/dw_map_polyline.dart' show DWMapPolyline, DWMapPolylineStyle;
+export 'src/core/dw_map_camera.dart' show DWMapCameraPosition;
+
+// Commands & Events (Pure Dart - no Flutter dependencies)
+export 'src/core/dw_map_commands.dart'
+    show
+        DWMapCommand,
+        DWSetContentCommand,
+        DWAnimateToBoundsCommand,
+        DWAnimateToPositionCommand,
+        DWClearCommand;
+export 'src/core/dw_map_events.dart'
+    show
+        DWMapEvent,
+        DWMarkerTappedEvent,
+        DWCameraMovedEvent,
+        DWMapTappedEvent,
+        DWMapReadyEvent,
+        DWCameraMoveStartedEvent;
+
+// Core controller interface (Pure Dart - no Flutter dependencies)
+export 'src/core/dw_map_controller.dart' show DWMapController;
+
+// Testing implementation (Pure Dart - no Flutter dependencies)
+export 'src/testing/in_memory_map_controller.dart' show InMemoryMapController;
+
+// =============================================================================
+// Legacy exports (existing implementation - may have Flutter dependencies)
+// =============================================================================
 
 export 'src/map_models.dart'
     show

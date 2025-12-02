@@ -319,5 +319,10 @@ class _FakeRideQuoteController extends RideQuoteController {
   Future<void> refreshFromDraft(RideDraftUiState draft) async {
     // No-op for tests
   }
+
+  @override
+  Future<void> retryFromDraft(RideDraftUiState draft) async {
+    // No-op for tests
+  }
 }
 

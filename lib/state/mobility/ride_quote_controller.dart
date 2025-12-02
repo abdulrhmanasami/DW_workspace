@@ -1,13 +1,16 @@
-/// Ride Quote Controller - Track B Ticket #14, #27
+/// Ride Quote Controller - Track B Ticket #14, #27, #115, #121
 /// Purpose: Bridge between UI and RidePricingService from mobility_shims
 /// Created by: Track B - Ticket #14
 /// Updated by: Track B - Ticket #27 (MockPricingService integration)
-/// Last updated: 2025-11-28
+/// Reviewed by: Track B - Ticket #115 (MockPricingService architecture validation)
+/// Updated by: Track B - Ticket #121 (Robust error/empty state handling)
+/// Last updated: 2025-12-01
 ///
 /// This controller manages the quote fetching lifecycle:
 /// - Loading state while fetching
 /// - Quote data when successful
-/// - Error state when failed
+/// - Error state when failed (with structured RideQuoteError)
+/// - Empty state when no options available
 ///
 /// IMPORTANT:
 /// - Uses MockRidePricingService for now (no real backend).
@@ -22,13 +25,98 @@ import 'package:mobility_shims/mobility_shims.dart';
 // From app:
 import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
 
+// ============================================================================
+// Track B - Ticket #121: Structured Error Model
+// ============================================================================
+
+/// Represents different types of quote fetching errors.
+///
+/// Used to provide structured error handling in the UI with appropriate
+/// error messages and recovery actions.
+@immutable
+sealed class RideQuoteError {
+  const RideQuoteError();
+
+  /// Error when the pricing service fails (network error, server error, etc.)
+  const factory RideQuoteError.pricingFailed([String? message]) =
+      RideQuoteErrorPricingFailed;
+
+  /// Error when the pricing service returns empty options.
+  const factory RideQuoteError.noOptionsAvailable() =
+      RideQuoteErrorNoOptionsAvailable;
+
+  /// Unexpected/generic error.
+  const factory RideQuoteError.unexpected([String? message]) =
+      RideQuoteErrorUnexpected;
+}
+
+/// Pricing service failure error.
+@immutable
+class RideQuoteErrorPricingFailed extends RideQuoteError {
+  const RideQuoteErrorPricingFailed([this.message]);
+  final String? message;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RideQuoteErrorPricingFailed && other.message == message;
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'RideQuoteError.pricingFailed($message)';
+}
+
+/// No options available error (empty quote).
+@immutable
+class RideQuoteErrorNoOptionsAvailable extends RideQuoteError {
+  const RideQuoteErrorNoOptionsAvailable();
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is RideQuoteErrorNoOptionsAvailable;
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  String toString() => 'RideQuoteError.noOptionsAvailable()';
+}
+
+/// Unexpected error.
+@immutable
+class RideQuoteErrorUnexpected extends RideQuoteError {
+  const RideQuoteErrorUnexpected([this.message]);
+  final String? message;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is RideQuoteErrorUnexpected && other.message == message;
+
+  @override
+  int get hashCode => message.hashCode;
+
+  @override
+  String toString() => 'RideQuoteError.unexpected($message)';
+}
+
+// ============================================================================
+// UI State Model
+// ============================================================================
+
 /// UI state for ride quote fetching.
+///
+/// Track B - Ticket #121: Updated to use structured [RideQuoteError] instead
+/// of a generic error message string.
 @immutable
 class RideQuoteUiState {
   const RideQuoteUiState({
     this.isLoading = false,
     this.quote,
-    this.errorMessage,
+    this.error,
+    @Deprecated('Use error instead') this.errorMessage,
   });
 
   /// Whether a quote request is in progress.
@@ -37,26 +125,45 @@ class RideQuoteUiState {
   /// The fetched quote, or null if not yet fetched or failed.
   final RideQuote? quote;
 
-  /// Error message if the last fetch failed.
+  /// Structured error if the last fetch failed.
+  ///
+  /// Track B - Ticket #121: Provides granular error types for better UX.
+  final RideQuoteError? error;
+
+  /// Legacy error message field (deprecated).
+  @Deprecated('Use error instead')
   final String? errorMessage;
 
   /// Whether we have a valid quote.
   bool get hasQuote => quote != null;
 
   /// Whether there's an error with no quote.
-  bool get hasError => errorMessage != null && quote == null;
+  ///
+  /// Track B - Ticket #121: Now checks both new [error] and legacy [errorMessage].
+  bool get hasError =>
+      (error != null || errorMessage != null) && quote == null;
+
+  /// Returns true if the error is specifically about no options available.
+  bool get isNoOptionsError => error is RideQuoteErrorNoOptionsAvailable;
+
+  /// Returns true if the error is a pricing failure.
+  bool get isPricingError => error is RideQuoteErrorPricingFailed;
 
   RideQuoteUiState copyWith({
     bool? isLoading,
     RideQuote? quote,
-    String? errorMessage,
+    RideQuoteError? error,
+    @Deprecated('Use error instead') String? errorMessage,
     bool clearError = false,
     bool clearQuote = false,
   }) {
     return RideQuoteUiState(
       isLoading: isLoading ?? this.isLoading,
       quote: clearQuote ? null : (quote ?? this.quote),
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      error: clearError ? null : (error ?? this.error),
+      // ignore: deprecated_member_use_from_same_package
+      errorMessage:
+          clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
@@ -66,16 +173,22 @@ class RideQuoteUiState {
     return other is RideQuoteUiState &&
         other.isLoading == isLoading &&
         other.quote?.quoteId == quote?.quoteId &&
+        other.error == error &&
+        // ignore: deprecated_member_use_from_same_package
         other.errorMessage == errorMessage;
   }
 
   @override
   int get hashCode =>
-      isLoading.hashCode ^ (quote?.quoteId.hashCode ?? 0) ^ errorMessage.hashCode;
+      isLoading.hashCode ^
+      (quote?.quoteId.hashCode ?? 0) ^
+      error.hashCode ^
+      // ignore: deprecated_member_use_from_same_package
+      errorMessage.hashCode;
 
   @override
   String toString() =>
-      'RideQuoteUiState(isLoading: $isLoading, hasQuote: $hasQuote, error: $errorMessage)';
+      'RideQuoteUiState(isLoading: $isLoading, hasQuote: $hasQuote, error: $error)';
 }
 
 /// Provides the current implementation of [RidePricingService].
@@ -96,6 +209,7 @@ final rideQuoteServiceProvider = Provider<RideQuoteService>((ref) {
 ///
 /// Uses [RidePricingService] to fetch quotes based on [RideDraftUiState].
 /// Track B - Ticket #27: Now uses MockRidePricingService for pricing logic.
+/// Track B - Ticket #121: Robust error handling with structured RideQuoteError.
 class RideQuoteController extends StateNotifier<RideQuoteUiState> {
   /// Creates a controller with the new [RidePricingService].
   RideQuoteController({
@@ -137,12 +251,25 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
     }
   }
 
+  /// Retry fetching quote from draft.
+  ///
+  /// Track B - Ticket #121: Delegate to [refreshFromDraft] for retry flows.
+  /// This provides a semantic API for retry actions in the UI.
+  Future<void> retryFromDraft(RideDraftUiState draft) async {
+    return refreshFromDraft(draft);
+  }
+
   /// New pricing flow using [RidePricingService] and [MobilityPlace].
+  ///
+  /// Track B - Ticket #121: Updated to use structured [RideQuoteError]:
+  /// - [RidePricingException] → [RideQuoteError.pricingFailed]
+  /// - Empty options → [RideQuoteError.noOptionsAvailable]
+  /// - Generic exceptions → [RideQuoteError.unexpected]
   Future<void> _refreshWithPricingService(
     MobilityPlace pickup,
     MobilityPlace destination,
   ) async {
-    state = const RideQuoteUiState(isLoading: true);
+    state = state.copyWith(isLoading: true, clearError: true);
 
     try {
       final quote = await _pricingService!.quoteRide(
@@ -151,18 +278,33 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
         serviceType: RideServiceType.ride, // Return all options
       );
 
-      state = RideQuoteUiState(
-        isLoading: false,
-        quote: quote,
-      );
+      // Track B - Ticket #121: Check for empty options
+      if (quote.options.isEmpty) {
+        state = const RideQuoteUiState(
+          isLoading: false,
+          quote: null,
+          error: RideQuoteError.noOptionsAvailable(),
+        );
+      } else {
+        state = RideQuoteUiState(
+          isLoading: false,
+          quote: quote,
+        );
+      }
     } on RidePricingException catch (e) {
+      // Track B - Ticket #121: Pricing service specific error
       state = RideQuoteUiState(
         isLoading: false,
+        error: RideQuoteError.pricingFailed(e.message),
+        // Keep legacy errorMessage for backward compatibility
         errorMessage: e.message,
       );
     } catch (e) {
+      // Track B - Ticket #121: Generic/unexpected error
       state = RideQuoteUiState(
         isLoading: false,
+        error: RideQuoteError.unexpected(e.toString()),
+        // Keep legacy errorMessage for backward compatibility
         errorMessage: e.toString(),
       );
     }
@@ -173,18 +315,21 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
   /// This is used when:
   /// - We have [RidePricingService] but no [MobilityPlace] in draft
   /// - Maintains backward compatibility with existing UI
+  ///
+  /// Track B - Ticket #121: Updated error handling.
   Future<void> _refreshWithSynthesizedPlaces(RideDraftUiState draft) async {
     final destinationQuery = draft.destinationQuery.trim();
 
     if (destinationQuery.isEmpty) {
       state = const RideQuoteUiState(
         isLoading: false,
+        error: RideQuoteError.pricingFailed('Destination is empty'),
         errorMessage: 'Destination is empty',
       );
       return;
     }
 
-    state = const RideQuoteUiState(isLoading: true);
+    state = state.copyWith(isLoading: true, clearError: true);
 
     try {
       // Synthesize MobilityPlace objects
@@ -223,21 +368,32 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
           serviceType: RideServiceType.ride,
         );
 
-        state = RideQuoteUiState(
-          isLoading: false,
-          quote: quote,
-        );
+        // Track B - Ticket #121: Check for empty options
+        if (quote.options.isEmpty) {
+          state = const RideQuoteUiState(
+            isLoading: false,
+            quote: null,
+            error: RideQuoteError.noOptionsAvailable(),
+          );
+        } else {
+          state = RideQuoteUiState(
+            isLoading: false,
+            quote: quote,
+          );
+        }
       } else {
         throw const RidePricingException('No pricing service available');
       }
     } on RidePricingException catch (e) {
       state = RideQuoteUiState(
         isLoading: false,
+        error: RideQuoteError.pricingFailed(e.message),
         errorMessage: e.message,
       );
     } catch (e) {
       state = RideQuoteUiState(
         isLoading: false,
+        error: RideQuoteError.unexpected(e.toString()),
         errorMessage: e.toString(),
       );
     }
@@ -252,6 +408,7 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
     if (destination.isEmpty) {
       state = const RideQuoteUiState(
         isLoading: false,
+        error: RideQuoteError.pricingFailed('Destination is empty'),
         errorMessage: 'Destination is empty',
       );
       return;
@@ -259,7 +416,7 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
 
     final request = _buildRequestFromDraft(draft);
 
-    state = const RideQuoteUiState(isLoading: true);
+    state = state.copyWith(isLoading: true, clearError: true);
 
     try {
       final quote = await _legacyService!.getQuote(request);
@@ -270,6 +427,7 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
     } catch (e) {
       state = RideQuoteUiState(
         isLoading: false,
+        error: RideQuoteError.unexpected(e.toString()),
         errorMessage: e.toString(),
       );
     }

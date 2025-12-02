@@ -499,6 +499,34 @@
     },
     "description": "Title for ride order item (Track B - Ticket #96)"
   },
+  "ordersRideItemTitleWithService": "{serviceName} to {destination}",
+  "@ordersRideItemTitleWithService": {
+    "placeholders": {
+      "serviceName": {
+        "type": "String",
+        "example": "Economy"
+      },
+      "destination": {
+        "type": "String",
+        "example": "Airport"
+      }
+    },
+    "description": "Title for ride order item with service name (Track B - Ticket #108)"
+  },
+  "ordersRideItemSubtitleWithOrigin": "From {origin} · {date}",
+  "@ordersRideItemSubtitleWithOrigin": {
+    "placeholders": {
+      "origin": {
+        "type": "String",
+        "example": "Home"
+      },
+      "date": {
+        "type": "String",
+        "example": "24 May, 10:30 PM"
+      }
+    },
+    "description": "Subtitle for ride order item with origin (Track B - Ticket #108)"
+  },
   "ordersRideStatusCompleted": "Completed",
   "@ordersRideStatusCompleted": {
     "description": "Ride order status: completed (Track B - Ticket #96)"
@@ -834,6 +862,10 @@
   "@rideCancelSuccessSnackbar": {
     "description": "Snackbar message after successful ride cancellation (Track B - Ticket #67)"
   },
+  "rideCancelReasonByRider": "Cancelled by rider",
+  "@rideCancelReasonByRider": {
+    "description": "Cancel reason label when rider cancels the trip (Track B - Ticket #120)"
+  },
 
   "rideActiveHeadlineFindingDriver": "Finding a driver…",
   "rideActiveHeadlineDriverEta": "Driver is {minutes} min away",
@@ -889,6 +921,44 @@
     }
   },
 
+  "rideActiveSummaryServiceAndPrice": "{serviceName} · {price}",
+  "@rideActiveSummaryServiceAndPrice": {
+    "description": "Service name and price display in active trip (Track B - Ticket #105)",
+    "placeholders": {
+      "serviceName": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActivePayingWith": "Paying with {method}",
+  "@rideActivePayingWith": {
+    "description": "Payment method label in active trip (Track B - Ticket #105)",
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActivePriceNotAvailable": "Price not available yet",
+  "@rideActivePriceNotAvailable": {
+    "description": "Fallback when price is not available in active trip (Track B - Ticket #105)"
+  },
+  "homeActiveRidePriceAndPayment": "{price} · {paymentMethod}",
+  "@homeActiveRidePriceAndPayment": {
+    "description": "Price and payment method in home active ride card (Track B - Ticket #105)",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "paymentMethod": {
+        "type": "String"
+      }
+    }
+  },
+
   "rideDebugFsmTitle": "Debug FSM Controls",
   "@rideDebugFsmTitle": {
     "description": "Title for debug FSM section (only shown in debug mode)"
@@ -922,6 +992,15 @@
   "homeActiveRideTitleGeneric": "Active ride",
   "@homeActiveRideTitleGeneric": {
     "description": "Generic fallback title for active ride card on Home Hub (Track B - Ticket #65)"
+  },
+  "homeActiveRideEtaTitle": "Arriving in {minutes} min",
+  "@homeActiveRideEtaTitle": {
+    "description": "Title with ETA for active ride card on Home Hub (Track B - Ticket #114)",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
   },
   "homeActiveRideSubtitleToDestination": "To {destination}",
   "@homeActiveRideSubtitleToDestination": {
@@ -1008,6 +1087,34 @@
   "@rideTripSummaryCompletedSubtitle": {
     "description": "Subtitle shown after trip completion"
   },
+  "rideTripSummaryCancelledTitle": "Trip cancelled",
+  "@rideTripSummaryCancelledTitle": {
+    "description": "Header title when trip is cancelled (Track B - Ticket #120)"
+  },
+  "rideTripSummaryCancelledSubtitle": "Your ride was cancelled",
+  "@rideTripSummaryCancelledSubtitle": {
+    "description": "Subtitle shown when viewing a cancelled trip (Track B - Ticket #120)"
+  },
+  "rideTripSummaryFailedTitle": "Ride failed",
+  "@rideTripSummaryFailedTitle": {
+    "description": "Title shown when viewing a failed trip (Track B - Ticket #122)"
+  },
+  "rideTripSummaryFailedSubtitle": "We couldn't complete this ride",
+  "@rideTripSummaryFailedSubtitle": {
+    "description": "Subtitle shown when viewing a failed trip (Track B - Ticket #122)"
+  },
+  "rideFailReasonNoDriverFound": "No driver found",
+  "@rideFailReasonNoDriverFound": {
+    "description": "Reason label when no driver was available (Track B - Ticket #122)"
+  },
+  "rideFailNoDriverFoundSnackbar": "We couldn't find a driver for this ride.",
+  "@rideFailNoDriverFoundSnackbar": {
+    "description": "SnackBar message shown when no driver is found (Track B - Ticket #122)"
+  },
+  "rideFailNoDriverFoundCta": "No drivers available? Try later",
+  "@rideFailNoDriverFoundCta": {
+    "description": "CTA button text for no driver found action (Track B - Ticket #122)"
+  },
   "rideTripSummaryRouteSectionTitle": "Route",
   "@rideTripSummaryRouteSectionTitle": {
     "description": "Section title for route summary"
@@ -1031,6 +1138,17 @@
   "rideTripSummaryDoneCta": "Done",
   "@rideTripSummaryDoneCta": {
     "description": "CTA button to finish and return home"
+  },
+
+  "rideTripCompletionServiceLabel": "{serviceName} ride",
+  "@rideTripCompletionServiceLabel": {
+    "description": "Service name label in trip completion screen (Track B - Ticket #107)",
+    "placeholders": {
+      "serviceName": {
+        "type": "String",
+        "example": "Economy"
+      }
+    }
   },
 
   "rideConfirmLoadingTitle": "Fetching ride options...",
@@ -1064,6 +1182,31 @@
   "rideConfirmRecommendedBadge": "Recommended",
   "@rideConfirmRecommendedBadge": {
     "description": "Badge shown on recommended ride option (Ticket #91)"
+  },
+
+  "rideQuoteErrorTitle": "We couldn't load prices",
+  "@rideQuoteErrorTitle": {
+    "description": "Title for the error state when ride pricing fails (Track B - Ticket #121)"
+  },
+  "rideQuoteErrorGeneric": "Something went wrong while fetching ride prices. Please try again.",
+  "@rideQuoteErrorGeneric": {
+    "description": "Generic error message for pricing failures (Track B - Ticket #121)"
+  },
+  "rideQuoteErrorNoOptions": "No ride options are available for this route right now.",
+  "@rideQuoteErrorNoOptions": {
+    "description": "Error message when no ride options are returned (Track B - Ticket #121)"
+  },
+  "rideQuoteRetryCta": "Retry",
+  "@rideQuoteRetryCta": {
+    "description": "CTA button text to retry fetching ride prices (Track B - Ticket #121)"
+  },
+  "rideQuoteEmptyTitle": "No rides available",
+  "@rideQuoteEmptyTitle": {
+    "description": "Title for empty state when no ride options (Track B - Ticket #121)"
+  },
+  "rideQuoteEmptyDescription": "Try a different time or adjust your pickup and destination.",
+  "@rideQuoteEmptyDescription": {
+    "description": "Description for empty state when no ride options (Track B - Ticket #121)"
   },
   "rideConfirmFromLabel": "From",
   "@rideConfirmFromLabel": {
@@ -2267,5 +2410,51 @@
   "rideActiveTripDriverSectionStubBody": "Driver and vehicle details will be available once the mobility integration is connected.",
   "@rideActiveTripDriverSectionStubBody": {
     "description": "[RESERVED - Ticket #88] Fallback when driver data unavailable. Currently using mock data."
+  },
+
+  "ordersHistoryEmptyAllTitle": "No orders yet",
+  "@ordersHistoryEmptyAllTitle": {
+    "description": "Empty state title when no orders at all (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyAllDescription": "Your rides, parcels and food orders will appear here.",
+  "@ordersHistoryEmptyAllDescription": {
+    "description": "Empty state description when no orders at all (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyRidesTitle": "No rides yet",
+  "@ordersHistoryEmptyRidesTitle": {
+    "description": "Empty state title when no ride orders (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyRidesDescription": "Your completed rides will appear here.",
+  "@ordersHistoryEmptyRidesDescription": {
+    "description": "Empty state description when no ride orders (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyParcelsTitle": "No parcels yet",
+  "@ordersHistoryEmptyParcelsTitle": {
+    "description": "Empty state title when no parcel orders (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyParcelsDescription": "Your shipments will appear here.",
+  "@ordersHistoryEmptyParcelsDescription": {
+    "description": "Empty state description when no parcel orders (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyFoodTitle": "No food orders yet",
+  "@ordersHistoryEmptyFoodTitle": {
+    "description": "Empty state title when no food orders (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyFoodDescription": "Your food delivery orders will appear here.",
+  "@ordersHistoryEmptyFoodDescription": {
+    "description": "Empty state description when no food orders (Track B - Ticket #125)"
+  },
+
+  "ordersServiceRideSemanticLabel": "Ride order",
+  "@ordersServiceRideSemanticLabel": {
+    "description": "Accessibility label for ride order service icon (Track B - Ticket #127)"
+  },
+  "ordersServiceParcelSemanticLabel": "Parcel shipment",
+  "@ordersServiceParcelSemanticLabel": {
+    "description": "Accessibility label for parcel order card (Track B - Ticket #127)"
+  },
+  "ordersServiceFoodSemanticLabel": "Food order",
+  "@ordersServiceFoodSemanticLabel": {
+    "description": "Accessibility label for food order service icon (Track B - Ticket #127)"
   }
 }

@@ -2,7 +2,9 @@
 /// Purpose: Shared state between RideBookingScreen and RideConfirmationScreen
 /// Created by: Track B - Ticket #9
 /// Updated by: Track B - Ticket #20 (MobilityPlace integration)
-/// Last updated: 2025-11-28
+/// Updated by: Track B - Ticket #101 (Payment method integration)
+/// Updated by: Track B - Ticket #102 (Payment method lifecycle + clearPaymentMethodId)
+/// Last updated: 2025-11-30
 ///
 /// This state is UI-only and synchronizes user input across the ride booking flow.
 ///
@@ -29,6 +31,7 @@ class RideDraftUiState {
     this.selectedOptionId,
     this.pickupPlace,
     this.destinationPlace,
+    this.paymentMethodId,
   });
 
   /// Human-readable pickup label (e.g. "Current location").
@@ -46,14 +49,21 @@ class RideDraftUiState {
   /// Domain model for destination/dropoff location (Track B - Ticket #20)
   final MobilityPlace? destinationPlace;
 
+  /// Track B - Ticket #101: Selected payment method id for this ride draft.
+  /// This connects the selected payment method from PaymentMethodsUiState
+  /// to the ride request.
+  final String? paymentMethodId;
+
   RideDraftUiState copyWith({
     String? pickupLabel,
     String? destinationQuery,
     String? selectedOptionId,
     MobilityPlace? pickupPlace,
     MobilityPlace? destinationPlace,
+    String? paymentMethodId,
     bool clearPickupPlace = false,
     bool clearDestinationPlace = false,
+    bool clearPaymentMethodId = false,
   }) {
     return RideDraftUiState(
       pickupLabel: pickupLabel ?? this.pickupLabel,
@@ -63,6 +73,9 @@ class RideDraftUiState {
       destinationPlace: clearDestinationPlace
           ? null
           : (destinationPlace ?? this.destinationPlace),
+      paymentMethodId: clearPaymentMethodId
+          ? null
+          : (paymentMethodId ?? this.paymentMethodId),
     );
   }
 
@@ -74,7 +87,8 @@ class RideDraftUiState {
         other.destinationQuery == destinationQuery &&
         other.selectedOptionId == selectedOptionId &&
         other.pickupPlace == pickupPlace &&
-        other.destinationPlace == destinationPlace;
+        other.destinationPlace == destinationPlace &&
+        other.paymentMethodId == paymentMethodId;
   }
 
   @override
@@ -84,11 +98,12 @@ class RideDraftUiState {
         selectedOptionId,
         pickupPlace,
         destinationPlace,
+        paymentMethodId,
       );
 
   @override
   String toString() =>
-      'RideDraftUiState(pickupLabel: $pickupLabel, destinationQuery: $destinationQuery, selectedOptionId: $selectedOptionId, pickupPlace: $pickupPlace, destinationPlace: $destinationPlace)';
+      'RideDraftUiState(pickupLabel: $pickupLabel, destinationQuery: $destinationQuery, selectedOptionId: $selectedOptionId, pickupPlace: $pickupPlace, destinationPlace: $destinationPlace, paymentMethodId: $paymentMethodId)';
 }
 
 /// Simple Riverpod StateNotifier for the ride draft.
@@ -123,7 +138,27 @@ class RideDraftController extends StateNotifier<RideDraftUiState> {
     );
   }
 
-  /// Can be used later after a trip is successfully created.
+  /// Track B - Ticket #101: Set the selected payment method id.
+  /// This links the payment selection from PaymentMethodsUiState
+  /// to the ride draft before creating a ride request.
+  void setPaymentMethodId(String? paymentMethodId) {
+    state = state.copyWith(paymentMethodId: paymentMethodId);
+  }
+
+  /// Track B - Ticket #102: Clear only the payment method id.
+  /// Use this when ending a trip (completed/cancelled) to prevent
+  /// leaking the payment method id into the next ride draft.
+  ///
+  /// Note: This only clears paymentMethodId while preserving other fields.
+  /// Use [clear] to reset the entire draft state.
+  void clearPaymentMethodId() {
+    state = state.copyWith(clearPaymentMethodId: true);
+  }
+
+  /// Reset the draft to initial state.
+  ///
+  /// Track B - Ticket #102: This clears ALL fields including paymentMethodId
+  /// to prevent any leakage between rides.
   void clear() {
     state = const RideDraftUiState();
   }

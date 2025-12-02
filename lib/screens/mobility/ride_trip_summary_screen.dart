@@ -1,4 +1,4 @@
-/// Ride Trip Summary Screen - Track B Ticket #23, #62, #63, #92, #96, #98
+/// Ride Trip Summary Screen - Track B Ticket #23, #62, #63, #92, #96, #98, #107, #118, #124
 /// Purpose: Display trip summary/receipt with driver rating
 /// Created by: Track B - Ticket #23
 /// Updated by: Track B - Ticket #62 (Receipt breakdown, comment field)
@@ -6,7 +6,10 @@
 /// Updated by: Ticket #92 (Full receipt UI + Design System Tokens + L10n)
 /// Updated by: Ticket #96 (Archive trip to history before clear)
 /// Updated by: Ticket #98 (Support viewing history trips from Orders)
-/// Last updated: 2025-11-30
+/// Updated by: Ticket #107 (Use completionSummary as source of truth)
+/// Updated by: Ticket #118 (Use completeCurrentTrip + historyTrips as single source of truth)
+/// Updated by: Ticket #124 (Connect driver rating to historyTrips via setRatingForMostRecentTrip)
+/// Last updated: 2025-12-01
 ///
 /// This screen shows the trip summary interface (Screen 11 in Hi-Fi Mockups):
 /// - Trip completed status header with ID and timestamp
@@ -29,6 +32,8 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../state/mobility/ride_draft_state.dart';
 import '../../state/mobility/ride_trip_session.dart';
 import '../../state/mobility/ride_quote_controller.dart';
+// Track B - Ticket #107: Payment method integration for completion summary
+import '../../state/payments/payment_methods_ui_state.dart';
 
 /// Arguments for navigating to RideTripSummaryScreen from history
 /// Track B - Ticket #98
@@ -43,7 +48,11 @@ class RideTripSummaryArgs {
 /// Track B - Ticket #98: Now supports two modes:
 /// 1. Active trip mode (default): Shows summary for current active trip
 /// 2. History mode: Shows summary for a past trip from Orders History
-class RideTripSummaryScreen extends ConsumerWidget {
+///
+/// Track B - Ticket #118: Refactored to use completeCurrentTrip() + historyTrips:
+/// - Active trip mode: calls completeCurrentTrip() on init, reads from historyTrips.first
+/// - History mode: reads directly from the passed historyEntry (unchanged)
+class RideTripSummaryScreen extends ConsumerStatefulWidget {
   const RideTripSummaryScreen({
     super.key,
     this.historyEntry,
@@ -54,50 +63,90 @@ class RideTripSummaryScreen extends ConsumerWidget {
   final RideHistoryEntry? historyEntry;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RideTripSummaryScreen> createState() => _RideTripSummaryScreenState();
+}
+
+class _RideTripSummaryScreenState extends ConsumerState<RideTripSummaryScreen> {
+  bool _completedTrip = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Track B - Ticket #118: Complete the trip on screen open (for active trip mode)
+    if (widget.historyEntry == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _completeActiveTripIfNeeded();
+      });
+    }
+  }
+
+  /// Track B - Ticket #118: Complete the active trip and archive it to history
+  void _completeActiveTripIfNeeded() {
+    if (_completedTrip) return; // Idempotent guard
+    
+    final sessionState = ref.read(rideTripSessionProvider);
+    final controller = ref.read(rideTripSessionProvider.notifier);
+    
+    // Only complete if there's an active trip
+    if (sessionState.activeTrip != null) {
+      // Get data from frozen snapshots before completing
+      final draftSnapshot = sessionState.draftSnapshot;
+      final tripSummary = sessionState.tripSummary;
+      
+      // Track B - Ticket #118: Get payment method label
+      final paymentsState = ref.read(paymentMethodsUiProvider);
+      final paymentMethodId = tripSummary?.selectedPaymentMethodId;
+      final paymentMethod = paymentMethodId != null
+          ? paymentsState.methods
+              .where((m) => m.id == paymentMethodId)
+              .firstOrNull
+          : paymentsState.selectedMethod;
+      final paymentMethodLabel = paymentMethod?.displayName;
+      
+      controller.completeCurrentTrip(
+        destinationLabel: draftSnapshot?.destinationQuery,
+        originLabel: draftSnapshot?.pickupLabel ?? draftSnapshot?.pickupPlace?.label,
+        amountFormatted: tripSummary?.fareDisplayText,
+        serviceName: tripSummary?.selectedServiceName,
+        paymentMethodLabel: paymentMethodLabel,
+      );
+      
+      setState(() {
+        _completedTrip = true;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     
-    // Track B - Ticket #98: Check if viewing from history
-    final fromHistory = historyEntry != null;
-
-    // If from history, use the history entry's trip
-    // Otherwise, use active trip from session
-    final RideTripState? effectiveTrip;
-    final DateTime? completedAt;
-    final String? historyDestinationLabel;
-    final String? historyAmountFormatted;
+    // Track B - Ticket #98: Check if viewing from history (passed via navigator)
+    final fromHistory = widget.historyEntry != null;
+    
+    // Track B - Ticket #118: Get the history entry to display
+    final RideHistoryEntry? effectiveEntry;
     
     if (fromHistory) {
-      effectiveTrip = historyEntry!.trip;
-      completedAt = historyEntry!.completedAt;
-      historyDestinationLabel = historyEntry!.destinationLabel;
-      historyAmountFormatted = historyEntry!.amountFormatted;
+      effectiveEntry = widget.historyEntry;
     } else {
       final tripSession = ref.watch(rideTripSessionProvider);
-      effectiveTrip = tripSession.activeTrip;
-      completedAt = null;
-      historyDestinationLabel = null;
-      historyAmountFormatted = null;
+      // After completeCurrentTrip(), the trip is in historyTrips
+      effectiveEntry = tripSession.historyTrips.isNotEmpty 
+          ? tripSession.historyTrips.first 
+          : null;
     }
 
-    // Defensive fallback: if no trip available
-    if (effectiveTrip == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        }
-      });
-      return const SizedBox.shrink();
-    }
-    
-    // For active trips, require completed phase; for history, allow any terminal phase
-    if (!fromHistory && effectiveTrip.phase != RideTripPhase.completed) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (context.mounted) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        }
-      });
-      return const SizedBox.shrink();
+    // Defensive fallback: if no entry available yet (waiting for completion)
+    if (effectiveEntry == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.rideTripSummaryTitle),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
 
     final draft = ref.watch(rideDraftProvider);
@@ -116,13 +165,19 @@ class RideTripSummaryScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         child: _RideTripSummaryBody(
-          trip: effectiveTrip,
+          trip: effectiveEntry.trip,
           draft: draft,
           quoteState: quoteState,
           fromHistory: fromHistory,
-          historyCompletedAt: completedAt,
-          historyDestinationLabel: historyDestinationLabel,
-          historyAmountFormatted: historyAmountFormatted,
+          historyCompletedAt: effectiveEntry.completedAt,
+          historyDestinationLabel: effectiveEntry.destinationLabel,
+          historyAmountFormatted: effectiveEntry.amountFormatted,
+          // Track B - Ticket #118: historyEntry has all the data we need
+          historyServiceName: effectiveEntry.serviceName,
+          historyOriginLabel: effectiveEntry.originLabel,
+          historyPaymentMethodLabel: effectiveEntry.paymentMethodLabel,
+          // Track B - Ticket #124: Pass driver rating from history entry
+          historyDriverRating: effectiveEntry.driverRating,
         ),
       ),
     );
@@ -139,6 +194,10 @@ class _RideTripSummaryBody extends ConsumerStatefulWidget {
     this.historyCompletedAt,
     this.historyDestinationLabel,
     this.historyAmountFormatted,
+    this.historyServiceName,
+    this.historyOriginLabel,
+    this.historyPaymentMethodLabel,
+    this.historyDriverRating,
   });
 
   final RideTripState trip;
@@ -150,6 +209,14 @@ class _RideTripSummaryBody extends ConsumerStatefulWidget {
   final DateTime? historyCompletedAt;
   final String? historyDestinationLabel;
   final String? historyAmountFormatted;
+  
+  /// Track B - Ticket #118: Additional history entry fields
+  final String? historyServiceName;
+  final String? historyOriginLabel;
+  final String? historyPaymentMethodLabel;
+
+  /// Track B - Ticket #124: Driver rating from history entry
+  final double? historyDriverRating;
 
   @override
   ConsumerState<_RideTripSummaryBody> createState() =>
@@ -157,8 +224,15 @@ class _RideTripSummaryBody extends ConsumerStatefulWidget {
 }
 
 class _RideTripSummaryBodyState extends ConsumerState<_RideTripSummaryBody> {
-  int _currentRating = 0;
+  late int _currentRating;
   final TextEditingController _commentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Track B - Ticket #124: Initialize rating from history entry if available
+    _currentRating = widget.historyDriverRating?.round() ?? 0;
+  }
 
   @override
   void dispose() {
@@ -198,13 +272,17 @@ class _RideTripSummaryBodyState extends ConsumerState<_RideTripSummaryBody> {
           ),
           SizedBox(height: DWSpacing.md),
 
-          // Fare Summary Card with full breakdown (Ticket #92)
+          // Fare Summary Card with full breakdown (Ticket #92, #107, #118)
           _FareSummaryCard(
             quoteState: widget.quoteState,
             draft: widget.draft,
             l10n: l10n,
             textTheme: textTheme,
             colorScheme: colorScheme,
+            // Track B - Ticket #118: Use history entry data instead of completionSummary
+            historyAmountFormatted: widget.historyAmountFormatted,
+            historyServiceName: widget.historyServiceName,
+            historyPaymentMethodLabel: widget.historyPaymentMethodLabel,
           ),
           SizedBox(height: DWSpacing.md),
 
@@ -241,9 +319,13 @@ class _RideTripSummaryBodyState extends ConsumerState<_RideTripSummaryBody> {
     setState(() {
       _currentRating = rating;
     });
-    // Only persist rating for active trips (not history)
+    // Track B - Ticket #124: Persist rating to historyTrips for active flow
+    // For history mode, we don't modify the rating (read-only view)
     if (!widget.fromHistory) {
-      ref.read(rideTripSessionProvider.notifier).rateCurrentTrip(rating);
+      // Persist rating into historyTrips (single source of truth)
+      ref
+          .read(rideTripSessionProvider.notifier)
+          .setRatingForMostRecentTrip(rating.toDouble());
     }
   }
   
@@ -263,34 +345,16 @@ class _RideTripSummaryBodyState extends ConsumerState<_RideTripSummaryBody> {
       ),
     );
     
-    // Track B - Ticket #96: Archive trip to history before clearing
-    final controller = ref.read(rideTripSessionProvider.notifier);
-    
-    // Get formatted amount from quote if available
-    String? amountFormatted;
-    final quote = widget.quoteState.quote;
-    final selectedId = widget.draft.selectedOptionId;
-    if (quote != null) {
-      final option = selectedId != null
-          ? quote.optionById(selectedId) ?? quote.recommendedOption
-          : quote.recommendedOption;
-      amountFormatted = '${option.currencyCode} ${(option.priceMinorUnits / 100).toStringAsFixed(2)}';
-    }
-    
-    controller.archiveTrip(
-      destinationLabel: widget.draft.destinationQuery.isNotEmpty
-          ? widget.draft.destinationQuery
-          : (widget.draft.destinationPlace?.label ?? ''),
-      amountFormatted: amountFormatted,
-    );
-    
-    // Clear trip session and return to home
-    controller.clear();
+    // Track B - Ticket #118: Trip is already archived in historyTrips via completeCurrentTrip()
+    // in initState. No need to call archiveTrip() or clear() here - just navigate home.
+    // historyTrips persists across navigation.
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
 }
 
 /// Header showing trip completed status with ID and timestamp (Ticket #92)
+/// Track B - Ticket #120: Header widget that shows appropriate title/icon based on trip phase.
+/// Supports completed, cancelled, and failed states.
 class _CompletedHeader extends StatelessWidget {
   const _CompletedHeader({
     required this.trip,
@@ -318,9 +382,41 @@ class _CompletedHeader extends StatelessWidget {
     final formattedDate = dateFormat.format(effectiveCompletedAt);
     final formattedTime = timeFormat.format(effectiveCompletedAt);
 
+    // Track B - Ticket #120, #122: Determine header content based on trip phase
+    // Now supports completed, cancelled, and failed states with proper l10n.
+    final bool isCancelled = trip.phase == RideTripPhase.cancelled;
+    final bool isFailed = trip.phase == RideTripPhase.failed;
+    
+    final String headerTitle;
+    final String headerSubtitle;
+    final IconData headerIcon;
+    final Color headerIconColor;
+    
+    if (isCancelled) {
+      headerTitle = l10n.rideTripSummaryCancelledTitle;
+      headerSubtitle = l10n.rideTripSummaryCancelledSubtitle;
+      headerIcon = Icons.cancel_outlined;
+      headerIconColor = colorScheme.error;
+    } else if (isFailed) {
+      // Track B - Ticket #122: Use proper l10n for failed state
+      headerTitle = l10n.rideTripSummaryFailedTitle;
+      headerSubtitle = l10n.rideTripSummaryFailedSubtitle;
+      headerIcon = Icons.error_outline;
+      headerIconColor = colorScheme.error;
+    } else {
+      headerTitle = l10n.rideTripSummaryCompletedTitle;
+      headerSubtitle = l10n.rideTripSummaryCompletedSubtitle;
+      headerIcon = Icons.check_circle_outline;
+      headerIconColor = Colors.green;
+    }
+    
+    final Color headerBackgroundColor = isCancelled || isFailed
+        ? colorScheme.errorContainer.withValues(alpha: 0.3)
+        : colorScheme.primaryContainer.withValues(alpha: 0.3);
+
     return Card(
       elevation: 0,
-      color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+      color: headerBackgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(DWRadius.lg),
       ),
@@ -331,13 +427,13 @@ class _CompletedHeader extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(DWSpacing.sm),
               decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.15),
+                color: headerIconColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(DWRadius.md),
               ),
-              child: const Icon(
-                Icons.check_circle_outline,
+              child: Icon(
+                headerIcon,
                 size: 32,
-                color: Colors.green,
+                color: headerIconColor,
               ),
             ),
             SizedBox(width: DWSpacing.md),
@@ -346,14 +442,14 @@ class _CompletedHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l10n.rideTripSummaryCompletedTitle,
+                    headerTitle,
                     style: textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   SizedBox(height: DWSpacing.xxs),
                   Text(
-                    l10n.rideTripSummaryCompletedSubtitle,
+                    headerSubtitle,
                     style: textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -511,18 +607,23 @@ class _RouteRow extends StatelessWidget {
   }
 }
 
-/// Card showing fare/receipt summary with full breakdown (Ticket #62, #63, #92)
+/// Card showing fare/receipt summary with full breakdown (Ticket #62, #63, #92, #107, #118)
 ///
 /// Track B - Ticket #63: Now uses [RidePriceBreakdown] from domain layer
 /// for consistent pricing between Screen 9 and Screen 10.
 /// Ticket #92: Added full breakdown (Base, Distance, Time, Fees) + Design Tokens
-class _FareSummaryCard extends StatelessWidget {
+/// Ticket #107: Uses completionSummary as source of truth when available
+/// Ticket #118: Uses historyEntry fields as single source of truth
+class _FareSummaryCard extends ConsumerWidget {
   const _FareSummaryCard({
     required this.quoteState,
     required this.draft,
     required this.l10n,
     required this.textTheme,
     required this.colorScheme,
+    this.historyAmountFormatted,
+    this.historyServiceName,
+    this.historyPaymentMethodLabel,
   });
 
   final RideQuoteUiState quoteState;
@@ -530,9 +631,14 @@ class _FareSummaryCard extends StatelessWidget {
   final AppLocalizations l10n;
   final TextTheme textTheme;
   final ColorScheme colorScheme;
+  
+  /// Track B - Ticket #118: Data from history entry
+  final String? historyAmountFormatted;
+  final String? historyServiceName;
+  final String? historyPaymentMethodLabel;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // Get price from selected option or recommended option
     final quote = quoteState.quote;
     final selectedOptionId = draft.selectedOptionId;
@@ -570,6 +676,13 @@ class _FareSummaryCard extends StatelessWidget {
       feesAmount = ((priceMinorUnits * 0.1) / 100).toStringAsFixed(2);
       totalAmount = selectedOption?.formattedPrice ?? '0.00';
     }
+    
+    // Track B - Ticket #118: Use history entry payment label, or fallback to payments state
+    final paymentsState = ref.watch(paymentMethodsUiProvider);
+    final paymentDisplayName = historyPaymentMethodLabel ?? 
+        paymentsState.selectedMethod?.displayName ?? 
+        l10n.rideTripConfirmationPaymentMethodCash;
+    final isCardPayment = paymentDisplayName.contains('••');
 
     return Card(
       elevation: 0,
@@ -582,6 +695,27 @@ class _FareSummaryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Track B - Ticket #118: Service name from history entry
+            if (historyServiceName != null) ...[
+              Row(
+                children: [
+                  Icon(
+                    Icons.directions_car_filled,
+                    size: 18,
+                    color: colorScheme.primary,
+                  ),
+                  SizedBox(width: DWSpacing.xs),
+                  Text(
+                    l10n.rideTripCompletionServiceLabel(historyServiceName!),
+                    style: textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: DWSpacing.md),
+            ],
+            
             Text(
               l10n.rideReceiptFareSectionTitle,
               style: textTheme.titleMedium?.copyWith(
@@ -638,7 +772,8 @@ class _FareSummaryCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '$totalAmount $currency',
+                  // Track B - Ticket #118: Use history entry fare if available
+                  historyAmountFormatted ?? '$totalAmount $currency',
                   style: textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: colorScheme.primary,
@@ -649,7 +784,7 @@ class _FareSummaryCard extends StatelessWidget {
 
             Divider(height: DWSpacing.lg),
 
-            // Payment method row
+            // Payment method row (Track B - Ticket #118: Use history entry payment)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -662,13 +797,13 @@ class _FareSummaryCard extends StatelessWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.payments_outlined,
+                      isCardPayment ? Icons.credit_card : Icons.payments_outlined,
                       size: 18,
                       color: colorScheme.onSurfaceVariant,
                     ),
                     SizedBox(width: DWSpacing.xs),
                     Text(
-                      l10n.rideTripConfirmationPaymentMethodCash,
+                      paymentDisplayName,
                       style: textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),

@@ -271,6 +271,30 @@
     },
     "description": "Titel für Fahrt-Auftragselement (Track B - Ticket #96)"
   },
+  "ordersRideItemTitleWithService": "{serviceName} nach {destination}",
+  "@ordersRideItemTitleWithService": {
+    "placeholders": {
+      "serviceName": {
+        "type": "String"
+      },
+      "destination": {
+        "type": "String"
+      }
+    },
+    "description": "Titel für Fahrt-Auftragselement mit Dienstname (Track B - Ticket #108)"
+  },
+  "ordersRideItemSubtitleWithOrigin": "Von {origin} · {date}",
+  "@ordersRideItemSubtitleWithOrigin": {
+    "placeholders": {
+      "origin": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    },
+    "description": "Untertitel für Fahrt-Auftragselement mit Abfahrtsort (Track B - Ticket #108)"
+  },
   "ordersRideStatusCompleted": "Abgeschlossen",
   "@ordersRideStatusCompleted": {
     "description": "Fahrtstatus: abgeschlossen (Track B - Ticket #96)"
@@ -1083,6 +1107,18 @@
   "@rideConfirmRequestedStubMessage": {
     "description": "Stub-Nachricht nach Fahrtanfrage (Ticket #91)"
   },
+
+  "rideTripCompletionServiceLabel": "{serviceName} Fahrt",
+  "@rideTripCompletionServiceLabel": {
+    "description": "Service-Bezeichnung auf dem Abschlussbildschirm (Ticket #107)",
+    "placeholders": {
+      "serviceName": {
+        "type": "String",
+        "example": "Economy"
+      }
+    }
+  },
+
   "rideConfirmLoadingTitle": "Fahrtoptionen werden geladen...",
   "@rideConfirmLoadingTitle": {
     "description": "Ladetitel beim Abrufen der Optionen (Ticket #91)"
@@ -1114,6 +1150,51 @@
   "rideConfirmRecommendedBadge": "Empfohlen",
   "@rideConfirmRecommendedBadge": {
     "description": "Empfohlene-Badge auf der Fahrtoption (Ticket #91)"
+  },
+
+  "rideQuoteErrorTitle": "Preise konnten nicht geladen werden",
+  "@rideQuoteErrorTitle": {
+    "description": "Titel für den Fehlerzustand bei Preisabruffehler (Track B - Ticket #121)"
+  },
+  "rideQuoteErrorGeneric": "Beim Abrufen der Fahrpreise ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+  "@rideQuoteErrorGeneric": {
+    "description": "Allgemeine Fehlermeldung für Preisabruffehler (Track B - Ticket #121)"
+  },
+  "rideQuoteErrorNoOptions": "Für diese Strecke sind derzeit keine Fahrtoptionen verfügbar.",
+  "@rideQuoteErrorNoOptions": {
+    "description": "Fehlermeldung wenn keine Fahrtoptionen zurückgegeben werden (Track B - Ticket #121)"
+  },
+  "rideQuoteRetryCta": "Erneut versuchen",
+  "@rideQuoteRetryCta": {
+    "description": "CTA-Button-Text zum erneuten Abrufen der Fahrpreise (Track B - Ticket #121)"
+  },
+  "rideQuoteEmptyTitle": "Keine Fahrten verfügbar",
+  "@rideQuoteEmptyTitle": {
+    "description": "Titel für den Leerzustand wenn keine Fahrtoptionen (Track B - Ticket #121)"
+  },
+  "rideQuoteEmptyDescription": "Versuchen Sie eine andere Zeit oder passen Sie Abholort und Ziel an.",
+  "@rideQuoteEmptyDescription": {
+    "description": "Beschreibung für den Leerzustand wenn keine Fahrtoptionen (Track B - Ticket #121)"
+  },
+  "rideTripSummaryFailedTitle": "Fahrt fehlgeschlagen",
+  "@rideTripSummaryFailedTitle": {
+    "description": "Titel für fehlgeschlagene Fahrt (Track B - Ticket #122)"
+  },
+  "rideTripSummaryFailedSubtitle": "Diese Fahrt konnte nicht abgeschlossen werden",
+  "@rideTripSummaryFailedSubtitle": {
+    "description": "Untertitel für fehlgeschlagene Fahrt (Track B - Ticket #122)"
+  },
+  "rideFailReasonNoDriverFound": "Kein Fahrer gefunden",
+  "@rideFailReasonNoDriverFound": {
+    "description": "Grund wenn kein Fahrer verfügbar war (Track B - Ticket #122)"
+  },
+  "rideFailNoDriverFoundSnackbar": "Es konnte kein Fahrer für diese Fahrt gefunden werden.",
+  "@rideFailNoDriverFoundSnackbar": {
+    "description": "SnackBar-Nachricht wenn kein Fahrer gefunden (Track B - Ticket #122)"
+  },
+  "rideFailNoDriverFoundCta": "Keine Fahrer verfügbar? Später versuchen",
+  "@rideFailNoDriverFoundCta": {
+    "description": "Aktionsbutton wenn kein Fahrer gefunden (Track B - Ticket #122)"
   },
   "rideConfirmFromLabel": "Von",
   "@rideConfirmFromLabel": {
@@ -1314,6 +1395,15 @@
   "@homeActiveRideTitleGeneric": {
     "description": "Generischer Fallback-Titel für aktive Fahrtkarte im Home Hub (Track B - Ticket #65)"
   },
+  "homeActiveRideEtaTitle": "Ankunft in {minutes} Min.",
+  "@homeActiveRideEtaTitle": {
+    "description": "Titel mit ETA für aktive Fahrtkarte im Home Hub (Track B - Ticket #114)",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "homeActiveRideSubtitleToDestination": "Nach {destination}",
   "@homeActiveRideSubtitleToDestination": {
     "description": "Untertitel mit Ziel auf der aktiven Fahrtkarte",
@@ -1394,6 +1484,46 @@
     "description": "CTA-Schaltfläche zur Anforderung einer neuen Fahrt (Track B - Ticket #95)"
   },
 
+  "rideActiveDestinationLabel": "Nach {destination}",
+  "@rideActiveDestinationLabel": {
+    "placeholders": {
+      "destination": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActiveSummaryServiceAndPrice": "{serviceName} · {price}",
+  "@rideActiveSummaryServiceAndPrice": {
+    "placeholders": {
+      "serviceName": {
+        "type": "String"
+      },
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActivePayingWith": "Bezahlen mit {method}",
+  "@rideActivePayingWith": {
+    "placeholders": {
+      "method": {
+        "type": "String"
+      }
+    }
+  },
+  "rideActivePriceNotAvailable": "Preis noch nicht verfügbar",
+  "homeActiveRidePriceAndPayment": "{price} · {paymentMethod}",
+  "@homeActiveRidePriceAndPayment": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "paymentMethod": {
+        "type": "String"
+      }
+    }
+  },
+
   "rideStatusFindingDriver": "Suche nach Fahrer...",
   "@rideStatusFindingDriver": {
     "description": "Fahrtstatus: Suche nach Fahrer (Track B - Ticket #66)"
@@ -1447,6 +1577,10 @@
   "rideCancelSuccessSnackbar": "Deine Fahrt wurde storniert.",
   "@rideCancelSuccessSnackbar": {
     "description": "Snackbar-Nachricht nach erfolgreicher Stornierung (Track B - Ticket #67)"
+  },
+  "rideCancelReasonByRider": "Vom Fahrgast storniert",
+  "@rideCancelReasonByRider": {
+    "description": "Stornogrund wenn Fahrgast die Fahrt storniert (Track B - Ticket #120)"
   },
 
   "rideActiveContactDriverCta": "Fahrer kontaktieren",
@@ -1800,5 +1934,51 @@
   "rideActiveTripDriverSectionStubBody": "Details zu Fahrer und Fahrzeug werden nach der Integration mit dem Mobilitätsdienst verfügbar sein.",
   "@rideActiveTripDriverSectionStubBody": {
     "description": "[RESERVIERT - Ticket #88] Fallback bei fehlenden Fahrerdaten. Derzeit Mock-Daten."
+  },
+
+  "ordersHistoryEmptyAllTitle": "Noch keine Bestellungen",
+  "@ordersHistoryEmptyAllTitle": {
+    "description": "Leerzustandstitel wenn keine Bestellungen vorhanden (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyAllDescription": "Ihre Fahrten, Pakete und Essensbestellungen werden hier angezeigt.",
+  "@ordersHistoryEmptyAllDescription": {
+    "description": "Leerzustandsbeschreibung wenn keine Bestellungen vorhanden (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyRidesTitle": "Noch keine Fahrten",
+  "@ordersHistoryEmptyRidesTitle": {
+    "description": "Leerzustandstitel wenn keine Fahrten vorhanden (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyRidesDescription": "Ihre abgeschlossenen Fahrten werden hier angezeigt.",
+  "@ordersHistoryEmptyRidesDescription": {
+    "description": "Leerzustandsbeschreibung wenn keine Fahrten vorhanden (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyParcelsTitle": "Noch keine Pakete",
+  "@ordersHistoryEmptyParcelsTitle": {
+    "description": "Leerzustandstitel wenn keine Pakete vorhanden (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyParcelsDescription": "Ihre Sendungen werden hier angezeigt.",
+  "@ordersHistoryEmptyParcelsDescription": {
+    "description": "Leerzustandsbeschreibung wenn keine Pakete vorhanden (Track B - Ticket #125)"
+  },
+  "ordersHistoryEmptyFoodTitle": "Noch keine Essensbestellungen",
+  "@ordersHistoryEmptyFoodTitle": {
+    "description": "Leerzustandstitel wenn keine Essensbestellungen vorhanden (Track B - Ticket #125)"                                                          
+  },
+  "ordersHistoryEmptyFoodDescription": "Ihre Essenslieferungen werden hier angezeigt.",                                                                         
+  "@ordersHistoryEmptyFoodDescription": {
+    "description": "Leerzustandsbeschreibung wenn keine Essensbestellungen vorhanden (Track B - Ticket #125)"                                                   
+  },
+
+  "ordersServiceRideSemanticLabel": "Fahrtbestellung",
+  "@ordersServiceRideSemanticLabel": {
+    "description": "Barrierefreiheitslabel für Fahrt-Symbol (Track B - Ticket #127)"
+  },
+  "ordersServiceParcelSemanticLabel": "Paketversand",
+  "@ordersServiceParcelSemanticLabel": {
+    "description": "Barrierefreiheitslabel für Paketkarte (Track B - Ticket #127)"
+  },
+  "ordersServiceFoodSemanticLabel": "Essensbestellung",
+  "@ordersServiceFoodSemanticLabel": {
+    "description": "Barrierefreiheitslabel für Essen-Symbol (Track B - Ticket #127)"
   }
 }

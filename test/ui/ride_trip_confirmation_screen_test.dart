@@ -5,7 +5,10 @@
 /// Updated by: Ticket #64 (FSM integration tests)
 /// Updated by: Ticket #97 (Chaos & Resilience Tests for pricing failures)
 /// Updated by: Ticket #100 (Payment method integration tests)
-/// Last updated: 2025-11-30
+/// Updated by: Ticket #101 (Payment method linked to RideDraft tests)
+/// Updated by: Ticket #113 (Request Ride -> Active Trip Happy Path tests)
+/// Updated by: Ticket #121 (Structured RideQuoteError error handling)
+/// Last updated: 2025-12-01
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,6 +39,9 @@ void main() {
 
   // Run Payment Method integration tests (Ticket #100)
   runPaymentMethodIntegrationTests();
+
+  // Run Happy Path tests (Ticket #113)
+  runRequestRideHappyPathTests();
 
   group('RideTripConfirmationScreen (RideConfirmationScreen) Widget Tests', () {
     /// Helper to create a mock RideQuote for testing
@@ -321,24 +327,24 @@ void main() {
     testWidgets('shows empty state when no quote is available',
         (WidgetTester tester) async {
       // Empty state: no loading, no error, no quote
-      // Note: RideQuote domain model enforces options.isNotEmpty
-      // so empty state only applies when quote is null
+      // Note: Track B - Ticket #121: RideQuote now allows empty options
+      // so empty state applies when quote is null or options are empty
 
       await tester.pumpWidget(createTestWidget(
         quoteState: const RideQuoteUiState(
           isLoading: false,
           // quote: null (default)
-          // errorMessage: null (default)
+          // error: null (default)
         ),
       ));
       await tester.pumpAndSettle();
 
-      // Check for empty title (Ticket #26)
+      // Check for empty title (Ticket #26, updated in Ticket #121)
       expect(find.text('No rides available'), findsOneWidget);
 
-      // Check for empty subtitle
+      // Track B - Ticket #121: Updated empty subtitle text
       expect(
-          find.text('Please try again in a few minutes.'), findsOneWidget);
+          find.text('Try a different time or adjust your pickup and destination.'), findsOneWidget);
 
       // No vehicle options should be visible
       expect(find.text('Economy'), findsNothing);
@@ -878,8 +884,9 @@ void runPricingChaosTests() {
       );
       await tester.pumpAndSettle();
 
+      // Track B - Ticket #121: Updated to use new error title l10n key
       // Initially should show error (first call fails)
-      expect(find.text("We couldn't load ride options"), findsOneWidget,
+      expect(find.text("We couldn't load prices"), findsOneWidget,
           reason: 'Initial error should be shown');
       expect(find.text('Retry'), findsOneWidget);
 
@@ -894,7 +901,7 @@ void runPricingChaosTests() {
           reason: 'After successful retry, XL option should be visible');
 
       // Error should be gone
-      expect(find.text("We couldn't load ride options"), findsNothing,
+      expect(find.text("We couldn't load prices"), findsNothing,
           reason: 'Error should disappear after successful retry');
     });
 
@@ -933,8 +940,9 @@ void runPricingChaosTests() {
       );
       await tester.pumpAndSettle();
 
+      // Track B - Ticket #121: Updated to use new error title l10n key
       // Verify initial error state
-      expect(find.text("We couldn't load ride options"), findsOneWidget);
+      expect(find.text("We couldn't load prices"), findsOneWidget);
 
       // Retry multiple times
       for (int i = 0; i < 3; i++) {
@@ -943,7 +951,7 @@ void runPricingChaosTests() {
       }
 
       // After multiple retries, should still show ONE error message (no duplicates)
-      expect(find.text("We couldn't load ride options"), findsOneWidget,
+      expect(find.text("We couldn't load prices"), findsOneWidget,
           reason:
               'Should show exactly one error message after multiple retries');
 
@@ -1106,6 +1114,8 @@ class _RetryableRideQuoteController extends StateNotifier<RideQuoteUiState>
   _RetryableRideQuoteController()
       : super(const RideQuoteUiState(
           isLoading: false,
+          // Track B - Ticket #121: Use structured error
+          error: RideQuoteError.pricingFailed('Initial pricing failure'),
           errorMessage: 'Initial pricing failure',
         ));
 
@@ -1119,6 +1129,8 @@ class _RetryableRideQuoteController extends StateNotifier<RideQuoteUiState>
       // First call fails
       state = const RideQuoteUiState(
         isLoading: false,
+        // Track B - Ticket #121: Use structured error
+        error: RideQuoteError.pricingFailed('Pricing service unavailable'),
         errorMessage: 'Pricing service unavailable',
       );
     } else {
@@ -1166,6 +1178,12 @@ class _RetryableRideQuoteController extends StateNotifier<RideQuoteUiState>
     }
   }
 
+  // Track B - Ticket #121: Add retryFromDraft implementation
+  @override
+  Future<void> retryFromDraft(RideDraftUiState draft) async {
+    return refreshFromDraft(draft);
+  }
+
   @override
   void clear() {
     state = const RideQuoteUiState();
@@ -1179,6 +1197,8 @@ class _AlwaysFailingRideQuoteController extends StateNotifier<RideQuoteUiState>
   _AlwaysFailingRideQuoteController()
       : super(const RideQuoteUiState(
           isLoading: false,
+          // Track B - Ticket #121: Use structured error
+          error: RideQuoteError.pricingFailed('Persistent pricing failure'),
           errorMessage: 'Persistent pricing failure',
         ));
 
@@ -1190,8 +1210,16 @@ class _AlwaysFailingRideQuoteController extends StateNotifier<RideQuoteUiState>
     // Re-emit the same error state to simulate continuous failures
     state = const RideQuoteUiState(
       isLoading: false,
+      // Track B - Ticket #121: Use structured error
+      error: RideQuoteError.pricingFailed('Persistent pricing failure'),
       errorMessage: 'Persistent pricing failure',
     );
+  }
+
+  // Track B - Ticket #121: Add retryFromDraft implementation
+  @override
+  Future<void> retryFromDraft(RideDraftUiState draft) async {
+    return refreshFromDraft(draft);
   }
 
   @override
@@ -1467,6 +1495,9 @@ void runFsmIntegrationTests() {
 
 /// Group of tests for payment method integration in Trip Confirmation
 void runPaymentMethodIntegrationTests() {
+  // Track B - Ticket #101: Tests for linking payment method to ride draft
+  runPaymentMethodLinkedToDraftTests();
+
   group('Payment Method Integration Tests (Ticket #100)', () {
     /// Creates a mock RideQuote for testing
     RideQuote createMockQuote() {
@@ -1669,9 +1700,903 @@ class _PaymentTestQuoteController extends StateNotifier<RideQuoteUiState>
   @override
   Future<void> refreshFromDraft(RideDraftUiState draft) async {}
 
+  // Track B - Ticket #121: Add retryFromDraft implementation
+  @override
+  Future<void> retryFromDraft(RideDraftUiState draft) async {
+    return refreshFromDraft(draft);
+  }
+
   @override
   void clear() {
     state = const RideQuoteUiState();
   }
+}
+
+// =============================================================================
+// Track B - Ticket #101: Payment Method Linked to Ride Draft Tests
+// =============================================================================
+
+/// Tests for verifying payment method is linked to ride draft when requesting ride.
+void runPaymentMethodLinkedToDraftTests() {
+  group('Payment Method Linked to RideDraft Tests (Ticket #101)', () {
+    /// Creates a mock RideQuote for testing
+    RideQuote createMockQuote() {
+      const pickup = LocationPoint(latitude: 24.7136, longitude: 46.6753);
+      const dropoff = LocationPoint(latitude: 24.7236, longitude: 46.6853);
+
+      return RideQuote(
+        quoteId: 'test_quote_101',
+        request: const RideQuoteRequest(
+          pickup: pickup,
+          dropoff: dropoff,
+          currencyCode: 'SAR',
+        ),
+        options: const [
+          RideQuoteOption(
+            id: 'economy',
+            category: RideVehicleCategory.economy,
+            displayName: 'Economy',
+            etaMinutes: 5,
+            priceMinorUnits: 1800,
+            currencyCode: 'SAR',
+            isRecommended: true,
+          ),
+        ],
+      );
+    }
+
+    testWidgets('confirming_ride_sets_payment_method_id_in_draft',
+        (WidgetTester tester) async {
+      late ProviderContainer container;
+
+      final draft = RideDraftUiState(
+        pickupLabel: 'Current location',
+        destinationQuery: 'Test Destination',
+        pickupPlace: MobilityPlace(
+          label: 'Current location',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        destinationPlace: MobilityPlace(
+          label: 'Test Destination',
+          location: LocationPoint(
+            latitude: 24.7236,
+            longitude: 46.6853,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        // Initially no payment method set
+        paymentMethodId: null,
+      );
+
+      final quote = RideQuoteUiState(
+        isLoading: false,
+        quote: createMockQuote(),
+      );
+
+      // Use Visa card as selected payment
+      final paymentsState = PaymentMethodsUiState(
+        methods: [
+          PaymentMethodUiModel.cash,
+          PaymentMethodUiModel.stubCard(brand: 'Visa', last4: '4242'),
+        ],
+        selectedMethodId: 'visa_4242',
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel(draft.pickupLabel);
+              controller.updateDestination(draft.destinationQuery);
+              if (draft.pickupPlace != null) {
+                controller.updatePickupPlace(draft.pickupPlace!);
+              }
+              if (draft.destinationPlace != null) {
+                controller.updateDestinationPlace(draft.destinationPlace!);
+              }
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _PaymentTestQuoteController(quote);
+            }),
+            rideTripSessionProvider.overrideWith((ref) {
+              return RideTripSessionController();
+            }),
+            paymentMethodsUiProvider.overrideWith((ref) => paymentsState),
+          ],
+          child: Builder(
+            builder: (context) {
+              return MaterialApp(
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('en')],
+                home: Consumer(
+                  builder: (context, ref, child) {
+                    container = ProviderScope.containerOf(context);
+                    return const RideConfirmationScreen();
+                  },
+                ),
+                routes: {
+                  '/ride/active': (context) =>
+                      const Scaffold(body: Text('Active Trip')),
+                },
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify initial draft has no payment method
+      final initialDraft = container.read(rideDraftProvider);
+      expect(initialDraft.paymentMethodId, isNull,
+          reason: 'Initially draft should have no paymentMethodId');
+
+      // Find and tap the Request Ride button
+      expect(find.text('Request Ride'), findsOneWidget);
+      await tester.tap(find.text('Request Ride'));
+      await tester.pumpAndSettle();
+
+      // Verify draft now has the selected payment method
+      final updatedDraft = container.read(rideDraftProvider);
+      expect(updatedDraft.paymentMethodId, 'visa_4242',
+          reason: 'After Request Ride, draft should have paymentMethodId set');
+    });
+
+    testWidgets('confirming_ride_uses_cash_when_cash_is_selected',
+        (WidgetTester tester) async {
+      late ProviderContainer container;
+
+      final draft = RideDraftUiState(
+        pickupLabel: 'Current location',
+        destinationQuery: 'Test Destination',
+        pickupPlace: MobilityPlace(
+          label: 'Current location',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        destinationPlace: MobilityPlace(
+          label: 'Test Destination',
+          location: LocationPoint(
+            latitude: 24.7236,
+            longitude: 46.6853,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+      );
+
+      final quote = RideQuoteUiState(
+        isLoading: false,
+        quote: createMockQuote(),
+      );
+
+      // Use Cash as selected payment
+      final paymentsState = PaymentMethodsUiState(
+        methods: [
+          PaymentMethodUiModel.cash,
+          PaymentMethodUiModel.stubCard(brand: 'Visa', last4: '4242'),
+        ],
+        selectedMethodId: 'cash',
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel(draft.pickupLabel);
+              controller.updateDestination(draft.destinationQuery);
+              if (draft.pickupPlace != null) {
+                controller.updatePickupPlace(draft.pickupPlace!);
+              }
+              if (draft.destinationPlace != null) {
+                controller.updateDestinationPlace(draft.destinationPlace!);
+              }
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _PaymentTestQuoteController(quote);
+            }),
+            rideTripSessionProvider.overrideWith((ref) {
+              return RideTripSessionController();
+            }),
+            paymentMethodsUiProvider.overrideWith((ref) => paymentsState),
+          ],
+          child: Builder(
+            builder: (context) {
+              return MaterialApp(
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('en')],
+                home: Consumer(
+                  builder: (context, ref, child) {
+                    container = ProviderScope.containerOf(context);
+                    return const RideConfirmationScreen();
+                  },
+                ),
+                routes: {
+                  '/ride/active': (context) =>
+                      const Scaffold(body: Text('Active Trip')),
+                },
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Request Ride
+      await tester.tap(find.text('Request Ride'));
+      await tester.pumpAndSettle();
+
+      // Verify draft has cash as payment method
+      final updatedDraft = container.read(rideDraftProvider);
+      expect(updatedDraft.paymentMethodId, 'cash',
+          reason: 'After Request Ride, draft should have cash as paymentMethodId');
+    });
+
+    testWidgets('confirming_ride_uses_default_payment_when_no_explicit_selection',
+        (WidgetTester tester) async {
+      late ProviderContainer container;
+
+      final draft = RideDraftUiState(
+        pickupLabel: 'Current location',
+        destinationQuery: 'Test Destination',
+        pickupPlace: MobilityPlace(
+          label: 'Current location',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        destinationPlace: MobilityPlace(
+          label: 'Test Destination',
+          location: LocationPoint(
+            latitude: 24.7236,
+            longitude: 46.6853,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+      );
+
+      final quote = RideQuoteUiState(
+        isLoading: false,
+        quote: createMockQuote(),
+      );
+
+      // Use default stub (Cash is default)
+      final paymentsState = PaymentMethodsUiState.defaultStub();
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel(draft.pickupLabel);
+              controller.updateDestination(draft.destinationQuery);
+              if (draft.pickupPlace != null) {
+                controller.updatePickupPlace(draft.pickupPlace!);
+              }
+              if (draft.destinationPlace != null) {
+                controller.updateDestinationPlace(draft.destinationPlace!);
+              }
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _PaymentTestQuoteController(quote);
+            }),
+            rideTripSessionProvider.overrideWith((ref) {
+              return RideTripSessionController();
+            }),
+            paymentMethodsUiProvider.overrideWith((ref) => paymentsState),
+          ],
+          child: Builder(
+            builder: (context) {
+              return MaterialApp(
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('en')],
+                home: Consumer(
+                  builder: (context, ref, child) {
+                    container = ProviderScope.containerOf(context);
+                    return const RideConfirmationScreen();
+                  },
+                ),
+                routes: {
+                  '/ride/active': (context) =>
+                      const Scaffold(body: Text('Active Trip')),
+                },
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Request Ride
+      await tester.tap(find.text('Request Ride'));
+      await tester.pumpAndSettle();
+
+      // Verify draft has default payment method (cash)
+      final updatedDraft = container.read(rideDraftProvider);
+      expect(updatedDraft.paymentMethodId, 'cash',
+          reason: 'After Request Ride, draft should use default payment method (cash)');
+    });
+
+    testWidgets('trip_session_receives_draft_with_payment_method',
+        (WidgetTester tester) async {
+      late ProviderContainer container;
+
+      final draft = RideDraftUiState(
+        pickupLabel: 'Current location',
+        destinationQuery: 'Test Destination',
+        pickupPlace: MobilityPlace(
+          label: 'Current location',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        destinationPlace: MobilityPlace(
+          label: 'Test Destination',
+          location: LocationPoint(
+            latitude: 24.7236,
+            longitude: 46.6853,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+      );
+
+      final quote = RideQuoteUiState(
+        isLoading: false,
+        quote: createMockQuote(),
+      );
+
+      // Use Mastercard
+      final paymentsState = PaymentMethodsUiState(
+        methods: [
+          PaymentMethodUiModel.cash,
+          PaymentMethodUiModel.stubCard(brand: 'Mastercard', last4: '5555'),
+        ],
+        selectedMethodId: 'mastercard_5555',
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel(draft.pickupLabel);
+              controller.updateDestination(draft.destinationQuery);
+              if (draft.pickupPlace != null) {
+                controller.updatePickupPlace(draft.pickupPlace!);
+              }
+              if (draft.destinationPlace != null) {
+                controller.updateDestinationPlace(draft.destinationPlace!);
+              }
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _PaymentTestQuoteController(quote);
+            }),
+            rideTripSessionProvider.overrideWith((ref) {
+              return RideTripSessionController();
+            }),
+            paymentMethodsUiProvider.overrideWith((ref) => paymentsState),
+          ],
+          child: Builder(
+            builder: (context) {
+              return MaterialApp(
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('en')],
+                home: Consumer(
+                  builder: (context, ref, child) {
+                    container = ProviderScope.containerOf(context);
+                    return const RideConfirmationScreen();
+                  },
+                ),
+                routes: {
+                  '/ride/active': (context) {
+                    // Verify the draft state on the active trip screen
+                    final currentDraft = container.read(rideDraftProvider);
+                    return Scaffold(
+                      body: Text('Payment: ${currentDraft.paymentMethodId}'),
+                    );
+                  },
+                },
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Request Ride
+      await tester.tap(find.text('Request Ride'));
+      await tester.pumpAndSettle();
+
+      // Verify we navigated to active trip screen with payment method
+      expect(find.text('Payment: mastercard_5555'), findsOneWidget,
+          reason: 'Active trip screen should show the selected payment method');
+    });
+  });
+}
+
+// =============================================================================
+// Track B - Ticket #113: Happy Path Integration Tests
+// =============================================================================
+
+/// Group of tests for Request Ride -> Active Trip Happy Path (Ticket #113)
+///
+/// These tests verify the complete flow:
+/// 1. User presses "Request Ride" CTA
+/// 2. Payment method is linked to draft (Ticket #101)
+/// 3. startFromDraft is called on RideTripSessionController
+/// 4. FSM transitions: draft -> quoting -> requesting -> findingDriver
+/// 5. draftSnapshot is frozen (Ticket #111)
+/// 6. Navigation to Active Trip screen (RoutePaths.rideActive)
+void runRequestRideHappyPathTests() {
+  group('Request Ride Happy Path Tests (Ticket #113)', () {
+    /// Creates a mock RideQuote for testing
+    RideQuote createMockQuote() {
+      const pickup = LocationPoint(latitude: 24.7136, longitude: 46.6753);
+      const dropoff = LocationPoint(latitude: 24.7236, longitude: 46.6853);
+
+      return RideQuote(
+        quoteId: 'test_quote_happy_path',
+        request: const RideQuoteRequest(
+          pickup: pickup,
+          dropoff: dropoff,
+          currencyCode: 'SAR',
+        ),
+        options: const [
+          RideQuoteOption(
+            id: 'economy',
+            category: RideVehicleCategory.economy,
+            displayName: 'Economy',
+            etaMinutes: 5,
+            priceMinorUnits: 1800,
+            currencyCode: 'SAR',
+            isRecommended: true,
+          ),
+        ],
+      );
+    }
+
+    testWidgets('happy_path_request_ride_populates_draftSnapshot',
+        (WidgetTester tester) async {
+      late ProviderContainer container;
+
+      final pickupPlace = MobilityPlace(
+        label: 'Pickup Location',
+        location: LocationPoint(
+          latitude: 24.7136,
+          longitude: 46.6753,
+          accuracyMeters: 10,
+          timestamp: DateTime.now(),
+        ),
+      );
+
+      final destinationPlace = MobilityPlace(
+        label: 'Destination',
+        location: LocationPoint(
+          latitude: 24.7236,
+          longitude: 46.6853,
+          accuracyMeters: 10,
+          timestamp: DateTime.now(),
+        ),
+      );
+
+      final draft = RideDraftUiState(
+        pickupLabel: 'Pickup Location',
+        destinationQuery: 'Destination',
+        pickupPlace: pickupPlace,
+        destinationPlace: destinationPlace,
+        selectedOptionId: 'economy',
+      );
+
+      final quote = RideQuoteUiState(
+        isLoading: false,
+        quote: createMockQuote(),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel(draft.pickupLabel);
+              controller.updateDestination(draft.destinationQuery);
+              controller.updatePickupPlace(pickupPlace);
+              controller.updateDestinationPlace(destinationPlace);
+              controller.updateSelectedOption('economy');
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _TestRideQuoteController(quote);
+            }),
+            rideTripSessionProvider.overrideWith((ref) {
+              return RideTripSessionController();
+            }),
+            paymentMethodsUiProvider.overrideWith(
+              (ref) => PaymentMethodsUiState(
+                methods: [
+                  const PaymentMethodUiModel(
+                    id: 'card_123',
+                    displayName: 'Visa ••4242',
+                    type: PaymentMethodUiType.card,
+                    isDefault: true,
+                  ),
+                ],
+                selectedMethodId: 'card_123',
+              ),
+            ),
+          ],
+          child: Builder(
+            builder: (context) {
+              container = ProviderScope.containerOf(context);
+              return MaterialApp(
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('en')],
+                home: const RideConfirmationScreen(),
+                routes: {
+                  '/ride/active': (context) =>
+                      const Scaffold(body: Text('Active Trip')),
+                },
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Verify initial state has no draftSnapshot
+      final initialSession = container.read(rideTripSessionProvider);
+      expect(initialSession.draftSnapshot, isNull,
+          reason: 'Before Request Ride, draftSnapshot should be null');
+
+      // Tap Request Ride
+      await tester.tap(find.text('Request Ride'));
+      await tester.pumpAndSettle();
+
+      // Verify draftSnapshot is populated (Ticket #111 + #113)
+      final updatedSession = container.read(rideTripSessionProvider);
+      expect(updatedSession.draftSnapshot, isNotNull,
+          reason: 'After Request Ride, draftSnapshot should be frozen');
+      expect(updatedSession.draftSnapshot!.pickupLabel, 'Pickup Location');
+      expect(updatedSession.draftSnapshot!.destinationQuery, 'Destination');
+    });
+
+    testWidgets('happy_path_request_ride_populates_tripSummary',
+        (WidgetTester tester) async {
+      late ProviderContainer container;
+
+      final draft = RideDraftUiState(
+        pickupLabel: 'Current location',
+        destinationQuery: 'Test Destination',
+        pickupPlace: MobilityPlace(
+          label: 'Current location',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        destinationPlace: MobilityPlace(
+          label: 'Test Destination',
+          location: LocationPoint(
+            latitude: 24.7236,
+            longitude: 46.6853,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        selectedOptionId: 'economy',
+      );
+
+      final quote = RideQuoteUiState(
+        isLoading: false,
+        quote: createMockQuote(),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel(draft.pickupLabel);
+              controller.updateDestination(draft.destinationQuery);
+              controller.updatePickupPlace(draft.pickupPlace!);
+              controller.updateDestinationPlace(draft.destinationPlace!);
+              controller.updateSelectedOption('economy');
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _TestRideQuoteController(quote);
+            }),
+            rideTripSessionProvider.overrideWith((ref) {
+              return RideTripSessionController();
+            }),
+            paymentMethodsUiProvider.overrideWith(
+              (ref) => PaymentMethodsUiState(
+                methods: [
+                  const PaymentMethodUiModel(
+                    id: 'visa_4242',
+                    displayName: 'Visa ••4242',
+                    type: PaymentMethodUiType.card,
+                    isDefault: true,
+                  ),
+                ],
+                selectedMethodId: 'visa_4242',
+              ),
+            ),
+          ],
+          child: Builder(
+            builder: (context) {
+              container = ProviderScope.containerOf(context);
+              return MaterialApp(
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('en')],
+                home: const RideConfirmationScreen(),
+                routes: {
+                  '/ride/active': (context) =>
+                      const Scaffold(body: Text('Active Trip')),
+                },
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Request Ride
+      await tester.tap(find.text('Request Ride'));
+      await tester.pumpAndSettle();
+
+      // Verify tripSummary is populated (Ticket #105 + #113)
+      final session = container.read(rideTripSessionProvider);
+      expect(session.tripSummary, isNotNull,
+          reason: 'After Request Ride, tripSummary should be populated');
+      expect(session.tripSummary!.selectedServiceId, 'economy');
+      expect(session.tripSummary!.selectedServiceName, 'Economy');
+      expect(session.tripSummary!.selectedPaymentMethodId, 'visa_4242');
+    });
+
+    testWidgets('happy_path_navigates_to_active_trip_screen',
+        (WidgetTester tester) async {
+      bool navigatedToActiveTrip = false;
+
+      final draft = RideDraftUiState(
+        pickupLabel: 'Current location',
+        destinationQuery: 'Test Destination',
+        pickupPlace: MobilityPlace(
+          label: 'Current location',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        destinationPlace: MobilityPlace(
+          label: 'Test Destination',
+          location: LocationPoint(
+            latitude: 24.7236,
+            longitude: 46.6853,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        selectedOptionId: 'economy',
+      );
+
+      final quote = RideQuoteUiState(
+        isLoading: false,
+        quote: createMockQuote(),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel(draft.pickupLabel);
+              controller.updateDestination(draft.destinationQuery);
+              controller.updatePickupPlace(draft.pickupPlace!);
+              controller.updateDestinationPlace(draft.destinationPlace!);
+              controller.updateSelectedOption('economy');
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _TestRideQuoteController(quote);
+            }),
+            rideTripSessionProvider.overrideWith((ref) {
+              return RideTripSessionController();
+            }),
+            paymentMethodsUiProvider.overrideWith(
+              (ref) => PaymentMethodsUiState(
+                methods: [
+                  const PaymentMethodUiModel(
+                    id: 'cash',
+                    displayName: 'Cash',
+                    type: PaymentMethodUiType.cash,
+                    isDefault: true,
+                  ),
+                ],
+                selectedMethodId: 'cash',
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en')],
+            home: const RideConfirmationScreen(),
+            routes: {
+              '/ride/active': (context) {
+                navigatedToActiveTrip = true;
+                return const Scaffold(
+                  body: Text('Active Trip Screen'),
+                );
+              },
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(navigatedToActiveTrip, isFalse,
+          reason: 'Should not navigate before pressing Request Ride');
+
+      // Tap Request Ride
+      await tester.tap(find.text('Request Ride'));
+      await tester.pumpAndSettle();
+
+      // Verify navigation to Active Trip screen
+      expect(navigatedToActiveTrip, isTrue,
+          reason: 'Should navigate to Active Trip after pressing Request Ride');
+      expect(find.text('Active Trip Screen'), findsOneWidget);
+    });
+
+    testWidgets('happy_path_shows_snackbar_confirmation',
+        (WidgetTester tester) async {
+      final draft = RideDraftUiState(
+        pickupLabel: 'Current location',
+        destinationQuery: 'Test Destination',
+        pickupPlace: MobilityPlace(
+          label: 'Current location',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        destinationPlace: MobilityPlace(
+          label: 'Test Destination',
+          location: LocationPoint(
+            latitude: 24.7236,
+            longitude: 46.6853,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        ),
+        selectedOptionId: 'economy',
+      );
+
+      final quote = RideQuoteUiState(
+        isLoading: false,
+        quote: createMockQuote(),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            rideDraftProvider.overrideWith((ref) {
+              final controller = RideDraftController();
+              controller.updatePickupLabel(draft.pickupLabel);
+              controller.updateDestination(draft.destinationQuery);
+              controller.updatePickupPlace(draft.pickupPlace!);
+              controller.updateDestinationPlace(draft.destinationPlace!);
+              controller.updateSelectedOption('economy');
+              return controller;
+            }),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _TestRideQuoteController(quote);
+            }),
+            rideTripSessionProvider.overrideWith((ref) {
+              return RideTripSessionController();
+            }),
+            paymentMethodsUiProvider.overrideWith(
+              (ref) => PaymentMethodsUiState(
+                methods: [
+                  const PaymentMethodUiModel(
+                    id: 'cash',
+                    displayName: 'Cash',
+                    type: PaymentMethodUiType.cash,
+                    isDefault: true,
+                  ),
+                ],
+                selectedMethodId: 'cash',
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en')],
+            home: const RideConfirmationScreen(),
+            routes: {
+              '/ride/active': (context) =>
+                  const Scaffold(body: Text('Active Trip')),
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Tap Request Ride
+      await tester.tap(find.text('Request Ride'));
+      await tester.pump(); // Don't settle - SnackBar might disappear
+
+      // Verify SnackBar is shown
+      expect(find.byType(SnackBar), findsOneWidget,
+          reason: 'Should show confirmation SnackBar after pressing Request Ride');
+    });
+  });
 }
 
