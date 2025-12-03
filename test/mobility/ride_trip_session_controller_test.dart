@@ -23,21 +23,93 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mobility_shims/mobility_shims.dart';
+import 'package:maps_shims/maps_shims.dart';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_map_port_providers.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_map_projection.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
+
+// Helper to create RideTripSessionController using ProviderContainer (official way)
+RideTripSessionController _createRideTripSessionControllerForTest({
+  ProviderContainer? container,
+}) {
+  // Create container if not provided
+  final c = container ?? ProviderContainer();
+  if (container == null) {
+    // Dispose when test ends
+    addTearDown(c.dispose);
+  }
+
+  // Get controller from the official provider
+  final controller = c.read(rideTripSessionProvider.notifier);
+  return controller;
+}
+
+// Recording MapPort for testing command recording
+class _RecordingMapPort implements MapPort {
+  final List<MapCommand> recordedCommands = <MapCommand>[];
+
+  @override
+  Stream<MapEvent> get events => const Stream<MapEvent>.empty();
+
+  @override
+  Sink<MapCommand> get commands => _RecordingSink(recordedCommands);
+
+  @override
+  void dispose() {
+    // Nothing to dispose
+  }
+}
+
+class _RecordingSink implements Sink<MapCommand> {
+  final List<MapCommand> _commands;
+
+  _RecordingSink(this._commands);
+
+  @override
+  void add(MapCommand command) {
+    _commands.add(command);
+  }
+
+  @override
+  void close() {
+    // Nothing to close
+  }
+}
+
+// Helper to create RideTripSessionController with overridden MapPort for testing
+RideTripSessionController _createRideTripSessionControllerWithMapPort(
+  _RecordingMapPort port, {
+  ProviderContainer? container,
+}) {
+  final c = container ?? ProviderContainer(
+    overrides: [
+      // Override the MapPort provider with our recording port
+      rideMapPortProvider.overrideWithValue(port),
+    ],
+  );
+
+  if (container == null) {
+    addTearDown(c.dispose);
+  }
+
+  return c.read(rideTripSessionProvider.notifier);
+}
 
 void main() {
   group('RideTripSessionController', () {
     group('initial state', () {
       test('has null activeTrip', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
 
         expect(controller.state.activeTrip, isNull);
       });
 
       test('hasActiveTrip is false', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
 
         expect(controller.hasActiveTrip, isFalse);
       });
@@ -45,7 +117,7 @@ void main() {
 
     group('startFromDraft', () {
       test('creates activeTrip with phase = findingDriver', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(
           pickupLabel: 'Current location',
           destinationQuery: 'Downtown',
@@ -61,8 +133,8 @@ void main() {
       });
 
       test('generates unique tripId', () {
-        final controller1 = RideTripSessionController();
-        final controller2 = RideTripSessionController();
+        final controller1 = _createRideTripSessionControllerForTest();
+        final controller2 = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller1.startFromDraft(draft);
@@ -75,7 +147,7 @@ void main() {
       });
 
       test('hasActiveTrip becomes true after start', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         expect(controller.hasActiveTrip, isFalse);
@@ -87,7 +159,7 @@ void main() {
 
       // Track B - Ticket #111: Draft snapshot freezing tests
       test('freezes draft snapshot on session state', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         final pickupPlace = MobilityPlace(
           label: 'Pickup Location',
           location: LocationPoint(
@@ -129,7 +201,7 @@ void main() {
       });
 
       test('draftSnapshot equals the draft passed to startFromDraft', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(
           pickupLabel: 'Home',
           destinationQuery: 'Office',
@@ -144,7 +216,7 @@ void main() {
 
     group('applyEvent', () {
       test('transitions phases correctly through happy path', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Downtown');
 
         controller.startFromDraft(draft);
@@ -172,7 +244,7 @@ void main() {
       });
 
       test('preserves tripId across transitions', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -186,7 +258,7 @@ void main() {
       });
 
       test('does not throw when applied on null activeTrip', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         expect(controller.state.activeTrip, isNull);
 
         // Should not throw
@@ -196,7 +268,7 @@ void main() {
       });
 
       test('ignores invalid transitions silently', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -210,7 +282,7 @@ void main() {
       });
 
       test('cancel from findingDriver leads to cancelled', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -222,7 +294,7 @@ void main() {
       });
 
       test('fail event transitions to failed', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -236,7 +308,7 @@ void main() {
 
     group('hasActiveTrip', () {
       test('returns false for terminal phase: completed', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -251,7 +323,7 @@ void main() {
       });
 
       test('returns false for terminal phase: cancelled', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -262,7 +334,7 @@ void main() {
       });
 
       test('returns false for terminal phase: failed', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -275,7 +347,7 @@ void main() {
 
     group('clear', () {
       test('resets session to empty state', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'X');
 
         controller.startFromDraft(draft);
@@ -289,7 +361,7 @@ void main() {
       });
 
       test('clear on fresh controller does nothing harmful', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
 
         controller.clear();
 
@@ -298,7 +370,7 @@ void main() {
 
       // Track B - Ticket #111: Clear should also clear draftSnapshot
       test('clears draftSnapshot when session is cleared', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(
           pickupLabel: 'Home',
           destinationQuery: 'Office',
@@ -316,7 +388,7 @@ void main() {
     group('cancelActiveTrip - Track B Ticket #22, #24, #95', () {
       // Ticket #95: cancelActiveTrip now keeps trip in cancelled state instead of clearing
       test('returns true and keeps activeTrip in cancelled phase', () async {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test Cancel');
 
         controller.startFromDraft(draft);
@@ -331,7 +403,7 @@ void main() {
       });
 
       test('returns false when activeTrip is null', () async {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         expect(controller.state.activeTrip, isNull);
 
         final result = await controller.cancelActiveTrip();
@@ -341,7 +413,7 @@ void main() {
       });
 
       test('returns false when phase is inProgress (not cancellable)', () async {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -359,7 +431,7 @@ void main() {
       });
 
       test('returns false when phase is payment (not cancellable)', () async {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -376,7 +448,7 @@ void main() {
       });
 
       test('returns false when already completed', () async {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -395,7 +467,7 @@ void main() {
 
       // Ticket #95: Trip stays in cancelled state after cancel
       test('cancels successfully from driverAccepted phase', () async {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -411,7 +483,7 @@ void main() {
 
       // Ticket #95: Trip stays in cancelled state after cancel
       test('cancels successfully from driverArrived phase', () async {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -429,7 +501,7 @@ void main() {
 
     group('rateCurrentTrip - Track B Ticket #23, #24', () {
       test('sets driverRating in state', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test Rating');
 
         controller.startFromDraft(draft);
@@ -441,7 +513,7 @@ void main() {
       });
 
       test('clamps rating to 1-5 range (minimum)', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -451,7 +523,7 @@ void main() {
       });
 
       test('clamps rating to 1-5 range (maximum)', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -461,7 +533,7 @@ void main() {
       });
 
       test('does nothing when activeTrip is null', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         expect(controller.state.activeTrip, isNull);
         expect(controller.state.driverRating, isNull);
 
@@ -471,7 +543,7 @@ void main() {
       });
 
       test('preserves activeTrip when setting rating', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -485,7 +557,7 @@ void main() {
       });
 
       test('can update rating multiple times', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -506,7 +578,7 @@ void main() {
     // =========================================================================
     group('archiveTrip - Track B Ticket #96, #108', () {
       test('archives trip to history with basic data', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Mall');
 
         controller.startFromDraft(draft);
@@ -530,7 +602,7 @@ void main() {
       });
 
       test('archives trip with extended data (Ticket #108)', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Airport');
 
         controller.startFromDraft(draft);
@@ -558,7 +630,7 @@ void main() {
       });
 
       test('new trips are inserted at top of history list', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         
         // First trip
         const draft1 = RideDraftUiState(destinationQuery: 'Mall');
@@ -605,7 +677,7 @@ void main() {
       });
 
       test('does not archive non-terminal trips', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
@@ -622,7 +694,7 @@ void main() {
       });
 
       test('does not archive when no active trip', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         expect(controller.state.activeTrip, isNull);
 
         controller.archiveTrip(
@@ -636,7 +708,7 @@ void main() {
 
     group('null-safety edge cases - Track B Ticket #24', () {
       test('applyEvent does not throw when activeTrip is null', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         expect(controller.state.activeTrip, isNull);
 
         // Should not throw
@@ -645,7 +717,7 @@ void main() {
       });
 
       test('cancelActiveTrip does not throw when activeTrip is null', () async {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         expect(controller.state.activeTrip, isNull);
 
         // Should not throw
@@ -654,7 +726,7 @@ void main() {
       });
 
       test('rateCurrentTrip does not throw when activeTrip is null', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         expect(controller.state.activeTrip, isNull);
 
         // Should not throw
@@ -663,7 +735,7 @@ void main() {
       });
 
       test('hasActiveTrip does not throw when activeTrip is null', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         expect(controller.state.activeTrip, isNull);
 
         // Should not throw
@@ -672,7 +744,7 @@ void main() {
       });
 
       test('clear does not throw on already empty state', () {
-        final controller = RideTripSessionController();
+        final controller = _createRideTripSessionControllerForTest();
         expect(controller.state.activeTrip, isNull);
 
         // Should not throw
@@ -808,7 +880,7 @@ void main() {
       expect(selectedOption, isNotNull);
 
       // 5. Create trip session controller and start trip from draft
-      final tripController = RideTripSessionController();
+      final tripController = _createRideTripSessionControllerForTest();
       tripController.startFromDraft(draft);
 
       // Verify initial phase is findingDriver
@@ -868,7 +940,7 @@ void main() {
       );
 
       // Start trip
-      final tripController = RideTripSessionController();
+      final tripController = _createRideTripSessionControllerForTest();
       tripController.startFromDraft(draft);
 
       expect(tripController.state.activeTrip?.phase, RideTripPhase.findingDriver);
@@ -891,7 +963,7 @@ void main() {
       );
 
       // Start trip
-      final tripController = RideTripSessionController();
+      final tripController = _createRideTripSessionControllerForTest();
       tripController.startFromDraft(draft);
 
       // Progress to driverAccepted
@@ -913,7 +985,7 @@ void main() {
 
   group('completeCurrentTrip - Track B Ticket #117', () {
     test('moves activeTrip to history and clears session from inProgress', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         pickupLabel: 'Pickup Point',
         destinationQuery: 'Downtown Mall',
@@ -956,7 +1028,7 @@ void main() {
     });
 
     test('moves activeTrip to history and clears session from payment phase', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         pickupLabel: 'Home',
         destinationQuery: 'Office',
@@ -982,7 +1054,7 @@ void main() {
     });
 
     test('is idempotent when no active trip exists', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
 
       // Call twice with no active trip
       final result1 = controller.completeCurrentTrip();
@@ -997,7 +1069,7 @@ void main() {
     });
 
     test('preserves existing history entries', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft1 = RideDraftUiState(destinationQuery: 'Trip 1');
       const draft2 = RideDraftUiState(destinationQuery: 'Trip 2');
       const draft3 = RideDraftUiState(destinationQuery: 'Trip 3');
@@ -1036,7 +1108,7 @@ void main() {
     });
 
     test('uses draftSnapshot for destination when not provided', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         pickupLabel: 'Current Location',
         destinationQuery: 'King Fahd Road',
@@ -1056,7 +1128,7 @@ void main() {
     });
 
     test('uses tripSummary for fare and service when not provided', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         destinationQuery: 'Airport',
         selectedOptionId: 'xl',
@@ -1085,7 +1157,7 @@ void main() {
     });
 
     test('handles already completed trip (terminal phase)', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1108,7 +1180,7 @@ void main() {
     });
 
     test('handles cancelled trip (terminal phase)', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1127,7 +1199,7 @@ void main() {
     });
 
     test('clears driverRating when completing trip', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1147,7 +1219,7 @@ void main() {
     });
 
     test('sets completedAt timestamp', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1165,7 +1237,7 @@ void main() {
     });
 
     test('returns false for findingDriver phase (cannot complete directly)', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1187,7 +1259,7 @@ void main() {
   // ===========================================================================
   group('cancelCurrentTrip (Track B - Ticket #120)', () {
     test('cancels and archives trip from findingDriver phase', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         pickupLabel: 'Home',
         destinationQuery: 'Downtown',
@@ -1209,7 +1281,7 @@ void main() {
     });
 
     test('returns false when no active trip', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
 
       final result = controller.cancelCurrentTrip(
         reasonLabel: 'Test',
@@ -1221,7 +1293,7 @@ void main() {
     });
 
     test('returns false for non-cancellable phase (inProgress)', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1239,7 +1311,7 @@ void main() {
     });
 
     test('returns false for non-cancellable phase (payment)', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1257,7 +1329,7 @@ void main() {
     });
 
     test('returns false for already completed trip', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1274,7 +1346,7 @@ void main() {
     });
 
     test('cancels from driverAccepted phase', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Mall');
 
       controller.startFromDraft(draft);
@@ -1288,7 +1360,7 @@ void main() {
     });
 
     test('cancels from driverArrived phase', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Airport');
 
       controller.startFromDraft(draft);
@@ -1303,7 +1375,7 @@ void main() {
     });
 
     test('uses draftSnapshot for destination when not provided', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         pickupLabel: 'Home',
         destinationQuery: 'Office',
@@ -1317,7 +1389,7 @@ void main() {
     });
 
     test('uses tripSummary for service and fare when not provided', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         destinationQuery: 'Station',
         selectedOptionId: 'economy',
@@ -1340,7 +1412,7 @@ void main() {
     });
 
     test('clears session state after cancellation', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         pickupLabel: 'Home',
         destinationQuery: 'Work',
@@ -1363,7 +1435,7 @@ void main() {
     });
 
     test('preserves history from previous trips', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       
       // First trip - complete it
       const draft1 = RideDraftUiState(destinationQuery: 'Trip 1');
@@ -1387,7 +1459,7 @@ void main() {
     });
 
     test('sets completedAt timestamp', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1408,7 +1480,7 @@ void main() {
 
   group('failCurrentTrip - Track B Ticket #122', () {
     test('moves activeTrip to history as failed and clears session from findingDriver', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         pickupLabel: 'Home',
         destinationQuery: 'Airport',
@@ -1441,7 +1513,7 @@ void main() {
     });
 
     test('returns false when no active trip exists', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
 
       final result = controller.failCurrentTrip(
         reasonLabel: 'Test',
@@ -1453,7 +1525,7 @@ void main() {
     });
 
     test('returns false for terminal phase (completed)', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1472,7 +1544,7 @@ void main() {
     });
 
     test('returns false for terminal phase (cancelled)', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1485,7 +1557,7 @@ void main() {
     });
 
     test('returns false for terminal phase (failed)', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1498,7 +1570,7 @@ void main() {
     });
 
     test('fails from driverAccepted phase', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Mall');
 
       controller.startFromDraft(draft);
@@ -1512,7 +1584,7 @@ void main() {
     });
 
     test('fails from driverArrived phase', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Office');
 
       controller.startFromDraft(draft);
@@ -1527,7 +1599,7 @@ void main() {
     });
 
     test('fails from inProgress phase', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Station');
 
       controller.startFromDraft(draft);
@@ -1543,7 +1615,7 @@ void main() {
     });
 
     test('uses draftSnapshot for destination when not provided', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         pickupLabel: 'Home',
         destinationQuery: 'Downtown',
@@ -1557,7 +1629,7 @@ void main() {
     });
 
     test('uses tripSummary for service and fare when not provided', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         destinationQuery: 'Airport',
         selectedOptionId: 'premium',
@@ -1580,7 +1652,7 @@ void main() {
     });
 
     test('clears session state after failure', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         pickupLabel: 'Home',
         destinationQuery: 'Work',
@@ -1603,7 +1675,7 @@ void main() {
     });
 
     test('preserves history from previous trips', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       
       // First trip - complete it
       const draft1 = RideDraftUiState(destinationQuery: 'Trip 1');
@@ -1634,7 +1706,7 @@ void main() {
     });
 
     test('sets completedAt timestamp', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1655,7 +1727,7 @@ void main() {
 
   group('setRatingForMostRecentTrip - Track B Ticket #124', () {
     test('sets rating for most recent history entry', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Downtown');
 
       // Complete a trip to create a history entry
@@ -1677,7 +1749,7 @@ void main() {
     });
 
     test('returns false when history is empty', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
 
       final result = controller.setRatingForMostRecentTrip(4.0);
 
@@ -1685,7 +1757,7 @@ void main() {
     });
 
     test('rejects rating below 1.0', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1701,7 +1773,7 @@ void main() {
     });
 
     test('rejects rating above 5.0', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1717,7 +1789,7 @@ void main() {
     });
 
     test('accepts rating at boundary values', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
 
       // First trip - test lower boundary
       const draft1 = RideDraftUiState(destinationQuery: 'Trip 1');
@@ -1745,7 +1817,7 @@ void main() {
     });
 
     test('allows updating rating multiple times', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Test');
 
       controller.startFromDraft(draft);
@@ -1765,7 +1837,7 @@ void main() {
     });
 
     test('sets rating for cancelled trip', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Cancelled Trip');
 
       controller.startFromDraft(draft);
@@ -1780,7 +1852,7 @@ void main() {
     });
 
     test('sets rating for failed trip', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(destinationQuery: 'Failed Trip');
 
       controller.startFromDraft(draft);
@@ -1795,7 +1867,7 @@ void main() {
     });
 
     test('only updates most recent trip in history', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
 
       // Complete first trip
       const draft1 = RideDraftUiState(destinationQuery: 'First');
@@ -1824,7 +1896,7 @@ void main() {
     });
 
     test('preserves other entry fields when setting rating', () {
-      final controller = RideTripSessionController();
+      final controller = _createRideTripSessionControllerForTest();
       const draft = RideDraftUiState(
         pickupLabel: 'Home',
         destinationQuery: 'Airport',
@@ -1864,6 +1936,232 @@ void main() {
       expect(entry.paymentMethodLabel, 'Cash');
       expect(entry.driverRating, 4.5);
       expect(entry.trip.phase, RideTripPhase.completed);
+    });
+  });
+
+  // ===========================================================================
+  // Track B - Ticket #203: RideTripSessionController ↔ Ride Map Integration
+  // ===========================================================================
+  group('RideTripSessionController Map Integration - Track B Ticket #203', () {
+    group('initial state', () {
+      test('has default mapStage idle and mapSnapshot null', () {
+        final controller = _createRideTripSessionControllerForTest();
+
+        expect(controller.state.mapStage, RideMapStage.idle);
+        expect(controller.state.mapSnapshot, isNull);
+        expect(controller.state.hasMap, isFalse);
+      });
+    });
+
+    group('FSM → RideMapStage mapping', () {
+      test('draft phase → RideMapStage.idle', () {
+        final controller = _createRideTripSessionControllerForTest();
+        final draft = RideDraftUiState(destinationQuery: 'Test');
+
+        controller.startFromDraft(draft);
+
+        expect(controller.state.activeTrip?.phase, RideTripPhase.findingDriver);
+        expect(controller.state.mapStage, RideMapStage.waitingForDriver);
+        expect(controller.state.mapSnapshot, isNotNull);
+        expect(controller.state.hasMap, isTrue);
+      });
+
+      test('applying driverAccepted event → RideMapStage.driverEnRouteToPickup', () {
+        final controller = _createRideTripSessionControllerForTest();
+        final draft = RideDraftUiState(destinationQuery: 'Test');
+
+        controller.startFromDraft(draft);
+        controller.applyEvent(RideTripEvent.driverAccepted);
+
+        expect(controller.state.activeTrip?.phase, RideTripPhase.driverAccepted);
+        expect(controller.state.mapStage, RideMapStage.driverEnRouteToPickup);
+        expect(controller.state.mapSnapshot, isNotNull);
+      });
+
+      test('applying driverArrived event → RideMapStage.driverArrived', () {
+        final controller = _createRideTripSessionControllerForTest();
+        final draft = RideDraftUiState(destinationQuery: 'Test');
+
+        controller.startFromDraft(draft);
+        controller.applyEvent(RideTripEvent.driverAccepted);
+        controller.applyEvent(RideTripEvent.driverArrived);
+
+        expect(controller.state.activeTrip?.phase, RideTripPhase.driverArrived);
+        expect(controller.state.mapStage, RideMapStage.driverArrived);
+        expect(controller.state.mapSnapshot, isNotNull);
+      });
+
+      test('applying startTrip event → RideMapStage.inProgressToDestination', () {
+        final controller = _createRideTripSessionControllerForTest();
+        final draft = RideDraftUiState(destinationQuery: 'Test');
+
+        controller.startFromDraft(draft);
+        controller.applyEvent(RideTripEvent.driverAccepted);
+        controller.applyEvent(RideTripEvent.driverArrived);
+        controller.applyEvent(RideTripEvent.startTrip);
+
+        expect(controller.state.activeTrip?.phase, RideTripPhase.inProgress);
+        expect(controller.state.mapStage, RideMapStage.inProgressToDestination);
+        expect(controller.state.mapSnapshot, isNotNull);
+      });
+
+      test('completing trip → RideMapStage.completed', () {
+        final controller = _createRideTripSessionControllerForTest();
+        final draft = RideDraftUiState(destinationQuery: 'Test');
+
+        controller.startFromDraft(draft);
+        controller.applyEvent(RideTripEvent.driverAccepted);
+        controller.applyEvent(RideTripEvent.driverArrived);
+        controller.applyEvent(RideTripEvent.startTrip);
+        controller.applyEvent(RideTripEvent.startPayment);
+        controller.applyEvent(RideTripEvent.complete);
+
+        expect(controller.state.activeTrip?.phase, RideTripPhase.completed);
+        expect(controller.state.mapStage, RideMapStage.completed);
+        expect(controller.state.mapSnapshot, isNotNull);
+      });
+
+      test('failing trip → RideMapStage.error', () {
+        final controller = _createRideTripSessionControllerForTest();
+        final draft = RideDraftUiState(destinationQuery: 'Test');
+
+        controller.startFromDraft(draft);
+        controller.applyEvent(RideTripEvent.fail);
+
+        expect(controller.state.activeTrip?.phase, RideTripPhase.failed);
+        expect(controller.state.mapStage, RideMapStage.error);
+        expect(controller.state.mapSnapshot, isNotNull);
+      });
+
+      test('cancelling trip → RideMapStage.error', () {
+        final controller = _createRideTripSessionControllerForTest();
+        final draft = RideDraftUiState(destinationQuery: 'Test');
+
+        controller.startFromDraft(draft);
+        controller.applyEvent(RideTripEvent.cancel);
+
+        expect(controller.state.activeTrip?.phase, RideTripPhase.cancelled);
+        expect(controller.state.mapStage, RideMapStage.error);
+        expect(controller.state.mapSnapshot, isNotNull);
+      });
+    });
+
+    group('MapPort command recording', () {
+      test('records commands when FSM transitions occur', () {
+        final port = _RecordingMapPort();
+        final controller = _createRideTripSessionControllerWithMapPort(port);
+        final draft = RideDraftUiState(destinationQuery: 'Test');
+
+        // Start trip - should record initial commands
+        controller.startFromDraft(draft);
+        expect(port.recordedCommands, isNotEmpty);
+
+        // Apply driver accepted - should record more commands
+        final commandsBefore = port.recordedCommands.length;
+        controller.applyEvent(RideTripEvent.driverAccepted);
+        expect(port.recordedCommands.length, greaterThan(commandsBefore));
+      });
+
+      test('includes SetMarkersCommand when trip has locations', () {
+        final port = _RecordingMapPort();
+        final controller = _createRideTripSessionControllerWithMapPort(port);
+
+        final pickupPlace = MobilityPlace(
+          label: 'Pickup',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        );
+        final destinationPlace = MobilityPlace(
+          label: 'Destination',
+          location: LocationPoint(
+            latitude: 24.7500,
+            longitude: 46.7000,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        );
+
+        final draft = RideDraftUiState(
+          pickupLabel: 'Pickup',
+          pickupPlace: pickupPlace,
+          destinationQuery: 'Destination',
+          destinationPlace: destinationPlace,
+        );
+
+        controller.startFromDraft(draft);
+
+        // Should have recorded SetMarkersCommand with pickup and destination markers
+        final setMarkersCommands = port.recordedCommands.whereType<SetMarkersCommand>();
+        expect(setMarkersCommands, isNotEmpty);
+
+        final markers = setMarkersCommands.first.markers;
+        expect(markers.length, 2); // pickup + destination markers
+        expect(markers.any((m) => m.id.value == 'pickup'), isTrue);
+        expect(markers.any((m) => m.id.value == 'dropoff'), isTrue);
+      });
+
+      test('includes SetCameraCommand in all transitions', () {
+        final port = _RecordingMapPort();
+        final controller = _createRideTripSessionControllerWithMapPort(port);
+        final draft = RideDraftUiState(destinationQuery: 'Test');
+
+        controller.startFromDraft(draft);
+
+        // Should have recorded SetCameraCommand
+        final setCameraCommands = port.recordedCommands.whereType<SetCameraCommand>();
+        expect(setCameraCommands, isNotEmpty);
+      });
+    });
+
+    group('location extraction', () {
+      test('extracts pickup and dropoff locations from draftSnapshot', () {
+        final port = _RecordingMapPort();
+        final controller = _createRideTripSessionControllerWithMapPort(port);
+
+        final pickupPlace = MobilityPlace(
+          label: 'Home',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        );
+        final destinationPlace = MobilityPlace(
+          label: 'Office',
+          location: LocationPoint(
+            latitude: 24.7500,
+            longitude: 46.7000,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+        );
+
+        final draft = RideDraftUiState(
+          pickupLabel: 'Home',
+          pickupPlace: pickupPlace,
+          destinationQuery: 'Office',
+          destinationPlace: destinationPlace,
+        );
+
+        controller.startFromDraft(draft);
+
+        // Verify the map snapshot contains the correct locations
+        final snapshot = controller.state.mapSnapshot!;
+        expect(snapshot.markers.length, 2); // pickup + dropoff
+
+        final pickupMarker = snapshot.markers.firstWhere((m) => m.id.value == 'pickup');
+        final dropoffMarker = snapshot.markers.firstWhere((m) => m.id.value == 'dropoff');
+
+        expect(pickupMarker.position.latitude, closeTo(24.7136, 0.001));
+        expect(pickupMarker.position.longitude, closeTo(46.6753, 0.001));
+        expect(dropoffMarker.position.latitude, closeTo(24.7500, 0.001));
+        expect(dropoffMarker.position.longitude, closeTo(46.7000, 0.001));
+      });
     });
   });
 }

@@ -10,6 +10,12 @@ import '../maps_contracts.dart';
 typedef GoogleLatLng = LatLng;
 typedef MapLatLng = LatLng;
 
+/// Legacy marker type alias for backward compatibility
+typedef MapMarker = LegacyMapMarker;
+
+/// Legacy polyline type alias for backward compatibility
+typedef MapPolyline = LegacyMapPolyline;
+
 /// Backward compatibility alias - prefer MapViewController.
 typedef MapController = MapViewController;
 

@@ -5,7 +5,39 @@
 // Updated by: Track B - Ticket #109 (DW Map Shim v1 with Streams/Sinks)
 
 // =============================================================================
-// Track B - Ticket #109: New Pure Dart Map Shim v1 (Streams/Sinks)
+// Track B - Ticket #198: MapInterface تفاعلي (Streams/Sinks) + Stub Implementation
+// =============================================================================
+
+// New API (Ticket #198) - Pure Dart Value Objects and Port Interface
+export 'src/map_models.dart'
+    show
+        GeoPoint,
+        MapBounds,
+        MapZoom,
+        MapCameraTarget,
+        MapMarkerId,
+        MapMarker,
+        MapPolylineId,
+        MapPolyline;
+export 'src/map_events.dart'
+    show
+        MapEvent,
+        MarkerTappedEvent,
+        CameraMovedEvent,
+        MapTappedEvent,
+        MapReadyEvent;
+export 'src/map_commands.dart'
+    show
+        MapCommand,
+        SetCameraCommand,
+        FitBoundsCommand,
+        SetMarkersCommand,
+        SetPolylinesCommand;
+export 'src/map_port.dart' show MapPort;
+export 'src/in_memory_map_port.dart' show InMemoryMapPort;
+
+// =============================================================================
+// Track B - Ticket #109: Legacy DW API (Pure Dart - no Flutter dependencies)
 // =============================================================================
 
 // Core types (Pure Dart - no Flutter dependencies)
@@ -44,8 +76,6 @@ export 'src/testing/in_memory_map_controller.dart' show InMemoryMapController;
 export 'src/map_models.dart'
     show
         LatLng,
-        MapMarker,
-        MapPolyline,
         MapConfig,
         MapCamera,
         CameraPosition,
@@ -57,6 +87,7 @@ export 'src/map_providers.dart' show mapControllerProvider;
 export 'src/maps_contracts.dart' show MapViewController;
 export 'src/map_controller.dart' show NoOpMapController;
 export 'src/legacy/aliases.dart'
+    hide MapMarker, MapPolyline, GeoPoint, MapBounds, MapCameraTarget, MapZoom
     show GoogleLatLng, MapLatLng, LatLngCompat, MapController;
 export 'src/marker_manager.dart' show MarkerManager, MarkerOptions;
 export 'src/polyline_manager.dart' show PolylineManager, PolylineOptions;

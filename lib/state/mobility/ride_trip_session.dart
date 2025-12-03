@@ -28,9 +28,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // From mobility_shims package (canonical FSM):
 import 'package:mobility_shims/mobility_shims.dart';
 
+// From maps_shims package (map integration):
+import 'package:maps_shims/maps_shims.dart';
+
 // From app:
 import 'ride_draft_state.dart';
 import 'ride_map_commands_builder.dart';
+import 'ride_map_port_providers.dart';
+import 'ride_map_projection.dart';
 import 'ride_recent_locations_providers.dart';
 
 /// Entry in the ride history list.
@@ -213,6 +218,8 @@ class RideTripSessionUiState {
     this.completionSummary,
     this.draftSnapshot,
     this.isLoading = false,
+    this.mapStage = RideMapStage.idle,
+    this.mapSnapshot,
   });
 
   /// The currently active ride trip, or null if no trip is running.
@@ -243,6 +250,14 @@ class RideTripSessionUiState {
   /// Track B - Ticket #127: Loading state for skeleton display.
   final bool isLoading;
 
+  /// Track B - Ticket #203: Current stage of the map presentation.
+  /// Derived from FSM state, controls what the map should show.
+  final RideMapStage mapStage;
+
+  /// Track B - Ticket #203: Current snapshot of map data (markers, polylines, camera).
+  /// Computed by RideMapProjector from current ride state and locations.
+  final RideMapSnapshot? mapSnapshot;
+
   RideTripSessionUiState copyWith({
     RideTripState? activeTrip,
     int? driverRating,
@@ -251,6 +266,8 @@ class RideTripSessionUiState {
     RideTripSummary? completionSummary,
     RideDraftUiState? draftSnapshot,
     bool? isLoading,
+    RideMapStage? mapStage,
+    RideMapSnapshot? mapSnapshot,
     bool clearActiveTrip = false,
     bool clearDriverRating = false,
     bool clearTripSummary = false,
@@ -265,6 +282,8 @@ class RideTripSessionUiState {
       completionSummary: clearCompletionSummary ? null : (completionSummary ?? this.completionSummary),
       draftSnapshot: clearDraftSnapshot ? null : (draftSnapshot ?? this.draftSnapshot),
       isLoading: isLoading ?? this.isLoading,
+      mapStage: mapStage ?? this.mapStage,
+      mapSnapshot: mapSnapshot ?? this.mapSnapshot,
     );
   }
 
@@ -279,7 +298,9 @@ class RideTripSessionUiState {
         other.tripSummary == tripSummary &&
         other.completionSummary == completionSummary &&
         other.draftSnapshot == draftSnapshot &&
-        other.isLoading == isLoading;
+        other.isLoading == isLoading &&
+        other.mapStage == mapStage &&
+        other.mapSnapshot == mapSnapshot;
   }
 
   @override
@@ -291,11 +312,16 @@ class RideTripSessionUiState {
         completionSummary,
         draftSnapshot,
         isLoading,
+        mapStage,
+        mapSnapshot,
       );
 
   @override
   String toString() =>
-      'RideTripSessionUiState(activeTrip: ${activeTrip?.phase}, driverRating: $driverRating, historyCount: ${historyTrips.length}, summary: $tripSummary, completion: $completionSummary, hasDraft: ${draftSnapshot != null}, isLoading: $isLoading)';
+      'RideTripSessionUiState(activeTrip: ${activeTrip?.phase}, driverRating: $driverRating, historyCount: ${historyTrips.length}, summary: $tripSummary, completion: $completionSummary, hasDraft: ${draftSnapshot != null}, isLoading: $isLoading, mapStage: $mapStage, hasMap: $hasMap)';
+
+  /// Track B - Ticket #203: Whether the map has data to display.
+  bool get hasMap => mapSnapshot != null;
 
   /// Track B - Ticket #110: Map commands for the current active trip, if any.
   ///
@@ -322,17 +348,45 @@ class RideTripSessionUiState {
   }
 }
 
-/// Controller for managing the active ride trip session.
+/// FSM for ride lifecycle (Draft -> Quoting -> Requesting -> FindingDriver -> DriverAccepted -> DriverArrived -> InProgress -> Payment -> Completed/Cancelled).
 ///
-/// Uses the canonical FSM types from mobility_shims:
-/// - [RideTripState] - immutable trip state
-/// - [RideTripPhase] - trip lifecycle phases
-/// - [RideTripEvent] - events that transition the FSM
-/// - [applyRideTripEvent] - pure transition function
+/// This controller manages the active ride trip session using the canonical FSM from mobility_shims.
+/// The FSM supports edge cases like pricing failures, network errors, and user/driver cancellations.
+///
+/// ## Supported Phases:
+/// - **draft**: Initial state before any processing
+/// - **quoting**: Fetching pricing options from service
+/// - **requesting**: Submitting trip request to backend
+/// - **findingDriver**: Waiting for driver assignment
+/// - **driverAccepted**: Driver accepted the trip
+/// - **driverArrived**: Driver arrived at pickup location
+/// - **inProgress**: Trip is actively in progress
+/// - **payment**: Processing payment (terminal phase)
+/// - **completed**: Trip successfully completed
+/// - **cancelled**: Trip cancelled by user/driver
+/// - **failed**: Trip failed due to errors (no driver, network issues, etc.)
+///
+/// ## Key Transitions:
+/// - `draft -> quoting` (via requestQuote event)
+/// - `quoting -> requesting` (via quoteReceived event)
+/// - `requesting -> findingDriver` (via submitRequest event)
+/// - `findingDriver -> driverAccepted` (via driverAccepted event)
+/// - `driverAccepted -> driverArrived` (via driverArrived event)
+/// - `driverArrived -> inProgress` (via startTrip event)
+/// - `inProgress -> payment` (via startPayment event)
+/// - `payment -> completed` (via complete event)
+/// - Any phase except payment -> cancelled (via cancel event)
+/// - Any non-terminal phase -> failed (via fail event)
+///
+/// This FSM is intentionally kept in the domain layer so we can unit-test edge cases
+/// like pricing failures, network errors, and user/driver cancellations.
+///
 class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
   RideTripSessionController(this._ref) : super(const RideTripSessionUiState());
 
   final Ref _ref;
+
+  MapPort get _mapPort => _ref.read(rideMapPortProvider);
 
   /// Starts a new trip from quote and selected option.
   ///
@@ -425,6 +479,9 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
       tripSummary: summary,
       draftSnapshot: draft,
     );
+
+    // Track B - Ticket #203: Sync map state after trip start
+    _syncMap();
   }
 
   /// Apply a single event to the active trip, if any.
@@ -437,6 +494,9 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
     try {
       final next = applyRideTripEvent(current, event);
       state = state.copyWith(activeTrip: next);
+
+      // Track B - Ticket #203: Sync map state after FSM transition
+      _syncMap();
     } on InvalidRideTransitionException {
       // For now, silently ignore invalid transitions.
       // TODO(Track B - Future): Log to error tracker or show user feedback.
@@ -857,6 +917,102 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
     state = RideTripSessionUiState(historyTrips: updatedHistory);
 
     return true;
+  }
+
+  /// Track B - Ticket #203: Sync map state with FSM state and push commands to MapPort.
+  ///
+  /// This method:
+  /// 1. Derives RideMapStage from current FSM state
+  /// 2. Projects map snapshot using RideMapProjector
+  /// 3. Updates state with new mapStage/mapSnapshot
+  /// 4. Pumps commands to MapPort
+  void _syncMap() {
+    final stage = _deriveMapStage();
+
+    final snapshot = RideMapProjector.project(
+      stage: stage,
+      userLocation: _buildUserLocationOrNull(),
+      pickupLocation: _buildPickupLocationOrNull(),
+      dropoffLocation: _buildDropoffLocationOrNull(),
+      driverLocation: _buildDriverLocationOrNull(),
+      routePolyline: _buildRoutePolylineOrNull(),
+    );
+
+    // Update the state
+    state = state.copyWith(
+      mapStage: stage,
+      mapSnapshot: snapshot,
+    );
+
+    // Push commands to MapPort (even if NoOp in runtime)
+    RideMapProjector.pumpToPort(
+      snapshot: snapshot,
+      port: _mapPort,
+    );
+  }
+
+  /// Track B - Ticket #203: Derive RideMapStage from current FSM state.
+  RideMapStage _deriveMapStage() {
+    final fsmState = state.activeTrip?.phase;
+
+    if (fsmState == null) return RideMapStage.idle;
+
+    switch (fsmState) {
+      case RideTripPhase.draft:
+        return RideMapStage.idle;
+      case RideTripPhase.quoting:
+        return RideMapStage.confirmingQuote;
+      case RideTripPhase.requesting:
+      case RideTripPhase.findingDriver:
+        return RideMapStage.waitingForDriver;
+      case RideTripPhase.driverAccepted:
+        return RideMapStage.driverEnRouteToPickup;
+      case RideTripPhase.driverArrived:
+        return RideMapStage.driverArrived;
+      case RideTripPhase.inProgress:
+      case RideTripPhase.payment:
+        return RideMapStage.inProgressToDestination;
+      case RideTripPhase.completed:
+        return RideMapStage.completed;
+      case RideTripPhase.cancelled:
+      case RideTripPhase.failed:
+        return RideMapStage.error;
+    }
+  }
+
+  /// Track B - Ticket #203: Extract user location as GeoPoint, or null if unavailable.
+  GeoPoint? _buildUserLocationOrNull() {
+    // TODO: Extract from user location provider/state when available
+    // For now, return null as user location is not yet available in session state
+    return null;
+  }
+
+  /// Track B - Ticket #203: Extract pickup location from draftSnapshot as GeoPoint.
+  GeoPoint? _buildPickupLocationOrNull() {
+    final pickup = state.draftSnapshot?.pickupPlace?.location;
+    if (pickup == null) return null;
+    return GeoPoint(pickup.latitude, pickup.longitude);
+  }
+
+  /// Track B - Ticket #203: Extract dropoff location from draftSnapshot as GeoPoint.
+  GeoPoint? _buildDropoffLocationOrNull() {
+    final dropoff = state.draftSnapshot?.destinationPlace?.location;
+    if (dropoff == null) return null;
+    return GeoPoint(dropoff.latitude, dropoff.longitude);
+  }
+
+  /// Track B - Ticket #203: Extract driver location as GeoPoint, or null if unavailable.
+  GeoPoint? _buildDriverLocationOrNull() {
+    // TODO: Extract from driver location updates when available
+    // For now, return null as driver location is not yet available in session state
+    return null;
+  }
+
+  /// Track B - Ticket #203: Extract route polyline, or null if unavailable.
+  MapPolyline? _buildRoutePolylineOrNull() {
+    // TODO: Extract from route data when available
+    // For now, return null as route data is not yet available in session state
+    return null;
   }
 
   /// Track B - Ticket #145: Helper to add current destination to recent locations

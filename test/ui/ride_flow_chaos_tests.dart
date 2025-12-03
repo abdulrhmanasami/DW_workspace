@@ -85,7 +85,7 @@ void main() {
               ],
               supportedLocales: const [Locale('en')],
               routes: {
-                '/ride/active': (context) => const RideActiveTripScreen(),
+                '/ride/active': (context) => RideActiveTripScreen(),
               },
               home: const RideConfirmationScreen(),
             ),
@@ -264,7 +264,7 @@ void main() {
                       body: Center(child: Text('Trip Summary')),
                     ),
               },
-              home: const RideActiveTripScreen(),
+              home: RideActiveTripScreen(),
             ),
           ),
         );
@@ -313,7 +313,7 @@ void main() {
               rideTripSessionProvider.overrideWith(
                   (ref) => RideTripSessionController(ref)),
             ],
-            child: const MaterialApp(
+            child: MaterialApp(
               locale: Locale('ar'),
               localizationsDelegates: [
                 AppLocalizations.delegate,
@@ -361,7 +361,7 @@ void main() {
               rideTripSessionProvider.overrideWith(
                   (ref) => RideTripSessionController(ref)),
             ],
-            child: const MaterialApp(
+            child: MaterialApp(
               locale: Locale('de'),
               localizationsDelegates: [
                 AppLocalizations.delegate,
@@ -386,6 +386,197 @@ void main() {
 
         // Success - vehicle options visible
         expect(find.text('Economy'), findsOneWidget);
+      },
+    );
+
+    // =========================================================================
+    // Track B - Ticket #197: Request failure chaos tests
+    // =========================================================================
+
+    testWidgets(
+      'ride_request_fails_after_successful_quoting_shows_proper_error_en',
+      (WidgetTester tester) async {
+        // Create controller that succeeds on quoting but fails on trip request
+        final requestFailingController = _RequestFailingTripController();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideDraftProvider.overrideWith((ref) {
+                final controller = RideDraftController();
+                controller.updateDestination('Airport Terminal');
+                controller.updatePickupPlace(MobilityPlace(
+                  label: 'Home',
+                  location: LocationPoint(
+                    latitude: 24.7136,
+                    longitude: 46.6753,
+                    accuracyMeters: 10,
+                    timestamp: DateTime.now(),
+                  ),
+                ));
+                controller.updateDestinationPlace(MobilityPlace(
+                  label: 'Airport Terminal',
+                  location: LocationPoint(
+                    latitude: 24.7743,
+                    longitude: 46.7386,
+                    accuracyMeters: 10,
+                    timestamp: DateTime.now(),
+                  ),
+                ));
+                return controller;
+              }),
+              rideQuoteControllerProvider.overrideWith(
+                  (ref) => _SuccessQuoteController()), // Quoting succeeds
+              rideTripSessionProvider.overrideWith((ref) => requestFailingController),
+            ],
+            // ignore: prefer_const_constructors
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              routes: {
+                '/ride/active': (context) => RideActiveTripScreen(),
+              },
+              home: const RideConfirmationScreen(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Step 1: Verify quoting succeeded and options are shown
+        expect(find.text('Economy'), findsOneWidget,
+            reason: 'Economy option should be visible after successful quoting');
+        expect(find.text('Request Ride'), findsOneWidget,
+            reason: 'Request Ride CTA should be visible');
+
+        // Step 2: Select and request ride - should fail during request
+        await tester.tap(find.text('Request Ride'));
+        await tester.pumpAndSettle();
+
+        // Step 3: Verify error handling - should navigate to active trip screen
+        // and show failure state
+        expect(find.byType(RideActiveTripScreen), findsOneWidget,
+            reason: 'Should navigate to active trip screen');
+        expect(find.text('Trip failed'), findsOneWidget,
+            reason: 'Should show trip failed message');
+        expect(find.text('No driver available'), findsOneWidget,
+            reason: 'Should show specific failure reason');
+
+        // Step 4: Verify user can retry or go back
+        expect(find.text('Try again'), findsOneWidget,
+            reason: 'Retry option should be available');
+        expect(find.text('Back to home'), findsOneWidget,
+            reason: 'Back to home option should be available');
+      },
+    );
+
+    testWidgets(
+      'ride_request_network_failure_shows_retry_option_ar',
+      (WidgetTester tester) async {
+        // Create controller that simulates network failure during request
+        final networkFailureController = _NetworkFailureTripController();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideDraftProvider.overrideWith((ref) {
+                final controller = RideDraftController();
+                controller.updateDestination('المستشفى');
+                return controller;
+              }),
+              rideQuoteControllerProvider.overrideWith(
+                  (ref) => _SuccessQuoteController()),
+              rideTripSessionProvider.overrideWith((ref) => networkFailureController),
+            ],
+            child: MaterialApp(
+              locale: Locale('ar'),
+              localizationsDelegates: [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: [Locale('en'), Locale('ar'), Locale('de')],
+              home: RideConfirmationScreen(),
+              routes: {
+                '/ride/active': (context) => RideActiveTripScreen(),
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Navigate to active trip screen to simulate failed request
+        await tester.tap(find.text('Request Ride'));
+        await tester.pumpAndSettle();
+
+        // Verify Arabic error messages
+        expect(find.text('فشل في الرحلة'), findsOneWidget,
+            reason: 'Arabic trip failed message should be shown');
+        expect(find.text('مشكلة في الشبكة'), findsOneWidget,
+            reason: 'Arabic network error message should be shown');
+        expect(find.text('حاول مرة أخرى'), findsOneWidget,
+            reason: 'Arabic retry button should be available');
+      },
+    );
+
+    testWidgets(
+      'ride_request_timeout_shows_timeout_error_and_retry_flow',
+      (WidgetTester tester) async {
+        // Create controller that simulates timeout during driver search
+        final timeoutController = _TimeoutFailureTripController();
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              rideDraftProvider.overrideWith((ref) {
+                final controller = RideDraftController();
+                controller.updateDestination('Downtown');
+                return controller;
+              }),
+              rideQuoteControllerProvider.overrideWith(
+                  (ref) => _SuccessQuoteController()),
+              rideTripSessionProvider.overrideWith((ref) => timeoutController),
+            ],
+            // ignore: prefer_const_constructors
+            child: MaterialApp(
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en')],
+              home: const RideConfirmationScreen(),
+              routes: {
+                '/ride/active': (context) => RideActiveTripScreen(),
+              },
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Request ride
+        await tester.tap(find.text('Request Ride'));
+        await tester.pumpAndSettle();
+
+        // Verify timeout error is shown
+        expect(find.text('Request timeout'), findsOneWidget,
+            reason: 'Timeout error should be displayed');
+        expect(find.text('Driver search took too long'), findsOneWidget,
+            reason: 'Timeout explanation should be shown');
+
+        // Test retry functionality
+        await tester.tap(find.text('Try again'));
+        await tester.pumpAndSettle();
+
+        // Should attempt new request (controller tracks retry count)
+        expect(timeoutController.retryCount, equals(2),
+            reason: 'Retry should increment retry count to 2');
       },
     );
 
@@ -419,7 +610,7 @@ void main() {
               supportedLocales: const [Locale('en')],
               home: const RideConfirmationScreen(),
               routes: {
-                '/ride/active': (context) => const RideActiveTripScreen(),
+                '/ride/active': (context) => RideActiveTripScreen(),
               },
             ),
           ),
@@ -485,7 +676,7 @@ void main() {
               supportedLocales: const [Locale('en')],
               home: const RideConfirmationScreen(),
               routes: {
-                '/ride/active': (context) => const RideActiveTripScreen(),
+                '/ride/active': (context) => RideActiveTripScreen(),
                 '/ride/trip_summary': (context) => const Scaffold(
                       body: Center(child: Text('Trip Summary')),
                     ),
@@ -1033,3 +1224,196 @@ class _CompletableRideTripSessionController extends RideTripSessionController {
   void clearCompletionSummary() {}
 }
 
+
+// ============================================================================
+// Track B - Ticket #197: Request Failure Controllers for Chaos Tests
+// ============================================================================
+
+/// Controller that fails during ride request (after successful quoting)
+class _RequestFailingTripController extends RideTripSessionController {
+  _RequestFailingTripController()
+      : super(_FakeRef()) {
+    state = const RideTripSessionUiState();
+  }
+
+  @override
+  void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {
+    // Simulate successful quoting -> requesting -> findingDriver
+    final tripId = "failed-request-${DateTime.now().microsecondsSinceEpoch}";
+    var tripState = RideTripState(
+      tripId: tripId,
+      phase: RideTripPhase.findingDriver,
+    );
+
+    // Immediately fail the request (simulates no drivers available)
+    tripState = applyRideTripEvent(tripState, RideTripEvent.fail);
+
+    state = RideTripSessionUiState(
+      activeTrip: tripState,
+      tripSummary: RideTripSummary(
+        selectedServiceId: selectedOption?.id ?? "economy",
+        selectedServiceName: selectedOption?.displayName ?? "Economy",
+        fareDisplayText: selectedOption?.formattedPrice ?? "SAR 18.00",
+        etaMinutes: selectedOption?.etaMinutes ?? 5,
+      ),
+      draftSnapshot: draft,
+    );
+  }
+
+  @override
+  void applyEvent(RideTripEvent event) {}
+
+  @override
+  void clear() {
+    state = const RideTripSessionUiState();
+  }
+
+  @override
+  bool get hasActiveTrip => state.activeTrip != null;
+
+  @override
+  Future<bool> cancelActiveTrip() async => false;
+
+  @override
+  void rateCurrentTrip(int rating) {}
+
+  @override
+  void archiveTrip({
+    required String destinationLabel,
+    String? amountFormatted,
+    String? serviceName,
+    String? originLabel,
+    String? paymentMethodLabel,
+  }) {}
+
+  @override
+  bool completeTrip() => true;
+
+  @override
+  void clearCompletionSummary() {}
+}
+
+/// Controller that simulates network failure during ride request
+class _NetworkFailureTripController extends RideTripSessionController {
+  _NetworkFailureTripController()
+      : super(_FakeRef()) {
+    state = const RideTripSessionUiState();
+  }
+
+  @override
+  void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {
+    // Simulate network failure during request
+    final tripId = "network-failed-${DateTime.now().microsecondsSinceEpoch}";
+    final tripState = RideTripState(
+      tripId: tripId,
+      phase: RideTripPhase.failed, // Immediately failed
+    );
+
+    state = RideTripSessionUiState(
+      activeTrip: tripState,
+      tripSummary: RideTripSummary(
+        selectedServiceId: "economy",
+        selectedServiceName: "Economy",
+        fareDisplayText: "SAR 18.00",
+        etaMinutes: 5,
+      ),
+      draftSnapshot: draft,
+    );
+  }
+
+  @override
+  void applyEvent(RideTripEvent event) {}
+
+  @override
+  void clear() {
+    state = const RideTripSessionUiState();
+  }
+
+  @override
+  bool get hasActiveTrip => state.activeTrip != null;
+
+  @override
+  Future<bool> cancelActiveTrip() async => false;
+
+  @override
+  void rateCurrentTrip(int rating) {}
+
+  @override
+  void archiveTrip({
+    required String destinationLabel,
+    String? amountFormatted,
+    String? serviceName,
+    String? originLabel,
+    String? paymentMethodLabel,
+  }) {}
+
+  @override
+  bool completeTrip() => true;
+
+  @override
+  void clearCompletionSummary() {}
+}
+
+/// Controller that simulates timeout during driver search
+class _TimeoutFailureTripController extends RideTripSessionController {
+  _TimeoutFailureTripController()
+      : super(_FakeRef()) {
+    state = const RideTripSessionUiState();
+  }
+
+  int retryCount = 0;
+
+  @override
+  void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {
+    retryCount++;
+    // Simulate timeout failure
+    final tripId = "timeout-failed-${DateTime.now().microsecondsSinceEpoch}";
+    final tripState = RideTripState(
+      tripId: tripId,
+      phase: RideTripPhase.failed,
+    );
+
+    state = RideTripSessionUiState(
+      activeTrip: tripState,
+      tripSummary: RideTripSummary(
+        selectedServiceId: "economy",
+        selectedServiceName: "Economy",
+        fareDisplayText: "SAR 18.00",
+        etaMinutes: 5,
+      ),
+      draftSnapshot: draft,
+    );
+  }
+
+  @override
+  void applyEvent(RideTripEvent event) {}
+
+  @override
+  void clear() {
+    state = const RideTripSessionUiState();
+  }
+
+  @override
+  bool get hasActiveTrip => state.activeTrip != null;
+
+  @override
+  Future<bool> cancelActiveTrip() async => false;
+
+  @override
+  void rateCurrentTrip(int rating) {}
+
+  @override
+  void archiveTrip({
+    required String destinationLabel,
+    String? amountFormatted,
+    String? serviceName,
+    String? originLabel,
+    String? paymentMethodLabel,
+  }) {}
+
+  @override
+  bool completeTrip() => true;
+
+  @override
+  void clearCompletionSummary() {}
+}

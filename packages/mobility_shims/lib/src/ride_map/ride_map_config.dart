@@ -128,9 +128,9 @@ RideMapConfig buildDestinationPreviewMap({
   final polylines = <MapPolyline>[];
   if (pickupLatLng != null && destLatLng != null) {
     polylines.add(MapPolyline(
-      id: 'route-pickup-destination',
-      points: [pickupLatLng, destLatLng],
-      width: 4.0,
+      id: const MapPolylineId('route-pickup-destination'),
+      points: [GeoPoint(pickupLatLng.lat, pickupLatLng.lng), GeoPoint(destLatLng.lat, destLatLng.lng)],
+      isPrimaryRoute: true,
     ));
   }
 
@@ -234,12 +234,9 @@ MapMarker _createMarker({
   required String title,
 }) {
   return MapMarker(
-    id: id,
-    point: MapPoint(
-      latitude: latLng.lat,
-      longitude: latLng.lng,
-    ),
-    title: title,
+    id: MapMarkerId(id),
+    position: GeoPoint(latLng.lat, latLng.lng),
+    label: title,
   );
 }
 
