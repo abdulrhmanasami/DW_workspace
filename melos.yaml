@@ -4,6 +4,8 @@ repository: https://github.com/your-org/delivery-ways
 packages:
   # Canonical packages live under /packages (top-level only).
   - packages/*
+  # Stub implementations live under /stubs (top-level only).
+  - stubs/*
 
 ignore:
   # Exclude legacy snapshots under app/packages/** from this workspace.

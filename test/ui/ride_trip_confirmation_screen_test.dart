@@ -19,11 +19,15 @@ import 'package:delivery_ways_clean/screens/mobility/ride_confirmation_screen.da
 import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_quote_controller.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_map_projection.dart';
+// Track B - Ticket #207: RideTripMapView integration tests
+import 'package:delivery_ways_clean/widgets/mobility/ride_trip_map_view.dart';
 // Track B - Ticket #100: Payment method integration
 import 'package:delivery_ways_clean/state/payments/payment_methods_ui_state.dart';
 import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
+import 'package:pricing_shims/pricing_shims.dart' as pricing;
 import '../support/design_system_harness.dart';
 
 void main() {
@@ -42,6 +46,9 @@ void main() {
 
   // Run Happy Path tests (Ticket #113)
   runRequestRideHappyPathTests();
+
+  // Run Pricing UI tests (Ticket #212)
+  runPricingUiTests();
 
   /// Helper to get AppLocalizations from the test widget
   AppLocalizations l10n(WidgetTester tester) =>
@@ -92,6 +99,7 @@ void main() {
     Widget createTestWidget({
       RideDraftUiState? draftState,
       RideQuoteUiState? quoteState,
+      RideTripSessionUiState? sessionState,
       Locale locale = const Locale('en'),
     }) {
       final draft = draftState ??
@@ -131,6 +139,9 @@ void main() {
             return _TestRideQuoteController(quote);
           }),
           rideTripSessionProvider.overrideWith((ref) {
+            if (sessionState != null) {
+              return _TestRideTripSessionController(sessionState);
+            }
             return RideTripSessionController(ref);
           }),
         ],
@@ -641,83 +652,84 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    // Track B - Ticket #28: Map integration tests
-    testWidgets('MapWidget is present with markers when draft has places',
+    // Track B - Ticket #207: RideTripMapView integration tests
+    testWidgets('RideTripMapView is present in confirmation screen',
         (WidgetTester tester) async {
-      final pickupPlace = MobilityPlace(
-        label: 'Home',
-        location: LocationPoint(
-          latitude: 24.7136,
-          longitude: 46.6753,
-          accuracyMeters: 10,
-          timestamp: DateTime.now(),
-        ),
-      );
-
-      final destinationPlace = MobilityPlace(
-        label: 'Office',
-        location: LocationPoint(
-          latitude: 24.7500,
-          longitude: 46.7000,
-          accuracyMeters: 10,
-          timestamp: DateTime.now(),
-        ),
-      );
-
-      await tester.pumpWidget(createTestWidget(
-        draftState: RideDraftUiState(
-          pickupLabel: 'Home',
-          pickupPlace: pickupPlace,
-          destinationQuery: 'Office',
-          destinationPlace: destinationPlace,
-        ),
-      ));
+      await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
-      // Verify MapWidget is present
-      final mapWidget = tester.widget<MapWidget>(find.byType(MapWidget));
-      expect(mapWidget, isNotNull);
-
-      // Verify markers (pickup + destination)
-      expect(mapWidget.markers.length, equals(2));
+      // Verify RideTripMapView is present
+      expect(find.byType(RideTripMapView), findsOneWidget);
     });
 
-    testWidgets('MapWidget has polylines when both places have coordinates',
+    testWidgets('RideTripMapView shows placeholder when no mapSnapshot',
         (WidgetTester tester) async {
-      final pickupPlace = MobilityPlace(
-        label: 'Start',
-        location: LocationPoint(
-          latitude: 24.7136,
-          longitude: 46.6753,
-          accuracyMeters: 10,
-          timestamp: DateTime.now(),
-        ),
-      );
-
-      final destinationPlace = MobilityPlace(
-        label: 'End',
-        location: LocationPoint(
-          latitude: 24.7500,
-          longitude: 46.7000,
-          accuracyMeters: 10,
-          timestamp: DateTime.now(),
-        ),
-      );
+      // Create a session state with no mapSnapshot (empty state)
+      final sessionState = const RideTripSessionUiState();
 
       await tester.pumpWidget(createTestWidget(
-        draftState: RideDraftUiState(
-          pickupLabel: 'Start',
-          pickupPlace: pickupPlace,
-          destinationQuery: 'End',
-          destinationPlace: destinationPlace,
-        ),
+        sessionState: sessionState,
       ));
       await tester.pumpAndSettle();
 
-      // Verify MapWidget has polylines
-      final mapWidget = tester.widget<MapWidget>(find.byType(MapWidget));
-      expect(mapWidget.polylines, isNotEmpty);
-      expect(mapWidget.polylines.first.points.length, equals(2));
+      // Verify RideTripMapView is present
+      expect(find.byType(RideTripMapView), findsOneWidget);
+
+      // Since RideTripMapView shows a SizedBox.expand() when no snapshot,
+      // we can't easily test the placeholder directly, but we can verify
+      // the widget is present and renders without errors
+    });
+
+    testWidgets('RideTripMapView displays map data when mapSnapshot exists',
+        (WidgetTester tester) async {
+      // Create mock map snapshot with markers and polylines
+      final mockSnapshot = RideMapSnapshot(
+        markers: [
+          MapMarker(
+            id: MapMarkerId('pickup'),
+            position: const GeoPoint(24.7136, 46.6753),
+            label: 'Home',
+          ),
+          MapMarker(
+            id: MapMarkerId('destination'),
+            position: const GeoPoint(24.7500, 46.7000),
+            label: 'Office',
+          ),
+        ],
+        polylines: [
+          MapPolyline(
+            id: MapPolylineId('route'),
+            points: [
+              const GeoPoint(24.7136, 46.6753),
+              const GeoPoint(24.7500, 46.7000),
+            ],
+            isPrimaryRoute: true,
+          ),
+        ],
+        cameraTarget: MapCameraTarget(
+          center: const GeoPoint(24.7320, 46.6877),
+          zoom: const MapZoom(12.0),
+        ),
+      );
+
+      // Create session state with map snapshot
+      final sessionState = RideTripSessionUiState(
+        mapSnapshot: mockSnapshot,
+        mapStage: RideMapStage.confirmingQuote,
+      );
+
+      await tester.pumpWidget(createTestWidget(
+        sessionState: sessionState,
+      ));
+      await tester.pumpAndSettle();
+
+      // Verify RideTripMapView is present
+      expect(find.byType(RideTripMapView), findsOneWidget);
+
+      // Verify debug information is displayed (based on RideTripMapView implementation)
+      expect(find.text('Map Stage: confirmingQuote'), findsOneWidget);
+      expect(find.text('Markers: 2, Polylines: 1'), findsOneWidget);
+      expect(find.textContaining('Camera: 24.7320, 46.6877'), findsOneWidget);
     });
   });
 }
@@ -736,6 +748,28 @@ class _TestRideQuoteController extends RideQuoteController {
   Future<void> refreshFromDraft(RideDraftUiState draft) async {
     // No-op for tests
   }
+}
+
+/// Test controller that returns a fixed session state
+class _TestRideTripSessionController extends RideTripSessionController {
+  _TestRideTripSessionController(this._initialState) : super(_MockRef());
+
+  final RideTripSessionUiState _initialState;
+
+  @override
+  RideTripSessionUiState get state => _initialState;
+
+  // Override to prevent tracking subscription in tests
+  @override
+  void _setupTrackingSubscription() {
+    // Do nothing in tests - we don't need tracking functionality
+  }
+}
+
+/// Mock Ref implementation for tests
+class _MockRef implements Ref {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 /// Test controller with retry counter for verifying Retry button behavior
@@ -2180,6 +2214,286 @@ void runPaymentMethodLinkedToDraftTests() {
 /// 4. FSM transitions: draft -> quoting -> requesting -> findingDriver
 /// 5. draftSnapshot is frozen (Ticket #111)
 /// 6. Navigation to Active Trip screen (RoutePaths.rideActive)
+void runPricingUiTests() {
+  group('RideConfirmationScreen - Pricing UI (Ticket #212)', () {
+    /// Helper to create a mock RideQuote for pricing UI testing
+    RideQuote createMockQuote() {
+      return RideQuote(
+        quoteId: 'test_quote_123',
+        request: const RideQuoteRequest(
+          pickup: LocationPoint(latitude: 24.7136, longitude: 46.6753),
+          dropoff: LocationPoint(latitude: 24.7236, longitude: 46.6853),
+        ),
+        options: const [
+          RideQuoteOption(
+            id: 'economy',
+            category: RideVehicleCategory.economy,
+            displayName: 'Economy',
+            etaMinutes: 15,
+            priceMinorUnits: 1800,
+            currencyCode: 'SAR',
+          ),
+          RideQuoteOption(
+            id: 'xl',
+            category: RideVehicleCategory.xl,
+            displayName: 'XL',
+            etaMinutes: 20,
+            priceMinorUnits: 2500,
+            currencyCode: 'SAR',
+          ),
+        ],
+      );
+    }
+
+    /// Helper to create test widget with provider overrides
+    Widget createTestWidget({
+      RideDraftUiState? draftState,
+      RideQuoteUiState? quoteState,
+      RideTripSessionUiState? sessionState,
+      Locale locale = const Locale('en'),
+    }) {
+      final draft = draftState ??
+          RideDraftUiState(
+            pickupLabel: 'Current location',
+            destinationQuery: 'Test Destination',
+            pickupPlace: MobilityPlace.currentLocation(label: 'Current location'),
+            destinationPlace: const MobilityPlace(
+              id: 'test_dest',
+              label: 'Test Destination',
+              type: MobilityPlaceType.searchResult,
+            ),
+          );
+
+      final quote = quoteState ??
+          RideQuoteUiState(
+            isLoading: false,
+            quote: createMockQuote(),
+          );
+
+      return ProviderScope(
+        overrides: [
+          rideDraftProvider.overrideWith((ref) {
+            final controller = RideDraftController();
+            // Set state via controller methods
+            controller.updatePickupLabel(draft.pickupLabel);
+            controller.updateDestination(draft.destinationQuery);
+            if (draft.pickupPlace != null) {
+              controller.updatePickupPlace(draft.pickupPlace!);
+            }
+            if (draft.destinationPlace != null) {
+              controller.updateDestinationPlace(draft.destinationPlace!);
+            }
+            return controller;
+          }),
+          rideQuoteControllerProvider.overrideWith((ref) {
+            return _TestRideQuoteController(quote);
+          }),
+          rideTripSessionProvider.overrideWith((ref) {
+            if (sessionState != null) {
+              return _TestRideTripSessionController(sessionState);
+            }
+            return RideTripSessionController(ref);
+          }),
+        ],
+        child: MaterialApp(
+          locale: locale,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('ar'),
+          ],
+          home: const RideConfirmationScreen(),
+          routes: {
+            '/ride/active': (context) =>
+                const Scaffold(body: Text('Active Trip')),
+          },
+        ),
+      );
+    }
+
+    /// Helper to create mock quote for testing
+    RideQuote createMockPricingQuote() {
+      const pickup = LocationPoint(
+        latitude: 24.7136,
+        longitude: 46.6753,
+      );
+      const dropoff = LocationPoint(
+        latitude: 24.7236,
+        longitude: 46.6853,
+      );
+
+      return RideQuote(
+        quoteId: 'pricing_quote_123',
+        request: RideQuoteRequest(
+          pickup: pickup,
+          dropoff: dropoff,
+        ),
+        options: [
+          RideQuoteOption(
+            id: 'economy',
+            category: RideVehicleCategory.economy,
+            displayName: 'Economy',
+            etaMinutes: 5,
+            priceMinorUnits: 1800,
+            currencyCode: 'SAR',
+            isRecommended: true,
+          ),
+          RideQuoteOption(
+            id: 'xl',
+            category: RideVehicleCategory.xl,
+            displayName: 'XL',
+            etaMinutes: 7,
+            priceMinorUnits: 2500,
+            currencyCode: 'SAR',
+          ),
+        ],
+      );
+    }
+
+    testWidgets('displays loader when isQuoting is true', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget(
+        sessionState: RideTripSessionUiState(
+          isQuoting: true,
+          activeQuote: null,
+          lastQuoteFailure: null,
+          draftSnapshot: RideDraftUiState(
+            pickupLabel: 'Current location',
+            destinationQuery: 'Test Destination',
+            pickupPlace: MobilityPlace.currentLocation(label: 'Current location'),
+            destinationPlace: const MobilityPlace(
+              id: 'test_dest',
+              label: 'Test Destination',
+              type: MobilityPlaceType.searchResult,
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Check for loading indicator
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      // Check for loading title
+      expect(find.text('Getting your price...'), findsOneWidget);
+
+      // Check that Request Ride button is disabled
+      final requestButton = find.byKey(RideConfirmationScreen.ctaRequestRideKey);
+      expect(requestButton, findsOneWidget);
+      final buttonWidget = tester.widget<ElevatedButton>(requestButton);
+      expect(buttonWidget.onPressed, isNull);
+    });
+
+    testWidgets('displays pricing options when activeQuote is available', (WidgetTester tester) async {
+      final mockQuote = createMockPricingQuote();
+
+      await tester.pumpWidget(createTestWidget(
+        sessionState: RideTripSessionUiState(
+          isQuoting: false,
+          activeQuote: mockQuote,
+          lastQuoteFailure: null,
+          draftSnapshot: RideDraftUiState(
+            pickupLabel: 'Current location',
+            destinationQuery: 'Test Destination',
+            pickupPlace: MobilityPlace.currentLocation(label: 'Current location'),
+            destinationPlace: const MobilityPlace(
+              id: 'test_dest',
+              label: 'Test Destination',
+              type: MobilityPlaceType.searchResult,
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Check for pricing options
+      expect(find.text('Economy'), findsOneWidget);
+      expect(find.text('XL'), findsOneWidget);
+
+      // Check for price display (formatted price)
+      expect(find.textContaining('18.00 SAR'), findsOneWidget);
+      expect(find.textContaining('25.00 SAR'), findsOneWidget);
+
+      // Check for distance and duration
+      expect(find.textContaining('2.5 km'), findsOneWidget);
+      expect(find.textContaining('15 min'), findsOneWidget);
+
+      // Check that Request Ride button is enabled
+      final requestButton = find.byKey(RideConfirmationScreen.ctaRequestRideKey);
+      expect(requestButton, findsOneWidget);
+      final buttonWidget = tester.widget<ElevatedButton>(requestButton);
+      expect(buttonWidget.onPressed, isNotNull);
+    });
+
+    testWidgets('displays network error when lastQuoteFailure is networkError', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget(
+        sessionState: RideTripSessionUiState(
+          isQuoting: false,
+          activeQuote: null,
+          lastQuoteFailure: pricing.RideQuoteFailureReason.networkError,
+          draftSnapshot: RideDraftUiState(
+            pickupLabel: 'Current location',
+            destinationQuery: 'Test Destination',
+            pickupPlace: MobilityPlace.currentLocation(label: 'Current location'),
+            destinationPlace: const MobilityPlace(
+              id: 'test_dest',
+              label: 'Test Destination',
+              type: MobilityPlaceType.searchResult,
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Check for error icon
+      expect(find.byIcon(Icons.error_outline), findsOneWidget);
+
+      // Check for error message
+      expect(find.textContaining('حدث خطأ في الاتصال'), findsOneWidget);
+
+      // Check for retry button
+      expect(find.text('Try again'), findsOneWidget);
+
+      // Check that Request Ride button is disabled
+      final requestButton = find.byKey(RideConfirmationScreen.ctaRequestRideKey);
+      expect(requestButton, findsOneWidget);
+      final buttonWidget = tester.widget<ElevatedButton>(requestButton);
+      expect(buttonWidget.onPressed, isNull);
+    });
+
+    testWidgets('displays invalid request error when lastQuoteFailure is invalidRequest', (WidgetTester tester) async {
+      await tester.pumpWidget(createTestWidget(
+        sessionState: RideTripSessionUiState(
+          isQuoting: false,
+          activeQuote: null,
+          lastQuoteFailure: pricing.RideQuoteFailureReason.invalidRequest,
+          draftSnapshot: RideDraftUiState(
+            pickupLabel: 'Current location',
+            destinationQuery: 'Test Destination',
+            pickupPlace: MobilityPlace.currentLocation(label: 'Current location'),
+            destinationPlace: const MobilityPlace(
+              id: 'test_dest',
+              label: 'Test Destination',
+              type: MobilityPlaceType.searchResult,
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // Check for error message
+      expect(find.textContaining('تحقق من النقاط المحددة'), findsOneWidget);
+
+      // Check for retry button
+      expect(find.text('Try again'), findsOneWidget);
+    });
+  });
+}
+
 void runRequestRideHappyPathTests() {
   group('Request Ride Happy Path Tests (Ticket #113)', () {
     /// Creates a mock RideQuote for testing

@@ -10,10 +10,11 @@
 /// Updated by: Track B - Ticket #112 (Map from RideMapCommands state)
 /// Updated by: Track B - Ticket #113 (Request Ride CTA -> Active Trip navigation)
 /// Updated by: Track B - Ticket #121 (RideQuoteError + InlineNotice/EmptyState)
-/// Last updated: 2025-12-01
+/// Updated by: Track B - Ticket #207 (Unified map integration with RideTripMapView)
+/// Last updated: 2025-12-03
 ///
 /// This screen provides the Ride trip confirmation interface with:
-/// - Map via RideMapCommands (from session state or draft state)
+/// - Map via RideTripMapView (from unified session state - mapStage/mapSnapshot)
 /// - Vehicle options list (dynamic from RideQuoteService)
 /// - Payment method section (from PaymentMethodsUiState)
 /// - Request Ride CTA button (calls startFromDraft + navigates to Active Trip)
@@ -35,17 +36,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Canonical types from shims packages (Track B - Ticket #28)
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
+import 'package:pricing_shims/pricing_shims.dart' as pricing;
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
 import '../../state/mobility/ride_draft_state.dart';
 import '../../state/mobility/ride_trip_session.dart';
-import '../../state/mobility/ride_quote_controller.dart';
-import '../../state/mobility/ride_map_commands_builder.dart';
 // Track B - Ticket #100: Payment method integration
 import '../../state/payments/payment_methods_ui_state.dart';
-// Track B - Ticket #112: Map from RideMapCommands
-import '../../widgets/ride_map_from_commands.dart';
+// Track B - Ticket #207: Use RideTripMapView for unified map integration
+import '../../widgets/mobility/ride_trip_map_view.dart';
 // Track B - Ticket #141: Use RideQuoteOptionsSheet
 import 'ride_quote_options_sheet.dart';
 
@@ -68,7 +68,7 @@ class RideConfirmationScreen extends ConsumerWidget {
     // Read ride draft state
     final rideDraft = ref.watch(rideDraftProvider);
 
-    // Read trip session state (FSM)
+    // Read trip session state (FSM + Pricing)
     final tripSession = ref.watch(rideTripSessionProvider);
 
     return Scaffold(
@@ -82,12 +82,13 @@ class RideConfirmationScreen extends ConsumerWidget {
       body: Stack(
         children: [
           // Map Area (Screen 9 - top ~50% of screen)
+          // Track B - Ticket #207: Use RideTripMapView for unified map integration
           Positioned.fill(
             child: Container(
               margin: const EdgeInsets.only(bottom: 260),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(DWRadius.md),
-                child: _ConfirmationMap(rideDraft: rideDraft),
+                child: const RideTripMapView(),
               ),
             ),
           ),
@@ -114,6 +115,7 @@ class RideConfirmationScreen extends ConsumerWidget {
                 destinationLabel: rideDraft.destinationQuery,
                 selectedOptionId: rideDraft.selectedOptionId,
                 activeTrip: tripSession.activeTrip,
+                tripSession: tripSession,
               ),
             ),
           ),
@@ -129,11 +131,13 @@ class _RideConfirmationSheet extends ConsumerStatefulWidget {
     required this.destinationLabel,
     required this.selectedOptionId,
     required this.activeTrip,
+    required this.tripSession,
   });
 
   final String destinationLabel;
   final String? selectedOptionId;
   final RideTripState? activeTrip;
+  final RideTripSessionUiState tripSession;
 
   @override
   ConsumerState<_RideConfirmationSheet> createState() =>
@@ -144,10 +148,10 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
   @override
   void initState() {
     super.initState();
-    // Request quote once when the screen opens
+    // Track B - Ticket #212: Prepare confirmation by saving draft and requesting quote
     Future.microtask(() {
       final draft = ref.read(rideDraftProvider);
-      ref.read(rideQuoteControllerProvider.notifier).refreshFromDraft(draft);
+      ref.read(rideTripSessionProvider.notifier).prepareConfirmation(draft);
     });
   }
 
@@ -158,18 +162,23 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    // Watch quote state
-    final quoteState = ref.watch(rideQuoteControllerProvider);
+    // Track B - Ticket #212: Read pricing state from session
     final rideDraft = ref.watch(rideDraftProvider);
     final activeTrip = widget.activeTrip;
 
-    // Get the quote and options directly from domain model
-    final quote = quoteState.quote;
+    // Get pricing state from session
+    final tripSession = widget.tripSession;
+    final isQuoting = tripSession.isQuoting;
+    final activeQuote = tripSession.activeQuote;
+    final lastQuoteFailure = tripSession.lastQuoteFailure;
     
+    // Track B - Ticket #212: Get quote and selected option from session
+    final quote = activeQuote;
+
     // Effective selected option: use state or fallback to first option
     final effectiveSelectedId = rideDraft.selectedOptionId ??
         (quote != null && quote.options.isNotEmpty ? quote.options.first.id : null);
-    
+
     final selectedOption = quote != null && quote.options.isNotEmpty
         ? quote.options.firstWhere(
             (opt) => opt.id == effectiveSelectedId,
@@ -177,23 +186,20 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
           )
         : null;
 
-    // Ticket #26: Derive quote states for robust UI handling
-    // Note: RideQuote domain model enforces options.isNotEmpty via assertion
-    // so isEmpty only applies when quote is null (no response yet)
-    final isLoading = quoteState.isLoading;
-    final hasError = quoteState.hasError;
-    final hasQuote = quoteState.hasQuote;
+    // Track B - Ticket #212: Derive pricing states for robust UI handling
+    final hasError = lastQuoteFailure != null;
+    final hasQuote = activeQuote != null;
     final hasOptions = hasQuote && (quote?.options.isNotEmpty ?? false);
-    // Empty state: not loading, no error, but also no quote (rare edge case)
-    final isEmptyState = !isLoading && !hasError && !hasQuote;
+    // Empty state: not quoting, no error, but also no quote (rare edge case)
+    final isEmptyState = !isQuoting && !hasError && !hasQuote;
 
     // Can request ride only when:
-    // - Not loading
+    // - Not quoting
     // - Has a valid quote with options
     // - Has a selected option
     // - No active trip
     // - No error
-    final canRequestRide = !isLoading &&
+    final canRequestRide = !isQuoting &&
         !hasError &&
         hasOptions &&
         effectiveSelectedId != null &&
@@ -305,23 +311,21 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
           ),
         const SizedBox(height: 16),
 
-        // Ticket #26 + #121: Robust quote state handling with structured errors
-        // 1. Loading state
-        if (isLoading && !hasOptions) ...[
+        // Track B - Ticket #212: Robust pricing state handling
+        // 1. Loading state (quoting in progress)
+        if (isQuoting && !hasOptions) ...[
           _QuoteLoadingCard(l10n: l10n, textTheme: textTheme, colorScheme: colorScheme),
         ]
-        // 2. Error state (Track B - Ticket #121: Use structured RideQuoteError)
+        // 2. Error state (pricing failure)
         else if (hasError) ...[
-          _QuoteErrorCard(
+          _PricingErrorCard(
             l10n: l10n,
             textTheme: textTheme,
             colorScheme: colorScheme,
-            error: quoteState.error,
+            failureReason: lastQuoteFailure,
             onRetry: () {
               final draft = ref.read(rideDraftProvider);
-              ref
-                  .read(rideQuoteControllerProvider.notifier)
-                  .retryFromDraft(draft);
+              ref.read(rideTripSessionProvider.notifier).prepareConfirmation(draft);
             },
           ),
         ]
@@ -384,15 +388,17 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
                     // Read updated draft with payment method
                     final updatedDraft = ref.read(rideDraftProvider);
 
-                    // Track B - Ticket #105: Get selected option for trip summary
-                    final quoteState = ref.read(rideQuoteControllerProvider);
-                    final quote = quoteState.quote;
+                    // Track B - Ticket #212: Get selected option from session pricing state
+                    final quote = widget.tripSession.activeQuote;
                     // effectiveSelectedId is guaranteed non-null at this point
-                    // (canRequestRide requires it), but quote.optionById may return null
-                    final selectedOpt = quote == null
-                        ? null
-                        : quote.optionById(effectiveSelectedId) ??
-                            quote.recommendedOption;
+                    // (canRequestRide requires it), find option by id or use first option
+                    final selectedOpt = quote?.options.firstWhere(
+                        (opt) => opt.id == effectiveSelectedId,
+                        orElse: () => quote.options.firstWhere(
+                          (opt) => opt.isRecommended,
+                          orElse: () => quote.options.first,
+                        ),
+                      );
 
                     if (selectedOpt == null) {
                       // Should not happen if canRequestRide validation is correct
@@ -562,97 +568,6 @@ class _QuoteLoadingCard extends StatelessWidget {
   }
 }
 
-/// Error state card shown when quote loading fails
-///
-/// Track B - Ticket #121: Updated to use structured [RideQuoteError] and
-/// new localization keys for granular error messages.
-class _QuoteErrorCard extends StatelessWidget {
-  const _QuoteErrorCard({
-    required this.l10n,
-    required this.textTheme,
-    required this.colorScheme,
-    required this.onRetry,
-    this.error,
-  });
-
-  final AppLocalizations l10n;
-  final TextTheme textTheme;
-  final ColorScheme colorScheme;
-  final VoidCallback onRetry;
-  final RideQuoteError? error;
-
-  @override
-  Widget build(BuildContext context) {
-    // Track B - Ticket #121: Map error type to localized message
-    final errorMessage = _mapErrorToMessage(error, l10n);
-    final errorTitle = _mapErrorToTitle(error, l10n);
-
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      color: colorScheme.errorContainer.withValues(alpha: 0.3),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 32,
-              color: colorScheme.error,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              errorTitle,
-              style: textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: colorScheme.error,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              errorMessage,
-              style: textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            DWButton.secondary(
-              label: l10n.rideQuoteRetryCta,
-              onPressed: onRetry,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Maps [RideQuoteError] to a localized title.
-  String _mapErrorToTitle(RideQuoteError? error, AppLocalizations l10n) {
-    if (error == null) return l10n.rideConfirmErrorTitle;
-
-    return switch (error) {
-      RideQuoteErrorNoOptionsAvailable() => l10n.rideQuoteEmptyTitle,
-      RideQuoteErrorPricingFailed() => l10n.rideQuoteErrorTitle,
-      RideQuoteErrorUnexpected() => l10n.rideConfirmErrorTitle,
-    };
-  }
-
-  /// Maps [RideQuoteError] to a localized message.
-  String _mapErrorToMessage(RideQuoteError? error, AppLocalizations l10n) {
-    if (error == null) return l10n.rideConfirmErrorSubtitle;
-
-    return switch (error) {
-      RideQuoteErrorNoOptionsAvailable() => l10n.rideQuoteErrorNoOptions,
-      RideQuoteErrorPricingFailed() => l10n.rideQuoteErrorGeneric,
-      RideQuoteErrorUnexpected() => l10n.rideConfirmErrorSubtitle,
-    };
-  }
-}
 
 /// Empty state card shown when no ride options are available
 /// Empty state card shown when no ride options are available
@@ -709,6 +624,93 @@ class _QuoteEmptyCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Track B - Ticket #212: Error state card for pricing failures
+///
+/// Shows appropriate error messages based on RideQuoteFailureReason.
+class _PricingErrorCard extends StatelessWidget {
+  const _PricingErrorCard({
+    required this.l10n,
+    required this.textTheme,
+    required this.colorScheme,
+    required this.failureReason,
+    required this.onRetry,
+  });
+
+  final AppLocalizations l10n;
+  final TextTheme textTheme;
+  final ColorScheme colorScheme;
+  final pricing.RideQuoteFailureReason failureReason;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    // Track B - Ticket #212: Map failure reason to localized message
+    final (errorTitle, errorMessage) = _mapFailureToMessages(failureReason, l10n);
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      color: colorScheme.errorContainer.withValues(alpha: 0.3),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 32,
+              color: colorScheme.error,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              errorTitle,
+              style: textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.error,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              errorMessage,
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            DWButton.secondary(
+              label: l10n.rideQuoteRetryCta,
+              onPressed: onRetry,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Maps RideQuoteFailureReason to localized title and message.
+  (String, String) _mapFailureToMessages(
+      pricing.RideQuoteFailureReason reason, AppLocalizations l10n) {
+    return switch (reason) {
+      pricing.RideQuoteFailureReason.networkError => (
+          l10n.rideConfirmErrorTitle,
+          'حدث خطأ في الاتصال، حاول مرة أخرى'
+        ),
+      pricing.RideQuoteFailureReason.invalidRequest => (
+          l10n.rideQuoteErrorTitle,
+          l10n.rideConfirmErrorSubtitle
+        ),
+      _ => (
+          l10n.rideConfirmErrorTitle,
+          l10n.rideConfirmErrorSubtitle
+        ),
+    };
   }
 }
 
@@ -772,46 +774,6 @@ IconData _phaseIcon(RideTripPhase phase) {
   }
 }
 
-// ============================================================================
-// Map Widget (Track B - Ticket #28, Updated: Ticket #112)
-// ============================================================================
-
-/// Map widget showing route between pickup and destination.
-///
-/// Track B - Ticket #112: Now uses RideMapCommands from state when available,
-/// with fallback to draft-based commands for backward compatibility.
-class _ConfirmationMap extends ConsumerWidget {
-  const _ConfirmationMap({required this.rideDraft});
-
-  final RideDraftUiState rideDraft;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Track B - Ticket #112: Try to get map commands from session state first
-    final tripSession = ref.watch(rideTripSessionProvider);
-    final sessionCommands = tripSession.draftMapCommands;
-
-    // If session has draftSnapshot (via startFromDraft), use it
-    if (sessionCommands != null) {
-      return RideMapFromCommands(commands: sessionCommands);
-    }
-
-    // Fallback: Build commands directly from current draft
-    // This handles the case before trip starts (no frozen snapshot yet)
-    final draftCommands = buildDraftMapCommands(rideDraft);
-
-    // If commands have markers, show the map
-    if (draftCommands.setContent.markers.isNotEmpty) {
-      return RideMapFromCommands(commands: draftCommands);
-    }
-
-    // No location data: show placeholder without loading indicator
-    // (to avoid duplicate spinners with quote loading card)
-    return const RideMapPlaceholder(
-      showLoadingIndicator: false,
-    );
-  }
-}
 
 /// Returns an appropriate background color for the phase chip.
 Color _phaseColor(ColorScheme colorScheme, RideTripPhase phase) {

@@ -1,0 +1,17 @@
+name: pricing_stub_impl
+description: Mock implementation of ride pricing service for testing and development
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  pricing_shims:
+    path: ../../packages/pricing_shims
+  payments:
+    path: ../../packages/payments
+  maps_shims:
+    path: ../../packages/maps_shims

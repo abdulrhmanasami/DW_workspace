@@ -36,7 +36,6 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Shims only - no direct SDKs
-import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
@@ -47,8 +46,8 @@ import '../../state/mobility/ride_trip_session.dart';
 import '../../state/mobility/ride_quote_controller.dart';
 // Track B - Ticket #105: Payment method integration for trip summary
 import '../../state/payments/payment_methods_ui_state.dart';
-// Track B - Ticket #112: Map from RideMapCommands
-import '../../widgets/ride_map_from_commands.dart';
+// Track B - Ticket #204: Ride Trip MapView Integration
+import '../../widgets/mobility/ride_trip_map_view.dart';
 // Track A - Ticket #134: Unified App Shell
 import '../../widgets/dw_app_shell.dart';
 
@@ -234,13 +233,9 @@ class RideActiveTripScreen extends ConsumerWidget {
       ),
       body: Stack(
         children: [
-          // Map background with route (Track B - Ticket #28)
-          Positioned.fill(
-            child: _ActiveTripMap(
-              activeTrip: activeTrip,
-              pickupPlace: rideDraft.pickupPlace,
-              destinationPlace: rideDraft.destinationPlace,
-            ),
+          // Map background with route (Track B - Ticket #204)
+          const Positioned.fill(
+            child: RideTripMapView(),
           ),
 
           // Bottom Driver Card
@@ -258,88 +253,6 @@ class RideActiveTripScreen extends ConsumerWidget {
   }
 }
 
-/// Map widget for active trip using RideMapCommands from session state (Track B - Ticket #28, #112)
-///
-/// Track B - Ticket #112: Now uses activeTripMapCommands from RideTripSessionUiState
-/// instead of building map config directly. This ensures single source of truth
-/// and consistency with the frozen draftSnapshot.
-class _ActiveTripMap extends ConsumerWidget {
-  const _ActiveTripMap({
-    required this.activeTrip,
-    required this.pickupPlace,
-    required this.destinationPlace,
-  });
-
-  final RideTripState activeTrip;
-  final MobilityPlace? pickupPlace;
-  final MobilityPlace? destinationPlace;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-
-    // Track B - Ticket #112: Get map commands from session state
-    final tripSession = ref.watch(rideTripSessionProvider);
-    final commands = tripSession.activeTripMapCommands;
-
-    // If commands are available, render the map
-    if (commands != null) {
-      return RideMapFromCommands(commands: commands);
-    }
-
-    // Terminal phase or no draftSnapshot: show appropriate placeholder
-    if (activeTrip.phase.isTerminal) {
-      // Terminal phases: no map needed, parent widget handles terminal UI
-      return RideMapPlaceholder(
-        message: l10n.rideActiveNoTripBody,
-        showLoadingIndicator: false,
-      );
-    }
-
-    // Fallback: Build map using legacy method for backward compatibility
-    // This handles edge cases where draftSnapshot isn't available
-    final mapConfig = buildActiveTripMap(
-      activeTrip: activeTrip,
-      pickup: pickupPlace,
-      destination: destinationPlace,
-      driverLocation: _getMockDriverLocation(),
-    );
-
-    return MapWidget(
-      initialPosition: mapConfig.cameraTarget,
-      markers: mapConfig.markers,
-      polylines: mapConfig.polylines,
-    );
-  }
-
-  /// Gets a mock driver location for demo purposes.
-  /// In production, this would come from real-time driver tracking.
-  LocationPoint? _getMockDriverLocation() {
-    final pickupLocation = pickupPlace?.location;
-    if (pickupLocation == null) return null;
-
-    // Only show driver marker for appropriate phases
-    if (!_shouldShowDriverMarker(activeTrip.phase)) return null;
-
-    return LocationPoint(
-      latitude: pickupLocation.latitude,
-      longitude: pickupLocation.longitude + 0.005,
-      accuracyMeters: 10,
-      timestamp: DateTime.now(),
-    );
-  }
-
-  /// Uses domain helper to determine if driver marker should be shown.
-  /// Track B - Ticket #89: FSM Integration
-  bool _shouldShowDriverMarker(RideTripPhase phase) {
-    // Driver marker shown when trip is "active" (driver involved)
-    // Using domain helper: isActiveTrip covers findingDriver, driverAccepted, 
-    // driverArrived, inProgress. We exclude findingDriver for marker.
-    return phase == RideTripPhase.driverAccepted ||
-        phase == RideTripPhase.driverArrived ||
-        phase == RideTripPhase.inProgress;
-  }
-}
 
 /// Bottom card showing driver info, status/ETA, and actions
 class _ActiveDriverCard extends ConsumerWidget {

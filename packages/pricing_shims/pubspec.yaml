@@ -1,0 +1,16 @@
+name: pricing_shims
+description: Ports/Contracts for ride pricing per B-STYLE (no SDKs here)
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  meta: ^1.16.0
+  payments:
+    path: ../payments
+  maps_shims:
+    path: ../maps_shims

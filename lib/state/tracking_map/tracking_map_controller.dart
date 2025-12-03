@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:maps_shims/maps.dart' show MapCamera, MapController, MapMarker, MapPoint;
+import 'package:maps_shims/maps.dart' show MapCamera, MapController, MapMarker, MapMarkerId, GeoPoint, MapPoint;
 import 'package:mobility_shims/mobility.dart';
 import '../infra/mobility_providers.dart' show mapControllerProvider, tripRecorderProvider;
 import 'tracking_map_state.dart';
@@ -18,13 +18,12 @@ class TrackingMapController extends StateNotifier<TrackingMapState> {
     await _recorder.beginTrip(tripId);
     _sub = _recorder.points.listen((point) async {
       final marker = MapMarker(
-        id: 'last',
-        point: MapPoint(
-          latitude: point.latitude,
-          longitude: point.longitude,
+        id: MapMarkerId('last'),
+        position: GeoPoint(
+          point.latitude,
+          point.longitude,
         ),
-        title: 'Current Location',
-        snippet: 'Live tracking',
+        label: 'Current Location',
       );
       await _map.moveCamera(
         MapCamera(

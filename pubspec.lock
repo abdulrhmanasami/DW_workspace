@@ -1115,6 +1115,20 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.0"
+  pricing_shims:
+    dependency: "direct main"
+    description:
+      path: "packages/pricing_shims"
+      relative: true
+    source: path
+    version: "0.1.0"
+  pricing_stub_impl:
+    dependency: "direct main"
+    description:
+      path: "stubs/pricing_stub_impl"
+      relative: true
+    source: path
+    version: "0.1.0"
   privacy:
     dependency: "direct main"
     description:

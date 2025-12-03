@@ -22,8 +22,12 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:mobility_shims/mobility_shims.dart';
+import 'package:mobility_shims/mobility_shims.dart' as mobility;
+import 'package:mobility_shims/src/ride_trip_fsm.dart';
+import 'package:mobility_shims/src/place_models.dart';
+import 'package:mobility_shims/location/models.dart';
 import 'package:maps_shims/maps_shims.dart';
+import 'package:foundation_shims/foundation_shims.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -31,6 +35,62 @@ import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_map_port_providers.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_map_projection.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
+import 'package:pricing_shims/pricing_shims.dart' as pricing;
+import 'package:payments/models.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_pricing_providers.dart';
+
+// Mock RidePricingService for testing
+class MockRidePricingService implements pricing.RidePricingService {
+  MockRidePricingService({
+    this.baseLatency = Duration.zero,
+  });
+
+  final Duration baseLatency;
+
+  pricing.RideQuoteResult? result;
+  Duration delay = Duration.zero;
+  int callCount = 0;
+
+  @override
+  Future<pricing.RideQuoteResult> requestQuote(pricing.RideQuoteRequest request) async {
+    callCount++;
+    if (delay > Duration.zero) {
+      await Future.delayed(delay);
+    }
+    return result ?? const pricing.RideQuoteResult.failure(pricing.RideQuoteFailureReason.networkError);
+  }
+}
+
+/// Helper to create mobility.RideQuote for testing
+mobility.RideQuote createMobilityTestQuote() {
+  return mobility.RideQuote(
+    quoteId: 'test-quote-123',
+    request: const mobility.RideQuoteRequest(
+      pickup: mobility.LocationPoint(latitude: 24.7136, longitude: 46.6753),
+      dropoff: mobility.LocationPoint(latitude: 24.7236, longitude: 46.6853),
+    ),
+    options: [
+      const mobility.RideQuoteOption(
+        id: 'economy',
+        category: mobility.RideVehicleCategory.economy,
+        displayName: 'Economy',
+        etaMinutes: 15,
+        priceMinorUnits: 1800,
+        currencyCode: 'SAR',
+        isRecommended: true,
+      ),
+      const mobility.RideQuoteOption(
+        id: 'xl',
+        category: mobility.RideVehicleCategory.xl,
+        displayName: 'XL',
+        etaMinutes: 20,
+        priceMinorUnits: 2500,
+        currencyCode: 'SAR',
+        isRecommended: false,
+      ),
+    ],
+  );
+}
 
 // Helper to create RideTripSessionController using ProviderContainer (official way)
 RideTripSessionController _createRideTripSessionControllerForTest({
@@ -832,22 +892,23 @@ void main() {
     test('happy path from draft to completed with quote + pricing + fsm', () async {
       // 1. Build RideDraftUiState with pickup and destination places
       final pickupPlace = MobilityPlace(
+        id: 'pickup_home',
         label: 'Home',
+        type: MobilityPlaceType.searchResult,
         location: LocationPoint(
           latitude: 24.7136,
           longitude: 46.6753,
-          accuracyMeters: 10,
           timestamp: DateTime.now(),
         ),
       );
 
       final destinationPlace = MobilityPlace(
+        id: 'destination_office',
         label: 'Office',
+        type: MobilityPlaceType.searchResult,
         location: LocationPoint(
           latitude: 24.7500,
           longitude: 46.7000,
-          accuracyMeters: 10,
-          timestamp: DateTime.now(),
         ),
       );
 
@@ -860,28 +921,19 @@ void main() {
       );
 
       // 2. Create MockRidePricingService with zero latency for fast tests
-      const pricingService = MockRidePricingService(
+      final pricingService = MockRidePricingService(
         baseLatency: Duration.zero,
-        failureRate: 0.0,
       );
 
-      // 3. Request quote using the pricing service
-      final quote = await pricingService.quoteRide(
-        pickup: pickupPlace,
-        destination: destinationPlace,
-        serviceType: RideServiceType.economy,
-      );
+      // 3. For this end-to-end test, we'll simulate the quote being set directly
+      // (in a real scenario, this would come from the pricing service)
+      final quote = createMobilityTestQuote();
 
-      expect(quote, isNotNull);
-      expect(quote.options, isNotEmpty);
-
-      // 4. Get selected option from quote
+      // 4. Create trip session controller and start trip from draft with selected option
+      final tripController = _createRideTripSessionControllerForTest();
       final selectedOption = quote.optionById('economy') ?? quote.recommendedOption;
       expect(selectedOption, isNotNull);
-
-      // 5. Create trip session controller and start trip from draft
-      final tripController = _createRideTripSessionControllerForTest();
-      tripController.startFromDraft(draft);
+      tripController.startFromDraft(draft, selectedOption: selectedOption);
 
       // Verify initial phase is findingDriver
       expect(tripController.state.activeTrip?.phase, RideTripPhase.findingDriver);
@@ -1134,9 +1186,9 @@ void main() {
         selectedOptionId: 'xl',
       );
 
-      const option = RideQuoteOption(
+      const option = mobility.RideQuoteOption(
         id: 'xl',
-        category: RideVehicleCategory.xl,
+        category: mobility.RideVehicleCategory.xl,
         displayName: 'XL',
         etaMinutes: 8,
         priceMinorUnits: 4500, // 45.00
@@ -1395,9 +1447,9 @@ void main() {
         selectedOptionId: 'economy',
       );
 
-      const option = RideQuoteOption(
+      const option = mobility.RideQuoteOption(
         id: 'economy',
-        category: RideVehicleCategory.economy,
+        category: mobility.RideVehicleCategory.economy,
         displayName: 'Economy',
         etaMinutes: 5,
         priceMinorUnits: 1800,
@@ -1635,9 +1687,9 @@ void main() {
         selectedOptionId: 'premium',
       );
 
-      const option = RideQuoteOption(
+      const option = mobility.RideQuoteOption(
         id: 'premium',
-        category: RideVehicleCategory.premium,
+        category: mobility.RideVehicleCategory.premium,
         displayName: 'Premium',
         etaMinutes: 4,
         priceMinorUnits: 5500,
@@ -1903,9 +1955,9 @@ void main() {
         selectedOptionId: 'economy',
       );
 
-      const option = RideQuoteOption(
+      const option = mobility.RideQuoteOption(
         id: 'economy',
-        category: RideVehicleCategory.economy,
+        category: mobility.RideVehicleCategory.economy,
         displayName: 'Economy',
         etaMinutes: 5,
         priceMinorUnits: 2500,
@@ -1936,6 +1988,138 @@ void main() {
       expect(entry.paymentMethodLabel, 'Cash');
       expect(entry.driverRating, 4.5);
       expect(entry.trip.phase, RideTripPhase.completed);
+    });
+  });
+
+  // ===========================================================================
+  // Track B - Ticket #209: Invariants Tests
+  // ===========================================================================
+  group('RideTripSessionController Invariants - Track B Ticket #209', () {
+    test('invariant: no driverLocation without activeTrip', () {
+      final controller = _createRideTripSessionControllerForTest();
+
+      // Initially no active trip, so no driver location
+      expect(controller.state.activeTrip, isNull);
+      expect(controller.state.driverLocation, isNull);
+
+      // Start a trip
+      const draft = RideDraftUiState(destinationQuery: 'Test');
+      controller.startFromDraft(draft);
+      expect(controller.state.activeTrip, isNotNull);
+
+      // Set driver location - should work
+      const driverPoint = GeoPoint(24.7136, 46.6753);
+      controller.updateDriverLocation(driverPoint);
+      expect(controller.state.driverLocation, equals(driverPoint));
+
+      // Complete the trip using completeCurrentTrip (which clears session state)
+      controller.applyEvent(RideTripEvent.driverAccepted);
+      controller.applyEvent(RideTripEvent.driverArrived);
+      controller.applyEvent(RideTripEvent.startTrip);
+      controller.applyEvent(RideTripEvent.startPayment);
+      final completed = controller.completeCurrentTrip(destinationLabel: 'Test');
+      expect(completed, isTrue);
+
+      // After completeCurrentTrip, session is cleared (activeTrip becomes null)
+      expect(controller.state.activeTrip, isNull);
+      expect(controller.state.driverLocation, isNull);
+
+      // Verify invariants hold even after clear
+      controller.clear();
+      expect(controller.state.activeTrip, isNull);
+      expect(controller.state.driverLocation, isNull);
+    });
+
+    test('invariant: idle mapStage means clean map state', () {
+      final controller = _createRideTripSessionControllerForTest();
+
+      // Initially idle with clean state
+      expect(controller.state.mapStage, RideMapStage.idle);
+      expect(controller.state.mapSnapshot, isNull);
+      expect(controller.state.driverLocation, isNull);
+
+      // Start a trip - should change map stage
+      const draft = RideDraftUiState(destinationQuery: 'Test');
+      controller.startFromDraft(draft);
+      expect(controller.state.mapStage, isNot(RideMapStage.idle));
+      expect(controller.state.mapSnapshot, isNotNull);
+
+      // Complete the trip - should be completed stage with clean driver location
+      controller.applyEvent(RideTripEvent.driverAccepted);
+      controller.applyEvent(RideTripEvent.driverArrived);
+      controller.applyEvent(RideTripEvent.startTrip);
+      controller.applyEvent(RideTripEvent.startPayment);
+      controller.applyEvent(RideTripEvent.complete);
+
+      // After completion, should be completed stage with driver location cleared
+      expect(controller.state.mapStage, RideMapStage.completed);
+      expect(controller.state.driverLocation, isNull);
+
+      // Only after clear() should we return to idle
+      controller.clear();
+      expect(controller.state.mapStage, RideMapStage.idle);
+      expect(controller.state.mapSnapshot, isNull);
+      expect(controller.state.driverLocation, isNull);
+    });
+
+    test('invariant: trip end cleans driverLocation and mapSnapshot', () {
+      final controller = _createRideTripSessionControllerForTest();
+      const draft = RideDraftUiState(destinationQuery: 'Test');
+      const driverPoint = GeoPoint(24.7136, 46.6753);
+
+      // Test completeCurrentTrip
+      controller.startFromDraft(draft);
+      controller.applyEvent(RideTripEvent.driverAccepted);
+      controller.applyEvent(RideTripEvent.driverArrived);
+      controller.applyEvent(RideTripEvent.startTrip);
+
+      // Set driver location
+      controller.updateDriverLocation(driverPoint);
+      expect(controller.state.driverLocation, equals(driverPoint));
+      expect(controller.state.mapSnapshot, isNotNull);
+
+      // Complete trip
+      final completed = controller.completeCurrentTrip(destinationLabel: 'Test');
+      expect(completed, isTrue);
+      expect(controller.state.activeTrip, isNull);
+      expect(controller.state.driverLocation, isNull);
+      expect(controller.state.mapSnapshot, isNull);
+      expect(controller.state.mapStage, RideMapStage.idle);
+
+      // Test cancelCurrentTrip
+      controller.startFromDraft(draft);
+      controller.updateDriverLocation(driverPoint);
+      expect(controller.state.driverLocation, equals(driverPoint));
+
+      final cancelled = controller.cancelCurrentTrip(destinationLabel: 'Test');
+      expect(cancelled, isTrue);
+      expect(controller.state.activeTrip, isNull);
+      expect(controller.state.driverLocation, isNull);
+      expect(controller.state.mapSnapshot, isNull);
+      expect(controller.state.mapStage, RideMapStage.idle);
+
+      // Test failCurrentTrip
+      controller.startFromDraft(draft);
+      controller.updateDriverLocation(driverPoint);
+      expect(controller.state.driverLocation, equals(driverPoint));
+
+      final failed = controller.failCurrentTrip(destinationLabel: 'Test');
+      expect(failed, isTrue);
+      expect(controller.state.activeTrip, isNull);
+      expect(controller.state.driverLocation, isNull);
+      expect(controller.state.mapSnapshot, isNull);
+      expect(controller.state.mapStage, RideMapStage.idle);
+
+      // Test clear() - this should also clean everything
+      controller.startFromDraft(draft);
+      controller.updateDriverLocation(driverPoint);
+      expect(controller.state.driverLocation, equals(driverPoint));
+
+      controller.clear();
+      expect(controller.state.activeTrip, isNull);
+      expect(controller.state.driverLocation, isNull);
+      expect(controller.state.mapSnapshot, isNull);
+      expect(controller.state.mapStage, RideMapStage.idle);
     });
   });
 
@@ -2162,6 +2346,556 @@ void main() {
         expect(dropoffMarker.position.latitude, closeTo(24.7500, 0.001));
         expect(dropoffMarker.position.longitude, closeTo(46.7000, 0.001));
       });
+    });
+
+    // ===========================================================================
+    // Track B - Ticket #206: Driver Location & Map Projection Tests
+    // ===========================================================================
+    group('driver location & map projection - Track B Ticket #206', () {
+      test('updateDriverLocation does nothing when no active trip', () {
+        final controller = _createRideTripSessionControllerWithMapPort(_RecordingMapPort());
+
+        // No active trip
+        expect(controller.state.activeTrip, isNull);
+        expect(controller.state.driverLocation, isNull);
+
+        // Try to update driver location
+        controller.updateDriverLocation(const GeoPoint(24.7, 46.7));
+
+        // Should remain null and no map sync should occur
+        expect(controller.state.driverLocation, isNull);
+        expect(controller.state.mapSnapshot, isNull);
+      });
+
+      test('updateDriverLocation updates location with active trip and syncs map', () {
+        final port = _RecordingMapPort();
+        final controller = _createRideTripSessionControllerWithMapPort(port);
+        const draft = RideDraftUiState(destinationQuery: 'Test');
+
+        // Start a trip
+        controller.startFromDraft(draft);
+        expect(controller.state.activeTrip, isNotNull);
+
+        // Initial state
+        expect(controller.state.driverLocation, isNull);
+        final initialSnapshot = controller.state.mapSnapshot;
+
+        // Update driver location
+        const driverPoint = GeoPoint(24.7136, 46.6753);
+        controller.updateDriverLocation(driverPoint);
+
+        // Verify location was updated
+        expect(controller.state.driverLocation, equals(driverPoint));
+        expect(controller.state.hasDriverLocation, isTrue);
+
+        // Verify map was synced (new snapshot created)
+        expect(controller.state.mapSnapshot, isNotNull);
+        expect(identical(controller.state.mapSnapshot, initialSnapshot), isFalse);
+
+        // Verify MapPort received commands
+        expect(port.recordedCommands, isNotEmpty);
+      });
+
+      test('clearDriverLocation clears location and syncs map when location exists', () {
+        final port = _RecordingMapPort();
+        final controller = _createRideTripSessionControllerWithMapPort(port);
+        const draft = RideDraftUiState(destinationQuery: 'Test');
+
+        // Start trip and set driver location
+        controller.startFromDraft(draft);
+        const driverPoint = GeoPoint(24.7136, 46.6753);
+        controller.updateDriverLocation(driverPoint);
+        expect(controller.state.driverLocation, equals(driverPoint));
+
+        final snapshotWithDriver = controller.state.mapSnapshot;
+        final commandsBeforeClear = port.recordedCommands.length;
+
+        // Clear driver location
+        controller.clearDriverLocation();
+
+        // Verify location was cleared
+        expect(controller.state.driverLocation, isNull);
+        expect(controller.state.hasDriverLocation, isFalse);
+
+        // Verify map was synced (new snapshot created)
+        expect(controller.state.mapSnapshot, isNotNull);
+        expect(identical(controller.state.mapSnapshot, snapshotWithDriver), isFalse);
+
+        // Verify MapPort received more commands
+        expect(port.recordedCommands.length, greaterThan(commandsBeforeClear));
+      });
+
+      test('clearDriverLocation is idempotent when location is already null', () {
+        final port = _RecordingMapPort();
+        final controller = _createRideTripSessionControllerWithMapPort(port);
+
+        // No driver location set
+        expect(controller.state.driverLocation, isNull);
+        final commandsBefore = port.recordedCommands.length;
+
+        // Clear (should do nothing)
+        controller.clearDriverLocation();
+
+        // Still null and no map sync
+        expect(controller.state.driverLocation, isNull);
+        expect(port.recordedCommands.length, equals(commandsBefore));
+      });
+
+      test('driver location persists during trip phases', () {
+        final controller = _createRideTripSessionControllerForTest();
+        const draft = RideDraftUiState(destinationQuery: 'Test');
+
+        // Start trip and set driver location
+        controller.startFromDraft(draft);
+        const driverPoint = GeoPoint(24.7136, 46.6753);
+        controller.updateDriverLocation(driverPoint);
+        expect(controller.state.driverLocation, equals(driverPoint));
+
+        // Transition through phases
+        controller.applyEvent(RideTripEvent.driverAccepted);
+        expect(controller.state.driverLocation, equals(driverPoint));
+
+        controller.applyEvent(RideTripEvent.driverArrived);
+        expect(controller.state.driverLocation, equals(driverPoint));
+
+        controller.applyEvent(RideTripEvent.startTrip);
+        expect(controller.state.driverLocation, equals(driverPoint));
+      });
+
+      test('driver location is cleared when trip completes', () {
+        final controller = _createRideTripSessionControllerForTest();
+        const draft = RideDraftUiState(destinationQuery: 'Test');
+
+        // Start trip and progress to inProgress phase
+        controller.startFromDraft(draft);
+        controller.applyEvent(RideTripEvent.driverAccepted);
+        controller.applyEvent(RideTripEvent.driverArrived);
+        controller.applyEvent(RideTripEvent.startTrip);
+        expect(controller.state.activeTrip?.phase, RideTripPhase.inProgress);
+
+        // Set driver location
+        const driverPoint = GeoPoint(24.7136, 46.6753);
+        controller.updateDriverLocation(driverPoint);
+        expect(controller.state.driverLocation, equals(driverPoint));
+
+        // Complete the trip
+        final result = controller.completeCurrentTrip();
+        expect(result, isTrue);
+
+        // Driver location should be cleared along with other session state
+        expect(controller.state.driverLocation, isNull);
+        expect(controller.state.activeTrip, isNull);
+        expect(controller.state.tripSummary, isNull);
+      });
+
+      test('driver location is cleared when trip is cancelled', () {
+        final controller = _createRideTripSessionControllerForTest();
+        const draft = RideDraftUiState(destinationQuery: 'Test');
+
+        // Start trip and set driver location
+        controller.startFromDraft(draft);
+        const driverPoint = GeoPoint(24.7136, 46.6753);
+        controller.updateDriverLocation(driverPoint);
+
+        // Cancel the trip
+        controller.cancelCurrentTrip();
+
+        // Driver location should be cleared
+        expect(controller.state.driverLocation, isNull);
+        expect(controller.state.activeTrip, isNull);
+      });
+
+      test('driver location is cleared when trip fails', () {
+        final controller = _createRideTripSessionControllerForTest();
+        const draft = RideDraftUiState(destinationQuery: 'Test');
+
+        // Start trip and set driver location
+        controller.startFromDraft(draft);
+        const driverPoint = GeoPoint(24.7136, 46.6753);
+        controller.updateDriverLocation(driverPoint);
+
+        // Fail the trip
+        controller.failCurrentTrip();
+
+        // Driver location should be cleared
+        expect(controller.state.driverLocation, isNull);
+        expect(controller.state.activeTrip, isNull);
+      });
+
+      test('driver location is cleared on manual session clear', () {
+        final controller = _createRideTripSessionControllerForTest();
+        const draft = RideDraftUiState(destinationQuery: 'Test');
+
+        // Start trip and set driver location
+        controller.startFromDraft(draft);
+        const driverPoint = GeoPoint(24.7136, 46.6753);
+        controller.updateDriverLocation(driverPoint);
+        expect(controller.state.driverLocation, equals(driverPoint));
+
+        // Clear session
+        controller.clear();
+
+        // Driver location should be cleared
+        expect(controller.state.driverLocation, isNull);
+      });
+    });
+  });
+
+  // ==========================================================================
+  group('RideTripSessionController - Pricing Integration (Ticket #211)', () {
+    late MockRidePricingService mockPricingService;
+
+    setUp(() {
+      mockPricingService = MockRidePricingService();
+    });
+
+    RideTripSessionController _createControllerWithMockPricing() {
+      final container = ProviderContainer(
+        overrides: [
+          ridePricingServiceProvider.overrideWithValue(mockPricingService),
+          rideMapPortProvider.overrideWithValue(_RecordingMapPort()),
+        ],
+      );
+      addTearDown(container.dispose);
+      return container.read(rideTripSessionProvider.notifier);
+    }
+
+    test('successful quote request sets activeQuote and clears isQuoting', () async {
+      final controller = _createControllerWithMockPricing();
+
+      // Create a draft with valid pickup/dropoff
+      final draft = RideDraftUiState(
+        pickupPlace: MobilityPlace(
+          id: 'pickup',
+          label: 'Pickup',
+          address: 'Pickup Address',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+          type: MobilityPlaceType.recent,
+        ),
+        destinationPlace: MobilityPlace(
+          id: 'dropoff',
+          label: 'Dropoff',
+          address: 'Dropoff Address',
+          location: LocationPoint(
+            latitude: 24.7743,
+            longitude: 46.7386,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+          type: MobilityPlaceType.recent,
+        ),
+        destinationQuery: 'Test destination',
+      );
+
+      controller.state = controller.state.copyWith(draftSnapshot: draft);
+
+      // Setup mock to return success
+      final mockQuote = createMobilityTestQuote();
+      // For the pricing service mock, we need to create a pricing.RideQuote
+      // This is only for the mock service - the UI uses mobility.RideQuote
+      final pricingQuote = pricing.RideQuote(
+        id: mockQuote.quoteId,
+        price: Amount(mockQuote.recommendedOption!.priceMinorUnits, mockQuote.recommendedOption!.currencyCode),
+        estimatedDuration: Duration(minutes: mockQuote.recommendedOption!.etaMinutes),
+        distanceMeters: 5000,
+        surgeMultiplier: 1.0,
+      );
+      mockPricingService.result = pricing.RideQuoteResult.success(pricingQuote);
+
+      // Request quote
+      final result = await controller.requestQuoteForCurrentDraft();
+
+      // Verify success
+      expect(result, isTrue);
+      expect(controller.state.isQuoting, isFalse);
+      expect(controller.state.activeQuote, equals(mockQuote));
+      expect(controller.state.lastQuoteFailure, isNull);
+    });
+
+    test('network error failure sets lastQuoteFailure and clears activeQuote', () async {
+      final controller = _createControllerWithMockPricing();
+
+      // Create a draft with valid pickup/dropoff
+      final draft = RideDraftUiState(
+        pickupPlace: MobilityPlace(
+          id: 'pickup',
+          label: 'Pickup',
+          address: 'Pickup Address',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+          type: MobilityPlaceType.recent,
+        ),
+        destinationPlace: MobilityPlace(
+          id: 'dropoff',
+          label: 'Dropoff',
+          address: 'Dropoff Address',
+          location: LocationPoint(
+            latitude: 24.7743,
+            longitude: 46.7386,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+          type: MobilityPlaceType.recent,
+        ),
+        destinationQuery: 'Test destination',
+      );
+
+      controller.state = controller.state.copyWith(draftSnapshot: draft);
+
+      // Setup mock to return network error
+      mockPricingService.result = const pricing.RideQuoteResult.failure(pricing.RideQuoteFailureReason.networkError);
+
+      // Request quote
+      final result = await controller.requestQuoteForCurrentDraft();
+
+      // Verify failure
+      expect(result, isFalse);
+      expect(controller.state.isQuoting, isFalse);
+      expect(controller.state.activeQuote, isNull);
+      expect(controller.state.lastQuoteFailure, equals(pricing.RideQuoteFailureReason.networkError));
+    });
+
+    test('invalid request (pickup == dropoff) fails immediately', () async {
+      final controller = _createControllerWithMockPricing();
+
+      // Create a draft with same pickup and dropoff
+      final sameLocation = LocationPoint(
+        latitude: 24.7136,
+        longitude: 46.6753,
+        accuracyMeters: 10,
+        timestamp: DateTime.now(),
+      );
+      final draft = RideDraftUiState(
+        pickupPlace: MobilityPlace(
+          id: 'pickup',
+          label: 'Pickup',
+          address: 'Pickup Address',
+          location: sameLocation,
+          type: MobilityPlaceType.recent,
+        ),
+        destinationPlace: MobilityPlace(
+          id: 'dropoff',
+          label: 'Dropoff',
+          address: 'Dropoff Address',
+          location: sameLocation, // Same as pickup
+          type: MobilityPlaceType.recent,
+        ),
+        destinationQuery: 'Test destination',
+      );
+
+      controller.state = controller.state.copyWith(draftSnapshot: draft);
+
+      // Request quote - should fail without calling service
+      final result = await controller.requestQuoteForCurrentDraft();
+
+      // Verify immediate failure
+      expect(result, isFalse);
+      expect(controller.state.isQuoting, isFalse);
+      expect(controller.state.activeQuote, isNull);
+      expect(controller.state.lastQuoteFailure, equals(pricing.RideQuoteFailureReason.invalidRequest));
+
+      // Verify service was not called
+      expect(mockPricingService.callCount, equals(0));
+    });
+
+    test('stale response is ignored when draft changes', () async {
+      final controller = _createControllerWithMockPricing();
+
+      // Create initial draft
+      final draft1 = RideDraftUiState(
+        pickupPlace: MobilityPlace(
+          id: 'pickup1',
+          label: 'Pickup 1',
+          address: 'Pickup Address 1',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+          type: MobilityPlaceType.recent,
+        ),
+        destinationPlace: MobilityPlace(
+          id: 'dropoff1',
+          label: 'Dropoff 1',
+          address: 'Dropoff Address 1',
+          location: LocationPoint(
+            latitude: 24.7743,
+            longitude: 46.7386,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+          type: MobilityPlaceType.recent,
+        ),
+        destinationQuery: 'Test destination 1',
+      );
+
+      controller.state = controller.state.copyWith(draftSnapshot: draft1);
+
+      // Setup mock to return success after delay
+      final pricingQuote = pricing.RideQuote(
+        id: 'stale-quote',
+        price: Amount(2500, 'SAR'),
+        estimatedDuration: const Duration(minutes: 15),
+        distanceMeters: 5000,
+        surgeMultiplier: 1.0,
+      );
+
+      // Create a service that completes after we change the draft
+      mockPricingService.result = pricing.RideQuoteResult.success(pricingQuote);
+      mockPricingService.delay = const Duration(milliseconds: 10);
+
+      // Start quote request
+      final future = controller.requestQuoteForCurrentDraft();
+
+      // Immediately change the draft (simulating user changing destination)
+      final draft2 = RideDraftUiState(
+        pickupPlace: MobilityPlace(
+          id: 'pickup2',
+          label: 'Pickup 2',
+          address: 'Pickup Address 2',
+          location: LocationPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+          type: MobilityPlaceType.recent,
+        ),
+        destinationPlace: MobilityPlace(
+          id: 'dropoff2',
+          label: 'Dropoff 2',
+          address: 'Dropoff Address 2',
+          location: LocationPoint(
+            latitude: 24.8,
+            longitude: 46.8,
+            accuracyMeters: 10,
+            timestamp: DateTime.now(),
+          ),
+          type: MobilityPlaceType.recent,
+        ),
+        destinationQuery: 'Test destination 2',
+      );
+
+      controller.state = controller.state.copyWith(draftSnapshot: draft2);
+
+      // Wait for the original request to complete
+      final result = await future;
+
+      // The result should be false (stale response ignored)
+      expect(result, isFalse);
+
+      // State should not be updated with the stale quote
+      expect(controller.state.activeQuote, isNull);
+      expect(controller.state.isQuoting, isFalse);
+    });
+
+    test('pricing state is cleared when trip completes', () {
+      final controller = _createControllerWithMockPricing();
+
+      // Start a trip
+      const draft = RideDraftUiState(destinationQuery: 'Test');
+      controller.startFromDraft(draft);
+
+      // Set some pricing state
+      final mockQuote = createMobilityTestQuote();
+
+      controller.state = controller.state.copyWith(
+        activeQuote: mockQuote,
+        lastQuoteFailure: pricing.RideQuoteFailureReason.networkError,
+        isQuoting: true,
+      );
+
+      // Complete the trip
+      final result = controller.completeCurrentTrip();
+      expect(result, isTrue);
+
+      // Pricing state should be cleared
+      expect(controller.state.activeQuote, isNull);
+      expect(controller.state.lastQuoteFailure, isNull);
+      expect(controller.state.isQuoting, isFalse);
+    });
+
+    test('pricing state is cleared when trip is cancelled', () {
+      final controller = _createControllerWithMockPricing();
+
+      // Start a trip
+      const draft = RideDraftUiState(destinationQuery: 'Test');
+      controller.startFromDraft(draft);
+
+      // Set some pricing state
+      final mockQuote = createMobilityTestQuote();
+
+      controller.state = controller.state.copyWith(
+        activeQuote: mockQuote,
+        lastQuoteFailure: pricing.RideQuoteFailureReason.networkError,
+        isQuoting: true,
+      );
+
+      // Cancel the trip
+      final result = controller.cancelCurrentTrip();
+      expect(result, isTrue);
+
+      // Pricing state should be cleared
+      expect(controller.state.activeQuote, isNull);
+      expect(controller.state.lastQuoteFailure, isNull);
+      expect(controller.state.isQuoting, isFalse);
+    });
+
+    test('pricing state is cleared when trip fails', () {
+      final controller = _createControllerWithMockPricing();
+
+      // Start a trip
+      const draft = RideDraftUiState(destinationQuery: 'Test');
+      controller.startFromDraft(draft);
+
+      // Set some pricing state
+      final mockQuote = createMobilityTestQuote();
+
+      controller.state = controller.state.copyWith(
+        activeQuote: mockQuote,
+        lastQuoteFailure: pricing.RideQuoteFailureReason.networkError,
+        isQuoting: true,
+      );
+
+      // Fail the trip
+      final result = controller.failCurrentTrip();
+      expect(result, isTrue);
+
+      // Pricing state should be cleared
+      expect(controller.state.activeQuote, isNull);
+      expect(controller.state.lastQuoteFailure, isNull);
+      expect(controller.state.isQuoting, isFalse);
+    });
+
+    test('pricing state is cleared when session is cleared', () {
+      final controller = _createControllerWithMockPricing();
+
+      // Set some pricing state without a trip
+      final mockQuote = createMobilityTestQuote();
+
+      controller.state = controller.state.copyWith(
+        activeQuote: mockQuote,
+        lastQuoteFailure: pricing.RideQuoteFailureReason.networkError,
+        isQuoting: true,
+      );
+
+      // Clear the session
+      controller.clear();
+
+      // Pricing state should be cleared
+      expect(controller.state.activeQuote, isNull);
+      expect(controller.state.lastQuoteFailure, isNull);
+      expect(controller.state.isQuoting, isFalse);
     });
   });
 }

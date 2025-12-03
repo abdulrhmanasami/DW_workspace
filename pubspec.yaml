@@ -35,6 +35,10 @@ dependencies:
     path: packages/mobility_adapter_geolocator
   mobility_stub_impl:
     path: packages/mobility_stub_impl
+  pricing_shims:
+    path: packages/pricing_shims
+  pricing_stub_impl:
+    path: stubs/pricing_stub_impl
   realtime_shims:
     path: packages/realtime_shims
   design_system_shims:

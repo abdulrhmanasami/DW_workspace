@@ -60,12 +60,12 @@ class RideMapFromCommands extends StatelessWidget {
   List<MapMarker> _convertMarkers(List<DWMapMarker> dwMarkers) {
     return dwMarkers.map((dwMarker) {
       return MapMarker(
-        id: dwMarker.id,
-        point: MapPoint(
-          latitude: dwMarker.position.latitude,
-          longitude: dwMarker.position.longitude,
+        id: MapMarkerId(dwMarker.id),
+        position: GeoPoint(
+          dwMarker.position.latitude,
+          dwMarker.position.longitude,
         ),
-        title: dwMarker.label,
+        label: dwMarker.label,
       );
     }).toList();
   }
@@ -74,11 +74,11 @@ class RideMapFromCommands extends StatelessWidget {
   List<MapPolyline> _convertPolylines(List<DWMapPolyline> dwPolylines) {
     return dwPolylines.map((dwPolyline) {
       return MapPolyline(
-        id: dwPolyline.id,
+        id: MapPolylineId(dwPolyline.id),
         points: dwPolyline.points
-            .map((p) => LatLng(p.latitude, p.longitude))
+            .map((p) => GeoPoint(p.latitude, p.longitude))
             .toList(),
-        width: 4.0, // Default route width
+        isPrimaryRoute: dwPolyline.style == DWMapPolylineStyle.route,
       );
     }).toList();
   }

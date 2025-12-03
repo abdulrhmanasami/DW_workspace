@@ -11,14 +11,48 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// Localization
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:maps_shims/maps_shims.dart';
 
+import 'package:delivery_ways_clean/screens/mobility/ride_active_trip_screen.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_map_commands_builder.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_map_port_providers.dart';
 import 'package:delivery_ways_clean/widgets/ride_map_from_commands.dart';
+import 'package:delivery_ways_clean/widgets/mobility/ride_trip_map_view.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_map_projection.dart';
+
+/// Recording MapPort implementation for testing.
+/// Records all commands sent to it for verification.
+class _RecordingMapPort implements MapPort {
+  final List<MapCommand> recorded = <MapCommand>[];
+
+  @override
+  Sink<MapCommand> get commands => _RecordingSink(recorded);
+
+  @override
+  Stream<MapEvent> get events => const Stream<MapEvent>.empty();
+
+  @override
+  void dispose() {}
+}
+
+class _RecordingSink implements Sink<MapCommand> {
+  _RecordingSink(this._commands);
+  final List<MapCommand> _commands;
+
+  @override
+  void add(MapCommand data) => _commands.add(data);
+
+  @override
+  void close() {}
+}
 
 void main() {
   group('Active Trip Map Integration - Ticket #112', () {
@@ -485,6 +519,47 @@ void main() {
         // Assert
         expect(find.byType(CircularProgressIndicator), findsNothing);
         expect(find.text('Trip ended'), findsOneWidget);
+      });
+    });
+
+    group('RideTripMapView Integration - Ticket #204', () {
+      testWidgets('RideActiveTripScreen contains RideTripMapView widget', (tester) async {
+        // Create a minimal mock setup - we just need to verify the widget exists
+        // The actual functionality is tested separately in ride_trip_map_view_test.dart
+
+        // For this integration test, we create a simple container with basic overrides
+        final container = ProviderContainer(
+          overrides: [
+            // Mock the map port
+            rideMapPortProvider.overrideWith((ref) => _RecordingMapPort()),
+            // Mock the session with an active trip to show RideTripMapView
+            rideTripSessionProvider.overrideWith(
+              (ref) => RideTripSessionController(ref)..state = RideTripSessionUiState(
+                activeTrip: RideTripState(
+                  tripId: 'test-trip-123',
+                  phase: RideTripPhase.driverAccepted,
+                ),
+              ),
+            ),
+          ],
+        );
+
+        addTearDown(container.dispose);
+
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const MaterialApp(
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: Locale('en'),
+              home: RideActiveTripScreen(),
+            ),
+          ),
+        );
+
+        // Should contain RideTripMapView widget in the layout
+        expect(find.byType(RideTripMapView), findsOneWidget);
       });
     });
   });

@@ -25,18 +25,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// From mobility_shims package (canonical FSM):
+// From mobility_shims package (quote models and FSM):
 import 'package:mobility_shims/mobility_shims.dart';
 
 // From maps_shims package (map integration):
 import 'package:maps_shims/maps_shims.dart';
+
+// From pricing_shims package (pricing integration):
+import 'package:pricing_shims/pricing_shims.dart' as pricing;
 
 // From app:
 import 'ride_draft_state.dart';
 import 'ride_map_commands_builder.dart';
 import 'ride_map_port_providers.dart';
 import 'ride_map_projection.dart';
+import 'ride_pricing_providers.dart';
 import 'ride_recent_locations_providers.dart';
+import 'tracking_controller.dart';
 
 /// Entry in the ride history list.
 ///
@@ -220,6 +225,10 @@ class RideTripSessionUiState {
     this.isLoading = false,
     this.mapStage = RideMapStage.idle,
     this.mapSnapshot,
+    this.driverLocation,
+    this.activeQuote,
+    this.lastQuoteFailure,
+    this.isQuoting = false,
   });
 
   /// The currently active ride trip, or null if no trip is running.
@@ -258,6 +267,25 @@ class RideTripSessionUiState {
   /// Computed by RideMapProjector from current ride state and locations.
   final RideMapSnapshot? mapSnapshot;
 
+  /// Track B - Ticket #206: Current driver location for map display.
+  /// Updated via updateDriverLocation() when live driver location becomes available.
+  /// Cleared when trip ends or is reset. Used only for map projection.
+  final GeoPoint? driverLocation;
+
+  /// Track B - Ticket #211: Current active quote from pricing service.
+  /// Non-null when a quote has been successfully obtained for the current draft.
+  /// Cleared when trip ends or pricing state is reset.
+  final RideQuote? activeQuote;
+
+  /// Track B - Ticket #211: Last pricing failure reason.
+  /// Non-null when the most recent quote request failed.
+  /// Cleared when a new quote is requested or trip ends.
+  final pricing.RideQuoteFailureReason? lastQuoteFailure;
+
+  /// Track B - Ticket #211: Whether a quote request is currently in progress.
+  /// True when waiting for pricing service response, false otherwise.
+  final bool isQuoting;
+
   RideTripSessionUiState copyWith({
     RideTripState? activeTrip,
     int? driverRating,
@@ -268,11 +296,18 @@ class RideTripSessionUiState {
     bool? isLoading,
     RideMapStage? mapStage,
     RideMapSnapshot? mapSnapshot,
+    GeoPoint? driverLocation,
+    RideQuote? activeQuote,
+    pricing.RideQuoteFailureReason? lastQuoteFailure,
+    bool? isQuoting,
     bool clearActiveTrip = false,
     bool clearDriverRating = false,
     bool clearTripSummary = false,
     bool clearCompletionSummary = false,
     bool clearDraftSnapshot = false,
+    bool clearDriverLocation = false,
+    bool clearActiveQuote = false,
+    bool clearLastQuoteFailure = false,
   }) {
     return RideTripSessionUiState(
       activeTrip: clearActiveTrip ? null : (activeTrip ?? this.activeTrip),
@@ -284,6 +319,10 @@ class RideTripSessionUiState {
       isLoading: isLoading ?? this.isLoading,
       mapStage: mapStage ?? this.mapStage,
       mapSnapshot: mapSnapshot ?? this.mapSnapshot,
+      driverLocation: clearDriverLocation ? null : (driverLocation ?? this.driverLocation),
+      activeQuote: clearActiveQuote ? null : (activeQuote ?? this.activeQuote),
+      lastQuoteFailure: clearLastQuoteFailure ? null : (lastQuoteFailure ?? this.lastQuoteFailure),
+      isQuoting: isQuoting ?? this.isQuoting,
     );
   }
 
@@ -300,7 +339,11 @@ class RideTripSessionUiState {
         other.draftSnapshot == draftSnapshot &&
         other.isLoading == isLoading &&
         other.mapStage == mapStage &&
-        other.mapSnapshot == mapSnapshot;
+        other.mapSnapshot == mapSnapshot &&
+        other.driverLocation == driverLocation &&
+        other.activeQuote == activeQuote &&
+        other.lastQuoteFailure == lastQuoteFailure &&
+        other.isQuoting == isQuoting;
   }
 
   @override
@@ -314,14 +357,27 @@ class RideTripSessionUiState {
         isLoading,
         mapStage,
         mapSnapshot,
+        driverLocation,
+        activeQuote,
+        lastQuoteFailure,
+        isQuoting,
       );
 
   @override
   String toString() =>
-      'RideTripSessionUiState(activeTrip: ${activeTrip?.phase}, driverRating: $driverRating, historyCount: ${historyTrips.length}, summary: $tripSummary, completion: $completionSummary, hasDraft: ${draftSnapshot != null}, isLoading: $isLoading, mapStage: $mapStage, hasMap: $hasMap)';
+      'RideTripSessionUiState(activeTrip: ${activeTrip?.phase}, driverRating: $driverRating, historyCount: ${historyTrips.length}, summary: $tripSummary, completion: $completionSummary, hasDraft: ${draftSnapshot != null}, isLoading: $isLoading, mapStage: $mapStage, hasMap: $hasMap, hasDriverLocation: $hasDriverLocation, activeQuote: ${activeQuote != null}, lastQuoteFailure: $lastQuoteFailure, isQuoting: $isQuoting)';
 
   /// Track B - Ticket #203: Whether the map has data to display.
   bool get hasMap => mapSnapshot != null;
+
+  /// Track B - Ticket #206: Whether the driver location is available for display.
+  bool get hasDriverLocation => driverLocation != null;
+
+  /// Track B - Ticket #211: Whether there is an active quote available.
+  bool get hasActiveQuote => activeQuote != null;
+
+  /// Track B - Ticket #211: Whether the last quote request failed.
+  bool get hasQuoteFailure => lastQuoteFailure != null;
 
   /// Track B - Ticket #110: Map commands for the current active trip, if any.
   ///
@@ -382,11 +438,54 @@ class RideTripSessionUiState {
 /// like pricing failures, network errors, and user/driver cancellations.
 ///
 class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
-  RideTripSessionController(this._ref) : super(const RideTripSessionUiState());
+  RideTripSessionController(this._ref) : super(const RideTripSessionUiState()) {
+    _setupTrackingSubscription();
+  }
 
   final Ref _ref;
 
+  // Track B - Ticket #208: Subscription to tracking controller for driver location updates
+  late final ProviderSubscription<TrackingSessionState?> _trackingSubscription;
+
+  // Track B - Ticket #211: Counter for quote request IDs to handle stale responses
+  int _currentQuoteRequestId = 0;
+
+  /// Track B - Ticket #208: Setup subscription to tracking controller for driver location updates.
+  ///
+  /// This listens to tracking state changes and updates driver location when:
+  /// - There's an active trip (non-terminal phase)
+  /// - New location points arrive from tracking uplink
+  void _setupTrackingSubscription() {
+    _trackingSubscription = _ref.listen<TrackingSessionState?>(
+      trackingControllerProvider,
+      (previous, next) {
+        _handleTrackingUpdate(next);
+      },
+    );
+  }
+
+  /// Track B - Ticket #208: Handle tracking state updates from uplink.
+  ///
+  /// Only updates driver location when there's an active trip.
+  /// Ignores updates when no active trip exists.
+  void _handleTrackingUpdate(TrackingSessionState? trackingState) {
+    // Only update driver location if there's an active trip
+    if (state.activeTrip == null) return;
+
+    // Extract last point from tracking state
+    final lastPoint = trackingState?.lastPoint;
+    if (lastPoint == null) return;
+
+    // Convert to GeoPoint and update driver location
+    final driverGeoPoint = GeoPoint(lastPoint.latitude, lastPoint.longitude);
+    updateDriverLocation(driverGeoPoint);
+  }
+
   MapPort get _mapPort => _ref.read(rideMapPortProvider);
+
+  /// Track B - Ticket #211: Gets the pricing service for quote requests.
+  pricing.RidePricingService get _pricingService =>
+      _ref.read(ridePricingServiceProvider);
 
   /// Starts a new trip from quote and selected option.
   ///
@@ -432,6 +531,21 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
       tripSummary: summary,
       draftSnapshot: draft,
     );
+  }
+
+  /// Track B - Ticket #212: Prepares confirmation by freezing draft and requesting quote.
+  ///
+  /// This method saves the draft as draftSnapshot and requests pricing without
+  /// starting the actual trip. Used by confirmation screen to get pricing
+  /// before the user commits to the ride.
+  ///
+  /// Returns true if preparation succeeded (draft saved and quote request initiated).
+  Future<bool> prepareConfirmation(RideDraftUiState draft) async {
+    // Save draft snapshot for pricing
+    state = state.copyWith(draftSnapshot: draft);
+
+    // Request quote for the draft
+    return await requestQuoteForCurrentDraft();
   }
 
   /// Starts a new trip from the current draft.
@@ -482,6 +596,9 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
 
     // Track B - Ticket #203: Sync map state after trip start
     _syncMap();
+
+    // Track B - Ticket #209: Assert invariants after state change
+    _debugAssertInvariants();
   }
 
   /// Apply a single event to the active trip, if any.
@@ -497,9 +614,136 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
 
       // Track B - Ticket #203: Sync map state after FSM transition
       _syncMap();
+
+      // Track B - Ticket #209: Assert invariants after state change
+      _debugAssertInvariants();
     } on InvalidRideTransitionException {
       // For now, silently ignore invalid transitions.
       // TODO(Track B - Future): Log to error tracker or show user feedback.
+    }
+  }
+
+  /// Track B - Ticket #211: Requests a quote for the current draft.
+  ///
+  /// This method validates the current draft state, sets isQuoting to true,
+  /// builds a RideQuoteRequest, and calls the pricing service.
+  ///
+  /// Returns true if the request was initiated successfully, false if:
+  /// - No draft exists
+  /// - Draft is missing required data (pickup, dropoff)
+  /// - Pickup and dropoff are the same location
+  ///
+  /// The result of the pricing request will update the state asynchronously:
+  /// - Success: activeQuote is set, isQuoting becomes false, lastQuoteFailure is cleared
+  /// - Failure: activeQuote is cleared, isQuoting becomes false, lastQuoteFailure is set
+  ///
+  /// Uses request ID tracking to handle stale responses (responses that arrive
+  /// after the draft state has changed).
+  Future<bool> requestQuoteForCurrentDraft() async {
+    final draft = state.draftSnapshot;
+    if (draft == null) return false;
+
+    final pickup = draft.pickupPlace?.location;
+    final dropoff = draft.destinationPlace?.location;
+    if (pickup == null || dropoff == null) return false;
+
+    // Validate that pickup and dropoff are different
+    // Compare coordinates instead of object identity since LocationPoint doesn't override ==
+    if (pickup.latitude == dropoff.latitude && pickup.longitude == dropoff.longitude) {
+      // Set failure state for invalid request
+      state = state.copyWith(
+        activeQuote: null,
+        lastQuoteFailure: pricing.RideQuoteFailureReason.invalidRequest,
+        isQuoting: false,
+        clearLastQuoteFailure: false,
+      );
+      return false;
+    }
+
+    // Increment request ID to handle stale responses
+    final requestId = ++_currentQuoteRequestId;
+
+    // Set quoting state
+    state = state.copyWith(
+      isQuoting: true,
+      clearActiveQuote: false,
+      clearLastQuoteFailure: true,
+    );
+
+    // Build quote request
+    final request = pricing.RideQuoteRequest(
+      pickup: GeoPoint(pickup.latitude, pickup.longitude),
+      dropoff: GeoPoint(dropoff.latitude, dropoff.longitude),
+      requestedAt: DateTime.now(),
+      serviceTierCode: draft.selectedOptionId,
+    );
+
+    try {
+      final result = await _pricingService.requestQuote(request);
+
+      // Check if this response is still relevant (not stale)
+      if (requestId != _currentQuoteRequestId) {
+        // Stale response - ignore it
+        return false;
+      }
+
+      if (result.isSuccess) {
+        // Success: convert pricing.RideQuote to RideQuote and set active quote
+        final pricingQuote = result.quote!;
+        final quoteOptions = _createQuoteOptionsFromPricingQuote(pricingQuote, request.serviceTierCode);
+        final mobilityQuote = RideQuote(
+          quoteId: pricingQuote.id,
+          request: RideQuoteRequest(
+            pickup: LocationPoint(
+              latitude: request.pickup.latitude,
+              longitude: request.pickup.longitude,
+            ),
+            dropoff: LocationPoint(
+              latitude: request.dropoff.latitude,
+              longitude: request.dropoff.longitude,
+            ),
+          ),
+          options: quoteOptions,
+        );
+
+        state = state.copyWith(
+          activeQuote: mobilityQuote,
+          isQuoting: false,
+          clearLastQuoteFailure: true,
+        );
+      } else {
+        // Failure: set failure reason
+        state = state.copyWith(
+          activeQuote: null,
+          lastQuoteFailure: result.failure!,
+          isQuoting: false,
+          clearActiveQuote: false,
+        );
+      }
+
+      // Track B - Ticket #209: Assert invariants after state change
+      _debugAssertInvariants();
+
+      return result.isSuccess;
+    } catch (error) {
+      // Check if this response is still relevant (not stale)
+      if (requestId != _currentQuoteRequestId) {
+        // Stale response - ignore it
+        return false;
+      }
+
+      // Handle unexpected errors as network errors
+      state = state.copyWith(
+        activeQuote: null,
+        lastQuoteFailure: pricing.RideQuoteFailureReason.networkError,
+        isQuoting: false,
+        clearActiveQuote: false,
+      );
+
+      // Track B - Ticket #209: Assert invariants after state change
+      _debugAssertInvariants();
+
+      return false;
     }
   }
 
@@ -509,8 +753,12 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
   /// Track B - Ticket #105: Also clears tripSummary to prevent leakage.
   /// Track B - Ticket #107: Also clears completionSummary.
   /// Track B - Ticket #111: Also clears draftSnapshot.
+  /// Track B - Ticket #211: Also clears pricing state (activeQuote, lastQuoteFailure, isQuoting).
   void clear() {
     state = RideTripSessionUiState(historyTrips: state.historyTrips);
+
+    // Track B - Ticket #209: Assert invariants after state change
+    _debugAssertInvariants();
   }
 
   /// Complete the current trip and freeze the summary snapshot.
@@ -675,6 +923,83 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
     return true;
   }
 
+  /// Track B - Ticket #206: Update the current driver location for map display.
+  ///
+  /// This method updates the driver location used by the map projection system.
+  /// It only works when there's an active trip (non-terminal phase).
+  /// When no active trip exists, the update is silently ignored.
+  ///
+  /// The driver location is cleared automatically when trips complete, cancel, or fail.
+  /// This provides a clean API for future integration with tracking/uplink systems.
+  void updateDriverLocation(GeoPoint newLocation) {
+    // Don't show driver marker without an active trip
+    if (state.activeTrip == null) return;
+
+    state = state.copyWith(driverLocation: newLocation);
+    _syncMap();
+
+    // Track B - Ticket #209: Assert invariants after state change
+    _debugAssertInvariants();
+  }
+
+  /// Track B - Ticket #206: Clear the current driver location.
+  ///
+  /// This method clears the driver location from the map projection system.
+  /// It's typically called when a trip ends (completes, cancels, or fails)
+  /// to ensure the driver marker is removed from the map.
+  ///
+  /// Idempotent - does nothing if driver location is already null.
+  void clearDriverLocation() {
+    if (state.driverLocation == null) return;
+
+    state = state.copyWith(clearDriverLocation: true);
+    _syncMap();
+  }
+
+  /// Track B - Ticket #209: Debug assert invariants for driver location and map state.
+  /// Track B - Ticket #211: Also validates pricing state invariants.
+  ///
+  /// Validates key invariants:
+  /// 1. No driverLocation without activeTrip
+  /// 2. Idle state means clean map (mapSnapshot == null && driverLocation == null)
+  /// 3. No activeQuote without draftSnapshot (pricing state should be tied to draft)
+  /// 4. isQuoting should only be true when there's a valid draft and no active trip
+  ///
+  /// Called from critical points in debug mode only.
+  void _debugAssertInvariants() {
+    assert(() {
+      // Invariant 1: No driverLocation without activeTrip
+      if (state.activeTrip == null) {
+        assert(state.driverLocation == null,
+            'driverLocation must be null when no activeTrip exists');
+      }
+
+      // Invariant 2: Idle state means clean map
+      if (state.mapStage == RideMapStage.idle) {
+        assert(state.mapSnapshot == null,
+            'mapSnapshot must be null in idle state');
+        assert(state.driverLocation == null,
+            'driverLocation must be null in idle state');
+      }
+
+      // Invariant 3: Track B - Ticket #211: Pricing state invariants
+      // No activeQuote without draftSnapshot - pricing should be tied to draft
+      if (state.activeQuote != null) {
+        assert(state.draftSnapshot != null,
+            'activeQuote should not exist without draftSnapshot');
+      }
+
+      // isQuoting should only be true when there's a valid draft and no conflicting state
+      if (state.isQuoting) {
+        assert(state.draftSnapshot != null,
+            'isQuoting should not be true without draftSnapshot');
+        // Could also check that there's no activeTrip, but for now just check draft exists
+      }
+
+      return true;
+    }());
+  }
+
   /// Track B - Ticket #120: Cancel the current active trip, archive it into
   /// historyTrips with a cancelled phase, and clear the live session state.
   ///
@@ -747,6 +1072,7 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
     final updatedHistory = [entry, ...state.historyTrips];
 
     // Step 5: Clear temporary state while preserving history
+    // Track B - Ticket #211: Also clears pricing state (activeQuote, lastQuoteFailure, isQuoting)
     state = RideTripSessionUiState(historyTrips: updatedHistory);
 
     return true;
@@ -830,10 +1156,14 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
     final updatedHistory = [entry, ...state.historyTrips];
 
     // Step 4: Clear temporary state while preserving history
+    // Track B - Ticket #211: Also clears pricing state (activeQuote, lastQuoteFailure, isQuoting)
     state = RideTripSessionUiState(historyTrips: updatedHistory);
 
     // Track B - Ticket #145: Add destination to recent locations
     _addToRecentLocations();
+
+    // Track B - Ticket #209: Assert invariants after state change
+    _debugAssertInvariants();
 
     return true;
   }
@@ -914,7 +1244,11 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
     final updatedHistory = [entry, ...state.historyTrips];
 
     // Step 5: Clear temporary state while preserving history
+    // Track B - Ticket #211: Also clears pricing state (activeQuote, lastQuoteFailure, isQuoting)
     state = RideTripSessionUiState(historyTrips: updatedHistory);
+
+    // Track B - Ticket #209: Assert invariants after state change
+    _debugAssertInvariants();
 
     return true;
   }
@@ -949,6 +1283,9 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
       snapshot: snapshot,
       port: _mapPort,
     );
+
+    // Track B - Ticket #209: Assert invariants after map sync
+    _debugAssertInvariants();
   }
 
   /// Track B - Ticket #203: Derive RideMapStage from current FSM state.
@@ -1001,11 +1338,9 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
     return GeoPoint(dropoff.latitude, dropoff.longitude);
   }
 
-  /// Track B - Ticket #203: Extract driver location as GeoPoint, or null if unavailable.
+  /// Track B - Ticket #206: Extract driver location as GeoPoint, or null if unavailable.
   GeoPoint? _buildDriverLocationOrNull() {
-    // TODO: Extract from driver location updates when available
-    // For now, return null as driver location is not yet available in session state
-    return null;
+    return state.driverLocation;
   }
 
   /// Track B - Ticket #203: Extract route polyline, or null if unavailable.
@@ -1041,6 +1376,62 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
       // Fail silently - recent locations is not critical
       debugPrint('Failed to add recent location: $e');
     }
+  }
+
+  /// Track B - Ticket #212: Creates quote options from pricing quote.
+  ///
+  /// For now, creates a single option based on the pricing quote.
+  /// Later, this could be extended to create multiple service tiers.
+  List<RideQuoteOption> _createQuoteOptionsFromPricingQuote(
+      pricing.RideQuote pricingQuote, String? serviceTierCode) {
+    // Determine category based on service tier
+    final category = _getCategoryFromServiceTier(serviceTierCode);
+
+    // Convert pricing data to quote option
+    final option = RideQuoteOption(
+      id: serviceTierCode ?? 'economy',
+      category: category,
+      displayName: _getDisplayNameFromCategory(category),
+      etaMinutes: (pricingQuote.estimatedDuration.inMinutes).clamp(1, 60),
+      priceMinorUnits: pricingQuote.price.value,
+      currencyCode: pricingQuote.price.currency,
+      isRecommended: true, // For now, single option is always recommended
+    );
+
+    return [option];
+  }
+
+  /// Track B - Ticket #212: Gets vehicle category from service tier code.
+  RideVehicleCategory _getCategoryFromServiceTier(String? serviceTier) {
+    switch (serviceTier?.toLowerCase()) {
+      case 'economy':
+        return RideVehicleCategory.economy;
+      case 'xl':
+        return RideVehicleCategory.xl;
+      case 'premium':
+        return RideVehicleCategory.premium;
+      default:
+        return RideVehicleCategory.economy;
+    }
+  }
+
+  /// Track B - Ticket #212: Gets display name from category.
+  String _getDisplayNameFromCategory(RideVehicleCategory category) {
+    switch (category) {
+      case RideVehicleCategory.economy:
+        return 'Economy';
+      case RideVehicleCategory.xl:
+        return 'XL';
+      case RideVehicleCategory.premium:
+        return 'Premium';
+    }
+  }
+
+  /// Track B - Ticket #208: Dispose tracking subscription when controller is disposed.
+  @override
+  void dispose() {
+    _trackingSubscription.close();
+    super.dispose();
   }
 }
 

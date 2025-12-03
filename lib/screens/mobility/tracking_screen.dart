@@ -63,9 +63,9 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
 
         // Update current location marker
         final marker = maps.MapMarker(
-          id: 'current_location',
-          point: maps.GeoAdapters.mapPointFromLocation(lastPoint),
-          title: 'موقعك الحالي',
+          id: maps.MapMarkerId('current_location'),
+          position: maps.GeoPoint(lastPoint.latitude, lastPoint.longitude),
+          label: 'موقعك الحالي',
         );
         _mapController!.setMarkers([marker]);
       }
@@ -104,9 +104,9 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
       final markers = points
           .map(
             (point) => maps.MapMarker(
-              id: 'polyline_${points.indexOf(point)}',
-              point: point,
-              title: 'مسار الرحلة',
+              id: maps.MapMarkerId('polyline_${points.indexOf(point)}'),
+              position: maps.GeoPoint(point.latitude, point.longitude),
+              label: 'مسار الرحلة',
             ),
           )
           .toList();
@@ -117,11 +117,9 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
       if (lastPoint != null) {
         markers.add(
           maps.MapMarker(
-            id: 'current_location',
-            point: maps.GeoAdapters.mapPointFromLocation(
-              lastPoint,
-            ),
-            title: 'موقعك الحالي',
+            id: maps.MapMarkerId('current_location'),
+            position: maps.GeoPoint(lastPoint.latitude, lastPoint.longitude),
+            label: 'موقعك الحالي',
           ),
         );
       }
