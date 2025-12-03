@@ -63,6 +63,7 @@ final class RideOrderHistoryItem extends OrderHistoryItem {
 ///
 /// Track C - Ticket #153: Hardened provider that preserves AsyncValue semantics.
 /// Track B - Ticket #157: Integrated ride history from ride_trip_session.dart.
+/// Fixed: Provider now recomputes when either parcels OR rides change.
 ///
 final ordersHistoryProvider =
     Provider.autoDispose<AsyncValue<List<OrderHistoryItem>>>((ref) {
@@ -70,22 +71,27 @@ final ordersHistoryProvider =
   final parcelShipmentsAsync = ref.watch(parcelShipmentsStreamProvider);
 
   // Ride history source - from ride trip session (synchronous)
+  // Must be watched to trigger recomputation when ride history changes
   final rideSession = ref.watch(rideTripSessionProvider);
 
-  return parcelShipmentsAsync.whenData((shipments) {
-    final parcelItems = shipments
-        .map<OrderHistoryItem>((s) => ParcelOrderHistoryItem(s))
-        .toList();
+  return parcelShipmentsAsync.when(
+    data: (shipments) {
+      final parcelItems = shipments
+          .map<OrderHistoryItem>((s) => ParcelOrderHistoryItem(s))
+          .toList();
 
-    // Add ride history items
-    final rideItems = rideSession.historyTrips
-        .map<OrderHistoryItem>((entry) => RideOrderHistoryItem(entry))
-        .toList();
+      // Add ride history items (rideSession is reactive due to ref.watch above)
+      final rideItems = rideSession.historyTrips
+          .map<OrderHistoryItem>((entry) => RideOrderHistoryItem(entry))
+          .toList();
 
-    // Combine and sort by createdAt desc (newest first)
-    final allItems = <OrderHistoryItem>[...parcelItems, ...rideItems]
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      // Combine and sort by createdAt desc (newest first)
+      final allItems = <OrderHistoryItem>[...parcelItems, ...rideItems]
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
-    return List<OrderHistoryItem>.unmodifiable(allItems);
-  });
+      return AsyncValue.data(List<OrderHistoryItem>.unmodifiable(allItems));
+    },
+    error: (error, stackTrace) => AsyncValue.error(error, stackTrace),
+    loading: () => const AsyncValue.loading(),
+  );
 });
