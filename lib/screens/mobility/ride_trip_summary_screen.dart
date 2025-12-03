@@ -535,7 +535,7 @@ class _RouteSummaryCard extends StatelessWidget {
 
             // Connecting line
             Container(
-              margin: EdgeInsets.only(left: 4, top: DWSpacing.xxs, bottom: DWSpacing.xxs),
+              margin: const EdgeInsets.only(left: 4, top: DWSpacing.xxs, bottom: DWSpacing.xxs),
               width: 2,
               height: 20,
               color: colorScheme.outlineVariant,
@@ -759,7 +759,7 @@ class _FareSummaryCard extends ConsumerWidget {
               colorScheme: colorScheme,
             ),
 
-            Divider(height: DWSpacing.lg),
+            const Divider(height: DWSpacing.lg),
 
             // Total row (emphasized)
             Row(
@@ -782,7 +782,7 @@ class _FareSummaryCard extends ConsumerWidget {
               ],
             ),
 
-            Divider(height: DWSpacing.lg),
+            const Divider(height: DWSpacing.lg),
 
             // Payment method row (Track B - Ticket #118: Use history entry payment)
             Row(
@@ -913,14 +913,14 @@ class _DriverRatingCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Ahmad M.', // TODO: Real driver name from backend
+                        l10n.rideDriverMockName, // TODO: Real driver name from backend
                         style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: DWSpacing.xxs),
                       Text(
-                        'Toyota Camry • ABC 1234', // TODO: Real car info
+                        l10n.rideDriverMockCarInfo, // TODO: Real car info
                         style: textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -944,7 +944,7 @@ class _DriverRatingCard extends StatelessWidget {
                       Icon(Icons.star, size: 14, color: colorScheme.tertiary),
                       const SizedBox(width: DWSpacing.xxs),
                       Text(
-                        '4.9', // TODO: Real rating from backend
+                        l10n.rideDriverMockRating, // TODO: Real rating from backend
                         style: textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),

@@ -1238,12 +1238,18 @@ void main() {
 // Fake Controllers for Testing
 // ============================================================================
 
+/// Fake Ref for testing
+class _FakeRef implements Ref {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 /// Fake RideTripSessionController for testing
-class _FakeRideTripSessionController
-    extends StateNotifier<RideTripSessionUiState>
-    implements RideTripSessionController {
+class _FakeRideTripSessionController extends RideTripSessionController {
   _FakeRideTripSessionController({required RideTripSessionUiState initialState})
-      : super(initialState);
+      : super(_FakeRef()) {
+    state = initialState;
+  }
 
   @override
   void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {}

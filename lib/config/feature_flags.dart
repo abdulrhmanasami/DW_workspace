@@ -16,10 +16,14 @@ class FeatureFlags {
   /// Constructor for creating injectable feature flags instances
   const FeatureFlags({
     required this.enableFoodMvpValue,
+    required this.enableParcelsMvpValue,
   });
 
   /// The injectable value for Food MVP flag
   final bool enableFoodMvpValue;
+
+  /// The injectable value for Parcels MVP flag
+  final bool enableParcelsMvpValue;
 
   // ---------------------------------------------------------------------------
   // Injectable Feature Flags System (Ticket #56)
@@ -33,12 +37,17 @@ class FeatureFlags {
 
   /// Factory to create flags from environment variables (production/dev)
   factory FeatureFlags._fromEnv() {
-    const String envValue = String.fromEnvironment(
+    const String foodEnvValue = String.fromEnvironment(
       'ENABLE_FOOD_MVP',
       defaultValue: 'false',
     );
+    const String parcelsEnvValue = String.fromEnvironment(
+      'ENABLE_PARCELS_MVP',
+      defaultValue: 'true',
+    );
     return FeatureFlags(
-      enableFoodMvpValue: envValue.toLowerCase() == 'true',
+      enableFoodMvpValue: foodEnvValue.toLowerCase() == 'true',
+      enableParcelsMvpValue: parcelsEnvValue.toLowerCase() == 'true',
     );
   }
 
@@ -268,17 +277,8 @@ class FeatureFlags {
   /// Check if Parcels MVP is enabled (Track C - Ticket #40)
   /// When true: Parcels service card navigates to ParcelsEntryScreen
   /// When false: Shows "coming soon" snackbar
-  static bool get enableParcelsMvp {
-    const String envValue = String.fromEnvironment(
-      'ENABLE_PARCELS_MVP',
-      defaultValue: 'true',
-    );
-    // Default to true in debug mode for development
-    if (kDebugMode) {
-      return envValue.toLowerCase() != 'false';
-    }
-    return envValue.toLowerCase() == 'true';
-  }
+  /// Updated to use injectable system for consistent testing
+  static bool get enableParcelsMvp => _current.enableParcelsMvpValue;
 
   /// Check if Food MVP is enabled (Track C - Future)
   /// Reserved for future Food vertical implementation

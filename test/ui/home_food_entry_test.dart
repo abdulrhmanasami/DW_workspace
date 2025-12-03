@@ -33,7 +33,10 @@ void main() {
     testWidgets('FoodComingSoonScreen is displayed when Food feature is disabled',
         (WidgetTester tester) async {
       // Track C - Ticket #56: Use injectable FeatureFlags
-      FeatureFlags.overrideForTests(const FeatureFlags(enableFoodMvpValue: false));
+      FeatureFlags.overrideForTests(const FeatureFlags(
+        enableFoodMvpValue: false,
+        enableParcelsMvpValue: true,
+      ));
 
       await tester.pumpWidget(
         ProviderScope(
@@ -253,7 +256,10 @@ void main() {
     testWidgets('FoodRestaurantsListScreen is displayed when Food feature is enabled',
         (WidgetTester tester) async {
       // Track C - Ticket #56: Use injectable FeatureFlags
-      FeatureFlags.overrideForTests(const FeatureFlags(enableFoodMvpValue: true));
+      FeatureFlags.overrideForTests(const FeatureFlags(
+        enableFoodMvpValue: true,
+        enableParcelsMvpValue: true,
+      ));
 
       await tester.pumpWidget(
         ProviderScope(

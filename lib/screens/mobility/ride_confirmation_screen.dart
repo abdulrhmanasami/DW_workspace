@@ -53,6 +53,11 @@ import 'ride_quote_options_sheet.dart';
 class RideConfirmationScreen extends ConsumerWidget {
   const RideConfirmationScreen({super.key});
 
+  // Keys for UI testing
+  static const vehicleListKey = Key('ride_confirmation_vehicle_list');
+  static const paymentMethodCardKey = Key('ride_confirmation_payment_method_card');
+  static const ctaRequestRideKey = Key('ride_confirmation_cta_request_ride');
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -76,11 +81,14 @@ class RideConfirmationScreen extends ConsumerWidget {
       ),
       body: Stack(
         children: [
-          // Map with route preview (Track B - Ticket #28)
+          // Map Area (Screen 9 - top ~50% of screen)
           Positioned.fill(
             child: Container(
               margin: const EdgeInsets.only(bottom: 260),
-              child: _ConfirmationMap(rideDraft: rideDraft),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(DWRadius.md),
+                child: _ConfirmationMap(rideDraft: rideDraft),
+              ),
             ),
           ),
 
@@ -162,10 +170,12 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
     final effectiveSelectedId = rideDraft.selectedOptionId ??
         (quote != null && quote.options.isNotEmpty ? quote.options.first.id : null);
     
-    final selectedOption = quote?.options.firstWhere(
-      (opt) => opt.id == effectiveSelectedId,
-      orElse: () => quote.options.first,
-    );
+    final selectedOption = quote != null && quote.options.isNotEmpty
+        ? quote.options.firstWhere(
+            (opt) => opt.id == effectiveSelectedId,
+            orElse: () => quote.options.first,
+          )
+        : null;
 
     // Ticket #26: Derive quote states for robust UI handling
     // Note: RideQuote domain model enforces options.isNotEmpty via assertion
@@ -331,6 +341,7 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
                     .updateSelectedOption(option.id);
               },
               showHandle: false, // Not a bottom sheet
+              vehicleListKey: RideConfirmationScreen.vehicleListKey,
             ),
           ),
         ],
@@ -344,6 +355,7 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
         SizedBox(
           width: double.infinity,
           child: DWButton.primary(
+            key: RideConfirmationScreen.ctaRequestRideKey,
             label: activeTrip != null
                 ? _phaseLabel(l10n, activeTrip.phase)
                 : l10n.rideConfirmPrimaryCta,
@@ -379,15 +391,25 @@ class _RideConfirmationSheetState extends ConsumerState<_RideConfirmationSheet> 
                     // (canRequestRide requires it), but quote.optionById may return null
                     final selectedOpt = quote == null
                         ? null
-                        : quote.optionById(effectiveSelectedId!) ??
+                        : quote.optionById(effectiveSelectedId) ??
                             quote.recommendedOption;
 
-                    // Track B - Ticket #113: Start trip session from draft (Happy Path)
+                    if (selectedOpt == null) {
+                      // Should not happen if canRequestRide validation is correct
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(l10n.rideQuoteErrorGeneric),
+                        ),
+                      );
+                      return;
+                    }
+
+                    // Track B - Ticket #156: Start trip session from quote (Happy Path)
                     // FSM transitions: draft -> quoting -> requesting -> findingDriver
-                    // Track B - Ticket #105: Pass selectedOption for unified summary
-                    ref.read(rideTripSessionProvider.notifier).startFromDraft(
-                          updatedDraft,
+                    // Use startRideFromQuote for cleaner API
+                    ref.read(rideTripSessionProvider.notifier).startRideFromQuote(
                           selectedOption: selectedOpt,
+                          draft: updatedDraft,
                         );
 
                     // Track B - Ticket #113: Show confirmation message
@@ -435,6 +457,7 @@ class _PaymentMethodSection extends ConsumerWidget {
         : Icons.payments_outlined;
 
     return Card(
+      key: RideConfirmationScreen.paymentMethodCardKey,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),

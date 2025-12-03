@@ -6,7 +6,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:design_system_shims/design_system_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 
 import 'package:delivery_ways_clean/screens/mobility/ride_quote_options_sheet.dart';
@@ -129,7 +128,7 @@ void main() {
 
     testWidgets('calls onOptionSelected when option is tapped', (WidgetTester tester) async {
       // Arrange
-      final option = const RideQuoteOption(
+      const option = RideQuoteOption(
         id: 'economy',
         category: RideVehicleCategory.economy,
         displayName: 'Economy',
@@ -144,7 +143,7 @@ void main() {
           pickup: createLocation(24.7136, 46.6753),
           dropoff: createLocation(24.7200, 46.6800),
         ),
-        options: [option],
+        options: const [option],
       );
 
       RideQuoteOption? selectedOption;
@@ -316,7 +315,7 @@ void main() {
 
     testWidgets('showRideQuoteOptionsSheet returns selected option', (WidgetTester tester) async {
       // Arrange
-      final option = const RideQuoteOption(
+      const option = RideQuoteOption(
         id: 'economy',
         category: RideVehicleCategory.economy,
         displayName: 'Economy',
@@ -331,7 +330,7 @@ void main() {
           pickup: createLocation(24.7136, 46.6753),
           dropoff: createLocation(24.7200, 46.6800),
         ),
-        options: [option],
+        options: const [option],
       );
 
       // Create a test app with a button to show the sheet

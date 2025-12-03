@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobility_shims/mobility_shims.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
-import '../../lib/app_shell/app_shell.dart';
-import '../../lib/state/orders/orders_history_providers.dart';
-import '../../lib/l10n/generated/app_localizations.dart';
+import 'package:auth_shims/auth_shims.dart';
+import 'package:delivery_ways_clean/app_shell/app_shell.dart';
+import 'package:delivery_ways_clean/state/orders/orders_history_providers.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
+import 'package:delivery_ways_clean/state/infra/auth_providers.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 
 /// Test file for Orders History Tab
 /// Track C - Ticket #152
@@ -13,6 +17,7 @@ import '../../lib/l10n/generated/app_localizations.dart';
 void main() {
   group('Orders History Tab Tests', () {
     late List<ParcelShipment> mockShipments;
+    late RideHistoryEntry mockRideEntry;
 
     setUp(() {
       // Create mock parcel shipments
@@ -80,6 +85,21 @@ void main() {
           updatedAt: DateTime.now(),
         ),
       ];
+
+      // Create mock ride history entry
+      final mockTripState = RideTripState(
+        tripId: 'ride-123',
+        phase: RideTripPhase.completed,
+      );
+      mockRideEntry = RideHistoryEntry(
+        trip: mockTripState,
+        destinationLabel: 'Airport',
+        completedAt: DateTime.now().subtract(const Duration(hours: 2)),
+        amountFormatted: '25.00 SAR',
+        serviceName: 'Economy',
+        originLabel: 'Home',
+        paymentMethodLabel: 'Visa ••4242',
+      );
     });
 
     testWidgets('displays Empty State when no shipments exist',
@@ -94,7 +114,7 @@ void main() {
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShell(),
+            home: const AppShellWithNavigation(),
           ),
         ),
       );
@@ -125,7 +145,7 @@ void main() {
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShell(),
+            home: const AppShellWithNavigation(),
           ),
         ),
       );
@@ -157,7 +177,7 @@ void main() {
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShell(),
+            home: const AppShellWithNavigation(),
           ),
         ),
       );
@@ -173,6 +193,43 @@ void main() {
       // Verify parcel orders are still displayed
       expect(find.text('Office'), findsOneWidget);
       expect(find.text('Customer'), findsOneWidget);
+    });
+
+    testWidgets('Rides filter shows only ride orders',
+        (WidgetTester tester) async {
+      final orderItems = [RideOrderHistoryItem(mockRideEntry)];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            ordersHistoryProvider.overrideWithValue(
+              AsyncData<List<OrderHistoryItem>>(orderItems),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const AppShellWithNavigation(),
+          ),
+        ),
+      );
+
+      // Navigate to Orders tab
+      await tester.tap(find.byIcon(Icons.receipt_long_outlined));
+      await tester.pumpAndSettle();
+
+      // Tap on Rides filter
+      await tester.tap(find.text('Rides'));
+      await tester.pumpAndSettle();
+
+      // Verify ride order is displayed
+      expect(find.text('Airport'), findsOneWidget); // Destination label
+      expect(find.text('Completed'), findsOneWidget); // Status
+      expect(find.text('25.00 SAR'), findsOneWidget); // Fare
+      expect(find.text('Economy'), findsOneWidget); // Service name
+      // Verify parcel orders are not displayed
+      expect(find.text('Office'), findsNothing);
+      expect(find.text('Customer'), findsNothing);
     });
 
     testWidgets('Rides filter shows empty state when no rides',
@@ -191,7 +248,7 @@ void main() {
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShell(),
+            home: const AppShellWithNavigation(),
           ),
         ),
       );
@@ -216,11 +273,15 @@ void main() {
             ordersHistoryProvider.overrideWithValue(
               const AsyncLoading<List<OrderHistoryItem>>(),
             ),
+            // Override auth state to prevent timer issues in tests
+            authStateProvider.overrideWith(
+              (ref) => Stream.value(const AuthState.unauthenticated()),
+            ),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShell(),
+            home: const AppShellWithNavigation(),
           ),
         ),
       );
@@ -250,7 +311,7 @@ void main() {
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShell(),
+            home: const AppShellWithNavigation(),
           ),
         ),
       );
@@ -263,6 +324,42 @@ void main() {
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
       expect(find.text('Unable to load orders'), findsOneWidget);
       expect(find.text('Retry'), findsOneWidget);
+    });
+
+    testWidgets('displays mix of ride and parcel orders sorted by date',
+        (WidgetTester tester) async {
+      final parcelItems = mockShipments
+          .map((s) => ParcelOrderHistoryItem(s))
+          .toList();
+      final rideItem = RideOrderHistoryItem(mockRideEntry);
+      final mixedItems = <OrderHistoryItem>[...parcelItems, rideItem];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            ordersHistoryProvider.overrideWithValue(
+              AsyncData<List<OrderHistoryItem>>(mixedItems),
+            ),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const AppShellWithNavigation(),
+          ),
+        ),
+      );
+
+      // Navigate to Orders tab
+      await tester.tap(find.byIcon(Icons.receipt_long_outlined));
+      await tester.pumpAndSettle();
+
+      // Verify both ride and parcel orders are displayed
+      expect(find.text('Airport'), findsOneWidget); // Ride destination
+      expect(find.text('Office'), findsOneWidget); // Parcel dropoff
+      expect(find.text('Customer'), findsOneWidget); // Parcel dropoff
+      expect(find.text('Completed'), findsOneWidget); // Ride status
+      expect(find.text('Created'), findsOneWidget); // Parcel status
+      expect(find.text('Delivered'), findsOneWidget); // Parcel status
     });
 
     testWidgets('order cards display correct information',
@@ -279,7 +376,7 @@ void main() {
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShell(),
+            home: const AppShellWithNavigation(),
           ),
         ),
       );

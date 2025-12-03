@@ -1012,6 +1012,55 @@
     }
   },
 
+  "homeHubTitle": "Where do you want to go?",
+  "@homeHubTitle": {
+    "description": "Main title for Home Hub screen - greeting asking user destination (Ticket #182)"
+  },
+  "homeHubCurrentLocationLabel": "Current location",
+  "@homeHubCurrentLocationLabel": {
+    "description": "Label for current location indicator (Ticket #182)"
+  },
+  "homeHubCurrentLocationLoading": "Detecting your location...",
+  "@homeHubCurrentLocationLoading": {
+    "description": "Temporary message while fetching current location on Home Hub"
+  },
+  "homeHubCurrentLocationUnavailable": "Location not available",
+  "@homeHubCurrentLocationUnavailable": {
+    "description": "Fallback message when current location cannot be determined on Home Hub"
+  },
+  "homeHubServiceRide": "Ride",
+  "@homeHubServiceRide": {
+    "description": "Label for Ride service chip (Ticket #182)"
+  },
+  "homeHubServiceParcels": "Parcels",
+  "@homeHubServiceParcels": {
+    "description": "Label for Parcels service chip (Ticket #182)"
+  },
+  "homeHubServiceFood": "Food",
+  "@homeHubServiceFood": {
+    "description": "Label for Food service chip (Ticket #182)"
+  },
+  "homeHubActiveRideTitle": "Ride in progress",
+  "@homeHubActiveRideTitle": {
+    "description": "Title for active ride card on home hub (Ticket #183)"
+  },
+  "homeHubActiveRideSubtitle": "Continue your active trip",
+  "@homeHubActiveRideSubtitle": {
+    "description": "Subtitle for active ride card on home hub (Ticket #183)"
+  },
+  "homeHubParcelsComingSoonMessage": "Parcels service is coming soon to your city.",
+  "@homeHubParcelsComingSoonMessage": {
+    "description": "SnackBar message shown when user taps Parcels chip on HomeHub (Ticket #184)"
+  },
+  "homeHubFoodComingSoonMessage": "Food ordering is coming soon to your city.",
+  "@homeHubFoodComingSoonMessage": {
+    "description": "SnackBar message shown when user taps Food chip on HomeHub (Ticket #184)"
+  },
+  "homeHubSearchPlaceholder": "Where to?",
+  "@homeHubSearchPlaceholder": {
+    "description": "Placeholder text for the HomeHub search bar used to start a new ride (Ticket #188)"
+  },
+
   "rideDestinationTitle": "Where to?",
   "@rideDestinationTitle": {
     "description": "Title for the ride destination input screen (Screen 8)"
@@ -1184,17 +1233,21 @@
     "description": "Badge shown on recommended ride option (Ticket #91)"
   },
 
-  "rideQuoteErrorTitle": "We couldn't load prices",
+  "rideQuoteErrorTitle": "We couldn't load ride options",
   "@rideQuoteErrorTitle": {
     "description": "Title for the error state when ride pricing fails (Track B - Ticket #121)"
   },
-  "rideQuoteErrorGeneric": "Something went wrong while fetching ride prices. Please try again.",
+  "rideQuoteErrorGeneric": "Please check your connection and try again.",
   "@rideQuoteErrorGeneric": {
     "description": "Generic error message for pricing failures (Track B - Ticket #121)"
   },
   "rideQuoteErrorNoOptions": "No ride options are available for this route right now.",
   "@rideQuoteErrorNoOptions": {
     "description": "Error message when no ride options are returned (Track B - Ticket #121)"
+  },
+  "ridePricingErrorGeneric": "We couldn't load prices. Please try again.",
+  "@ridePricingErrorGeneric": {
+    "description": "Generic error message for pricing failures (Ticket #196)"
   },
   "rideQuoteRetryCta": "Retry",
   "@rideQuoteRetryCta": {
@@ -1204,7 +1257,7 @@
   "@rideQuoteEmptyTitle": {
     "description": "Title for empty state when no ride options (Track B - Ticket #121)"
   },
-  "rideQuoteEmptyDescription": "Try a different time or adjust your pickup and destination.",
+  "rideQuoteEmptyDescription": "Please try again in a few minutes.",
   "@rideQuoteEmptyDescription": {
     "description": "Description for empty state when no ride options (Track B - Ticket #121)"
   },
@@ -2083,6 +2136,21 @@
     "description": "Done CTA button (Ticket #92)"
   },
 
+  "rideDriverMockName": "Ahmad M.",
+  "@rideDriverMockName": {
+    "description": "Mock driver name for development (Track C - Ticket #171)"
+  },
+
+  "rideDriverMockCarInfo": "Toyota Camry • ABC 1234",
+  "@rideDriverMockCarInfo": {
+    "description": "Mock driver car info for development (Track C - Ticket #171)"
+  },
+
+  "rideDriverMockRating": "4.9",
+  "@rideDriverMockRating": {
+    "description": "Mock driver rating for development (Track C - Ticket #171)"
+  },
+
   "rideSummaryEndTripDebugCta": "End trip",
   "@rideSummaryEndTripDebugCta": {
     "description": "Debug CTA button to end trip (Track B - Ticket #62)"
@@ -2494,7 +2562,11 @@
   "@parcelsShipmentStatusCancelled": {
     "description": "Shipment status: cancelled (Track C - Ticket #149)"
   },
-  
+  "parcelsShipmentsErrorTitle": "Something went wrong",
+  "@parcelsShipmentsErrorTitle": {
+    "description": "Error state title for shipments list (Track C - Ticket #149)"
+  },
+
   "parcelsCreateShipmentTitle": "Create shipment",
   "@parcelsCreateShipmentTitle": {
     "description": "Title for create shipment screen (Track C - Ticket #150)"
@@ -2631,5 +2703,13 @@
   "commonTotalLabel": "Total",
   "@commonTotalLabel": {
     "description": "Total price label (Track C - Ticket #151)"
+  },
+  "homeHubRecentDestinationsTitle": "Recent destinations",
+  "@homeHubRecentDestinationsTitle": {
+    "description": "Title for the recent destinations shortcuts section on the HomeHub screen (Ticket #189)"
+  },
+  "homeHubRecentDestinationsSeeAll": "See all",
+  "@homeHubRecentDestinationsSeeAll": {
+    "description": "Button label to show all recent destinations from HomeHub (Ticket #194)"
   }
 }

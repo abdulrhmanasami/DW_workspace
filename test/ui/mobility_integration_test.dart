@@ -6,7 +6,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobility_shims/mobility.dart';
-import '../../lib/wiring/mobility_binding.dart';
+import 'package:delivery_ways_clean/wiring/mobility_binding.dart';
 
 void main() {
   group('Mobility Integration Tests', () {

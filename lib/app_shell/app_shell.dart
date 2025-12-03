@@ -31,7 +31,7 @@ import 'package:flutter/material.dart';
 import '../l10n/generated/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobility_shims/mobility_shims.dart';
-import 'package:parcels_shims/parcels_shims.dart' show Parcel, ParcelShipment, ParcelShipmentStatus, Address, ParcelDetails, ParcelDimensions;
+import 'package:parcels_shims/parcels_shims.dart' show Parcel, ParcelShipment, ParcelShipmentStatus;
 import 'package:design_system_shims/design_system_shims.dart'
     show DWButton, DWSpacing, DWRadius;
 
@@ -61,16 +61,53 @@ import '../widgets/ride_map_from_commands.dart';
 import '../state/mobility/ride_map_commands_builder.dart';
 import '../state/orders/orders_history_providers.dart';
 
-/// Root App Shell for Delivery Ways Super-App
-/// Tabs: Home, Orders, Payments, Profile
-class AppShell extends StatefulWidget {
-  const AppShell({super.key});
+/// AppShell V1 - Unified App Container
+/// Created by: Ticket #179
+/// Purpose: Universal container for all app screens with background and SafeArea
+///
+/// This widget serves as a unified wrapper around the entire app,
+/// providing consistent background color and SafeArea across all screens.
+/// Navigation logic is handled separately in future tickets.
+
+/// AppShell V1
+/// حاوية عامة لكل شاشات التطبيق:
+/// - تضبط لون الخلفية من الـ Theme
+/// - تضيف SafeArea حول الـ child (إن وجد)
+///
+/// ملاحظة:
+/// - `child` اختياري لدعم الاستدعاءات القديمة `AppShell()` في الراوتر والاختبارات.
+/// - في حالة عدم تمرير child، يتم استخدام `SizedBox.shrink()` كـ محتوى افتراضي.
+class AppShell extends StatelessWidget {
+  final Widget? child;
+
+  const AppShell({
+    super.key,
+    this.child,
+  });
 
   @override
-  State<AppShell> createState() => _AppShellState();
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final Widget content = child ?? const SizedBox.shrink();
+
+    return ColoredBox(
+      color: theme.colorScheme.surface,
+      child: content,
+    );
+  }
 }
 
-class _AppShellState extends State<AppShell> {
+
+/// Legacy AppShell with Navigation - will be refactored in future tickets
+/// TODO: Move to navigation_shell.dart in future ticket
+class AppShellWithNavigation extends StatefulWidget {
+  const AppShellWithNavigation({super.key});
+
+  @override
+  State<AppShellWithNavigation> createState() => _AppShellWithNavigationState();
+}
+
+class _AppShellWithNavigationState extends State<AppShellWithNavigation> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -222,7 +259,7 @@ class _HomeTab extends ConsumerWidget {
                 size: 48,
                 color: colorScheme.onSurfaceVariant,
               ),
-              SizedBox(height: DWSpacing.xs),
+              const SizedBox(height: DWSpacing.xs),
               Text(
                 'Map area',
                 textAlign: TextAlign.center,
@@ -242,7 +279,7 @@ class _HomeTab extends ConsumerWidget {
         children: [
           // Top Bar: location + profile icon
           Padding(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: DWSpacing.md,
               vertical: DWSpacing.xs,
             ),
@@ -292,7 +329,7 @@ class _HomeTab extends ConsumerWidget {
           // Screen 7 design: Shows activeTripMapCommands when ride is in progress
           // Aspect ratio adjusts when active trip exists (Track B - Ticket #19)
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: DWSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: DWSpacing.md),
             child: AspectRatio(
               aspectRatio: aspectRatio,
               child: ClipRRect(
@@ -310,10 +347,10 @@ class _HomeTab extends ConsumerWidget {
           // When there's an active parcel/trip, show a prominent "hero" card section
           // between the map and service cards (Screen 7 design)
           if (hasActiveOrder) ...[
-            SizedBox(height: DWSpacing.sm),
+            const SizedBox(height: DWSpacing.sm),
             // Active Order Cards Section - Hero area
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: DWSpacing.md),
+              padding: const EdgeInsets.symmetric(horizontal: DWSpacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -322,7 +359,7 @@ class _HomeTab extends ConsumerWidget {
                     _ActiveParcelHomeCard(
                       activeParcel: activeParcel,
                     ),
-                    if (hasActiveTrip) SizedBox(height: DWSpacing.sm),
+                    if (hasActiveTrip) const SizedBox(height: DWSpacing.sm),
                   ],
                   // Active Ride Card (Track B - Ticket #19, #86, #105)
                   // Track B - Ticket #86: Uses localizedRidePhaseStatusLong for status
@@ -341,23 +378,23 @@ class _HomeTab extends ConsumerWidget {
                 ],
               ),
             ),
-            SizedBox(height: DWSpacing.sm),
+            const SizedBox(height: DWSpacing.sm),
           ] else ...[
-            SizedBox(height: DWSpacing.md),
+            const SizedBox(height: DWSpacing.md),
           ],
 
           // Service Cards Section: Ride / Parcels / Food
           // Track C - Ticket #71: When active order exists, services are secondary (below hero)
           Expanded(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: DWSpacing.md),
+              padding: const EdgeInsets.symmetric(horizontal: DWSpacing.md),
               child: ListView(
                 children: [
                   Text(
                     'Services',
                     style: textTheme.headlineSmall,
                   ),
-                  SizedBox(height: DWSpacing.xs),
+                  const SizedBox(height: DWSpacing.xs),
                   _ServiceCard(
                     icon: Icons.directions_car,
                     title: l10n.homeRideCardTitle,
@@ -373,7 +410,7 @@ class _HomeTab extends ConsumerWidget {
                       }
                     },
                   ),
-                  SizedBox(height: DWSpacing.xs),
+                  const SizedBox(height: DWSpacing.xs),
                   _ServiceCard(
                     icon: Icons.inventory_2_outlined,
                     title: 'Parcels',
@@ -394,7 +431,7 @@ class _HomeTab extends ConsumerWidget {
                       }
                     },
                   ),
-                  SizedBox(height: DWSpacing.xs),
+                  const SizedBox(height: DWSpacing.xs),
                   _ServiceCard(
                     icon: Icons.fastfood_outlined,
                     title: l10n.homeFoodCardTitle,
@@ -478,7 +515,7 @@ class _ActiveParcelHomeCard extends StatelessWidget {
         onTap: navigateToDetails,
         child: Padding(
           // space.md padding from Design Tokens
-          padding: EdgeInsets.all(DWSpacing.md),
+          padding: const EdgeInsets.all(DWSpacing.md),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -496,7 +533,7 @@ class _ActiveParcelHomeCard extends StatelessWidget {
                   size: 24,
                 ),
               ),
-              SizedBox(width: DWSpacing.md),
+              const SizedBox(width: DWSpacing.md),
               // Text content: Title + Subtitle
               Expanded(
                 child: Column(
@@ -512,7 +549,7 @@ class _ActiveParcelHomeCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     if (destinationLabel.isNotEmpty) ...[
-                      SizedBox(height: DWSpacing.xxs),
+                      const SizedBox(height: DWSpacing.xxs),
                       // type.subtitle.default → bodyMedium
                       Text(
                         l10n.homeActiveParcelSubtitleToDestination(
@@ -528,7 +565,7 @@ class _ActiveParcelHomeCard extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(width: DWSpacing.sm),
+              const SizedBox(width: DWSpacing.sm),
               // CTA: "View shipment" using DWButton.tertiary for type.label.button
               // Track C - Ticket #74: Unified navigation
               DWButton.tertiary(
@@ -606,7 +643,7 @@ class _ActiveRideHomeCard extends ConsumerWidget {
         onTap: onViewTrip,
         child: Padding(
           // space.md padding from Design Tokens
-          padding: EdgeInsets.all(DWSpacing.md),
+          padding: const EdgeInsets.all(DWSpacing.md),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -624,7 +661,7 @@ class _ActiveRideHomeCard extends ConsumerWidget {
                   size: 24,
                 ),
               ),
-              SizedBox(width: DWSpacing.md),
+              const SizedBox(width: DWSpacing.md),
               // Text content: Title + Subtitle + Price/Payment (Ticket #105, #114)
               Expanded(
                 child: Column(
@@ -642,7 +679,7 @@ class _ActiveRideHomeCard extends ConsumerWidget {
                     ),
                     if (destinationLabel != null &&
                         destinationLabel!.isNotEmpty) ...[
-                      SizedBox(height: DWSpacing.xxs),
+                      const SizedBox(height: DWSpacing.xxs),
                       // type.subtitle.default → bodyMedium
                       Text(
                         destinationLabel!,
@@ -655,7 +692,7 @@ class _ActiveRideHomeCard extends ConsumerWidget {
                     ],
                     // Track B - Ticket #105: Price + Payment method line
                     if (priceAndPaymentLabel != null) ...[
-                      SizedBox(height: DWSpacing.xxs),
+                      const SizedBox(height: DWSpacing.xxs),
                       Text(
                         priceAndPaymentLabel,
                         style: textTheme.bodySmall?.copyWith(
@@ -668,7 +705,7 @@ class _ActiveRideHomeCard extends ConsumerWidget {
                   ],
                 ),
               ),
-              SizedBox(width: DWSpacing.sm),
+              const SizedBox(width: DWSpacing.sm),
               // CTA: "View trip" using DWButton.tertiary for type.label.button
               DWButton.tertiary(
                 label: l10n.homeActiveRideViewTripCta,
@@ -733,18 +770,18 @@ class _ServiceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(DWRadius.md),
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.all(DWSpacing.md),
+          padding: const EdgeInsets.all(DWSpacing.md),
           child: Row(
             children: [
               Container(
-                padding: EdgeInsets.all(DWSpacing.sm),
+                padding: const EdgeInsets.all(DWSpacing.sm),
                 decoration: BoxDecoration(
                   color: colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(DWRadius.md),
                 ),
                 child: Icon(icon, color: colorScheme.primary, size: 28),
               ),
-              SizedBox(width: DWSpacing.md),
+              const SizedBox(width: DWSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -755,7 +792,7 @@ class _ServiceCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: DWSpacing.xxs),
+                    const SizedBox(height: DWSpacing.xxs),
                     Text(
                       subtitle,
                       style: textTheme.bodyMedium?.copyWith(
@@ -864,8 +901,11 @@ class _OrdersTabState extends ConsumerState<_OrdersTab> {
                           l10n: l10n,
                         );
                       case OrderHistoryServiceType.ride:
-                        // TODO (future): Ride order card
-                        return const SizedBox.shrink();
+                        final rideItem = item as RideOrderHistoryItem;
+                        return _RideOrderCard(
+                          entry: rideItem.entry,
+                          l10n: l10n,
+                        );
                       case OrderHistoryServiceType.food:
                         // TODO (future): Food order card
                         return const SizedBox.shrink();
@@ -1168,6 +1208,194 @@ class _ParcelOrderCard extends StatelessWidget {
   }
 }
 
+/// Ride Order Card for Orders Tab
+/// Track B - Ticket #157: Ride history integration with Orders History
+class _RideOrderCard extends StatelessWidget {
+  const _RideOrderCard({
+    required this.entry,
+    required this.l10n,
+  });
+
+  final RideHistoryEntry entry;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    final dateText = MaterialLocalizations.of(context)
+        .formatMediumDate(entry.completedAt);
+
+    final statusLabel = _mapRideStatusToLabel(l10n, entry.trip.phase);
+    final statusColor = _mapRideStatusToColor(colorScheme, entry.trip.phase);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: DWSpacing.sm),
+      padding: const EdgeInsets.all(DWSpacing.md),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(DWRadius.lg),
+        boxShadow: kElevationToShadow[1],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Icon
+          Container(
+            padding: const EdgeInsets.all(DWSpacing.sm),
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(DWRadius.md),
+            ),
+            child: Icon(
+              Icons.directions_car_outlined,
+              size: 24,
+              color: colorScheme.onPrimaryContainer,
+            ),
+          ),
+          const SizedBox(width: DWSpacing.md),
+          // Content
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title + status chip
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        entry.destinationLabel,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: DWSpacing.xs),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: DWSpacing.sm,
+                        vertical: DWSpacing.xs,
+                      ),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(DWRadius.sm),
+                      ),
+                      child: Text(
+                        statusLabel,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: statusColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: DWSpacing.xs),
+                // Route line (pickup -> dest) if available
+                if (entry.originLabel != null && entry.destinationLabel.isNotEmpty)
+                  Text(
+                    '${entry.originLabel} → ${entry.destinationLabel}',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                const SizedBox(height: DWSpacing.xs),
+                // Service name + date and fare
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Service name and date
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (entry.serviceName != null)
+                            Text(
+                              entry.serviceName!,
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          Text(
+                            dateText,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Fare
+                    if (entry.amountFormatted != null)
+                      Text(
+                        entry.amountFormatted!,
+                        style: textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _mapRideStatusToLabel(AppLocalizations l10n, RideTripPhase phase) {
+    switch (phase) {
+      case RideTripPhase.draft:
+        return l10n.rideStatusShortDraft;
+      case RideTripPhase.quoting:
+        return l10n.rideStatusShortQuoting;
+      case RideTripPhase.requesting:
+        return l10n.rideStatusShortRequesting;
+      case RideTripPhase.findingDriver:
+        return l10n.rideStatusShortFindingDriver;
+      case RideTripPhase.driverAccepted:
+        return l10n.rideStatusShortDriverAccepted;
+      case RideTripPhase.driverArrived:
+        return l10n.rideStatusShortDriverArrived;
+      case RideTripPhase.inProgress:
+      case RideTripPhase.payment:
+        return l10n.rideStatusShortInProgress;
+      case RideTripPhase.completed:
+        return l10n.rideStatusShortCompleted;
+      case RideTripPhase.cancelled:
+        return l10n.rideStatusShortCancelled;
+      case RideTripPhase.failed:
+        return l10n.rideStatusShortFailed;
+    }
+  }
+
+  Color _mapRideStatusToColor(ColorScheme colorScheme, RideTripPhase phase) {
+    switch (phase) {
+      case RideTripPhase.draft:
+      case RideTripPhase.quoting:
+      case RideTripPhase.requesting:
+      case RideTripPhase.findingDriver:
+      case RideTripPhase.driverAccepted:
+      case RideTripPhase.driverArrived:
+      case RideTripPhase.inProgress:
+      case RideTripPhase.payment:
+        return colorScheme.primary;
+      case RideTripPhase.completed:
+        return colorScheme.secondary;
+      case RideTripPhase.cancelled:
+      case RideTripPhase.failed:
+        return colorScheme.error;
+    }
+  }
+}
+
 /// Loading State for Orders Tab
 /// Track C - Ticket #153: Enhanced with skeleton loader matching Card/Order design
 class _OrdersLoadingState extends StatelessWidget {
@@ -1300,7 +1528,6 @@ class _OrdersErrorState extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    final l10n = AppLocalizations.of(context)!;
 
     // Simplify error message for user display
     final displayMessage = message.contains('Exception:') 
@@ -1464,7 +1691,7 @@ class _ProfileTab extends ConsumerWidget {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: EdgeInsets.all(DWSpacing.md),
+        padding: const EdgeInsets.all(DWSpacing.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -1473,13 +1700,13 @@ class _ProfileTab extends ConsumerWidget {
               l10n.profileTitle,
               style: textTheme.headlineMedium,
             ),
-            SizedBox(height: DWSpacing.md),
+            const SizedBox(height: DWSpacing.md),
 
             // User Info Card
             Card(
               // Uses CardTheme from DWTheme (radius: DWRadius.md)
               child: Padding(
-                padding: EdgeInsets.all(DWSpacing.md),
+                padding: const EdgeInsets.all(DWSpacing.md),
                 child: Row(
                   children: [
                     CircleAvatar(
@@ -1491,7 +1718,7 @@ class _ProfileTab extends ConsumerWidget {
                         size: 32,
                       ),
                     ),
-                    SizedBox(width: DWSpacing.md),
+                    const SizedBox(width: DWSpacing.md),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1502,7 +1729,7 @@ class _ProfileTab extends ConsumerWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(height: DWSpacing.xxs),
+                          const SizedBox(height: DWSpacing.xxs),
                           Text(
                             phone ?? '—',
                             style: textTheme.bodyMedium?.copyWith(
@@ -1517,7 +1744,7 @@ class _ProfileTab extends ConsumerWidget {
               ),
             ),
 
-            SizedBox(height: DWSpacing.lg),
+            const SizedBox(height: DWSpacing.lg),
 
             // Settings Section
             Text(
@@ -1526,7 +1753,7 @@ class _ProfileTab extends ConsumerWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: DWSpacing.xs),
+            const SizedBox(height: DWSpacing.xs),
 
             _ProfileListTile(
               icon: Icons.person_outline,
@@ -1557,7 +1784,7 @@ class _ProfileTab extends ConsumerWidget {
               onTap: null,
             ),
 
-            SizedBox(height: DWSpacing.lg),
+            const SizedBox(height: DWSpacing.lg),
 
             // Privacy & Data Section (DSR)
             Text(
@@ -1566,7 +1793,7 @@ class _ProfileTab extends ConsumerWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            SizedBox(height: DWSpacing.xs),
+            const SizedBox(height: DWSpacing.xs),
 
             _ProfileListTile(
               icon: Icons.download_outlined,
@@ -1583,7 +1810,7 @@ class _ProfileTab extends ConsumerWidget {
               onTap: () => _openDsrErasure(context),
             ),
 
-            SizedBox(height: DWSpacing.lg),
+            const SizedBox(height: DWSpacing.lg),
 
             // Logout
             _ProfileListTile(
@@ -1664,7 +1891,7 @@ class _ProfileListTile extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Card(
-      margin: EdgeInsets.symmetric(vertical: DWSpacing.xxs),
+      margin: const EdgeInsets.symmetric(vertical: DWSpacing.xxs),
       // Uses CardTheme from DWTheme (radius: DWRadius.md)
       child: ListTile(
         enabled: enabled,
@@ -1717,7 +1944,7 @@ class _AccountBottomSheet extends ConsumerWidget {
     final phoneNumber = authState.phoneNumber;
 
     return Padding(
-      padding: EdgeInsets.all(DWSpacing.lg),
+      padding: const EdgeInsets.all(DWSpacing.lg),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

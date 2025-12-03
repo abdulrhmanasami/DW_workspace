@@ -22,7 +22,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: locale,
-          home: const AppShell(),
+          home: const AppShellWithNavigation(),
         ),
       );
     }

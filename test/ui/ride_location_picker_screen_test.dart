@@ -15,11 +15,30 @@ import 'package:delivery_ways_clean/state/mobility/ride_quote_controller.dart';
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 
 // Shims
+import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
+// Recent locations
+import 'package:delivery_ways_clean/state/mobility/ride_recent_locations_providers.dart';
+
 // Test support
 import '../support/design_system_harness.dart';
+
+/// Helper to pump the location picker screen with limited pumps to avoid timeouts.
+/// Replaces pumpAndSettle which can hang on map widgets with continuous animations.
+Future<void> pumpLocationPicker(
+  WidgetTester tester,
+  Widget widget, {
+  int maxPumps = 10,
+}) async {
+  await tester.pumpWidget(widget);
+
+  // Limited pumps instead of pumpAndSettle to prevent timeouts on map widgets
+  for (var i = 0; i < maxPumps; i++) {
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+}
 
 void main() {
   setUpAll(() {
@@ -54,6 +73,25 @@ void main() {
           rideQuoteControllerProvider.overrideWith(
             (ref) => _FakeRideQuoteController(initialState: quote),
           ),
+          // Override map to prevent pumpAndSettle timeouts (Ticket #172)
+          mapViewBuilderProvider.overrideWith(
+            (ref) => (params) => const SizedBox(key: Key('map_placeholder')),
+          ),
+          // Override recent locations for consistent test data
+          recentLocationsProvider.overrideWith(
+            (ref) => Stream.value([
+              const RecentLocation(
+                id: 'home',
+                title: 'Home',
+                type: MobilityPlaceType.saved,
+              ),
+              const RecentLocation(
+                id: 'work',
+                title: 'Work',
+                type: MobilityPlaceType.saved,
+              ),
+            ]),
+          ),
         ],
         child: MaterialApp(
           locale: locale,
@@ -78,8 +116,7 @@ void main() {
     // ========================================================================
 
     testWidgets('shows search fields and map placeholder', (tester) async {
-      await tester.pumpWidget(buildTestWidget());
-      await tester.pumpAndSettle();
+      await pumpLocationPicker(tester, buildTestWidget());
 
       // Verify title
       expect(find.text('Choose your trip'), findsOneWidget);
@@ -103,13 +140,15 @@ void main() {
 
     testWidgets('disables continue CTA when locations are missing',
         (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        rideDraft: const RideDraftUiState(
-          pickupLabel: '',
-          destinationQuery: '',
+      await pumpLocationPicker(
+        tester,
+        buildTestWidget(
+          rideDraft: const RideDraftUiState(
+            pickupLabel: '',
+            destinationQuery: '',
+          ),
         ),
-      ));
-      await tester.pumpAndSettle();
+      );
 
       // Find the Continue CTA
       final continueButton = find.text('See prices');
@@ -140,11 +179,10 @@ void main() {
           ),
         ),
       ));
-      await tester.pumpAndSettle();
 
       // Scroll to see the button
       await tester.ensureVisible(find.text('See prices'));
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Verify the button is enabled (DWButton with non-null onPressed)
       final dwButton = tester.widget<DWButton>(find.byType(DWButton));
@@ -156,8 +194,7 @@ void main() {
     // ========================================================================
 
     testWidgets('updates draft when destination is entered', (tester) async {
-      await tester.pumpWidget(buildTestWidget());
-      await tester.pumpAndSettle();
+      await pumpLocationPicker(tester, buildTestWidget());
 
       // Find the destination text field (search field)
       final textField = find.byType(TextField);
@@ -165,7 +202,7 @@ void main() {
 
       // Enter destination
       await tester.enterText(textField, 'Airport');
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 100));
 
       // Verify the text was entered
       expect(find.text('Airport'), findsOneWidget);
@@ -176,8 +213,7 @@ void main() {
     // ========================================================================
 
     testWidgets('shows recent locations list', (tester) async {
-      await tester.pumpWidget(buildTestWidget());
-      await tester.pumpAndSettle();
+      await pumpLocationPicker(tester, buildTestWidget());
 
       // Verify recent locations section header
       expect(find.text('Recent locations'), findsOneWidget);
@@ -192,8 +228,10 @@ void main() {
     // ========================================================================
 
     testWidgets('l10n AR renders Arabic labels', (tester) async {
-      await tester.pumpWidget(buildTestWidget(locale: const Locale('ar')));
-      await tester.pumpAndSettle();
+      await pumpLocationPicker(
+        tester,
+        buildTestWidget(locale: const Locale('ar')),
+      );
 
       // Verify Arabic title
       expect(find.text('اختيار موقع الرحلة'), findsOneWidget);
@@ -216,8 +254,10 @@ void main() {
     // ========================================================================
 
     testWidgets('l10n DE renders German labels', (tester) async {
-      await tester.pumpWidget(buildTestWidget(locale: const Locale('de')));
-      await tester.pumpAndSettle();
+      await pumpLocationPicker(
+        tester,
+        buildTestWidget(locale: const Locale('de')),
+      );
 
       // Verify German title
       expect(find.text('Fahrtziel wählen'), findsOneWidget);
@@ -241,8 +281,7 @@ void main() {
 
     testWidgets('pickup field is tappable and opens search sheet',
         (tester) async {
-      await tester.pumpWidget(buildTestWidget());
-      await tester.pumpAndSettle();
+      await pumpLocationPicker(tester, buildTestWidget());
 
       // Find the pickup field by looking for the edit icon
       final editIcon = find.byIcon(Icons.edit_location_outlined);
@@ -253,16 +292,16 @@ void main() {
         of: find.text('Pickup'),
         matching: find.byType(Column),
       ).first;
-      
+
       // Find the InkWell within the pickup section
       final inkWell = find.descendant(
         of: pickupField,
         matching: find.byType(InkWell),
       );
-      
+
       if (inkWell.evaluate().isNotEmpty) {
         await tester.tap(inkWell.first);
-        await tester.pumpAndSettle();
+        await tester.pump(const Duration(milliseconds: 100));
 
         // Verify search sheet opened
         expect(find.byType(TextField), findsAtLeastNWidgets(1));
@@ -274,8 +313,7 @@ void main() {
     // ========================================================================
 
     testWidgets('uses Design System components', (tester) async {
-      await tester.pumpWidget(buildTestWidget());
-      await tester.pumpAndSettle();
+      await pumpLocationPicker(tester, buildTestWidget());
 
       // Verify DWButton is used
       expect(find.byType(DWButton), findsOneWidget);
@@ -286,13 +324,15 @@ void main() {
     // ========================================================================
 
     testWidgets('displays pickup placeholder when empty', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        rideDraft: const RideDraftUiState(
-          pickupLabel: '',
-          destinationQuery: '',
+      await pumpLocationPicker(
+        tester,
+        buildTestWidget(
+          rideDraft: const RideDraftUiState(
+            pickupLabel: '',
+            destinationQuery: '',
+          ),
         ),
-      ));
-      await tester.pumpAndSettle();
+      );
 
       // Should show placeholder text
       expect(find.text('Where should we pick you up?'), findsAtLeastNWidgets(1));

@@ -38,6 +38,10 @@ void main() {
   });
 
   group('Ride Trip Complete Screen Tests (Ticket #107)', () {
+    /// Helper to get AppLocalizations from the test widget
+    AppLocalizations _l10n(WidgetTester tester) =>
+        AppLocalizations.of(tester.element(find.byType(RideTripSummaryScreen)))!;
+
     /// Helper to build the test widget with provider overrides
     Widget buildTestWidget({
       required RideTripSessionUiState tripSession,
@@ -66,15 +70,15 @@ void main() {
             ),
           ),
           paymentMethodsUiProvider.overrideWith(
-            (ref) => paymentsState ?? PaymentMethodsUiState(
+            (ref) => paymentsState ?? const PaymentMethodsUiState(
               methods: [
-                const PaymentMethodUiModel(
+                PaymentMethodUiModel(
                   id: 'cash',
                   displayName: 'Cash',
                   type: PaymentMethodUiType.cash,
                   isDefault: true,
                 ),
-                const PaymentMethodUiModel(
+                PaymentMethodUiModel(
                   id: 'visa_4242',
                   displayName: 'Visa ••4242',
                   type: PaymentMethodUiType.card,
@@ -110,7 +114,7 @@ void main() {
       'shows_trip_summary_after_completion_via_history',
       (WidgetTester tester) async {
         // Track B - Ticket #118: Screen now reads from historyTrips after completeCurrentTrip
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-trip-completed-123',
           phase: RideTripPhase.inProgress, // Not yet completed - screen will complete it
         );
@@ -129,7 +133,7 @@ void main() {
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(
+          tripSession: const RideTripSessionUiState(
             activeTrip: activeTrip,
             tripSummary: tripSummary,
             draftSnapshot: draftSnapshot,
@@ -138,7 +142,8 @@ void main() {
         await tester.pumpAndSettle();
 
         // Verify the screen shows Trip summary title
-        expect(find.text('Trip summary'), findsOneWidget);
+        final l10n = _l10n(tester);
+        expect(find.text(l10n.rideTripSummaryTitle), findsOneWidget);
 
         // Verify service name is shown (Economy ride)
         expect(find.textContaining('Economy'), findsWidgets);
@@ -150,7 +155,7 @@ void main() {
         expect(find.textContaining('Visa'), findsWidgets);
 
         // Verify Done CTA is shown
-        expect(find.text('Done'), findsOneWidget);
+        expect(find.text(l10n.rideTripSummaryDoneCta), findsOneWidget);
       },
     );
 
@@ -160,28 +165,29 @@ void main() {
     testWidgets(
       'shows_fallback_when_no_summary_available',
       (WidgetTester tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-trip-no-summary',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(
+          tripSession: const RideTripSessionUiState(
             activeTrip: activeTrip,
             tripSummary: null, // No trip summary
-            draftSnapshot: const RideDraftUiState(destinationQuery: 'Test'),
+            draftSnapshot: RideDraftUiState(destinationQuery: 'Test'),
           ),
         ));
         await tester.pumpAndSettle();
 
         // Should still render the summary screen
-        expect(find.text('Trip summary'), findsOneWidget);
+        final l10n2 = _l10n(tester);
+        expect(find.text(l10n2.rideTripSummaryTitle), findsOneWidget);
 
         // Should show default payment method (Cash as fallback)
-        expect(find.text('Cash'), findsOneWidget);
+        expect(find.text(l10n2.rideTripConfirmationPaymentMethodCash), findsOneWidget);
 
         // Done CTA should be shown
-        expect(find.text('Done'), findsOneWidget);
+        expect(find.text(l10n2.rideTripSummaryDoneCta), findsOneWidget);
       },
     );
 
@@ -191,7 +197,7 @@ void main() {
     testWidgets(
       'l10n_ar_shows_arabic_completion_texts',
       (WidgetTester tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-trip-ar',
           phase: RideTripPhase.inProgress,
         );
@@ -204,23 +210,24 @@ void main() {
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(
+          tripSession: const RideTripSessionUiState(
             activeTrip: activeTrip,
             tripSummary: tripSummary,
-            draftSnapshot: const RideDraftUiState(destinationQuery: 'Test'),
+            draftSnapshot: RideDraftUiState(destinationQuery: 'Test'),
           ),
           locale: const Locale('ar'),
         ));
         await tester.pumpAndSettle();
 
         // Verify Arabic title is shown
-        expect(find.text('ملخص الرحلة'), findsOneWidget);
+        final l10nAr = _l10n(tester);
+        expect(find.text(l10nAr.rideTripSummaryTitle), findsOneWidget);
 
         // Verify Arabic Done CTA
-        expect(find.text('إنهاء'), findsOneWidget);
+        expect(find.text(l10nAr.rideTripSummaryDoneCta), findsOneWidget);
 
         // Verify Arabic Trip completed text
-        expect(find.text('تم إنهاء الرحلة'), findsOneWidget);
+        expect(find.text(l10nAr.rideTripSummaryCompletedTitle), findsOneWidget);
       },
     );
 
@@ -230,7 +237,7 @@ void main() {
     testWidgets(
       'displays_correct_service_and_price_from_history_entry',
       (WidgetTester tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-trip-xl',
           phase: RideTripPhase.inProgress,
         );
@@ -244,10 +251,10 @@ void main() {
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(
+          tripSession: const RideTripSessionUiState(
             activeTrip: activeTrip,
             tripSummary: tripSummary,
-            draftSnapshot: const RideDraftUiState(destinationQuery: 'Test'),
+            draftSnapshot: RideDraftUiState(destinationQuery: 'Test'),
           ),
         ));
         await tester.pumpAndSettle();
@@ -266,19 +273,19 @@ void main() {
     testWidgets(
       'completed_header_shows_trip_id',
       (WidgetTester tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'local-1234567890',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(
+          tripSession: const RideTripSessionUiState(
             activeTrip: activeTrip,
-            tripSummary: const RideTripSummary(
+            tripSummary: RideTripSummary(
               selectedServiceName: 'Economy',
               fareDisplayText: '≈ 20.00 SAR',
             ),
-            draftSnapshot: const RideDraftUiState(destinationQuery: 'Test'),
+            draftSnapshot: RideDraftUiState(destinationQuery: 'Test'),
           ),
         ));
         await tester.pumpAndSettle();
@@ -294,7 +301,7 @@ void main() {
     testWidgets(
       'payment_method_from_history_entry_is_shown',
       (WidgetTester tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-trip-card-payment',
           phase: RideTripPhase.inProgress,
         );
@@ -307,10 +314,10 @@ void main() {
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(
+          tripSession: const RideTripSessionUiState(
             activeTrip: activeTrip,
             tripSummary: tripSummary,
-            draftSnapshot: const RideDraftUiState(destinationQuery: 'Test'),
+            draftSnapshot: RideDraftUiState(destinationQuery: 'Test'),
           ),
         ));
         await tester.pumpAndSettle();
@@ -329,25 +336,26 @@ void main() {
     testWidgets(
       'driver_rating_section_is_visible',
       (WidgetTester tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-trip-rating',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(
+          tripSession: const RideTripSessionUiState(
             activeTrip: activeTrip,
-            tripSummary: const RideTripSummary(
+            tripSummary: RideTripSummary(
               selectedServiceName: 'Economy',
               fareDisplayText: '≈ 18.00 SAR',
             ),
-            draftSnapshot: const RideDraftUiState(destinationQuery: 'Test'),
+            draftSnapshot: RideDraftUiState(destinationQuery: 'Test'),
           ),
         ));
         await tester.pumpAndSettle();
 
         // Verify driver section title (L10n: rideReceiptDriverSectionTitle)
-        expect(find.text('Driver & vehicle'), findsOneWidget);
+        final l10nDriver = _l10n(tester);
+        expect(find.text(l10nDriver.rideReceiptDriverSectionTitle), findsOneWidget);
 
         // Verify star icons for rating
         expect(find.byIcon(Icons.star_border), findsWidgets);
@@ -360,7 +368,7 @@ void main() {
     testWidgets(
       'complete_current_trip_called_on_init_archives_to_history',
       (WidgetTester tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-trip-archive',
           phase: RideTripPhase.inProgress,
         );
@@ -383,7 +391,7 @@ void main() {
               rideTripSessionProvider.overrideWith(
                 (ref) {
                   final controller = _FakeRideTripSessionController(
-                    initialState: RideTripSessionUiState(
+                    initialState: const RideTripSessionUiState(
                       activeTrip: activeTrip,
                       tripSummary: tripSummary,
                       draftSnapshot: draftSnapshot,
@@ -407,8 +415,8 @@ void main() {
                 ),
               ),
               paymentMethodsUiProvider.overrideWith(
-                (ref) => PaymentMethodsUiState(
-                  methods: const [
+                (ref) => const PaymentMethodsUiState(
+                  methods: [
                     PaymentMethodUiModel(
                       id: 'cash',
                       displayName: 'Cash',
@@ -420,16 +428,16 @@ void main() {
                 ),
               ),
             ],
-            child: MaterialApp(
-              localizationsDelegates: const [
+            child: const MaterialApp(
+              localizationsDelegates: [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
-              locale: const Locale('en'),
-              home: const RideTripSummaryScreen(),
+              supportedLocales: [Locale('en')],
+              locale: Locale('en'),
+              home: RideTripSummaryScreen(),
             ),
           ),
         );
@@ -448,29 +456,30 @@ void main() {
     testWidgets(
       'done_cta_is_present_and_tappable',
       (WidgetTester tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-trip-done',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(
+          tripSession: const RideTripSessionUiState(
             activeTrip: activeTrip,
-            tripSummary: const RideTripSummary(
+            tripSummary: RideTripSummary(
               selectedServiceName: 'Economy',
               fareDisplayText: '≈ 20.00 SAR',
             ),
-            draftSnapshot: const RideDraftUiState(destinationQuery: 'Test'),
+            draftSnapshot: RideDraftUiState(destinationQuery: 'Test'),
           ),
         ));
         await tester.pumpAndSettle();
 
         // Find Done CTA
-        final doneCta = find.text('Done');
+        final l10nDone = _l10n(tester);
+        final doneCta = find.text(l10nDone.rideTripSummaryDoneCta);
         expect(doneCta, findsOneWidget);
 
         // Verify button is tappable (exists and is enabled)
-        final button = find.widgetWithText(ElevatedButton, 'Done');
+        final button = find.widgetWithText(ElevatedButton, l10nDone.rideTripSummaryDoneCta);
         expect(button, findsOneWidget);
       },
     );
@@ -481,12 +490,18 @@ void main() {
 // Fake Controllers for Testing
 // ============================================================================
 
+/// Fake Ref for testing
+class _FakeRef implements Ref {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 /// Fake RideTripSessionController for testing
-class _FakeRideTripSessionController
-    extends StateNotifier<RideTripSessionUiState>
-    implements RideTripSessionController {
+class _FakeRideTripSessionController extends RideTripSessionController {
   _FakeRideTripSessionController({required RideTripSessionUiState initialState})
-      : super(initialState);
+      : super(_FakeRef()) {
+    state = initialState;
+  }
 
   @override
   void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {}

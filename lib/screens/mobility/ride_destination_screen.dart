@@ -29,6 +29,7 @@ import '../../state/mobility/ride_draft_state.dart';
 import '../../state/mobility/ride_quote_controller.dart';
 import '../../state/mobility/ride_recent_locations_providers.dart';
 import '../../widgets/dw_app_shell.dart';
+import 'widgets/ride_recent_destination_item.dart';
 
 /// RideDestinationScreen - Location picker for ride booking from Home Hub
 /// Shows map background with bottom sheet for pickup/destination input.
@@ -60,7 +61,7 @@ class RideDestinationScreen extends ConsumerWidget {
         centerTitle: true,
         leading: IconButton(
           icon: Container(
-            padding: EdgeInsets.all(DWSpacing.xs),
+            padding: const EdgeInsets.all(DWSpacing.xs),
             decoration: BoxDecoration(
               color: colorScheme.surface,
               shape: BoxShape.circle,
@@ -119,7 +120,7 @@ class _MapHintBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: DWSpacing.md,
         vertical: DWSpacing.sm,
       ),
@@ -140,7 +141,7 @@ class _MapHintBanner extends StatelessWidget {
             size: 18,
             color: colorScheme.primary,
           ),
-          SizedBox(width: DWSpacing.xs),
+          const SizedBox(width: DWSpacing.xs),
           Expanded(
             child: Text(
               l10n.rideLocationPickerMapHint,
@@ -171,10 +172,19 @@ class _LocationPickerMap extends ConsumerWidget {
       destination: draft.destinationPlace,
     );
 
-    return MapWidget(
-      initialPosition: mapConfig.cameraTarget,
-      markers: mapConfig.markers,
-      polylines: mapConfig.polylines,
+    // Use mapViewBuilderProvider for proper dependency injection (Ticket #172)
+    final buildMap = ref.watch(mapViewBuilderProvider);
+    return buildMap(
+      MapViewParams(
+        initialCameraPosition: MapCamera(
+          target: MapPoint(
+            latitude: mapConfig.cameraTarget.lat,
+            longitude: mapConfig.cameraTarget.lng,
+          ),
+          zoom: mapConfig.cameraZoom,
+        ),
+        onMapReady: (_) {}, // No-op for location picker
+      ),
     );
   }
 }
@@ -192,7 +202,7 @@ class _LocationPickerBottomSheet extends ConsumerStatefulWidget {
 }
 
 /// Enum to track which field is currently being edited
-enum _LocationFieldType { pickup, destination }
+enum _LocationFieldType { pickup }
 
 class _LocationPickerBottomSheetState
     extends ConsumerState<_LocationPickerBottomSheet> {
@@ -319,7 +329,7 @@ class _LocationPickerBottomSheetState
       ),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.vertical(
+        borderRadius: const BorderRadius.vertical(
           top: Radius.circular(DWRadius.lg),
         ),
         boxShadow: [
@@ -333,7 +343,7 @@ class _LocationPickerBottomSheetState
       child: SafeArea(
         top: false,
         child: SingleChildScrollView(
-          padding: EdgeInsets.fromLTRB(DWSpacing.lg, DWSpacing.sm, DWSpacing.lg, DWSpacing.lg),
+          padding: const EdgeInsets.fromLTRB(DWSpacing.lg, DWSpacing.sm, DWSpacing.lg, DWSpacing.lg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -343,7 +353,7 @@ class _LocationPickerBottomSheetState
                 child: Container(
                   width: 40,
                   height: 4,
-                  margin: EdgeInsets.only(bottom: DWSpacing.md),
+                  margin: const EdgeInsets.only(bottom: DWSpacing.md),
                   decoration: BoxDecoration(
                     color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(DWRadius.circle),
@@ -366,7 +376,7 @@ class _LocationPickerBottomSheetState
                 ),
               ),
 
-              SizedBox(height: DWSpacing.sm),
+              const SizedBox(height: DWSpacing.sm),
 
               // Destination field (editable) - Ticket #93
               _DestinationInputField(
@@ -382,7 +392,7 @@ class _LocationPickerBottomSheetState
                 },
               ),
 
-              SizedBox(height: DWSpacing.lg),
+              const SizedBox(height: DWSpacing.lg),
 
               // Recent locations section
               Text(
@@ -391,7 +401,7 @@ class _LocationPickerBottomSheetState
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              SizedBox(height: DWSpacing.sm),
+              const SizedBox(height: DWSpacing.sm),
 
               // Recent locations list
               _RecentLocationsList(
@@ -407,7 +417,7 @@ class _LocationPickerBottomSheetState
                 },
               ),
 
-              SizedBox(height: DWSpacing.lg),
+              const SizedBox(height: DWSpacing.lg),
 
               // Continue CTA - Ticket #93: enabled only when both locations set
               SizedBox(
@@ -462,12 +472,12 @@ class _TappableLocationField extends StatelessWidget {
             color: colorScheme.onSurfaceVariant,
           ),
         ),
-        SizedBox(height: DWSpacing.xxs),
+        const SizedBox(height: DWSpacing.xxs),
         InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(DWRadius.md),
           child: Container(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: DWSpacing.md,
               vertical: DWSpacing.md,
             ),
@@ -481,7 +491,7 @@ class _TappableLocationField extends StatelessWidget {
             child: Row(
               children: [
                 Icon(icon, color: iconColor, size: 22),
-                SizedBox(width: DWSpacing.sm),
+                const SizedBox(width: DWSpacing.sm),
                 Expanded(
                   child: Text(
                     value,
@@ -598,7 +608,7 @@ class _LocationSearchSheetState extends State<_LocationSearchSheet> {
       height: MediaQuery.of(context).size.height * 0.75,
       decoration: BoxDecoration(
         color: widget.colorScheme.surface,
-        borderRadius: BorderRadius.vertical(
+        borderRadius: const BorderRadius.vertical(
           top: Radius.circular(DWRadius.lg),
         ),
       ),
@@ -606,7 +616,7 @@ class _LocationSearchSheetState extends State<_LocationSearchSheet> {
         children: [
           // Header
           Padding(
-            padding: EdgeInsets.all(DWSpacing.md),
+            padding: const EdgeInsets.all(DWSpacing.md),
             child: Column(
               children: [
                 // Drag handle
@@ -618,7 +628,7 @@ class _LocationSearchSheetState extends State<_LocationSearchSheet> {
                     borderRadius: BorderRadius.circular(DWRadius.circle),
                   ),
                 ),
-                SizedBox(height: DWSpacing.md),
+                const SizedBox(height: DWSpacing.md),
                 // Title
                 Text(
                   title,
@@ -626,7 +636,7 @@ class _LocationSearchSheetState extends State<_LocationSearchSheet> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(height: DWSpacing.md),
+                const SizedBox(height: DWSpacing.md),
                 // Search field
                 TextField(
                   controller: _searchController,
@@ -666,7 +676,7 @@ class _LocationSearchSheetState extends State<_LocationSearchSheet> {
           // Search results
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(horizontal: DWSpacing.md),
+              padding: const EdgeInsets.symmetric(horizontal: DWSpacing.md),
               itemCount: _searchResults.length,
               itemBuilder: (context, index) {
                 final place = _searchResults[index];
@@ -717,7 +727,7 @@ class _SearchResultTile extends StatelessWidget {
     final textTheme = theme.textTheme;
 
     return Card(
-      margin: EdgeInsets.symmetric(vertical: DWSpacing.xxs),
+      margin: const EdgeInsets.symmetric(vertical: DWSpacing.xxs),
       elevation: 0,
       color: colorScheme.surfaceContainerLow,
       shape: RoundedRectangleBorder(
@@ -725,7 +735,7 @@ class _SearchResultTile extends StatelessWidget {
       ),
       child: ListTile(
         leading: Container(
-          padding: EdgeInsets.all(DWSpacing.xs),
+          padding: const EdgeInsets.all(DWSpacing.xs),
           decoration: BoxDecoration(
             color: colorScheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(DWRadius.sm),
@@ -834,7 +844,7 @@ class _RecentLocationsList extends ConsumerWidget {
         if (recentLocations.isEmpty) {
       // Empty state UI
       return Container(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           vertical: DWSpacing.lg,
           horizontal: DWSpacing.md,
         ),
@@ -852,7 +862,7 @@ class _RecentLocationsList extends ConsumerWidget {
               size: 48,
               color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
-            SizedBox(height: DWSpacing.sm),
+            const SizedBox(height: DWSpacing.sm),
             Text(
               'No recent locations yet',
               style: textTheme.titleMedium?.copyWith(
@@ -861,7 +871,7 @@ class _RecentLocationsList extends ConsumerWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: DWSpacing.xs),
+            const SizedBox(height: DWSpacing.xs),
             Text(
               'Your recent destinations will appear here',
               style: textTheme.bodySmall?.copyWith(
@@ -877,8 +887,10 @@ class _RecentLocationsList extends ConsumerWidget {
         // If we have locations, show them
         return Column(
           children: recentLocations
-              .map((location) => _RecentLocationCard(
-                    location: location,
+              .map((location) => RideRecentDestinationItem(
+                    label: location.title,
+                    subtitle: location.subtitle,
+                    icon: getMobilityPlaceIcon(location.type, location.id),
                     onTap: () => onLocationSelected(location),
                   ))
               .toList(),
@@ -891,13 +903,13 @@ class _RecentLocationsList extends ConsumerWidget {
 /// Loading state widget for recent locations
 class _RecentLocationsLoadingState extends StatelessWidget {
   const _RecentLocationsLoadingState({required this.colorScheme});
-  
+
   final ColorScheme colorScheme;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         vertical: DWSpacing.lg,
         horizontal: DWSpacing.md,
       ),
@@ -931,7 +943,7 @@ class _RecentLocationsErrorState extends StatelessWidget {
     required this.textTheme,
     required this.error,
   });
-  
+
   final ColorScheme colorScheme;
   final TextTheme textTheme;
   final String error;
@@ -939,7 +951,7 @@ class _RecentLocationsErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         vertical: DWSpacing.lg,
         horizontal: DWSpacing.md,
       ),
@@ -957,7 +969,7 @@ class _RecentLocationsErrorState extends StatelessWidget {
             size: 48,
             color: colorScheme.error.withValues(alpha: 0.6),
           ),
-          SizedBox(height: DWSpacing.sm),
+          const SizedBox(height: DWSpacing.sm),
           Text(
             'Failed to load recent locations',
             style: textTheme.titleMedium?.copyWith(
@@ -972,100 +984,5 @@ class _RecentLocationsErrorState extends StatelessWidget {
   }
 }
 
-/// Individual recent location card
-class _RecentLocationCard extends StatelessWidget {
-  const _RecentLocationCard({
-    required this.location,
-    required this.onTap,
-  });
-
-  final RecentLocation location;
-  final VoidCallback onTap;
-
-  IconData _getIconForType(MobilityPlaceType type, String id) {
-    if (id == 'home') return Icons.home_outlined;
-    if (id == 'work') return Icons.work_outline;
-
-    switch (type) {
-      case MobilityPlaceType.saved:
-        return Icons.bookmark_outline;
-      case MobilityPlaceType.recent:
-        return Icons.history;
-      default:
-        return Icons.place_outlined;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final colorScheme = theme.colorScheme;
-
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      elevation: 0,
-      color: colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: BorderSide(
-          color: colorScheme.outline.withValues(alpha: 0.1),
-        ),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  _getIconForType(location.type, location.id),
-                  color: colorScheme.primary,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      location.title,
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    if (location.subtitle != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        location.subtitle!,
-                        style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 

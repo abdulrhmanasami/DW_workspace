@@ -23,31 +23,6 @@ void main() {
     ensureDesignSystemStubsForTests();
   });
 
-  /// Creates a test widget with necessary L10n and routing setup.
-  Widget createTestApp({
-    required Widget home,
-    Map<String, WidgetBuilder>? routes,
-    Locale locale = const Locale('en'),
-  }) {
-    return ProviderScope(
-      child: MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('en'),
-          Locale('ar'),
-          Locale('de'),
-        ],
-        locale: locale,
-        home: home,
-        routes: routes ?? {},
-      ),
-    );
-  }
 
   /// Creates a stub Parcel with given parameters.
   Parcel createStubParcel({

@@ -20,16 +20,16 @@ void main() {
     testWidgets('builds successfully without errors', (tester) async {
       // Create a simple test app
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            localizationsDelegates: const [
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en'), Locale('ar')],
-            home: const RideConfirmationScreen(),
+            supportedLocales: [Locale('en'), Locale('ar')],
+            home: RideConfirmationScreen(),
           ),
         ),
       );
@@ -41,12 +41,17 @@ void main() {
       // Verify basic UI elements are present
       expect(find.byType(Scaffold), findsOneWidget);
       expect(find.byType(Stack), findsWidgets); // Map and bottom sheet
-      
+
       // Verify screen title
       expect(find.text('Confirm your ride'), findsOneWidget);
-      
+
       // Verify bottom sheet container exists
       expect(find.byType(Container), findsWidgets);
+
+      // Verify keys are present (even if widgets are not rendered due to missing data)
+      expect(find.byKey(RideConfirmationScreen.vehicleListKey), findsNothing); // No quote data yet
+      expect(find.byKey(RideConfirmationScreen.paymentMethodCardKey), findsOneWidget);
+      expect(find.byKey(RideConfirmationScreen.ctaRequestRideKey), findsOneWidget);
       
       // TODO(Track B): Add more comprehensive tests when mock providers are ready
     });
@@ -103,7 +108,6 @@ void main() {
                 const RideQuoteUiState(
                   error: RideQuoteError.pricingFailed('Network error'),
                 ),
-                onRetry: () => retryPressed = true,
               ),
             ),
           ],
@@ -212,22 +216,130 @@ void main() {
       // Just verify the button exists when quote is available
       final requestButton = find.widgetWithText(FilledButton, 'Request Ride');
       final elevatedButton = find.widgetWithText(ElevatedButton, 'Request Ride');
-      
+
       // Button should exist in some form
       expect(requestButton.evaluate().isNotEmpty || elevatedButton.evaluate().isNotEmpty, isTrue);
+    });
+
+    testWidgets('shows vehicle options with proper keys when quote available', (tester) async {
+      // Create test quote with options
+      final testQuote = RideQuote(
+        quoteId: 'test-123',
+        request: const RideQuoteRequest(
+          pickup: LocationPoint(latitude: 24.7136, longitude: 46.6753),
+          dropoff: LocationPoint(latitude: 24.9576, longitude: 46.6988),
+          currencyCode: 'SAR',
+        ),
+        options: const [
+          RideQuoteOption(
+            id: 'eco',
+            displayName: 'Economy',
+            category: RideVehicleCategory.economy,
+            etaMinutes: 5,
+            priceMinorUnits: 1500,
+            currencyCode: 'SAR',
+            isRecommended: true,
+          ),
+          RideQuoteOption(
+            id: 'xl',
+            displayName: 'XL',
+            category: RideVehicleCategory.xl,
+            etaMinutes: 7,
+            priceMinorUnits: 2000,
+            currencyCode: 'SAR',
+            isRecommended: false,
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        createTestAppWithProviders(
+          home: const RideConfirmationScreen(),
+          overrides: [
+            rideQuoteControllerProvider.overrideWith(
+              (ref) => _MockQuoteController(
+                RideQuoteUiState(quote: testQuote),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      await tester.pump();
+      await tester.pump(); // Extra pump for async operations
+
+      // Verify vehicle options list is present with proper key
+      expect(find.byKey(RideConfirmationScreen.vehicleListKey), findsOneWidget);
+
+      // Verify vehicle options are displayed
+      expect(find.text('Economy'), findsOneWidget);
+      expect(find.text('XL'), findsOneWidget);
+      expect(find.text('5 min'), findsOneWidget);
+      expect(find.text('7 min'), findsOneWidget);
+    });
+
+    testWidgets('shows payment method card with proper key', (tester) async {
+      await tester.pumpWidget(
+        createTestAppWithProviders(
+          home: const RideConfirmationScreen(),
+        ),
+      );
+
+      await tester.pump();
+
+      // Verify payment method card is present with proper key
+      expect(find.byKey(RideConfirmationScreen.paymentMethodCardKey), findsOneWidget);
+    });
+
+    testWidgets('shows request ride button with proper key', (tester) async {
+      final testQuote = RideQuote(
+        quoteId: 'test-456',
+        request: const RideQuoteRequest(
+          pickup: LocationPoint(latitude: 24.7136, longitude: 46.6753),
+          dropoff: LocationPoint(latitude: 24.9576, longitude: 46.6988),
+          currencyCode: 'SAR',
+        ),
+        options: const [
+          RideQuoteOption(
+            id: 'eco',
+            displayName: 'Economy',
+            category: RideVehicleCategory.economy,
+            etaMinutes: 5,
+            priceMinorUnits: 1500,
+            currencyCode: 'SAR',
+            isRecommended: true,
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        createTestAppWithProviders(
+          home: const RideConfirmationScreen(),
+          overrides: [
+            rideQuoteControllerProvider.overrideWith(
+              (ref) => _MockQuoteController(
+                RideQuoteUiState(quote: testQuote),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      await tester.pump();
+
+      // Verify CTA button is present with proper key
+      expect(find.byKey(RideConfirmationScreen.ctaRequestRideKey), findsOneWidget);
     });
   });
 }
 
 // Mock controllers for testing
 class _MockQuoteController extends RideQuoteController {
-  _MockQuoteController(RideQuoteUiState initialState, {this.onRetry}) 
+  _MockQuoteController(RideQuoteUiState initialState)
       : super.legacy(const MockRideQuoteService()) {
     // Set initial state
     state = initialState;
   }
-
-  final VoidCallback? onRetry;
 
   @override
   Future<void> refreshFromDraft(RideDraftUiState draft) async {
@@ -236,6 +348,6 @@ class _MockQuoteController extends RideQuoteController {
 
   @override
   Future<void> retryFromDraft(RideDraftUiState draft) async {
-    onRetry?.call();
+    // Mock implementation - no-op
   }
 }

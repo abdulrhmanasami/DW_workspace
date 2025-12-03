@@ -52,6 +52,7 @@ class ParcelsShipmentsListScreen extends ConsumerWidget {
           loading: () => const _ShipmentsLoading(),
           error: (error, stack) => _ShipmentsError(
             message: error.toString(),
+            l10n: l10n,
           ),
           data: (shipments) {
             if (shipments.isEmpty) {
@@ -147,13 +148,12 @@ class _ShipmentsEmpty extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            if (onCreateFirst != null) ...[
-              const SizedBox(height: DWSpacing.xl),
+            const SizedBox(height: DWSpacing.xl),
+            if (onCreateFirst != null)
               DWButton.primary(
                 label: ctaLabel,
-                onPressed: onCreateFirst!,
+                onPressed: onCreateFirst,
               ),
-            ],
           ],
         ),
       ),
@@ -163,9 +163,10 @@ class _ShipmentsEmpty extends StatelessWidget {
 
 /// Error state widget
 class _ShipmentsError extends StatelessWidget {
-  const _ShipmentsError({required this.message});
+  const _ShipmentsError({required this.message, this.l10n});
 
   final String message;
+  final AppLocalizations? l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -186,7 +187,7 @@ class _ShipmentsError extends StatelessWidget {
             ),
             const SizedBox(height: DWSpacing.lg),
             Text(
-              'Something went wrong',
+              l10n?.parcelsShipmentsErrorTitle ?? 'Something went wrong',
               style: textTheme.titleMedium?.copyWith(
                 color: colorScheme.error,
               ),

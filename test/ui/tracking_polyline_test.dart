@@ -9,9 +9,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:maps_shims/maps.dart';
 import 'package:mobility_shims/mobility.dart';
 import 'package:mobility_uplink_impl/mobility_uplink_impl.dart' hide uplinkServiceProvider;
-import '../../lib/screens/mobility/tracking_screen.dart';
-import '../../lib/state/mobility/tracking_controller.dart';
-import '../../lib/state/infra/triprecorder_provider.dart';
+import 'package:delivery_ways_clean/screens/mobility/tracking_screen.dart';
+import 'package:delivery_ways_clean/state/mobility/tracking_controller.dart';
+import 'package:delivery_ways_clean/state/infra/triprecorder_provider.dart';
 import '../support/design_system_harness.dart';
 import '../support/mobility_stubs.dart';
 
@@ -39,10 +39,8 @@ void main() {
           mobilityConfigProvider.overrideWithValue(true),
           consentBackgroundLocationProvider.overrideWithValue(true),
           tripRecorderProvider.overrideWithValue(InMemoryTripRecorder()),
-          trackingControllerProvider.overrideWithProvider(
-            StateNotifierProvider<TrackingController, TrackingSessionState>((
-              ref,
-            ) {
+          trackingControllerProvider.overrideWith(
+            (ref) {
               final controller = TrackingController(ref);
               // Mock running state with initial point
               controller.state = TrackingSessionState(
@@ -54,26 +52,21 @@ void main() {
                 ),
               );
               return controller;
-            }),
+            },
           ),
-          mapViewBuilderProvider.overrideWithProvider(
-            Provider<MapViewBuilder>(
-              (ref) =>
-                  (params) => const SizedBox(key: Key('map_placeholder')),
-            ),
+          mapViewBuilderProvider.overrideWith(
+            (ref) => (params) => const SizedBox(key: Key('map_placeholder')),
           ),
-          uplinkServiceProvider.overrideWithProvider(
-            Provider<UplinkService>(
-              (ref) => UplinkService(
-                UplinkConfig(
-                  uplinkEnabled: true,
-                  flushInterval: const Duration(seconds: 10),
-                  batchSize: 50,
-                  maxQueue: 1000,
-                  endpoint: Uri.parse('https://api.example.com'),
-                  requestTimeout: const Duration(seconds: 15),
-                  maxRetries: 2,
-                ),
+          uplinkServiceProvider.overrideWith(
+            (ref) => UplinkService(
+              UplinkConfig(
+                uplinkEnabled: true,
+                flushInterval: const Duration(seconds: 10),
+                batchSize: 50,
+                maxQueue: 1000,
+                endpoint: Uri.parse('https://api.example.com'),
+                requestTimeout: const Duration(seconds: 15),
+                maxRetries: 2,
               ),
             ),
           ),
@@ -107,10 +100,8 @@ void main() {
           mobilityConfigProvider.overrideWithValue(true),
           consentBackgroundLocationProvider.overrideWithValue(true),
           tripRecorderProvider.overrideWithValue(InMemoryTripRecorder()),
-          trackingControllerProvider.overrideWithProvider(
-            StateNotifierProvider<TrackingController, TrackingSessionState>((
-              ref,
-            ) {
+          trackingControllerProvider.overrideWith(
+            (ref) {
               final controller = TrackingController(ref);
               controller.state = TrackingSessionState(
                 status: TrackingStatus.running,
@@ -121,13 +112,10 @@ void main() {
                 ),
               );
               return controller;
-            }),
+            },
           ),
-          mapViewBuilderProvider.overrideWithProvider(
-            Provider<MapViewBuilder>(
-              (ref) =>
-                  (params) => const SizedBox(key: Key('map_placeholder')),
-            ),
+          mapViewBuilderProvider.overrideWith(
+            (ref) => (params) => const SizedBox(key: Key('map_placeholder')),
           ),
         ],
       );
@@ -157,10 +145,8 @@ void main() {
           mobilityConfigProvider.overrideWithValue(true),
           consentBackgroundLocationProvider.overrideWithValue(true),
           tripRecorderProvider.overrideWithValue(InMemoryTripRecorder()),
-          trackingControllerProvider.overrideWithProvider(
-            StateNotifierProvider<TrackingController, TrackingSessionState>((
-              ref,
-            ) {
+          trackingControllerProvider.overrideWith(
+            (ref) {
               final controller = TrackingController(ref);
               controller.state = TrackingSessionState(
                 status: TrackingStatus.running,
@@ -171,13 +157,10 @@ void main() {
                 ),
               );
               return controller;
-            }),
+            },
           ),
-          mapViewBuilderProvider.overrideWithProvider(
-            Provider<MapViewBuilder>(
-              (ref) =>
-                  (params) => const SizedBox(key: Key('map_placeholder')),
-            ),
+          mapViewBuilderProvider.overrideWith(
+            (ref) => (params) => const SizedBox(key: Key('map_placeholder')),
           ),
         ],
       );
@@ -219,10 +202,8 @@ void main() {
           mobilityConfigProvider.overrideWithValue(true),
           consentBackgroundLocationProvider.overrideWithValue(true),
           tripRecorderProvider.overrideWithValue(InMemoryTripRecorder()),
-          trackingControllerProvider.overrideWithProvider(
-            StateNotifierProvider<TrackingController, TrackingSessionState>((
-              ref,
-            ) {
+          trackingControllerProvider.overrideWith(
+            (ref) {
               final controller = TrackingController(ref);
               controller.state = TrackingSessionState(
                 status: TrackingStatus.running,
@@ -233,13 +214,10 @@ void main() {
                 ),
               );
               return controller;
-            }),
+            },
           ),
-          mapViewBuilderProvider.overrideWithProvider(
-            Provider<MapViewBuilder>(
-              (ref) =>
-                  (params) => const SizedBox(key: Key('map_placeholder')),
-            ),
+          mapViewBuilderProvider.overrideWith(
+            (ref) => (params) => const SizedBox(key: Key('map_placeholder')),
           ),
         ],
       );

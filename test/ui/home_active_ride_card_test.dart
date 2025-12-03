@@ -86,7 +86,7 @@ void main() {
                       body: Center(child: Text('Ride Active Trip Screen')),
                     ),
               },
-          home: const AppShell(),
+          home: const AppShellWithNavigation(),
         ),
       );
     }
@@ -97,13 +97,13 @@ void main() {
     // =========================================================================
     testWidgets('shows ActiveRideCard when active trip exists with findingDriver phase',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-trip-123',
         phase: RideTripPhase.findingDriver,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         rideDraft: const RideDraftUiState(destinationQuery: 'King Fahd Road'),
       ));
       await tester.pumpAndSettle();
@@ -119,13 +119,13 @@ void main() {
 
     testWidgets('shows ActiveRideCard with driverAccepted phase',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-trip-456',
         phase: RideTripPhase.driverAccepted,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         rideDraft: const RideDraftUiState(destinationQuery: 'Mall of Arabia'),
       ));
       await tester.pumpAndSettle();
@@ -137,13 +137,13 @@ void main() {
 
     testWidgets('shows ActiveRideCard with driverArrived phase',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-trip-789',
         phase: RideTripPhase.driverArrived,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -154,13 +154,13 @@ void main() {
 
     testWidgets('shows ActiveRideCard with inProgress phase',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-trip-in-progress',
         phase: RideTripPhase.inProgress,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -193,13 +193,13 @@ void main() {
 
     testWidgets('hides ActiveRideCard when trip is in completed phase (terminal)',
         (tester) async {
-      final completedTrip = RideTripState(
+      const completedTrip = RideTripState(
         tripId: 'test-completed',
         phase: RideTripPhase.completed,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: completedTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: completedTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -213,13 +213,13 @@ void main() {
 
     testWidgets('hides ActiveRideCard when trip is in cancelled phase (terminal)',
         (tester) async {
-      final cancelledTrip = RideTripState(
+      const cancelledTrip = RideTripState(
         tripId: 'test-cancelled',
         phase: RideTripPhase.cancelled,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: cancelledTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: cancelledTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -229,13 +229,13 @@ void main() {
 
     testWidgets('hides ActiveRideCard when trip is in failed phase (terminal)',
         (tester) async {
-      final failedTrip = RideTripState(
+      const failedTrip = RideTripState(
         tripId: 'test-failed',
         phase: RideTripPhase.failed,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: failedTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: failedTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -248,13 +248,13 @@ void main() {
     // =========================================================================
     testWidgets('View trip CTA navigates to RideActiveTripScreen',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-nav',
         phase: RideTripPhase.findingDriver,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         routes: {
           RoutePaths.rideActive: (_) => const Scaffold(
                 body: Center(child: Text('Ride Active Trip Screen')),
@@ -281,13 +281,13 @@ void main() {
     // =========================================================================
     testWidgets('shows ActiveRideCard with payment phase',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-payment',
         phase: RideTripPhase.payment,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -301,13 +301,13 @@ void main() {
     // =========================================================================
     testWidgets('Services section title visible when ActiveRideCard is shown',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-services',
         phase: RideTripPhase.findingDriver,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -323,7 +323,7 @@ void main() {
     // Track B - Ticket #86: Updated to use homeActiveRideStatus* L10n keys
     // =========================================================================
     testWidgets('ActiveRideCard displays Arabic content', (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-ar',
         phase: RideTripPhase.findingDriver,
       );
@@ -333,7 +333,7 @@ void main() {
           overrides: [
             rideTripSessionProvider.overrideWith(
               (ref) => _FakeRideTripSessionController(
-                initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                initialState: const RideTripSessionUiState(activeTrip: activeTrip),
               ),
             ),
             rideDraftProvider.overrideWith(
@@ -345,19 +345,19 @@ void main() {
               (ref) => _FakeAuthController(),
             ),
           ],
-          child: MaterialApp(
-            locale: const Locale('ar'),
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            locale: Locale('ar'),
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
+            supportedLocales: [
               Locale('en'),
               Locale('ar'),
             ],
-            home: const AppShell(),
+            home: AppShellWithNavigation(),
           ),
         ),
       );
@@ -369,7 +369,7 @@ void main() {
     });
 
     testWidgets('ActiveRideCard displays German content', (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-de',
         phase: RideTripPhase.inProgress,
       );
@@ -379,7 +379,7 @@ void main() {
           overrides: [
             rideTripSessionProvider.overrideWith(
               (ref) => _FakeRideTripSessionController(
-                initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                initialState: const RideTripSessionUiState(activeTrip: activeTrip),
               ),
             ),
             rideDraftProvider.overrideWith(
@@ -391,19 +391,19 @@ void main() {
               (ref) => _FakeAuthController(),
             ),
           ],
-          child: MaterialApp(
-            locale: const Locale('de'),
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            locale: Locale('de'),
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
+            supportedLocales: [
               Locale('en'),
               Locale('de'),
             ],
-            home: const AppShell(),
+            home: AppShellWithNavigation(),
           ),
         ),
       );
@@ -420,13 +420,13 @@ void main() {
     // Track B - Ticket #86: Updated icon to directions_car_outlined (DS alignment)
     // =========================================================================
     testWidgets('ActiveRideCard shows car icon', (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-icon',
         phase: RideTripPhase.findingDriver,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -439,7 +439,7 @@ void main() {
     // =========================================================================
     testWidgets('home_active_ride_card_shows_eta_destination_and_price',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-summary',
         phase: RideTripPhase.driverAccepted,
       );
@@ -457,7 +457,7 @@ void main() {
           overrides: [
             rideTripSessionProvider.overrideWith(
               (ref) => _FakeRideTripSessionController(
-                initialState: RideTripSessionUiState(
+                initialState: const RideTripSessionUiState(
                   activeTrip: activeTrip,
                   tripSummary: tripSummary,
                 ),
@@ -480,16 +480,16 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            locale: const Locale('en'),
-            home: const AppShell(),
+            supportedLocales: [Locale('en')],
+            locale: Locale('en'),
+            home: AppShellWithNavigation(),
           ),
         ),
       );
@@ -502,7 +502,7 @@ void main() {
     });
 
     testWidgets('home_active_ride_card_shows_payment_method', (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-payment',
         phase: RideTripPhase.inProgress,
       );
@@ -519,7 +519,7 @@ void main() {
           overrides: [
             rideTripSessionProvider.overrideWith(
               (ref) => _FakeRideTripSessionController(
-                initialState: RideTripSessionUiState(
+                initialState: const RideTripSessionUiState(
                   activeTrip: activeTrip,
                   tripSummary: tripSummary,
                 ),
@@ -542,16 +542,16 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            locale: const Locale('en'),
-            home: const AppShell(),
+            supportedLocales: [Locale('en')],
+            locale: Locale('en'),
+            home: AppShellWithNavigation(),
           ),
         ),
       );
@@ -567,7 +567,7 @@ void main() {
     // =========================================================================
     testWidgets('home_active_ride_card_shows_eta_title_when_available',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-eta',
         phase: RideTripPhase.driverAccepted,
       );
@@ -585,7 +585,7 @@ void main() {
           overrides: [
             rideTripSessionProvider.overrideWith(
               (ref) => _FakeRideTripSessionController(
-                initialState: RideTripSessionUiState(
+                initialState: const RideTripSessionUiState(
                   activeTrip: activeTrip,
                   tripSummary: tripSummary,
                 ),
@@ -608,16 +608,16 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            locale: const Locale('en'),
-            home: const AppShell(),
+            supportedLocales: [Locale('en')],
+            locale: Locale('en'),
+            home: AppShellWithNavigation(),
           ),
         ),
       );
@@ -631,7 +631,7 @@ void main() {
 
     testWidgets('home_active_ride_card_falls_back_to_status_when_no_eta',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-no-eta',
         phase: RideTripPhase.findingDriver,
       );
@@ -650,7 +650,7 @@ void main() {
           overrides: [
             rideTripSessionProvider.overrideWith(
               (ref) => _FakeRideTripSessionController(
-                initialState: RideTripSessionUiState(
+                initialState: const RideTripSessionUiState(
                   activeTrip: activeTrip,
                   tripSummary: tripSummary,
                 ),
@@ -671,16 +671,16 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            locale: const Locale('en'),
-            home: const AppShell(),
+            supportedLocales: [Locale('en')],
+            locale: Locale('en'),
+            home: AppShellWithNavigation(),
           ),
         ),
       );
@@ -724,7 +724,7 @@ void main() {
         destinationPlace: destinationPlace,
       );
 
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-map',
         phase: RideTripPhase.driverAccepted,
       );
@@ -749,16 +749,16 @@ void main() {
               (ref) => _FakeAuthController(),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            locale: const Locale('en'),
-            home: const AppShell(),
+            supportedLocales: [Locale('en')],
+            locale: Locale('en'),
+            home: AppShellWithNavigation(),
           ),
         ),
       );
@@ -793,16 +793,16 @@ void main() {
               (ref) => _FakeAuthController(),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            locale: const Locale('en'),
-            home: const AppShell(),
+            supportedLocales: [Locale('en')],
+            locale: Locale('en'),
+            home: AppShellWithNavigation(),
           ),
         ),
       );
@@ -820,12 +820,18 @@ void main() {
 // Fake Controllers for Testing
 // ============================================================================
 
+/// Fake Ref for testing
+class _FakeRef implements Ref {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 /// Fake RideTripSessionController
-class _FakeRideTripSessionController
-    extends StateNotifier<RideTripSessionUiState>
-    implements RideTripSessionController {
+class _FakeRideTripSessionController extends RideTripSessionController {
   _FakeRideTripSessionController({required RideTripSessionUiState initialState})
-      : super(initialState);
+      : super(_FakeRef()) {
+    state = initialState;
+  }
 
   @override
   void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {}

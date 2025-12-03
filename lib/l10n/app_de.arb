@@ -1152,17 +1152,21 @@
     "description": "Empfohlene-Badge auf der Fahrtoption (Ticket #91)"
   },
 
-  "rideQuoteErrorTitle": "Preise konnten nicht geladen werden",
+  "rideQuoteErrorTitle": "Fahrtoptionen konnten nicht geladen werden",
   "@rideQuoteErrorTitle": {
     "description": "Titel für den Fehlerzustand bei Preisabruffehler (Track B - Ticket #121)"
   },
-  "rideQuoteErrorGeneric": "Beim Abrufen der Fahrpreise ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+  "rideQuoteErrorGeneric": "Bitte überprüfe deine Verbindung und versuche es erneut.",
   "@rideQuoteErrorGeneric": {
     "description": "Allgemeine Fehlermeldung für Preisabruffehler (Track B - Ticket #121)"
   },
   "rideQuoteErrorNoOptions": "Für diese Strecke sind derzeit keine Fahrtoptionen verfügbar.",
   "@rideQuoteErrorNoOptions": {
     "description": "Fehlermeldung wenn keine Fahrtoptionen zurückgegeben werden (Track B - Ticket #121)"
+  },
+  "ridePricingErrorGeneric": "Die Preise konnten nicht geladen werden. Bitte versuche es erneut.",
+  "@ridePricingErrorGeneric": {
+    "description": "Allgemeine Fehlermeldung für Preisabruffehler (Ticket #196)"
   },
   "rideQuoteRetryCta": "Erneut versuchen",
   "@rideQuoteRetryCta": {
@@ -1172,7 +1176,7 @@
   "@rideQuoteEmptyTitle": {
     "description": "Titel für den Leerzustand wenn keine Fahrtoptionen (Track B - Ticket #121)"
   },
-  "rideQuoteEmptyDescription": "Versuchen Sie eine andere Zeit oder passen Sie Abholort und Ziel an.",
+  "rideQuoteEmptyDescription": "Bitte versuchen Sie es in ein paar Minuten erneut.",
   "@rideQuoteEmptyDescription": {
     "description": "Beschreibung für den Leerzustand wenn keine Fahrtoptionen (Track B - Ticket #121)"
   },
@@ -1376,6 +1380,21 @@
   "rideReceiptDoneCta": "Fertig",
   "@rideReceiptDoneCta": {
     "description": "Fertig-Button (Ticket #92)"
+  },
+
+  "rideDriverMockName": "Ahmad M.",
+  "@rideDriverMockName": {
+    "description": "Mock-Fahrername für Entwicklung (Track C - Ticket #171)"
+  },
+
+  "rideDriverMockCarInfo": "Toyota Camry • ABC 1234",
+  "@rideDriverMockCarInfo": {
+    "description": "Mock-Fahrzeuginformationen für Entwicklung (Track C - Ticket #171)"
+  },
+
+  "rideDriverMockRating": "4.9",
+  "@rideDriverMockRating": {
+    "description": "Mock-Fahrerbewertung für Entwicklung (Track C - Ticket #171)"
   },
 
   "rideSummaryEndTripDebugCta": "Fahrt beenden",
@@ -2018,6 +2037,10 @@
   "@parcelsShipmentStatusCancelled": {
     "description": "Sendungsstatus: storniert (Track C - Ticket #149)"
   },
+  "parcelsShipmentsErrorTitle": "Etwas ist schiefgelaufen",
+  "@parcelsShipmentsErrorTitle": {
+    "description": "Fehlerstatus-Titel für Sendungsliste (Track C - Ticket #149)"
+  },
 
   "parcelsCreateShipmentTitle": "Sendung erstellen",
   "@parcelsCreateShipmentTitle": {
@@ -2155,5 +2178,61 @@
   "commonTotalLabel": "Gesamt",
   "@commonTotalLabel": {
     "description": "Gesamt (Track C - Ticket #151)"
+  },
+  "homeHubTitle": "Where do you want to go?",
+  "@homeHubTitle": {
+    "description": "Main title for Home Hub screen - greeting asking user destination (Ticket #182)"
+  },
+  "homeHubCurrentLocationLabel": "Current location",
+  "@homeHubCurrentLocationLabel": {
+    "description": "Label for current location indicator (Ticket #182)"
+  },
+  "homeHubCurrentLocationLoading": "Detecting your location...",
+  "@homeHubCurrentLocationLoading": {
+    "description": "Temporary message while fetching current location on Home Hub"
+  },
+  "homeHubCurrentLocationUnavailable": "Location not available",
+  "@homeHubCurrentLocationUnavailable": {
+    "description": "Fallback message when current location cannot be determined on Home Hub"
+  },
+  "homeHubServiceRide": "Ride",
+  "@homeHubServiceRide": {
+    "description": "Label for Ride service chip (Ticket #182)"
+  },
+  "homeHubServiceParcels": "Parcels",
+  "@homeHubServiceParcels": {
+    "description": "Label for Parcels service chip (Ticket #182)"
+  },
+  "homeHubServiceFood": "Food",
+  "@homeHubServiceFood": {
+    "description": "Label for Food service chip (Ticket #182)"
+  },
+  "homeHubActiveRideTitle": "Fahrt läuft",
+  "@homeHubActiveRideTitle": {
+    "description": "Titel für aktive Fahrt-Karte auf Home Hub (Ticket #183)"
+  },
+  "homeHubActiveRideSubtitle": "Aktive Fahrt fortsetzen",
+  "@homeHubActiveRideSubtitle": {
+    "description": "Untertitel für aktive Fahrt-Karte auf Home Hub (Ticket #183)"
+  },
+  "homeHubParcelsComingSoonMessage": "Parcels service is coming soon to your city.",
+  "@homeHubParcelsComingSoonMessage": {
+    "description": "Coming soon message for parcels service (Ticket #182)"
+  },
+  "homeHubFoodComingSoonMessage": "Food ordering is coming soon to your city.",
+  "@homeHubFoodComingSoonMessage": {
+    "description": "Coming soon message for food ordering (Ticket #182)"
+  },
+  "homeHubSearchPlaceholder": "Where to?",
+  "@homeHubSearchPlaceholder": {
+    "description": "Placeholder text for the HomeHub search bar used to start a new ride (Ticket #188)"
+  },
+  "homeHubRecentDestinationsTitle": "Recent destinations",
+  "@homeHubRecentDestinationsTitle": {
+    "description": "Title for the recent destinations shortcuts section on the HomeHub screen (Ticket #189)"
+  },
+  "homeHubRecentDestinationsSeeAll": "See all",
+  "@homeHubRecentDestinationsSeeAll": {
+    "description": "Button label to show all recent destinations from HomeHub (Ticket #194, German uses English text for now)"
   }
 }

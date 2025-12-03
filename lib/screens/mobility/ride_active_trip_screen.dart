@@ -56,6 +56,13 @@ import '../../widgets/dw_app_shell.dart';
 class RideActiveTripScreen extends ConsumerWidget {
   const RideActiveTripScreen({super.key});
 
+  // Keys for UI testing
+  static const driverCardKey = Key('ride_active_driver_card');
+  static const statusTextKey = Key('ride_active_status_text');
+  static const contactDriverActionKey = Key('ride_active_action_contact_driver');
+  static const shareTripActionKey = Key('ride_active_action_share_trip');
+  static const cancelRideActionKey = Key('ride_active_action_cancel_ride');
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -122,7 +129,7 @@ class RideActiveTripScreen extends ConsumerWidget {
                 size: 64,
                 color: colorScheme.onSurfaceVariant,
               ),
-              SizedBox(height: DWSpacing.md), // DS: 16pt
+              const SizedBox(height: DWSpacing.md), // DS: 16pt
               Text(
                 l10n.rideActiveNoTripBody,
                 style: textTheme.bodyMedium?.copyWith(
@@ -130,7 +137,7 @@ class RideActiveTripScreen extends ConsumerWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: DWSpacing.lg), // DS: 24pt
+              const SizedBox(height: DWSpacing.lg), // DS: 24pt
               DWButton.primary(
                 label: l10n.rideActiveGoBackCta,
                 onPressed: () => Navigator.of(context).pop(),
@@ -184,7 +191,7 @@ class RideActiveTripScreen extends ConsumerWidget {
         elevation: 0,
         leading: IconButton(
           icon: Container(
-            padding: EdgeInsets.all(DWSpacing.xs), // DS: 8pt
+            padding: const EdgeInsets.all(DWSpacing.xs), // DS: 8pt
             decoration: BoxDecoration(
               color: colorScheme.surface, // DS: color.surface.default
               shape: BoxShape.circle,
@@ -204,7 +211,7 @@ class RideActiveTripScreen extends ConsumerWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Container(
-          padding: EdgeInsets.symmetric(
+          padding: const EdgeInsets.symmetric(
             horizontal: DWSpacing.md, // DS: 16pt
             vertical: DWSpacing.xs, // DS: 8pt
           ),
@@ -375,7 +382,7 @@ class _ActiveDriverCard extends ConsumerWidget {
         return ConstrainedBox(
           constraints: BoxConstraints(maxHeight: maxCardHeight),
           child: Container(
-            margin: EdgeInsets.all(DWSpacing.md), // DS: 16pt
+            margin: const EdgeInsets.all(DWSpacing.md), // DS: 16pt
             decoration: BoxDecoration(
               color: colorScheme.surface, // DS: color.surface.default
               borderRadius: BorderRadius.circular(DWRadius.lg), // DS: 24pt
@@ -390,7 +397,7 @@ class _ActiveDriverCard extends ConsumerWidget {
             child: SafeArea(
               top: false,
               child: Padding(
-                padding: EdgeInsets.fromLTRB(
+                padding: const EdgeInsets.fromLTRB(
                   DWSpacing.lg, // DS: 24pt - left
                   DWSpacing.lg, // DS: 24pt - top
                   DWSpacing.lg, // DS: 24pt - right
@@ -407,7 +414,7 @@ class _ActiveDriverCard extends ConsumerWidget {
                 child: Container(
                   width: 40,
                   height: 4,
-                  margin: EdgeInsets.only(bottom: DWSpacing.md), // DS: 16pt
+                  margin: const EdgeInsets.only(bottom: DWSpacing.md), // DS: 16pt
                   decoration: BoxDecoration(
                     color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(DWRadius.circle), // DS: pill
@@ -419,7 +426,7 @@ class _ActiveDriverCard extends ConsumerWidget {
               Row(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(DWSpacing.sm), // DS: 12pt
+                    padding: const EdgeInsets.all(DWSpacing.sm), // DS: 12pt
                     decoration: BoxDecoration(
                       color: _phaseColor(colorScheme, activeTrip.phase)
                           .withValues(alpha: 0.15),
@@ -431,13 +438,14 @@ class _ActiveDriverCard extends ConsumerWidget {
                       size: 24,
                     ),
                   ),
-                  SizedBox(width: DWSpacing.sm), // DS: 12pt
+                  const SizedBox(width: DWSpacing.sm), // DS: 12pt
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // DS: type.headline.h2 (24pt Bold)
                         Text(
+                          key: RideActiveTripScreen.statusTextKey,
                           headline,
                           style: textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.w700,
@@ -445,7 +453,7 @@ class _ActiveDriverCard extends ConsumerWidget {
                           ),
                         ),
                         if (subtitle.isNotEmpty) ...[
-                          SizedBox(height: DWSpacing.xxs), // DS: 4pt
+                          const SizedBox(height: DWSpacing.xxs), // DS: 4pt
                           Row(
                             children: [
                               Icon(
@@ -453,7 +461,7 @@ class _ActiveDriverCard extends ConsumerWidget {
                                 size: 14,
                                 color: colorScheme.error, // DS: color.state.error
                               ),
-                              SizedBox(width: DWSpacing.xxs), // DS: 4pt
+                              const SizedBox(width: DWSpacing.xxs), // DS: 4pt
                               Expanded(
                                 // DS: type.body.regular (14pt)
                                 child: Text(
@@ -474,11 +482,12 @@ class _ActiveDriverCard extends ConsumerWidget {
                 ],
               ),
 
-              SizedBox(height: DWSpacing.lg), // DS: 24pt
+              const SizedBox(height: DWSpacing.lg), // DS: 24pt
 
               // Driver info card (elevated surface)
               Container(
-                padding: EdgeInsets.all(DWSpacing.sm), // DS: 12pt
+                key: RideActiveTripScreen.driverCardKey,
+                padding: const EdgeInsets.all(DWSpacing.sm), // DS: 12pt
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerHighest, // DS: color.surface.elevated
                   borderRadius: BorderRadius.circular(DWRadius.md), // DS: 12pt
@@ -495,7 +504,7 @@ class _ActiveDriverCard extends ConsumerWidget {
                         size: 28,
                       ),
                     ),
-                    SizedBox(width: DWSpacing.sm), // DS: 12pt
+                    const SizedBox(width: DWSpacing.sm), // DS: 12pt
 
                     // Driver details (type.title.default + type.subtitle.default)
                     Expanded(
@@ -510,7 +519,7 @@ class _ActiveDriverCard extends ConsumerWidget {
                               fontSize: 18,  // Explicit 18pt as per DS
                             ),
                           ),
-                          SizedBox(height: DWSpacing.xxs), // DS: 4pt
+                          const SizedBox(height: DWSpacing.xxs), // DS: 4pt
                           Row(
                             children: [
                               Icon(
@@ -518,7 +527,7 @@ class _ActiveDriverCard extends ConsumerWidget {
                                 size: 16,
                                 color: colorScheme.tertiary, // DS: use theme tertiary
                               ),
-                              SizedBox(width: DWSpacing.xxs), // DS: 4pt
+                              const SizedBox(width: DWSpacing.xxs), // DS: 4pt
                               // DS: type.body.regular (14pt)
                               Text(
                                 '4.9', // TODO: Real rating from domain model
@@ -526,7 +535,7 @@ class _ActiveDriverCard extends ConsumerWidget {
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              SizedBox(width: DWSpacing.sm), // DS: 12pt
+                              const SizedBox(width: DWSpacing.sm), // DS: 12pt
                               Container(
                                 width: 4,
                                 height: 4,
@@ -535,7 +544,7 @@ class _ActiveDriverCard extends ConsumerWidget {
                                   shape: BoxShape.circle,
                                 ),
                               ),
-                              SizedBox(width: DWSpacing.sm), // DS: 12pt
+                              const SizedBox(width: DWSpacing.sm), // DS: 12pt
                               Expanded(
                                 // DS: type.subtitle.default (16pt)
                                 child: Text(
@@ -555,7 +564,7 @@ class _ActiveDriverCard extends ConsumerWidget {
 
                     // License plate badge
                     Container(
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                         horizontal: DWSpacing.sm, // DS: 12pt
                         vertical: DWSpacing.xxs + 2, // DS: ~6pt
                       ),
@@ -576,23 +585,23 @@ class _ActiveDriverCard extends ConsumerWidget {
                     ),
                   ],
                 ),
-              ),
+                ),
 
-              SizedBox(height: DWSpacing.md), // DS: 16pt
+              const SizedBox(height: DWSpacing.md), // DS: 16pt
 
               // Track B - Ticket #105: Trip Summary Section (Service + Price + Payment)
               _TripSummarySection(
                 tripSummary: ref.watch(rideTripSessionProvider).tripSummary,
               ),
 
-            SizedBox(height: DWSpacing.lg), // DS: 24pt
-            
+            const SizedBox(height: DWSpacing.lg), // DS: 24pt
+
             // Divider for cleaner separation
             Divider(
               height: 1,
               color: colorScheme.outlineVariant,
             ),
-            SizedBox(height: DWSpacing.md), // DS: 16pt
+            const SizedBox(height: DWSpacing.md), // DS: 16pt
 
             // Track B - Ticket #142: Cleaner action buttons layout matching Hi-Fi
             // Primary actions in a row (Contact Driver + Share Trip)
@@ -601,6 +610,7 @@ class _ActiveDriverCard extends ConsumerWidget {
                 // Contact driver button - Icon + Text for better UX
                 Expanded(
                   child: TextButton.icon(
+                    key: RideActiveTripScreen.contactDriverActionKey,
                     icon: Icon(
                       Icons.phone_outlined,
                       size: 20,
@@ -620,9 +630,10 @@ class _ActiveDriverCard extends ConsumerWidget {
                   height: 24,
                   color: colorScheme.outlineVariant,
                 ),
-                // Share trip button - Icon + Text for better UX  
+                // Share trip button - Icon + Text for better UX
                 Expanded(
                   child: TextButton.icon(
+                    key: RideActiveTripScreen.shareTripActionKey,
                     icon: Icon(
                       Icons.share_outlined,
                       size: 20,
@@ -640,15 +651,16 @@ class _ActiveDriverCard extends ConsumerWidget {
               ],
             ),
 
-            SizedBox(height: DWSpacing.sm), // DS: 12pt
-            
+            const SizedBox(height: DWSpacing.sm), // DS: 12pt
+
             // Cancel ride button - Red accent for warning action
             // Only enabled when phase.isCancellable is true
             if (activeTrip.phase.isCancellable) ...[
               TextButton(
+                key: RideActiveTripScreen.cancelRideActionKey,
                 style: TextButton.styleFrom(
                   foregroundColor: colorScheme.error,
-                  minimumSize: Size(double.infinity, 44),
+                  minimumSize: const Size(double.infinity, 44),
                 ),
                 onPressed: () => _onCancelRide(context, ref),
                 child: Text(
@@ -661,8 +673,8 @@ class _ActiveDriverCard extends ConsumerWidget {
             ],
             
             // Debug: End trip button (only in debug mode)
-            if (kDebugMode) ...[  
-              SizedBox(height: DWSpacing.sm), // DS: 12pt
+            if (kDebugMode) ...[
+              const SizedBox(height: DWSpacing.sm), // DS: 12pt
               SizedBox(
                 width: double.infinity,
                 child: DWButton.secondary(
@@ -675,7 +687,7 @@ class _ActiveDriverCard extends ConsumerWidget {
             // Track B - Ticket #122: No driver found CTA
             // Shown during findingDriver phase as secondary option
             if (activeTrip.phase == RideTripPhase.findingDriver) ...[
-              SizedBox(height: DWSpacing.sm), // DS: 12pt
+              const SizedBox(height: DWSpacing.sm), // DS: 12pt
               SizedBox(
                 width: double.infinity,
                 child: TextButton(
@@ -863,20 +875,20 @@ class _ActiveDriverCard extends ConsumerWidget {
     // Mock driver phone - in production this would come from activeTrip/backend
     // Using the mock driver name "Ahmad M." from the UI, phone is mock too
     const mockDriverPhone = '+966500000000';
-    final driverPhone = mockDriverPhone;
+    const driverPhone = mockDriverPhone;
 
     if (!context.mounted) return;
 
     // Design Tokens (Track B - Ticket #88)
     await showModalBottomSheet<void>(
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(DWRadius.lg)), // DS: 24pt
       ),
       builder: (ctx) {
         return SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: DWSpacing.md, // DS: 16pt
               vertical: DWSpacing.sm, // DS: 12pt
             ),
@@ -887,7 +899,7 @@ class _ActiveDriverCard extends ConsumerWidget {
                 Container(
                   width: 40,
                   height: 4,
-                  margin: EdgeInsets.only(bottom: DWSpacing.sm), // DS: 12pt
+                  margin: const EdgeInsets.only(bottom: DWSpacing.sm), // DS: 12pt
                   decoration: BoxDecoration(
                     color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(DWRadius.circle), // DS: pill
@@ -896,7 +908,7 @@ class _ActiveDriverCard extends ConsumerWidget {
                 // Phone number option
                 ListTile(
                   leading: const Icon(Icons.phone_outlined),
-                  title: Text(driverPhone),
+                  title: const Text(driverPhone),
                   subtitle: Text(l10n.rideActiveContactDriverCta),
                   onTap: () {
                     // Stub: In this phase we don't activate real calling (NoOp)
@@ -912,12 +924,16 @@ class _ActiveDriverCard extends ConsumerWidget {
                 // Copy phone number option
                 ListTile(
                   leading: const Icon(Icons.copy_outlined),
-                  title: Text('Copy phone number'),
+                  title: const Text('Copy phone number'),
                   onTap: () async {
-                    await Clipboard.setData(ClipboardData(text: driverPhone));
-                    Navigator.of(ctx).pop();
+                    final scaffoldMessenger = ScaffoldMessenger.of(context);
+                    final navigator = Navigator.of(ctx);
+
+                    await Clipboard.setData(const ClipboardData(text: driverPhone));
+
+                    navigator.pop();
                     if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      scaffoldMessenger.showSnackBar(
                         SnackBar(content: Text(l10n.rideActiveShareTripCopied)),
                       );
                     }
@@ -1027,7 +1043,7 @@ class _TripSummarySection extends ConsumerWidget {
     }
 
     return Container(
-      padding: EdgeInsets.all(DWSpacing.sm), // DS: 12pt
+      padding: const EdgeInsets.all(DWSpacing.sm), // DS: 12pt
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest, // DS: color.surface.elevated
         borderRadius: BorderRadius.circular(DWRadius.md), // DS: 12pt
@@ -1044,7 +1060,7 @@ class _TripSummarySection extends ConsumerWidget {
                   size: 18,
                   color: colorScheme.primary,
                 ),
-                SizedBox(width: DWSpacing.xs), // DS: 8pt
+                const SizedBox(width: DWSpacing.xs), // DS: 8pt
                 Expanded(
                   child: Text(
                     serviceAndPriceText,
@@ -1055,7 +1071,7 @@ class _TripSummarySection extends ConsumerWidget {
                 ),
               ],
             ),
-            SizedBox(height: DWSpacing.xs), // DS: 8pt
+            const SizedBox(height: DWSpacing.xs), // DS: 8pt
           ],
           // Payment method row
           Row(
@@ -1067,7 +1083,7 @@ class _TripSummarySection extends ConsumerWidget {
                 size: 18,
                 color: colorScheme.onSurfaceVariant,
               ),
-              SizedBox(width: DWSpacing.xs), // DS: 8pt
+              const SizedBox(width: DWSpacing.xs), // DS: 8pt
               Expanded(
                 child: Text(
                   paymentText,
@@ -1123,28 +1139,6 @@ String _activeTripHeadline({
   }
 }
 
-/// Returns a localized status label for the given FSM phase (Track B - Ticket #66)
-///
-/// This function maps [RideTripPhase] to L10n status labels (`rideStatus*` keys)
-/// for displaying a simple, unified status text on [RideActiveTripScreen].
-String _rideStatusLabel(AppLocalizations l10n, RideTripPhase? phase) {
-  switch (phase) {
-    case RideTripPhase.findingDriver:
-      return l10n.rideStatusFindingDriver;
-    case RideTripPhase.driverAccepted:
-      return l10n.rideStatusDriverAccepted;
-    case RideTripPhase.driverArrived:
-      return l10n.rideStatusDriverArrived;
-    case RideTripPhase.inProgress:
-      return l10n.rideStatusInProgress;
-    case RideTripPhase.payment:
-      return l10n.rideStatusPaymentPending;
-    case RideTripPhase.completed:
-      return l10n.rideStatusCompleted;
-    default:
-      return l10n.rideStatusUnknown;
-  }
-}
 
 /// Returns an appropriate icon for the given trip phase
 IconData _phaseIcon(RideTripPhase phase) {
@@ -1200,162 +1194,6 @@ Color _phaseColor(ColorScheme colorScheme, RideTripPhase phase) {
   }
 }
 
-// ============================================================================
-// Debug FSM Buttons (Track B - Ticket #64)
-// ============================================================================
-
-/// Debug buttons for testing FSM phase transitions manually.
-///
-/// Only shown when [kDebugMode] is true.
-/// Each button applies the appropriate [RideTripEvent] to advance the FSM.
-class _DebugFsmButtons extends ConsumerWidget {
-  const _DebugFsmButtons({
-    required this.activeTrip,
-    required this.l10n,
-  });
-
-  final RideTripState activeTrip;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final phase = activeTrip.phase;
-
-    // Build list of available debug actions based on current phase
-    final actions = <_DebugAction>[];
-
-    switch (phase) {
-      case RideTripPhase.findingDriver:
-        actions.add(_DebugAction(
-          label: l10n.rideDebugDriverFound,
-          event: RideTripEvent.driverAccepted,
-          color: colorScheme.primary,
-        ));
-      case RideTripPhase.driverAccepted:
-        actions.add(_DebugAction(
-          label: l10n.rideDebugDriverArrived,
-          event: RideTripEvent.driverArrived,
-          color: colorScheme.primary,
-        ));
-      case RideTripPhase.driverArrived:
-        actions.add(_DebugAction(
-          label: l10n.rideDebugStartTrip,
-          event: RideTripEvent.startTrip,
-          color: colorScheme.tertiary,
-        ));
-      case RideTripPhase.inProgress:
-        actions.add(_DebugAction(
-          label: l10n.rideDebugCompleteTrip,
-          event: RideTripEvent.startPayment,
-          color: colorScheme.tertiary, // DS: color.state.success
-          chainedEvent: RideTripEvent.complete,
-        ));
-      case RideTripPhase.payment:
-        actions.add(_DebugAction(
-          label: l10n.rideDebugConfirmPayment,
-          event: RideTripEvent.complete,
-          color: colorScheme.tertiary, // DS: color.state.success
-        ));
-      default:
-        // No debug actions for other phases
-        break;
-    }
-
-    if (actions.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    // Design Tokens (Track B - Ticket #88)
-    return Container(
-      padding: EdgeInsets.all(DWSpacing.sm), // DS: 12pt
-      decoration: BoxDecoration(
-        color: colorScheme.errorContainer.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(DWRadius.md), // DS: 12pt
-        border: Border.all(
-          color: colorScheme.error.withValues(alpha: 0.3),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.bug_report,
-                size: 16,
-                color: colorScheme.error,
-              ),
-              SizedBox(width: DWSpacing.xxs + 2), // ~6pt
-              Text(
-                l10n.rideDebugFsmTitle,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colorScheme.error,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: DWSpacing.xs), // DS: 8pt
-          Text(
-            l10n.rideDebugCurrentPhase(phase.name),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          SizedBox(height: DWSpacing.sm), // DS: 12pt
-          Wrap(
-            spacing: DWSpacing.xs, // DS: 8pt
-            runSpacing: DWSpacing.xs, // DS: 8pt
-            children: actions.map((action) {
-              return FilledButton.tonal(
-                onPressed: () => _applyAction(ref, action),
-                style: FilledButton.styleFrom(
-                  backgroundColor: action.color.withValues(alpha: 0.2),
-                  foregroundColor: action.color,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: DWSpacing.sm, // DS: 12pt
-                    vertical: DWSpacing.xs, // DS: 8pt
-                  ),
-                ),
-                child: Text(
-                  action.label,
-                  style: theme.textTheme.bodySmall, // DS: type.caption.default (12pt)
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _applyAction(WidgetRef ref, _DebugAction action) {
-    final controller = ref.read(rideTripSessionProvider.notifier);
-    controller.applyEvent(action.event);
-    
-    // Apply chained event if present (e.g., startPayment + complete)
-    if (action.chainedEvent != null) {
-      controller.applyEvent(action.chainedEvent!);
-    }
-  }
-}
-
-/// Helper class for debug actions
-class _DebugAction {
-  const _DebugAction({
-    required this.label,
-    required this.event,
-    required this.color,
-    this.chainedEvent,
-  });
-
-  final String label;
-  final RideTripEvent event;
-  final Color color;
-  final RideTripEvent? chainedEvent;
-}
 
 // ============================================================================
 // Terminal Trip State View (Track B - Ticket #95)
@@ -1428,7 +1266,7 @@ class _TerminalTripStateView extends StatelessWidget {
       // Use custom padding for terminal view (24pt instead of default 16pt)
       applyPadding: false,
       body: Padding(
-          padding: EdgeInsets.all(DWSpacing.lg), // DS: 24pt
+          padding: const EdgeInsets.all(DWSpacing.lg), // DS: 24pt
           child: Column(
             children: [
               // Spacer to push content towards center
@@ -1436,7 +1274,7 @@ class _TerminalTripStateView extends StatelessWidget {
 
               // Icon
               Container(
-                padding: EdgeInsets.all(DWSpacing.lg), // DS: 24pt
+                padding: const EdgeInsets.all(DWSpacing.lg), // DS: 24pt
                 decoration: BoxDecoration(
                   color: iconColor.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
@@ -1448,7 +1286,7 @@ class _TerminalTripStateView extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: DWSpacing.lg), // DS: 24pt
+              const SizedBox(height: DWSpacing.lg), // DS: 24pt
 
               // Title (type.headline.h2)
               Text(
@@ -1460,7 +1298,7 @@ class _TerminalTripStateView extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
 
-              SizedBox(height: DWSpacing.sm), // DS: 12pt
+              const SizedBox(height: DWSpacing.sm), // DS: 12pt
 
               // Body (type.body.regular)
               Text(
@@ -1473,9 +1311,9 @@ class _TerminalTripStateView extends StatelessWidget {
 
               // Show destination if available
               if (destination.isNotEmpty) ...[
-                SizedBox(height: DWSpacing.md), // DS: 16pt
+                const SizedBox(height: DWSpacing.md), // DS: 16pt
                 Container(
-                  padding: EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: DWSpacing.md, // DS: 16pt
                     vertical: DWSpacing.sm, // DS: 12pt
                   ),
@@ -1491,7 +1329,7 @@ class _TerminalTripStateView extends StatelessWidget {
                         size: 16,
                         color: colorScheme.onSurfaceVariant,
                       ),
-                      SizedBox(width: DWSpacing.xs), // DS: 8pt
+                      const SizedBox(width: DWSpacing.xs), // DS: 8pt
                       Flexible(
                         child: Text(
                           destination,
@@ -1521,7 +1359,7 @@ class _TerminalTripStateView extends StatelessWidget {
                       onPressed: onRequestNewRide,
                     ),
 
-                  SizedBox(height: DWSpacing.sm), // DS: 12pt
+                  const SizedBox(height: DWSpacing.sm), // DS: 12pt
 
                   // Secondary CTA: Back to home
                   DWButton.secondary(
@@ -1531,7 +1369,7 @@ class _TerminalTripStateView extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: DWSpacing.md), // DS: 16pt
+              const SizedBox(height: DWSpacing.md), // DS: 16pt
             ],
         ),
       ),

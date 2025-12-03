@@ -781,6 +781,55 @@
     }
   },
 
+  "homeHubTitle": "إلى أين تريد الذهاب؟",
+  "@homeHubTitle": {
+    "description": "العنوان الرئيسي لشاشة Home Hub - تحية تسأل المستخدم عن وجهته (Ticket #182)"
+  },
+  "homeHubCurrentLocationLabel": "موقعك الحالي",
+  "@homeHubCurrentLocationLabel": {
+    "description": "عنوان مؤشر الموقع الحالي (Ticket #182)"
+  },
+  "homeHubCurrentLocationLoading": "جاري تحديد موقعك...",
+  "@homeHubCurrentLocationLoading": {
+    "description": "رسالة مؤقتة أثناء جلب الموقع الحالي في Home Hub"
+  },
+  "homeHubCurrentLocationUnavailable": "لا يمكن تحديد موقعك",
+  "@homeHubCurrentLocationUnavailable": {
+    "description": "رسالة تظهر عند تعذر تحديد الموقع الحالي في Home Hub"
+  },
+  "homeHubServiceRide": "مشاوير",
+  "@homeHubServiceRide": {
+    "description": "عنوان خدمة المشاوير (Ticket #182)"
+  },
+  "homeHubServiceParcels": "طرود",
+  "@homeHubServiceParcels": {
+    "description": "عنوان خدمة الطرود (Ticket #182)"
+  },
+  "homeHubServiceFood": "طلبات الطعام",
+  "@homeHubServiceFood": {
+    "description": "عنوان خدمة الطعام (Ticket #182)"
+  },
+  "homeHubActiveRideTitle": "رحلة قيد التنفيذ",
+  "@homeHubActiveRideTitle": {
+    "description": "عنوان بطاقة الرحلة النشطة في الصفحة الرئيسية (Ticket #183)"
+  },
+  "homeHubActiveRideSubtitle": "تابع رحلتك النشطة",
+  "@homeHubActiveRideSubtitle": {
+    "description": "وصف بطاقة الرحلة النشطة في الصفحة الرئيسية (Ticket #183)"
+  },
+  "homeHubParcelsComingSoonMessage": "خدمة الطرود قادمة قريبًا إلى مدينتك.",
+  "@homeHubParcelsComingSoonMessage": {
+    "description": "رسالة سناك بار عند ضغط المستخدم على شريحة الطرود في شاشة HomeHub (Ticket #184)"
+  },
+  "homeHubFoodComingSoonMessage": "خدمة طلبات الطعام قادمة قريبًا إلى مدينتك.",
+  "@homeHubFoodComingSoonMessage": {
+    "description": "رسالة سناك بار عند ضغط المستخدم على شريحة الطعام في شاشة HomeHub (Ticket #184)"
+  },
+  "homeHubSearchPlaceholder": "إلى أين؟",
+  "@homeHubSearchPlaceholder": {
+    "description": "النص الإرشادي في شريط البحث في شاشة HomeHub لبدء رحلة جديدة (Ticket #188)"
+  },
+
   "rideDestinationTitle": "إلى أين؟",
   "@rideDestinationTitle": {
     "description": "عنوان شاشة إدخال الوجهة للرحلة (Screen 8)"
@@ -953,17 +1002,21 @@
     "description": "شارة تظهر على خيار الرحلة الموصى به (Ticket #91)"
   },
 
-  "rideQuoteErrorTitle": "تعذّر تحميل الأسعار",
+  "rideQuoteErrorTitle": "تعذّر تحميل خيارات الرحلة",
   "@rideQuoteErrorTitle": {
     "description": "عنوان حالة الخطأ عند فشل التسعير (Track B - Ticket #121)"
   },
-  "rideQuoteErrorGeneric": "حدث خطأ أثناء جلب أسعار الرحلات. يرجى المحاولة مرة أخرى.",
+  "rideQuoteErrorGeneric": "يرجى التحقق من الاتصال بالإنترنت ثم المحاولة مرة أخرى.",
   "@rideQuoteErrorGeneric": {
     "description": "رسالة خطأ عامة لفشل التسعير (Track B - Ticket #121)"
   },
   "rideQuoteErrorNoOptions": "لا تتوفر خيارات رحلات لهذا المسار في الوقت الحالي.",
   "@rideQuoteErrorNoOptions": {
     "description": "رسالة خطأ عند عدم إرجاع خيارات رحلات (Track B - Ticket #121)"
+  },
+  "ridePricingErrorGeneric": "تعذّر تحميل أسعار الرحلة، حاول مرة أخرى.",
+  "@ridePricingErrorGeneric": {
+    "description": "رسالة خطأ عامة لفشل التسعير (Ticket #196)"
   },
   "rideQuoteRetryCta": "إعادة المحاولة",
   "@rideQuoteRetryCta": {
@@ -973,7 +1026,7 @@
   "@rideQuoteEmptyTitle": {
     "description": "عنوان الحالة الفارغة عند عدم وجود خيارات رحلات (Track B - Ticket #121)"
   },
-  "rideQuoteEmptyDescription": "جرّب وقتًا مختلفًا أو عدّل نقطة الانطلاق والوجهة.",
+  "rideQuoteEmptyDescription": "يرجى المحاولة مرة أخرى خلال بضع دقائق.",
   "@rideQuoteEmptyDescription": {
     "description": "وصف الحالة الفارغة عند عدم وجود خيارات رحلات (Track B - Ticket #121)"
   },
@@ -1852,6 +1905,21 @@
     "description": "زر الانتهاء (Ticket #92)"
   },
 
+  "rideDriverMockName": "أحمد م.",
+  "@rideDriverMockName": {
+    "description": "اسم السائق التجريبي للتطوير (Track C - Ticket #171)"
+  },
+
+  "rideDriverMockCarInfo": "تويوتا كامري • ABC 1234",
+  "@rideDriverMockCarInfo": {
+    "description": "معلومات السيارة التجريبية للتطوير (Track C - Ticket #171)"
+  },
+
+  "rideDriverMockRating": "4.9",
+  "@rideDriverMockRating": {
+    "description": "تقييم السائق التجريبي للتطوير (Track C - Ticket #171)"
+  },
+
   "rideSummaryEndTripDebugCta": "إنهاء الرحلة",
   "@rideSummaryEndTripDebugCta": {
     "description": "زر إنهاء الرحلة للاختبار (Track B - Ticket #62)"
@@ -2263,6 +2331,10 @@
   "@parcelsShipmentStatusCancelled": {
     "description": "حالة الشحنة: ملغاة (Track C - Ticket #149)"
   },
+  "parcelsShipmentsErrorTitle": "حدث خطأ ما",
+  "@parcelsShipmentsErrorTitle": {
+    "description": "عنوان حالة الخطأ لقائمة الشحنات (Track C - Ticket #149)"
+  },
 
   "parcelsCreateShipmentTitle": "إنشاء شحنة",
   "@parcelsCreateShipmentTitle": {
@@ -2400,5 +2472,13 @@
   "commonTotalLabel": "المجموع",
   "@commonTotalLabel": {
     "description": "المجموع (Track C - Ticket #151)"
+  },
+  "homeHubRecentDestinationsTitle": "الوجهات الأخيرة",
+  "@homeHubRecentDestinationsTitle": {
+    "description": "عنوان قسم الوجهات الأخيرة في شاشة HomeHub (Ticket #189)"
+  },
+  "homeHubRecentDestinationsSeeAll": "عرض الكل",
+  "@homeHubRecentDestinationsSeeAll": {
+    "description": "زر لعرض كل الوجهات الأخيرة من شاشة HomeHub (Ticket #194)"
   }
 }

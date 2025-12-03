@@ -23,6 +23,7 @@ class RideQuoteOptionsSheet extends StatelessWidget {
     required this.onOptionSelected,
     this.onClose,
     this.showHandle = true,
+    this.vehicleListKey,
   });
 
   /// The quote containing available options.
@@ -39,6 +40,9 @@ class RideQuoteOptionsSheet extends StatelessWidget {
 
   /// Whether to show the drag handle (for bottom sheet).
   final bool showHandle;
+
+  /// Key for the vehicle list (for testing).
+  final Key? vehicleListKey;
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +110,7 @@ class RideQuoteOptionsSheet extends StatelessWidget {
           // Options list
           Flexible(
             child: ListView.separated(
+              key: vehicleListKey,
               shrinkWrap: true,
               padding: const EdgeInsets.all(DWSpacing.md),
               itemCount: quote.options.length,
@@ -195,7 +200,7 @@ class _RideQuoteOptionTile extends StatelessWidget {
                       ),
                       if (isRecommended) ...[
                         const SizedBox(width: DWSpacing.xs),
-                        _RecommendedBadge(),
+                        const _RecommendedBadge(),
                       ],
                     ],
                   ),

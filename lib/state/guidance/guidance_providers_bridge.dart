@@ -23,10 +23,10 @@ class SharedPreferencesHintRepository implements InAppHintStateRepository {
 
   static const String _prefix = 'hint_';
 
-  String _showCountKey(String hintId) => '${_prefix}${hintId}_show_count';
-  String _lastShownKey(String hintId) => '${_prefix}${hintId}_last_shown';
-  String _dismissedKey(String hintId) => '${_prefix}${hintId}_dismissed';
-  String _dismissedAtKey(String hintId) => '${_prefix}${hintId}_dismissed_at';
+  String _showCountKey(String hintId) => '$_prefix${hintId}_show_count';
+  String _lastShownKey(String hintId) => '$_prefix${hintId}_last_shown';
+  String _dismissedKey(String hintId) => '$_prefix${hintId}_dismissed';
+  String _dismissedAtKey(String hintId) => '$_prefix${hintId}_dismissed_at';
 
   @override
   Future<InAppHintDisplayState> getDisplayState(String hintId) async {

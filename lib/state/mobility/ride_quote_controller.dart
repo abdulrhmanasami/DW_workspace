@@ -24,6 +24,7 @@ import 'package:mobility_shims/mobility_shims.dart';
 
 // From app:
 import 'ride_draft_state.dart';
+import 'ride_pricing_service_stub.dart';
 
 // ============================================================================
 // Track B - Ticket #121: Structured Error Model
@@ -116,7 +117,6 @@ class RideQuoteUiState {
     this.isLoading = false,
     this.quote,
     this.error,
-    @Deprecated('Use error instead') this.errorMessage,
   });
 
   /// Whether a quote request is in progress.
@@ -130,18 +130,13 @@ class RideQuoteUiState {
   /// Track B - Ticket #121: Provides granular error types for better UX.
   final RideQuoteError? error;
 
-  /// Legacy error message field (deprecated).
-  @Deprecated('Use error instead')
-  final String? errorMessage;
-
   /// Whether we have a valid quote.
   bool get hasQuote => quote != null;
 
   /// Whether there's an error with no quote.
   ///
-  /// Track B - Ticket #121: Now checks both new [error] and legacy [errorMessage].
-  bool get hasError =>
-      (error != null || errorMessage != null) && quote == null;
+  /// Track B - Ticket #121: Now checks error field.
+  bool get hasError => error != null && quote == null;
 
   /// Returns true if the error is specifically about no options available.
   bool get isNoOptionsError => error is RideQuoteErrorNoOptionsAvailable;
@@ -153,7 +148,6 @@ class RideQuoteUiState {
     bool? isLoading,
     RideQuote? quote,
     RideQuoteError? error,
-    @Deprecated('Use error instead') String? errorMessage,
     bool clearError = false,
     bool clearQuote = false,
   }) {
@@ -161,9 +155,6 @@ class RideQuoteUiState {
       isLoading: isLoading ?? this.isLoading,
       quote: clearQuote ? null : (quote ?? this.quote),
       error: clearError ? null : (error ?? this.error),
-      // ignore: deprecated_member_use_from_same_package
-      errorMessage:
-          clearError ? null : (errorMessage ?? this.errorMessage),
     );
   }
 
@@ -173,18 +164,14 @@ class RideQuoteUiState {
     return other is RideQuoteUiState &&
         other.isLoading == isLoading &&
         other.quote?.quoteId == quote?.quoteId &&
-        other.error == error &&
-        // ignore: deprecated_member_use_from_same_package
-        other.errorMessage == errorMessage;
+        other.error == error;
   }
 
   @override
   int get hashCode =>
       isLoading.hashCode ^
       (quote?.quoteId.hashCode ?? 0) ^
-      error.hashCode ^
-      // ignore: deprecated_member_use_from_same_package
-      errorMessage.hashCode;
+      error.hashCode;
 
   @override
   String toString() =>
@@ -193,10 +180,10 @@ class RideQuoteUiState {
 
 /// Provides the current implementation of [RidePricingService].
 ///
-/// Track B - Ticket #27: Using MockRidePricingService for pricing.
+/// Ticket #196: Using StubRidePricingService for clean pricing abstraction.
 /// In production, this can be swapped with a real backend-backed implementation.
 final ridePricingServiceProvider = Provider<RidePricingService>((ref) {
-  return const MockRidePricingService();
+  return StubRidePricingService();
 });
 
 /// Legacy provider for backward compatibility.
@@ -300,20 +287,16 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
         );
       } else {
         // Track B - Ticket #121: Pricing service specific error
-        state = RideQuoteUiState(
-          isLoading: false,
-          error: RideQuoteError.pricingFailed(e.message),
-          // Keep legacy errorMessage for backward compatibility
-          errorMessage: e.message,
-        );
+      state = RideQuoteUiState(
+        isLoading: false,
+        error: RideQuoteError.pricingFailed(e.message),
+      );
       }
     } catch (e) {
       // Track B - Ticket #121: Generic/unexpected error
       state = RideQuoteUiState(
         isLoading: false,
         error: RideQuoteError.unexpected(e.toString()),
-        // Keep legacy errorMessage for backward compatibility
-        errorMessage: e.toString(),
       );
     }
   }
@@ -332,7 +315,6 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
       state = const RideQuoteUiState(
         isLoading: false,
         error: RideQuoteError.pricingFailed('Destination is empty'),
-        errorMessage: 'Destination is empty',
       );
       return;
     }
@@ -396,13 +378,11 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
       state = RideQuoteUiState(
         isLoading: false,
         error: RideQuoteError.pricingFailed(e.message),
-        errorMessage: e.message,
       );
     } catch (e) {
       state = RideQuoteUiState(
         isLoading: false,
         error: RideQuoteError.unexpected(e.toString()),
-        errorMessage: e.toString(),
       );
     }
   }
@@ -417,7 +397,6 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
       state = const RideQuoteUiState(
         isLoading: false,
         error: RideQuoteError.pricingFailed('Destination is empty'),
-        errorMessage: 'Destination is empty',
       );
       return;
     }
@@ -436,7 +415,6 @@ class RideQuoteController extends StateNotifier<RideQuoteUiState> {
       state = RideQuoteUiState(
         isLoading: false,
         error: RideQuoteError.unexpected(e.toString()),
-        errorMessage: e.toString(),
       );
     }
   }

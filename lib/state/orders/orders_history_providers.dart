@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:parcels_shims/parcels_shims.dart';
 import '../parcels/parcel_shipments_providers.dart';
+import '../mobility/ride_trip_session.dart';
 
 /// Service type for unified orders history.
 enum OrderHistoryServiceType {
@@ -40,32 +41,51 @@ final class ParcelOrderHistoryItem extends OrderHistoryItem {
   DateTime get createdAt => shipment.createdAt;
 }
 
-// TODO (Track B/D): add RideOrderHistoryItem when ride history repository exists.
+/// Ride-based order history item.
+///
+/// Wraps a ride trip history entry into the unified OrderHistoryItem model.
+@immutable
+final class RideOrderHistoryItem extends OrderHistoryItem {
+  const RideOrderHistoryItem(this.entry);
+
+  final RideHistoryEntry entry;
+
+  @override
+  OrderHistoryServiceType get serviceType => OrderHistoryServiceType.ride;
+
+  @override
+  DateTime get createdAt => entry.completedAt;
+}
+
 // TODO (Track C/Food): add FoodOrderHistoryItem when food orders are implemented.
 
 /// Unified orders history view.
 ///
 /// Track C - Ticket #153: Hardened provider that preserves AsyncValue semantics.
-/// Currently depends on parcels only, with structure prepared for rides/food integration.
-/// 
-/// This provider maintains the loading/error/data states from underlying service providers
-/// instead of converting them to empty lists, allowing proper UI state handling.
+/// Track B - Ticket #157: Integrated ride history from ride_trip_session.dart.
+///
 final ordersHistoryProvider =
     Provider.autoDispose<AsyncValue<List<OrderHistoryItem>>>((ref) {
   // Parcels source - maintains AsyncValue state
   final parcelShipmentsAsync = ref.watch(parcelShipmentsStreamProvider);
 
-  // TODO (future): Merge with rideHistoryProvider and foodOrdersProvider when available.
-  // Will need to combine multiple AsyncValues properly.
-  
+  // Ride history source - from ride trip session (synchronous)
+  final rideSession = ref.watch(rideTripSessionProvider);
+
   return parcelShipmentsAsync.whenData((shipments) {
-    final items = shipments
+    final parcelItems = shipments
         .map<OrderHistoryItem>((s) => ParcelOrderHistoryItem(s))
-        .toList()
-      // Sort by createdAt desc (newest first)
-      ..sort(
-        (a, b) => b.createdAt.compareTo(a.createdAt),
-      );
-    return List<OrderHistoryItem>.unmodifiable(items);
+        .toList();
+
+    // Add ride history items
+    final rideItems = rideSession.historyTrips
+        .map<OrderHistoryItem>((entry) => RideOrderHistoryItem(entry))
+        .toList();
+
+    // Combine and sort by createdAt desc (newest first)
+    final allItems = <OrderHistoryItem>[...parcelItems, ...rideItems]
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    return List<OrderHistoryItem>.unmodifiable(allItems);
   });
 });

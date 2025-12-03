@@ -43,6 +43,10 @@ void main() {
   // Run Happy Path tests (Ticket #113)
   runRequestRideHappyPathTests();
 
+  /// Helper to get AppLocalizations from the test widget
+  AppLocalizations l10n(WidgetTester tester) =>
+      AppLocalizations.of(tester.element(find.byType(RideConfirmationScreen)))!;
+
   group('RideTripConfirmationScreen (RideConfirmationScreen) Widget Tests', () {
     /// Helper to create a mock RideQuote for testing
     RideQuote createMockQuote() {
@@ -255,17 +259,17 @@ void main() {
       await tester.pumpWidget(createTestWidget(
         quoteState: const RideQuoteUiState(
           isLoading: false,
-          errorMessage: 'Network error',
+          error: RideQuoteError.unexpected('Network error'),
         ),
       ));
       await tester.pumpAndSettle();
 
       // Check for error title (Ticket #26)
-      expect(find.text("We couldn't load ride options"), findsOneWidget);
+      expect(find.text(l10n(tester).rideConfirmErrorTitle), findsOneWidget);
 
       // Check for error subtitle
       expect(
-          find.text('Please check your connection and try again.'),
+          find.text(l10n(tester).rideConfirmErrorSubtitle),
           findsOneWidget);
 
       // Check for retry button (DWButton.secondary)
@@ -280,7 +284,7 @@ void main() {
       final testController = _TestRideQuoteControllerWithRetryCount(
         const RideQuoteUiState(
           isLoading: false,
-          errorMessage: 'Network error',
+          error: RideQuoteError.unexpected('Network error'),
         ),
       );
 
@@ -296,6 +300,7 @@ void main() {
             rideTripSessionProvider.overrideWith(
                 (ref) => RideTripSessionController(ref)),
           ],
+          // ignore: prefer_const_constructors
           child: MaterialApp(
             localizationsDelegates: const [
               AppLocalizations.delegate,
@@ -340,11 +345,11 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check for empty title (Ticket #26, updated in Ticket #121)
-      expect(find.text('No rides available'), findsOneWidget);
+      expect(find.text(l10n(tester).rideQuoteEmptyTitle), findsOneWidget);
 
       // Track B - Ticket #121: Updated empty subtitle text
       expect(
-          find.text('Try a different time or adjust your pickup and destination.'), findsOneWidget);
+          find.text(l10n(tester).rideQuoteEmptyDescription), findsOneWidget);
 
       // No vehicle options should be visible
       expect(find.text('Economy'), findsNothing);
@@ -372,7 +377,7 @@ void main() {
       await tester.pumpWidget(createTestWidget(
         quoteState: const RideQuoteUiState(
           isLoading: false,
-          errorMessage: 'Error loading options',
+          error: RideQuoteError.unexpected('Error loading options'),
         ),
       ));
       await tester.pumpAndSettle();
@@ -381,7 +386,7 @@ void main() {
       expect(find.text('Request Ride'), findsOneWidget);
 
       // Error UI should be shown
-      expect(find.text("We couldn't load ride options"), findsOneWidget);
+      expect(find.text(l10n(tester).rideConfirmErrorTitle), findsOneWidget);
     });
 
     testWidgets('Request Ride CTA is disabled on empty state (no quote)',
@@ -415,9 +420,9 @@ void main() {
       expect(find.text('Request Ride'), findsOneWidget);
 
       // No error/loading/empty UI should be visible
-      expect(find.text("We couldn't load ride options"), findsNothing);
+      expect(find.text(l10n(tester).rideConfirmErrorTitle), findsNothing);
       expect(find.text('Fetching ride options...'), findsNothing);
-      expect(find.text('No rides available'), findsNothing);
+      expect(find.text(l10n(tester).rideQuoteEmptyTitle), findsNothing);
     });
 
     testWidgets('displays pickup location label', (WidgetTester tester) async {
@@ -581,6 +586,7 @@ void main() {
               return RideTripSessionController(ref);
             }),
           ],
+          // ignore: prefer_const_constructors
           child: MaterialApp(
             locale: const Locale('de'),
             localizationsDelegates: const [
@@ -760,6 +766,10 @@ void runPricingChaosTests() {
   });
 
   group('Chaos & Resilience Tests - Pricing Failures (Ticket #97)', () {
+    /// Helper to get AppLocalizations from the test widget
+    AppLocalizations l10n(WidgetTester tester) =>
+        AppLocalizations.of(tester.element(find.byType(RideConfirmationScreen)))!;
+
     /// Helper to create draft state for tests
     RideDraftUiState createDraftForChaos() {
       return RideDraftUiState(
@@ -795,7 +805,7 @@ void runPricingChaosTests() {
       final errorController = _TestRideQuoteController(
         const RideQuoteUiState(
           isLoading: false,
-          errorMessage: 'Mock pricing service failure',
+          error: RideQuoteError.pricingFailed('Mock pricing service failure'),
         ),
       );
 
@@ -811,6 +821,7 @@ void runPricingChaosTests() {
             rideTripSessionProvider.overrideWith(
                 (ref) => RideTripSessionController(ref)),
           ],
+          // ignore: prefer_const_constructors
           child: MaterialApp(
             localizationsDelegates: const [
               AppLocalizations.delegate,
@@ -826,11 +837,11 @@ void runPricingChaosTests() {
       await tester.pumpAndSettle();
 
       // Verify error title is shown
-      expect(find.text("We couldn't load ride options"), findsOneWidget,
+      expect(find.text(l10n(tester).rideConfirmErrorTitle), findsOneWidget,
           reason: 'Error title should be visible when pricing fails');
 
       // Verify error subtitle is shown
-      expect(find.text('Please check your connection and try again.'),
+      expect(find.text(l10n(tester).rideConfirmErrorSubtitle),
           findsOneWidget,
           reason: 'Error subtitle should explain what to do');
 
@@ -870,6 +881,7 @@ void runPricingChaosTests() {
             rideTripSessionProvider.overrideWith(
                 (ref) => RideTripSessionController(ref)),
           ],
+          // ignore: prefer_const_constructors
           child: MaterialApp(
             localizationsDelegates: const [
               AppLocalizations.delegate,
@@ -886,7 +898,7 @@ void runPricingChaosTests() {
 
       // Track B - Ticket #121: Updated to use new error title l10n key
       // Initially should show error (first call fails)
-      expect(find.text("We couldn't load prices"), findsOneWidget,
+      expect(find.text(l10n(tester).rideConfirmErrorTitle), findsOneWidget,
           reason: 'Initial error should be shown');
       expect(find.text('Retry'), findsOneWidget);
 
@@ -901,7 +913,7 @@ void runPricingChaosTests() {
           reason: 'After successful retry, XL option should be visible');
 
       // Error should be gone
-      expect(find.text("We couldn't load prices"), findsNothing,
+      expect(find.text(l10n(tester).rideConfirmErrorTitle), findsNothing,
           reason: 'Error should disappear after successful retry');
     });
 
@@ -926,6 +938,7 @@ void runPricingChaosTests() {
             rideTripSessionProvider.overrideWith(
                 (ref) => RideTripSessionController(ref)),
           ],
+          // ignore: prefer_const_constructors
           child: MaterialApp(
             localizationsDelegates: const [
               AppLocalizations.delegate,
@@ -942,7 +955,7 @@ void runPricingChaosTests() {
 
       // Track B - Ticket #121: Updated to use new error title l10n key
       // Verify initial error state
-      expect(find.text("We couldn't load prices"), findsOneWidget);
+      expect(find.text(l10n(tester).rideConfirmErrorTitle), findsOneWidget);
 
       // Retry multiple times
       for (int i = 0; i < 3; i++) {
@@ -951,7 +964,7 @@ void runPricingChaosTests() {
       }
 
       // After multiple retries, should still show ONE error message (no duplicates)
-      expect(find.text("We couldn't load prices"), findsOneWidget,
+      expect(find.text(l10n(tester).rideConfirmErrorTitle), findsOneWidget,
           reason:
               'Should show exactly one error message after multiple retries');
 
@@ -972,7 +985,7 @@ void runPricingChaosTests() {
       final errorController = _TestRideQuoteController(
         const RideQuoteUiState(
           isLoading: false,
-          errorMessage: 'Network error',
+          error: RideQuoteError.unexpected('Network error'),
         ),
       );
 
@@ -1020,7 +1033,7 @@ void runPricingChaosTests() {
       final errorController = _TestRideQuoteController(
         const RideQuoteUiState(
           isLoading: false,
-          errorMessage: 'Network error',
+          error: RideQuoteError.unexpected('Network error'),
         ),
       );
 
@@ -1082,6 +1095,7 @@ void runPricingChaosTests() {
             rideTripSessionProvider.overrideWith(
                 (ref) => RideTripSessionController(ref)),
           ],
+          // ignore: prefer_const_constructors
           child: MaterialApp(
             localizationsDelegates: const [
               AppLocalizations.delegate,
@@ -1116,7 +1130,6 @@ class _RetryableRideQuoteController extends StateNotifier<RideQuoteUiState>
           isLoading: false,
           // Track B - Ticket #121: Use structured error
           error: RideQuoteError.pricingFailed('Initial pricing failure'),
-          errorMessage: 'Initial pricing failure',
         ));
 
   int _callCount = 0;
@@ -1131,7 +1144,6 @@ class _RetryableRideQuoteController extends StateNotifier<RideQuoteUiState>
         isLoading: false,
         // Track B - Ticket #121: Use structured error
         error: RideQuoteError.pricingFailed('Pricing service unavailable'),
-        errorMessage: 'Pricing service unavailable',
       );
     } else {
       // Subsequent calls succeed
@@ -1199,7 +1211,6 @@ class _AlwaysFailingRideQuoteController extends StateNotifier<RideQuoteUiState>
           isLoading: false,
           // Track B - Ticket #121: Use structured error
           error: RideQuoteError.pricingFailed('Persistent pricing failure'),
-          errorMessage: 'Persistent pricing failure',
         ));
 
   int refreshCount = 0;
@@ -1212,7 +1223,6 @@ class _AlwaysFailingRideQuoteController extends StateNotifier<RideQuoteUiState>
       isLoading: false,
       // Track B - Ticket #121: Use structured error
       error: RideQuoteError.pricingFailed('Persistent pricing failure'),
-      errorMessage: 'Persistent pricing failure',
     );
   }
 
@@ -1631,7 +1641,7 @@ void runPaymentMethodIntegrationTests() {
 
     testWidgets('shows_cash_payment_label_for_cash_method', (tester) async {
       await tester.pumpWidget(buildPaymentTestWidget(
-        paymentsState: PaymentMethodsUiState(
+        paymentsState: const PaymentMethodsUiState(
           methods: [PaymentMethodUiModel.cash],
           selectedMethodId: 'cash',
         ),
@@ -1646,7 +1656,7 @@ void runPaymentMethodIntegrationTests() {
 
     testWidgets('l10n_ar_shows_arabic_payment_labels_in_confirmation', (tester) async {
       await tester.pumpWidget(buildPaymentTestWidget(
-        paymentsState: PaymentMethodsUiState(
+        paymentsState: const PaymentMethodsUiState(
           methods: [PaymentMethodUiModel.cash],
           selectedMethodId: 'cash',
         ),
@@ -1660,7 +1670,7 @@ void runPaymentMethodIntegrationTests() {
 
     testWidgets('l10n_de_shows_german_payment_labels_in_confirmation', (tester) async {
       await tester.pumpWidget(buildPaymentTestWidget(
-        paymentsState: PaymentMethodsUiState(
+        paymentsState: const PaymentMethodsUiState(
           methods: [PaymentMethodUiModel.cash],
           selectedMethodId: 'cash',
         ),
@@ -1783,7 +1793,7 @@ void runPaymentMethodLinkedToDraftTests() {
       final paymentsState = PaymentMethodsUiState(
         methods: [
           PaymentMethodUiModel.cash,
-          PaymentMethodUiModel.stubCard(brand: 'Visa', last4: '4242'),
+                  PaymentMethodUiModel.stubCard(brand: 'Visa', last4: '4242'),
         ],
         selectedMethodId: 'visa_4242',
       );
@@ -1890,7 +1900,7 @@ void runPaymentMethodLinkedToDraftTests() {
       final paymentsState = PaymentMethodsUiState(
         methods: [
           PaymentMethodUiModel.cash,
-          PaymentMethodUiModel.stubCard(brand: 'Visa', last4: '4242'),
+                  PaymentMethodUiModel.stubCard(brand: 'Visa', last4: '4242'),
         ],
         selectedMethodId: 'cash',
       );
@@ -2254,9 +2264,9 @@ void runRequestRideHappyPathTests() {
               return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith(
-              (ref) => PaymentMethodsUiState(
+              (ref) => const PaymentMethodsUiState(
                 methods: [
-                  const PaymentMethodUiModel(
+                  PaymentMethodUiModel(
                     id: 'card_123',
                     displayName: 'Visa ••4242',
                     type: PaymentMethodUiType.card,
@@ -2359,9 +2369,9 @@ void runRequestRideHappyPathTests() {
               return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith(
-              (ref) => PaymentMethodsUiState(
+              (ref) => const PaymentMethodsUiState(
                 methods: [
-                  const PaymentMethodUiModel(
+                  PaymentMethodUiModel(
                     id: 'visa_4242',
                     displayName: 'Visa ••4242',
                     type: PaymentMethodUiType.card,
@@ -2460,9 +2470,9 @@ void runRequestRideHappyPathTests() {
               return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith(
-              (ref) => PaymentMethodsUiState(
+              (ref) => const PaymentMethodsUiState(
                 methods: [
-                  const PaymentMethodUiModel(
+                  PaymentMethodUiModel(
                     id: 'cash',
                     displayName: 'Cash',
                     type: PaymentMethodUiType.cash,
@@ -2473,6 +2483,7 @@ void runRequestRideHappyPathTests() {
               ),
             ),
           ],
+          // ignore: prefer_const_constructors
           child: MaterialApp(
             localizationsDelegates: const [
               AppLocalizations.delegate,
@@ -2558,9 +2569,9 @@ void runRequestRideHappyPathTests() {
               return RideTripSessionController(ref);
             }),
             paymentMethodsUiProvider.overrideWith(
-              (ref) => PaymentMethodsUiState(
+              (ref) => const PaymentMethodsUiState(
                 methods: [
-                  const PaymentMethodUiModel(
+                  PaymentMethodUiModel(
                     id: 'cash',
                     displayName: 'Cash',
                     type: PaymentMethodUiType.cash,
@@ -2571,6 +2582,7 @@ void runRequestRideHappyPathTests() {
               ),
             ),
           ],
+          // ignore: prefer_const_constructors
           child: MaterialApp(
             localizationsDelegates: const [
               AppLocalizations.delegate,

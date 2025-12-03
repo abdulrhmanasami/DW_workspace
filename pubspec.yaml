@@ -11,6 +11,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   cupertino_icons: ^1.0.2
+  intl: 0.20.2
+  meta: 1.16.0
   flutter_riverpod: ^2.6.1
   in_app_review: ^2.0.9
   core:

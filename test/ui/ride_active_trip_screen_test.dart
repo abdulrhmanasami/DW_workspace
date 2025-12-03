@@ -9,6 +9,8 @@
 /// Updated by: Track B - Ticket #105 (Unified trip summary - service, price, payment method)
 /// Last updated: 2025-11-30
 
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -44,6 +46,21 @@ class MockNavigatorObserver extends NavigatorObserver {
   }
   
   void verify() {}
+}
+
+/// Track B - Ticket #166: Helper to configure larger test screen
+/// Buttons are positioned at y ≈ 683px, which is below the default 600px test screen.
+/// Increasing height to 1000px ensures all action buttons are within hit-test bounds.
+Future<void> _configureLargeTestScreen(WidgetTester tester) async {
+  // Set physical size to accommodate buttons positioned below 600px
+  tester.view.physicalSize = const ui.Size(800, 1000);
+  tester.view.devicePixelRatio = 1.0;
+
+  // Reset to defaults after each test
+  addTearDown(() {
+    tester.view.resetPhysicalSize();
+    tester.view.resetDevicePixelRatio();
+  });
 }
 
 void main() {
@@ -97,13 +114,13 @@ void main() {
     });
 
     testWidgets('shows trip screen when activeTrip exists', (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-trip-123',
         phase: RideTripPhase.findingDriver,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         rideDraft: const RideDraftUiState(destinationQuery: 'Mall of Arabia'),
       ));
       await tester.pumpAndSettle();
@@ -116,13 +133,13 @@ void main() {
 
     testWidgets('shows driver info card with mock driver details',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-trip-456',
         phase: RideTripPhase.driverAccepted,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -131,16 +148,23 @@ void main() {
       expect(find.text('4.9'), findsOneWidget);
       expect(find.text('Toyota Camry'), findsOneWidget);
       expect(find.text('ABC 1234'), findsOneWidget);
+
+      // Verify keys are present
+      expect(find.byKey(RideActiveTripScreen.driverCardKey), findsOneWidget);
+      expect(find.byKey(RideActiveTripScreen.statusTextKey), findsOneWidget);
+      expect(find.byKey(RideActiveTripScreen.contactDriverActionKey), findsOneWidget);
+      expect(find.byKey(RideActiveTripScreen.shareTripActionKey), findsOneWidget);
+      expect(find.byKey(RideActiveTripScreen.cancelRideActionKey), findsOneWidget);
     });
 
     testWidgets('shows Cancel ride button for cancellable phases', (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-trip-789',
         phase: RideTripPhase.findingDriver,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -151,9 +175,12 @@ void main() {
     // Track B - Ticket #120: Updated to reflect cancelCurrentTrip usage
     testWidgets('tapping Cancel ride and confirming calls cancelCurrentTrip on controller',
         (tester) async {
+      // Track B - Ticket #166: Configure larger screen for button hit-testing
+      await _configureLargeTestScreen(tester);
+
       // Track B - Ticket #67: Updated to include dialog confirmation flow
       final fakeController = _FakeRideTripSessionController(
-        initialState: RideTripSessionUiState(
+        initialState: const RideTripSessionUiState(
           activeTrip: RideTripState(
             tripId: 'test-cancel-trip',
             phase: RideTripPhase.findingDriver,
@@ -174,11 +201,11 @@ void main() {
                   _FakeRideQuoteController(initialState: const RideQuoteUiState()),
             ),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
-            home: const RideActiveTripScreen(),
+            locale: Locale('en'),
+            home: RideActiveTripScreen(),
           ),
         ),
       );
@@ -203,13 +230,13 @@ void main() {
 
     testWidgets('displays correct phase icon for driverArrived phase',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-arrived',
         phase: RideTripPhase.driverArrived,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -219,7 +246,7 @@ void main() {
     });
 
     testWidgets('displays ETA when quote option is available', (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-eta',
         phase: RideTripPhase.driverAccepted,
       );
@@ -244,7 +271,7 @@ void main() {
       final quote = RideQuote(
         quoteId: 'quote-1',
         request: request,
-        options: [
+        options: const [
           RideQuoteOption(
             id: 'opt-1',
             category: RideVehicleCategory.economy,
@@ -258,7 +285,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         quoteState: RideQuoteUiState(quote: quote),
       ));
       await tester.pumpAndSettle();
@@ -269,13 +296,13 @@ void main() {
 
     testWidgets('shows inProgress headline when trip is active',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-progress',
         phase: RideTripPhase.inProgress,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
       ));
       await tester.pumpAndSettle();
 
@@ -286,7 +313,7 @@ void main() {
     // Track B - Ticket #28: Map integration tests
     testWidgets('MapWidget is present with markers when activeTrip exists',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-map',
         phase: RideTripPhase.driverAccepted,
       );
@@ -312,7 +339,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         rideDraft: RideDraftUiState(
           pickupLabel: 'Home',
           pickupPlace: pickupPlace,
@@ -333,7 +360,7 @@ void main() {
 
     testWidgets('MapWidget has polylines when pickup and destination exist',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-polyline',
         phase: RideTripPhase.findingDriver,
       );
@@ -359,7 +386,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         rideDraft: RideDraftUiState(
           pickupLabel: 'Start',
           pickupPlace: pickupPlace,
@@ -391,13 +418,13 @@ void main() {
 
     testWidgets('screen does not crash with empty draft and active trip',
         (tester) async {
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'test-guard',
         phase: RideTripPhase.findingDriver,
       );
 
       await tester.pumpWidget(buildTestWidget(
-        tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+        tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         rideDraft: const RideDraftUiState(), // Empty draft
       ));
       await tester.pumpAndSettle();
@@ -413,13 +440,13 @@ void main() {
     group('No Driver Found CTA (Ticket #122)', () {
       testWidgets('shows "No drivers available" CTA during findingDriver phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-no-driver-cta',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
           rideDraft: const RideDraftUiState(
             destinationQuery: 'Downtown Mall',
           ),
@@ -433,12 +460,12 @@ void main() {
       testWidgets('tapping no-driver CTA calls failCurrentTrip and clears session',
           (tester) async {
         final fakeController = _FakeRideTripSessionController(
-          initialState: RideTripSessionUiState(
+          initialState: const RideTripSessionUiState(
             activeTrip: RideTripState(
               tripId: 'test-fail-trip',
               phase: RideTripPhase.findingDriver,
             ),
-            draftSnapshot: const RideDraftUiState(
+            draftSnapshot: RideDraftUiState(
               pickupLabel: 'Home',
               destinationQuery: 'Downtown Mall',
             ),
@@ -462,11 +489,11 @@ void main() {
                     _FakeRideQuoteController(initialState: const RideQuoteUiState()),
               ),
             ],
-            child: MaterialApp(
+            child: const MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
-              locale: const Locale('en'),
-              home: const RideActiveTripScreen(),
+              locale: Locale('en'),
+              home: RideActiveTripScreen(),
             ),
           ),
         );
@@ -489,13 +516,13 @@ void main() {
 
       testWidgets('no-driver CTA is hidden for non-findingDriver phases',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-driver-accepted',
           phase: RideTripPhase.driverAccepted,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -514,13 +541,13 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('EN: shows "Looking for a driver..." for findingDriver phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-en-finding',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -531,13 +558,13 @@ void main() {
 
       testWidgets('EN: shows "Driver on the way" for driverAccepted phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-en-accepted',
           phase: RideTripPhase.driverAccepted,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -547,13 +574,13 @@ void main() {
 
       testWidgets('EN: shows "Driver has arrived" for driverArrived phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-en-arrived',
           phase: RideTripPhase.driverArrived,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -562,13 +589,13 @@ void main() {
 
       testWidgets('EN: shows "Trip in progress" for inProgress phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-en-progress',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -577,13 +604,13 @@ void main() {
 
       testWidgets('EN: shows "Completing payment" for payment phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-en-payment',
           phase: RideTripPhase.payment,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -596,7 +623,7 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('AR: shows Arabic status for inProgress phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-ar-progress',
           phase: RideTripPhase.inProgress,
         );
@@ -606,7 +633,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -636,7 +663,7 @@ void main() {
 
       testWidgets('AR: shows Arabic status for findingDriver phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-ar-finding',
           phase: RideTripPhase.findingDriver,
         );
@@ -646,7 +673,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -679,7 +706,7 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('DE: shows German status for findingDriver phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-de-finding',
           phase: RideTripPhase.findingDriver,
         );
@@ -689,7 +716,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -719,7 +746,7 @@ void main() {
 
       testWidgets('DE: shows German status for inProgress phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-de-progress',
           phase: RideTripPhase.inProgress,
         );
@@ -729,7 +756,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -763,13 +790,13 @@ void main() {
       testWidgets('shows fallback status text when phase is unknown/null',
           (tester) async {
         // Test with draft phase (not a normal active phase)
-        final draftTrip = RideTripState(
+        const draftTrip = RideTripState(
           tripId: 'test-draft',
           phase: RideTripPhase.draft,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: draftTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: draftTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -778,13 +805,13 @@ void main() {
       });
 
       testWidgets('shows preparing status for quoting phase', (tester) async {
-        final quotingTrip = RideTripState(
+        const quotingTrip = RideTripState(
           tripId: 'test-quoting',
           phase: RideTripPhase.quoting,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: quotingTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: quotingTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -803,13 +830,13 @@ void main() {
       testWidgets('does NOT show Cancel ride button for inProgress phase (non-cancellable)',
           (tester) async {
         // Track B - Ticket #142: inProgress phase is NOT cancellable per domain model
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-cancel-visible',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -819,13 +846,13 @@ void main() {
 
       testWidgets('shows Cancel ride button for findingDriver phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-cancel-finding',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -834,13 +861,13 @@ void main() {
 
       testWidgets('shows Cancel ride button for driverArrived phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-cancel-arrived',
           phase: RideTripPhase.driverArrived,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -853,18 +880,23 @@ void main() {
       testWidgets('tapping Cancel ride shows confirmation dialog',
           (tester) async {
         // Ticket #95: Use a cancellable phase (findingDriver/driverAccepted/driverArrived)
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-dialog',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
+        // Ensure cancel button is visible by scrolling if needed
+        final cancelButton = find.text('Cancel ride');
+        await tester.ensureVisible(cancelButton);
+        await tester.pumpAndSettle();
+
         // Tap cancel button
-        await tester.tap(find.text('Cancel ride'));
+        await tester.tap(cancelButton);
         await tester.pumpAndSettle();
 
         // Verify dialog appears with correct content
@@ -881,9 +913,12 @@ void main() {
 
       testWidgets('tapping Keep ride dismisses dialog without cancelling',
           (tester) async {
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
         // Ticket #95: Use a cancellable phase (findingDriver/driverAccepted/driverArrived)
         final fakeController = _FakeRideTripSessionController(
-          initialState: RideTripSessionUiState(
+          initialState: const RideTripSessionUiState(
             activeTrip: RideTripState(
               tripId: 'test-keep',
               phase: RideTripPhase.findingDriver,
@@ -928,11 +963,14 @@ void main() {
       });
 
       testWidgets(
-          'confirming cancellation calls controller and shows success snackbar',
-          (tester) async {
-        // Ticket #95: Use a cancellable phase (findingDriver/driverAccepted/driverArrived)
-        final fakeController = _FakeRideTripSessionController(
-          initialState: RideTripSessionUiState(
+        'confirming cancellation calls controller and shows success snackbar',
+        (tester) async {
+      // Track B - Ticket #166: Configure larger screen for button hit-testing
+      await _configureLargeTestScreen(tester);
+
+      // Ticket #95: Use a cancellable phase (findingDriver/driverAccepted/driverArrived)
+      final fakeController = _FakeRideTripSessionController(
+          initialState: const RideTripSessionUiState(
             activeTrip: RideTripState(
               tripId: 'test-confirm-cancel',
               phase: RideTripPhase.findingDriver,
@@ -987,7 +1025,7 @@ void main() {
       // Arabic (AR) cancel button test
       // -----------------------------------------------------------------------
       testWidgets('AR: shows Arabic cancel button text', (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-ar-cancel',
           phase: RideTripPhase.findingDriver,
         );
@@ -997,7 +1035,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -1024,8 +1062,11 @@ void main() {
       });
 
       testWidgets('AR: shows Arabic dialog text', (tester) async {
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
         // Ticket #95: Use a cancellable phase (findingDriver/driverAccepted/driverArrived)
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-ar-dialog',
           phase: RideTripPhase.findingDriver,
         );
@@ -1035,7 +1076,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -1070,7 +1111,7 @@ void main() {
       // German (DE) cancel button test
       // -----------------------------------------------------------------------
       testWidgets('DE: shows German cancel button text', (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-de-cancel',
           phase: RideTripPhase.findingDriver,
         );
@@ -1080,7 +1121,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -1110,8 +1151,11 @@ void main() {
       });
 
       testWidgets('DE: shows German dialog text', (tester) async {
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
         // Ticket #95: Use a cancellable phase (findingDriver/driverAccepted/driverArrived)
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-de-dialog',
           phase: RideTripPhase.findingDriver,
         );
@@ -1121,7 +1165,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -1163,13 +1207,13 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('shows Contact driver and Share trip buttons when active trip exists',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-actions',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1179,13 +1223,13 @@ void main() {
 
       testWidgets('shows Contact driver and Share trip buttons for findingDriver phase',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-actions-finding',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1198,13 +1242,16 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('tapping Contact driver opens bottom sheet with phone',
           (tester) async {
-        final activeTrip = RideTripState(
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
+        const activeTrip = RideTripState(
           tripId: 'test-contact',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1218,13 +1265,16 @@ void main() {
 
       testWidgets('tapping copy phone in bottom sheet triggers copy action',
           (tester) async {
-        final activeTrip = RideTripState(
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
+        const activeTrip = RideTripState(
           tripId: 'test-copy-phone',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1249,13 +1299,16 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('tapping Share trip does not crash',
           (tester) async {
-        final activeTrip = RideTripState(
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
+        const activeTrip = RideTripState(
           tripId: 'test-share',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
           rideDraft: const RideDraftUiState(destinationQuery: 'Mall of Arabia'),
         ));
         await tester.pumpAndSettle();
@@ -1270,13 +1323,16 @@ void main() {
 
       testWidgets('Share trip handles empty destination gracefully',
           (tester) async {
-        final activeTrip = RideTripState(
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
+        const activeTrip = RideTripState(
           tripId: 'test-share-empty',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
           rideDraft: const RideDraftUiState(destinationQuery: ''),
         ));
         await tester.pumpAndSettle();
@@ -1294,7 +1350,7 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('AR: shows Arabic Contact driver and Share trip buttons',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-ar-actions',
           phase: RideTripPhase.inProgress,
         );
@@ -1304,7 +1360,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -1334,7 +1390,7 @@ void main() {
 
       testWidgets('DE: shows German Contact driver and Share trip buttons',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-de-actions',
           phase: RideTripPhase.inProgress,
         );
@@ -1344,7 +1400,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -1382,7 +1438,7 @@ void main() {
       // Summary Card Tests
       // -----------------------------------------------------------------------
       testWidgets('shows_summary_card_with_from_and_to_labels', (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-summary-card',
           phase: RideTripPhase.findingDriver,
         );
@@ -1408,7 +1464,7 @@ void main() {
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
           rideDraft: RideDraftUiState(
             pickupLabel: 'Home Address',
             pickupPlace: pickupPlace,
@@ -1427,13 +1483,13 @@ void main() {
       testWidgets('shows_map_stub_with_icon_and_texts', (tester) async {
         // The existing screen uses a real MapWidget, not a stub
         // We verify the map widget is present instead
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-map-widget',
           phase: RideTripPhase.driverAccepted,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1443,13 +1499,13 @@ void main() {
 
       testWidgets('shows_status_section_with_short_and_long_labels_en',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-status-labels',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1458,7 +1514,7 @@ void main() {
       });
 
       testWidgets('l10n_ar_displays_arabic_texts', (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-ar-texts',
           phase: RideTripPhase.findingDriver,
         );
@@ -1468,7 +1524,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -1497,7 +1553,7 @@ void main() {
       });
 
       testWidgets('l10n_de_displays_german_texts', (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-de-texts',
           phase: RideTripPhase.findingDriver,
         );
@@ -1507,7 +1563,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -1536,13 +1592,13 @@ void main() {
       testWidgets('driver_vehicle_stub_section_shows_title_and_body',
           (tester) async {
         // The existing screen shows driver card with mock data
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-driver-section',
           phase: RideTripPhase.driverAccepted,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1557,13 +1613,13 @@ void main() {
       // Additional MVP Tests
       // -----------------------------------------------------------------------
       testWidgets('shows_end_trip_button_for_debug', (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-end-trip',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1573,13 +1629,13 @@ void main() {
 
       testWidgets('shows_correct_phase_icons_for_each_phase', (tester) async {
         // Test findingDriver phase icon (Icons.search)
-        final findingDriverTrip = RideTripState(
+        const findingDriverTrip = RideTripState(
           tripId: 'test-phase-icon',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: findingDriverTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: findingDriverTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1588,13 +1644,13 @@ void main() {
 
       testWidgets('navigates_correctly_when_trip_completes', (tester) async {
         // This test verifies the listener for trip completion exists
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-complete-nav',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1603,13 +1659,13 @@ void main() {
       });
 
       testWidgets('displays_payment_phase_correctly', (tester) async {
-        final paymentTrip = RideTripState(
+        const paymentTrip = RideTripState(
           tripId: 'test-payment-phase',
           phase: RideTripPhase.payment,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: paymentTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: paymentTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1629,7 +1685,7 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('EN: shows ETA headline "Driver is X min away" for driverAccepted with ETA',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-en-eta',
           phase: RideTripPhase.driverAccepted,
         );
@@ -1653,7 +1709,7 @@ void main() {
         final quote = RideQuote(
           quoteId: 'quote-eta-1',
           request: request,
-          options: [
+          options: const [
             RideQuoteOption(
               id: 'opt-eta-1',
               category: RideVehicleCategory.economy,
@@ -1667,7 +1723,7 @@ void main() {
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
           quoteState: RideQuoteUiState(quote: quote),
         ));
         await tester.pumpAndSettle();
@@ -1678,7 +1734,7 @@ void main() {
 
       testWidgets('AR: shows Arabic ETA headline for driverAccepted with ETA',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-ar-eta',
           phase: RideTripPhase.driverAccepted,
         );
@@ -1702,7 +1758,7 @@ void main() {
         final quote = RideQuote(
           quoteId: 'quote-ar-eta',
           request: request,
-          options: [
+          options: const [
             RideQuoteOption(
               id: 'opt-ar-eta',
               category: RideVehicleCategory.economy,
@@ -1720,7 +1776,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -1748,7 +1804,7 @@ void main() {
 
       testWidgets('DE: shows German ETA headline for driverAccepted with ETA',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-de-eta',
           phase: RideTripPhase.driverAccepted,
         );
@@ -1772,7 +1828,7 @@ void main() {
         final quote = RideQuote(
           quoteId: 'quote-de-eta',
           request: request,
-          options: [
+          options: const [
             RideQuoteOption(
               id: 'opt-de-eta',
               category: RideVehicleCategory.economy,
@@ -1790,7 +1846,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -1821,13 +1877,13 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('EN: shows "Looking for a driver..." as findingDriver status',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-finding-status',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1838,13 +1894,13 @@ void main() {
 
       testWidgets('EN: shows "Trip in progress" as on-trip status',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-on-trip-status',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
           rideDraft: const RideDraftUiState(destinationQuery: 'Downtown Mall'),
         ));
         await tester.pumpAndSettle();
@@ -1860,13 +1916,16 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('action buttons (Contact/Share/Cancel) are present and tappable',
           (tester) async {
-        final activeTrip = RideTripState(
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
+        const activeTrip = RideTripState(
           tripId: 'test-actions-buttons',
           phase: RideTripPhase.driverAccepted,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1889,13 +1948,13 @@ void main() {
 
       testWidgets('driver info card shows mock driver details correctly',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-driver-card',
           phase: RideTripPhase.driverArrived,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1919,13 +1978,13 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('Test A: driverArrived phase shows correct headline and actions',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-fsm-arrived',
           phase: RideTripPhase.driverArrived,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1944,13 +2003,13 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('Test B: completed phase shows completion headline',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-fsm-completed',
           phase: RideTripPhase.completed,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1965,13 +2024,13 @@ void main() {
       testWidgets('Test C: draft phase shows preparing headline (pre-trip fallback)',
           (tester) async {
         // Opening active trip screen with draft phase should show fallback
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-fsm-draft',
           phase: RideTripPhase.draft,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1982,13 +2041,13 @@ void main() {
 
       testWidgets('quoting phase shows preparing headline',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-fsm-quoting',
           phase: RideTripPhase.quoting,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -1999,13 +2058,13 @@ void main() {
 
       testWidgets('requesting phase shows preparing headline',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-fsm-requesting',
           phase: RideTripPhase.requesting,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2019,13 +2078,13 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('findingDriver phase shows search icon',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-icon-finding',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2034,13 +2093,13 @@ void main() {
 
       testWidgets('inProgress phase shows car icon',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-icon-progress',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2049,13 +2108,13 @@ void main() {
 
       testWidgets('payment phase shows payment icon',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-icon-payment',
           phase: RideTripPhase.payment,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2068,13 +2127,13 @@ void main() {
       testWidgets('cancelled phase shows terminal cancellation view',
           (tester) async {
         // Ticket #95: Now uses Terminal View with different UI
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-fsm-cancelled',
           phase: RideTripPhase.cancelled,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2087,13 +2146,13 @@ void main() {
       testWidgets('failed phase shows terminal failure view',
           (tester) async {
         // Ticket #95: Now uses Terminal View with different UI
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-fsm-failed',
           phase: RideTripPhase.failed,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2108,13 +2167,13 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('findingDriver shows "Finding a driver…" headline',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-seq-finding',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2123,13 +2182,13 @@ void main() {
 
       testWidgets('driverAccepted shows "Driver on the way" without ETA',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-seq-accepted',
           phase: RideTripPhase.driverAccepted,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
           // No quote = no ETA
         ));
         await tester.pumpAndSettle();
@@ -2139,13 +2198,13 @@ void main() {
 
       testWidgets('driverArrived shows "Driver has arrived" headline',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-seq-arrived',
           phase: RideTripPhase.driverArrived,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2154,13 +2213,13 @@ void main() {
 
       testWidgets('inProgress shows "Trip in progress" headline',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-seq-progress',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2169,13 +2228,13 @@ void main() {
 
       testWidgets('payment shows "Completing payment" headline',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-seq-payment',
           phase: RideTripPhase.payment,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2184,13 +2243,13 @@ void main() {
 
       testWidgets('completed shows "Trip completed" headline',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-seq-completed',
           phase: RideTripPhase.completed,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2208,13 +2267,16 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('cancel_button_enabled_when_phase_is_findingDriver',
           (tester) async {
-        final activeTrip = RideTripState(
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
+        const activeTrip = RideTripState(
           tripId: 'test-cancel-finding',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2230,13 +2292,16 @@ void main() {
 
       testWidgets('cancel_button_enabled_when_phase_is_driverAccepted',
           (tester) async {
-        final activeTrip = RideTripState(
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
+        const activeTrip = RideTripState(
           tripId: 'test-cancel-accepted',
           phase: RideTripPhase.driverAccepted,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2252,13 +2317,16 @@ void main() {
 
       testWidgets('cancel_button_enabled_when_phase_is_driverArrived',
           (tester) async {
-        final activeTrip = RideTripState(
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
+        const activeTrip = RideTripState(
           tripId: 'test-cancel-arrived',
           phase: RideTripPhase.driverArrived,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2275,47 +2343,41 @@ void main() {
       testWidgets('cancel_button_NOT_shown_when_phase_is_inProgress',
           (tester) async {
         // Track B - Ticket #142: inProgress phase is NOT cancellable per domain model
-        final activeTrip = RideTripState(
+        // Track B - Ticket #166: Configure larger screen (though button shouldn't exist anyway)
+        await _configureLargeTestScreen(tester);
+
+        const activeTrip = RideTripState(
           tripId: 'test-cancel-progress',
           phase: RideTripPhase.inProgress,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
         // Cancel button should NOT be shown for non-cancellable phase
-        final cancelButton = find.text('Cancel ride');
-        expect(cancelButton, findsNothing);
-
-        // Tap should NOT open dialog (button disabled)
-        await tester.tap(cancelButton);
-        await tester.pumpAndSettle();
-        expect(find.text('Cancel this ride?'), findsNothing);
+        expect(find.text('Cancel ride'), findsNothing);
       });
 
       testWidgets('cancel_button_NOT_shown_when_phase_is_payment',
           (tester) async {
         // Track B - Ticket #142: payment phase is NOT cancellable per domain model
-        final activeTrip = RideTripState(
+        // Track B - Ticket #166: Configure larger screen (though button shouldn't exist anyway)
+        await _configureLargeTestScreen(tester);
+
+        const activeTrip = RideTripState(
           tripId: 'test-cancel-payment',
           phase: RideTripPhase.payment,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
         // Cancel button should NOT be shown for non-cancellable phase
-        final cancelButton = find.text('Cancel ride');
-        expect(cancelButton, findsNothing);
-
-        // Tap should NOT open dialog (button disabled)
-        await tester.tap(cancelButton);
-        await tester.pumpAndSettle();
-        expect(find.text('Cancel this ride?'), findsNothing);
+        expect(find.text('Cancel ride'), findsNothing);
       });
 
       // -----------------------------------------------------------------------
@@ -2323,13 +2385,13 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('cancelled_phase_shows_terminal_cancelled_ui',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-cancelled-ui',
           phase: RideTripPhase.cancelled,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
           rideDraft: const RideDraftUiState(destinationQuery: 'Mall of Arabia'),
         ));
         await tester.pumpAndSettle();
@@ -2353,13 +2415,13 @@ void main() {
 
       testWidgets('cancelled_phase_does_not_show_driver_card_or_actions',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-cancelled-no-card',
           phase: RideTripPhase.cancelled,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2375,13 +2437,13 @@ void main() {
       // Failed phase UI tests
       // -----------------------------------------------------------------------
       testWidgets('failed_phase_shows_terminal_failed_ui', (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-failed-ui',
           phase: RideTripPhase.failed,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
           rideDraft: const RideDraftUiState(destinationQuery: 'Airport'),
         ));
         await tester.pumpAndSettle();
@@ -2405,13 +2467,13 @@ void main() {
 
       testWidgets('failed_phase_does_not_show_driver_card_or_actions',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-failed-no-card',
           phase: RideTripPhase.failed,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2428,7 +2490,7 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('AR: cancelled_phase_shows_arabic_terminal_ui',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-ar-cancelled',
           phase: RideTripPhase.cancelled,
         );
@@ -2438,7 +2500,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -2471,7 +2533,7 @@ void main() {
       });
 
       testWidgets('AR: failed_phase_shows_arabic_terminal_ui', (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-ar-failed',
           phase: RideTripPhase.failed,
         );
@@ -2481,7 +2543,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -2516,7 +2578,7 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('DE: cancelled_phase_shows_german_terminal_ui',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-de-cancelled',
           phase: RideTripPhase.cancelled,
         );
@@ -2526,7 +2588,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -2560,7 +2622,7 @@ void main() {
       });
 
       testWidgets('DE: failed_phase_shows_german_terminal_ui', (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-de-failed',
           phase: RideTripPhase.failed,
         );
@@ -2570,7 +2632,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: activeTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: activeTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -2608,13 +2670,13 @@ void main() {
           (tester) async {
         // Completed phase should show the normal trip screen (not terminal view)
         // because navigation to summary is handled by the listener
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-completed-no-terminal',
           phase: RideTripPhase.completed,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: activeTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: activeTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2640,7 +2702,7 @@ void main() {
         // This tests that FSM handles duplicate events gracefully
 
         // Start with findingDriver phase
-        final initialTrip = RideTripState(
+        const initialTrip = RideTripState(
           tripId: 'chaos-test-double-accepted',
           phase: RideTripPhase.findingDriver,
         );
@@ -2686,9 +2748,12 @@ void main() {
       // Track B - Ticket #120: Updated to reflect new cancellation flow.
       // Now cancelCurrentTrip() archives trip and clears session, navigating home.
       testWidgets('cancelling_trip_twice_does_not_crash', (tester) async {
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
         // Create a controller that tracks cancel calls and simulates the flow
         final cancelTrackingController = _CancelTrackingController(
-          initialState: RideTripSessionUiState(
+          initialState: const RideTripSessionUiState(
             activeTrip: RideTripState(
               tripId: 'chaos-test-double-cancel',
               phase: RideTripPhase.driverAccepted,
@@ -2751,13 +2816,13 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('failed_trip_shows_back_to_home_and_request_new_ride_ctas',
           (tester) async {
-        final failedTrip = RideTripState(
+        const failedTrip = RideTripState(
           tripId: 'chaos-test-failed',
           phase: RideTripPhase.failed,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: failedTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: failedTrip),
           rideDraft: const RideDraftUiState(destinationQuery: 'Airport'),
         ));
         await tester.pumpAndSettle();
@@ -2792,7 +2857,7 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('rapid_phase_transitions_do_not_crash_ui', (tester) async {
         // Simulate rapid FSM transitions using FSM functions
-        var trip = RideTripState(
+        var trip = const RideTripState(
           tripId: 'chaos-rapid-transitions',
           phase: RideTripPhase.findingDriver,
         );
@@ -2824,7 +2889,7 @@ void main() {
       testWidgets('illegal_event_for_current_phase_is_handled_gracefully',
           (tester) async {
         // Try to apply startTrip event to findingDriver phase (illegal)
-        final trip = RideTripState(
+        const trip = RideTripState(
           tripId: 'chaos-illegal-event',
           phase: RideTripPhase.findingDriver,
         );
@@ -2855,7 +2920,7 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('AR: failed_terminal_state_texts_are_in_arabic',
           (tester) async {
-        final failedTrip = RideTripState(
+        const failedTrip = RideTripState(
           tripId: 'chaos-ar-failed',
           phase: RideTripPhase.failed,
         );
@@ -2865,7 +2930,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: failedTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: failedTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -2901,7 +2966,7 @@ void main() {
       // -----------------------------------------------------------------------
       testWidgets('DE: cancelled_terminal_state_texts_are_in_german',
           (tester) async {
-        final cancelledTrip = RideTripState(
+        const cancelledTrip = RideTripState(
           tripId: 'chaos-de-cancelled',
           phase: RideTripPhase.cancelled,
         );
@@ -2911,7 +2976,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(activeTrip: cancelledTrip),
+                  initialState: const RideTripSessionUiState(activeTrip: cancelledTrip),
                 ),
               ),
               rideDraftProvider.overrideWith(
@@ -2946,6 +3011,9 @@ void main() {
       // Phase progression tracking test
       // -----------------------------------------------------------------------
       testWidgets('phase_progression_tracking_is_stable', (tester) async {
+        // Track B - Ticket #166: Configure larger screen for button hit-testing
+        await _configureLargeTestScreen(tester);
+
         // Test that FSM correctly tracks phase progression
         // isCancellable is a property of RideTripPhase (not RideTripState)
         // Cancellable phases: draft, quoting, requesting, findingDriver, driverAccepted, driverArrived
@@ -2969,13 +3037,13 @@ void main() {
         }
 
         // Build UI with a cancellable phase
-        final cancellableTrip = RideTripState(
+        const cancellableTrip = RideTripState(
           tripId: 'chaos-cancellable',
           phase: RideTripPhase.findingDriver,
         );
 
         await tester.pumpWidget(buildTestWidget(
-          tripSession: RideTripSessionUiState(activeTrip: cancellableTrip),
+          tripSession: const RideTripSessionUiState(activeTrip: cancellableTrip),
         ));
         await tester.pumpAndSettle();
 
@@ -2994,7 +3062,7 @@ void main() {
       testWidgets(
           'active_trip_screen_shows_selected_service_and_price_from_confirmation',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-summary-123',
           phase: RideTripPhase.driverAccepted,
         );
@@ -3013,7 +3081,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(
+                  initialState: const RideTripSessionUiState(
                     activeTrip: activeTrip,
                     tripSummary: tripSummary,
                   ),
@@ -3057,7 +3125,7 @@ void main() {
 
       testWidgets('active_trip_screen_shows_selected_payment_method_label',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-payment-method',
           phase: RideTripPhase.inProgress,
         );
@@ -3075,7 +3143,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(
+                  initialState: const RideTripSessionUiState(
                     activeTrip: activeTrip,
                     tripSummary: tripSummary,
                   ),
@@ -3121,19 +3189,19 @@ void main() {
         final navigatorObserver = MockNavigatorObserver();
         
         // Initial state with trip in progress
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-navigation-to-summary',
           phase: RideTripPhase.inProgress,
         );
 
         final tripController = _FakeRideTripSessionController(
-          initialState: RideTripSessionUiState(
+          initialState: const RideTripSessionUiState(
             activeTrip: activeTrip,
-            tripSummary: const RideTripSummary(
+            tripSummary: RideTripSummary(
               selectedServiceName: 'Economy',
               fareDisplayText: 'SAR 24.50',
             ),
-            draftSnapshot: const RideDraftUiState(
+            draftSnapshot: RideDraftUiState(
               pickupLabel: 'Test Pickup',
               destinationQuery: 'Test Destination',
             ),
@@ -3173,7 +3241,7 @@ void main() {
         expect(find.text('Trip in progress'), findsOneWidget);
 
         // Simulate trip completion by updating the state to completed phase
-        final completedTrip = RideTripState(
+        const completedTrip = RideTripState(
           tripId: 'test-navigation-to-summary',
           phase: RideTripPhase.completed,
         );
@@ -3215,7 +3283,7 @@ void main() {
       });
 
       testWidgets('l10n_ar_active_trip_summary', (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-ar-summary',
           phase: RideTripPhase.driverAccepted,
         );
@@ -3232,7 +3300,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(
+                  initialState: const RideTripSessionUiState(
                     activeTrip: activeTrip,
                     tripSummary: tripSummary,
                   ),
@@ -3249,8 +3317,8 @@ void main() {
                 ),
               ),
               paymentMethodsUiProvider.overrideWith(
-                (ref) => PaymentMethodsUiState(
-                  methods: const [PaymentMethodUiModel.cash],
+                (ref) => const PaymentMethodsUiState(
+                  methods: [PaymentMethodUiModel.cash],
                   selectedMethodId: 'cash',
                 ),
               ),
@@ -3275,7 +3343,7 @@ void main() {
 
       testWidgets('trip_summary_graceful_fallback_when_no_summary',
           (tester) async {
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-no-summary',
           phase: RideTripPhase.findingDriver,
         );
@@ -3286,7 +3354,7 @@ void main() {
             overrides: [
               rideTripSessionProvider.overrideWith(
                 (ref) => _FakeRideTripSessionController(
-                  initialState: RideTripSessionUiState(
+                  initialState: const RideTripSessionUiState(
                     activeTrip: activeTrip,
                     tripSummary: null,
                   ),
@@ -3335,6 +3403,14 @@ class _FakeRideTripSessionController
       : super(initialState);
 
   int cancelCalledCount = 0;
+
+  @override
+  void startRideFromQuote({
+    required RideQuoteOption selectedOption,
+    required RideDraftUiState draft,
+  }) {
+    // No-op for tests
+  }
 
   @override
   void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {
@@ -3511,6 +3587,14 @@ class _CancelTrackingController extends StateNotifier<RideTripSessionUiState>
       : super(initialState);
 
   int cancelCallCount = 0;
+
+  @override
+  void startRideFromQuote({
+    required RideQuoteOption selectedOption,
+    required RideDraftUiState draft,
+  }) {
+    // No-op for tests
+  }
 
   @override
   void startFromDraft(RideDraftUiState draft, {RideQuoteOption? selectedOption}) {}

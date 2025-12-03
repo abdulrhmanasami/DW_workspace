@@ -73,8 +73,9 @@ void main() {
               }),
               rideQuoteControllerProvider.overrideWith((ref) => chaosController),
               rideTripSessionProvider.overrideWith(
-                  (ref) => RideTripSessionController()),
+                  (ref) => RideTripSessionController(ref)),
             ],
+            // ignore: prefer_const_constructors
             child: MaterialApp(
               localizationsDelegates: const [
                 AppLocalizations.delegate,
@@ -142,8 +143,9 @@ void main() {
               rideQuoteControllerProvider
                   .overrideWith((ref) => persistentFailController),
               rideTripSessionProvider.overrideWith(
-                  (ref) => RideTripSessionController()),
+                  (ref) => RideTripSessionController(ref)),
             ],
+            // ignore: prefer_const_constructors
             child: MaterialApp(
               localizationsDelegates: const [
                 AppLocalizations.delegate,
@@ -199,8 +201,9 @@ void main() {
               rideQuoteControllerProvider
                   .overrideWith((ref) => emptyController),
               rideTripSessionProvider.overrideWith(
-                  (ref) => RideTripSessionController()),
+                  (ref) => RideTripSessionController(ref)),
             ],
+            // ignore: prefer_const_constructors
             child: MaterialApp(
               localizationsDelegates: const [
                 AppLocalizations.delegate,
@@ -251,6 +254,7 @@ void main() {
                     initialState: const RideQuoteUiState()),
               ),
             ],
+            // ignore: prefer_const_constructors
             child: MaterialApp(
               localizationsDelegates: AppLocalizations.localizationsDelegates,
               supportedLocales: AppLocalizations.supportedLocales,
@@ -307,7 +311,7 @@ void main() {
               }),
               rideQuoteControllerProvider.overrideWith((ref) => chaosController),
               rideTripSessionProvider.overrideWith(
-                  (ref) => RideTripSessionController()),
+                  (ref) => RideTripSessionController(ref)),
             ],
             child: const MaterialApp(
               locale: Locale('ar'),
@@ -325,7 +329,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Initial error in Arabic
-        expect(find.text('تعذر تحميل خيارات الرحلة'), findsOneWidget);
+        expect(find.text('تعذّر تحميل خيارات الرحلة'), findsOneWidget);
         expect(find.text('إعادة المحاولة'), findsOneWidget);
 
         // Retry
@@ -355,7 +359,7 @@ void main() {
               }),
               rideQuoteControllerProvider.overrideWith((ref) => chaosController),
               rideTripSessionProvider.overrideWith(
-                  (ref) => RideTripSessionController()),
+                  (ref) => RideTripSessionController(ref)),
             ],
             child: const MaterialApp(
               locale: Locale('de'),
@@ -404,6 +408,7 @@ void main() {
                   (ref) => _SuccessQuoteController()),
               rideTripSessionProvider.overrideWith((ref) => sessionController),
             ],
+            // ignore: prefer_const_constructors
             child: MaterialApp(
               localizationsDelegates: const [
                 AppLocalizations.delegate,
@@ -469,6 +474,7 @@ void main() {
                   (ref) => _SuccessQuoteController()),
               rideTripSessionProvider.overrideWith((ref) => sessionController),
             ],
+            // ignore: prefer_const_constructors
             child: MaterialApp(
               localizationsDelegates: const [
                 AppLocalizations.delegate,
@@ -523,8 +529,9 @@ void main() {
               rideQuoteControllerProvider.overrideWith(
                   (ref) => _SuccessQuoteController()),
               rideTripSessionProvider.overrideWith(
-                  (ref) => RideTripSessionController()),
+                  (ref) => RideTripSessionController(ref)),
             ],
+            // ignore: prefer_const_constructors
             child: MaterialApp(
               localizationsDelegates: const [
                 AppLocalizations.delegate,
@@ -575,7 +582,7 @@ class _ChaosRideQuoteController extends StateNotifier<RideQuoteUiState>
   _ChaosRideQuoteController()
       : super(const RideQuoteUiState(
           isLoading: false,
-          errorMessage: 'Initial chaos failure',
+          error: RideQuoteError.pricingFailed('Initial chaos failure'),
         ));
 
   int _callCount = 0;
@@ -588,7 +595,7 @@ class _ChaosRideQuoteController extends StateNotifier<RideQuoteUiState>
       // First call fails
       state = const RideQuoteUiState(
         isLoading: false,
-        errorMessage: 'Chaos pricing service failure',
+        error: RideQuoteError.pricingFailed('Chaos pricing service failure'),
       );
     } else {
       // Subsequent calls succeed
@@ -653,7 +660,7 @@ class _PersistentFailController extends StateNotifier<RideQuoteUiState>
   _PersistentFailController()
       : super(const RideQuoteUiState(
           isLoading: false,
-          errorMessage: 'Persistent failure',
+          error: RideQuoteError.pricingFailed('Persistent failure'),
         ));
 
   int failCount = 0;
@@ -663,7 +670,7 @@ class _PersistentFailController extends StateNotifier<RideQuoteUiState>
     failCount++;
     state = const RideQuoteUiState(
       isLoading: false,
-      errorMessage: 'Persistent failure',
+      error: RideQuoteError.pricingFailed('Persistent failure'),
     );
   }
 
@@ -704,19 +711,26 @@ class _EmptyQuoteController extends StateNotifier<RideQuoteUiState>
   }
 }
 
+/// Fake Ref for testing
+class _FakeRef implements Ref {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 /// Controller that allows programmatic phase changes for testing.
-class _RapidPhaseChangeController extends StateNotifier<RideTripSessionUiState>
-    implements RideTripSessionController {
+class _RapidPhaseChangeController extends RideTripSessionController {
   _RapidPhaseChangeController()
-      : super(RideTripSessionUiState(
-          activeTrip: RideTripState(
-            tripId: 'rapid-test',
-            phase: RideTripPhase.findingDriver,
-          ),
-        ));
+      : super(_FakeRef()) {
+    state = const RideTripSessionUiState(
+      activeTrip: RideTripState(
+        tripId: 'rapid-test',
+        phase: RideTripPhase.findingDriver,
+      ),
+    );
+  }
 
   void advanceToAccepted() {
-    state = RideTripSessionUiState(
+    state = const RideTripSessionUiState(
       activeTrip: RideTripState(
         tripId: 'rapid-test',
         phase: RideTripPhase.driverAccepted,
@@ -725,7 +739,7 @@ class _RapidPhaseChangeController extends StateNotifier<RideTripSessionUiState>
   }
 
   void advanceToArrived() {
-    state = RideTripSessionUiState(
+    state = const RideTripSessionUiState(
       activeTrip: RideTripState(
         tripId: 'rapid-test',
         phase: RideTripPhase.driverArrived,
@@ -734,7 +748,7 @@ class _RapidPhaseChangeController extends StateNotifier<RideTripSessionUiState>
   }
 
   void advanceToProgress() {
-    state = RideTripSessionUiState(
+    state = const RideTripSessionUiState(
       activeTrip: RideTripState(
         tripId: 'rapid-test',
         phase: RideTripPhase.inProgress,
@@ -743,7 +757,7 @@ class _RapidPhaseChangeController extends StateNotifier<RideTripSessionUiState>
   }
 
   void advanceToCompleted() {
-    state = RideTripSessionUiState(
+    state = const RideTripSessionUiState(
       activeTrip: RideTripState(
         tripId: 'rapid-test',
         phase: RideTripPhase.completed,
@@ -890,14 +904,14 @@ class _SuccessQuoteController extends StateNotifier<RideQuoteUiState>
 }
 
 /// Controller that can simulate trip cancellation
-class _CancellableRideTripSessionController
-    extends StateNotifier<RideTripSessionUiState>
-    implements RideTripSessionController {
+class _CancellableRideTripSessionController extends RideTripSessionController {
   _CancellableRideTripSessionController()
-      : super(const RideTripSessionUiState());
+      : super(_FakeRef()) {
+    state = const RideTripSessionUiState();
+  }
 
   void simulateStartTrip() {
-    state = RideTripSessionUiState(
+    state = const RideTripSessionUiState(
       activeTrip: RideTripState(
         tripId: 'cancellable-test',
         phase: RideTripPhase.findingDriver,
@@ -955,14 +969,14 @@ class _CancellableRideTripSessionController
 }
 
 /// Controller that can simulate trip completion
-class _CompletableRideTripSessionController
-    extends StateNotifier<RideTripSessionUiState>
-    implements RideTripSessionController {
+class _CompletableRideTripSessionController extends RideTripSessionController {
   _CompletableRideTripSessionController()
-      : super(const RideTripSessionUiState());
+      : super(_FakeRef()) {
+    state = const RideTripSessionUiState();
+  }
 
   void simulateStartTrip() {
-    state = RideTripSessionUiState(
+    state = const RideTripSessionUiState(
       activeTrip: RideTripState(
         tripId: 'completable-test',
         phase: RideTripPhase.inProgress,

@@ -36,7 +36,8 @@ import '../screens/parcels/parcels_entry_screen.dart';
 import '../screens/parcels/parcels_list_screen.dart'; // Track C - Ticket #72
 import '../screens/parcels/parcels_shipments_list_screen.dart'; // Track C - Ticket #149
 import '../screens/parcels/parcels_create_shipment_screen.dart'; // Track C - Ticket #150
-import '../screens/parcels/parcels_shipment_details_screen.dart'; // Track C - Ticket #151
+import '../screens/parcels/parcels_shipment_details_screen.dart';
+import '../screens/home/home_hub_screen.dart'; // Track C - Ticket #151
 import '../screens/order_tracking_screen.dart';
 import '../screens/orders_history_screen.dart';
 import '../screens/orders_screen.dart';
@@ -363,7 +364,8 @@ class AuthGateScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     if (!FeatureFlags.enablePasswordlessAuth) {
       // AppShell is the main entry point for authenticated users (Track A - Ticket #2)
-      return const AppShell();
+      // Ticket #180: Use HomeHubScreen as the main entry point
+      return const AppShell(child: HomeHubScreen());
     }
 
     final authState = ref.watch(authStateProvider);
@@ -371,7 +373,8 @@ class AuthGateScreen extends ConsumerWidget {
       data: (state) {
         if (state.isAuthenticated) {
           // AppShell is the main entry point for authenticated users (Track A - Ticket #2)
-          return const AppShell();
+          // Ticket #180: Use HomeHubScreen as the main entry point
+          return const AppShell(child: HomeHubScreen());
         }
         return const PhoneLoginScreen();
       },

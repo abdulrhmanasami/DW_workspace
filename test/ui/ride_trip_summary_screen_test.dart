@@ -29,9 +29,13 @@ void main() {
   });
 
   group('RideTripSummaryScreen Widget Tests (Ticket #92)', () {
+    /// Helper to get AppLocalizations from the test widget
+    AppLocalizations _l10n(WidgetTester tester) =>
+        AppLocalizations.of(tester.element(find.byType(RideTripSummaryScreen)))!;
+
     /// Helper to create a completed trip state
     RideTripState createCompletedTrip() {
-      return RideTripState(
+      return const RideTripState(
         tripId: 'test-trip-receipt-123',
         phase: RideTripPhase.completed,
       );
@@ -347,10 +351,11 @@ void main() {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
-      // Verify mock driver info
-      expect(find.text('Ahmad M.'), findsOneWidget);
-      expect(find.text('Toyota Camry • ABC 1234'), findsOneWidget);
-      expect(find.text('4.9'), findsOneWidget); // Rating badge
+      // Verify mock driver info using l10n
+      final l10n = _l10n(tester);
+      expect(find.text(l10n.rideDriverMockName), findsOneWidget);
+      expect(find.text(l10n.rideDriverMockCarInfo), findsOneWidget);
+      expect(find.text(l10n.rideDriverMockRating), findsOneWidget); // Rating badge
     });
 
     // ========================================================================
@@ -380,7 +385,7 @@ void main() {
     // ========================================================================
 
     testWidgets('tapping_rating_stars_calls_setRatingForMostRecentTrip', (tester) async {
-      final completedTrip = RideTripState(
+      const completedTrip = RideTripState(
         tripId: 'rating-test-123',
         phase: RideTripPhase.completed,
       );
@@ -423,15 +428,15 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const RideTripSummaryScreen(),
+            supportedLocales: [Locale('en')],
+            home: RideTripSummaryScreen(),
           ),
         ),
       );
@@ -455,7 +460,7 @@ void main() {
     });
 
     testWidgets('rating_from_history_entry_shows_initial_stars', (tester) async {
-      final completedTrip = RideTripState(
+      const completedTrip = RideTripState(
         tripId: 'initial-rating-test',
         phase: RideTripPhase.completed,
       );
@@ -496,15 +501,15 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const RideTripSummaryScreen(),
+            supportedLocales: [Locale('en')],
+            home: RideTripSummaryScreen(),
           ),
         ),
       );
@@ -520,10 +525,16 @@ void main() {
 // Fake Controllers for Testing
 // ============================================================================
 
+/// Fake Ref for testing
+class _FakeRef implements Ref {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 /// Fake RideTripSessionController for testing
 class _FakeRideTripSessionController extends RideTripSessionController {
   _FakeRideTripSessionController({required RideTripSessionUiState initialState})
-      : super() {
+      : super(_FakeRef()) {
     state = initialState;
   }
 

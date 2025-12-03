@@ -48,7 +48,10 @@ void main() {
         'Food card navigates to FoodComingSoonScreen when Food MVP is disabled',
         (WidgetTester tester) async {
       // Arrange: Explicitly set feature flag to false
-      FeatureFlags.overrideForTests(const FeatureFlags(enableFoodMvpValue: false));
+      FeatureFlags.overrideForTests(const FeatureFlags(
+        enableFoodMvpValue: false,
+        enableParcelsMvpValue: true,
+      ));
 
       await tester.pumpWidget(
         ProviderScope(
@@ -189,7 +192,10 @@ void main() {
         'Food card navigates to FoodRestaurantsListScreen when Food MVP is enabled',
         (WidgetTester tester) async {
       // Arrange: Enable Food MVP via injectable FeatureFlags
-      FeatureFlags.overrideForTests(const FeatureFlags(enableFoodMvpValue: true));
+      FeatureFlags.overrideForTests(const FeatureFlags(
+        enableFoodMvpValue: true,
+        enableParcelsMvpValue: true,
+      ));
 
       await tester.pumpWidget(
         ProviderScope(
@@ -346,11 +352,17 @@ void main() {
       expect(FeatureFlags.enableFoodMvp, isFalse);
 
       // Override to true
-      FeatureFlags.overrideForTests(const FeatureFlags(enableFoodMvpValue: true));
+      FeatureFlags.overrideForTests(const FeatureFlags(
+        enableFoodMvpValue: true,
+        enableParcelsMvpValue: true,
+      ));
       expect(FeatureFlags.enableFoodMvp, isTrue);
 
       // Override to false
-      FeatureFlags.overrideForTests(const FeatureFlags(enableFoodMvpValue: false));
+      FeatureFlags.overrideForTests(const FeatureFlags(
+        enableFoodMvpValue: false,
+        enableParcelsMvpValue: true,
+      ));
       expect(FeatureFlags.enableFoodMvp, isFalse);
 
       // Reset restores default
@@ -361,7 +373,10 @@ void main() {
     testWidgets('FeatureFlags.current provides access to current flags',
         (WidgetTester tester) async {
       // Set up custom flags
-      FeatureFlags.overrideForTests(const FeatureFlags(enableFoodMvpValue: true));
+      FeatureFlags.overrideForTests(const FeatureFlags(
+        enableFoodMvpValue: true,
+        enableParcelsMvpValue: true,
+      ));
       
       // Access via current
       expect(FeatureFlags.current.enableFoodMvpValue, isTrue);

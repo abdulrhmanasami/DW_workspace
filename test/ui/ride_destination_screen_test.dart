@@ -14,6 +14,7 @@ import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 import 'package:delivery_ways_clean/screens/mobility/ride_destination_screen.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_recent_locations_providers.dart';
+import 'package:delivery_ways_clean/wiring/maps_binding.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 import '../support/design_system_harness.dart';
@@ -28,8 +29,14 @@ void main() {
       List<Override> overrides = const [],
       Locale locale = const Locale('en'),
     }) {
+      // Include maps binding overrides for consistent map behavior in tests
+      final allOverrides = [
+        ...mapsOverrides,
+        ...overrides,
+      ];
+
       return ProviderScope(
-        overrides: overrides,
+        overrides: allOverrides,
         child: MaterialApp(
           locale: locale,
           localizationsDelegates: const [
@@ -137,7 +144,7 @@ void main() {
     testWidgets('tapping recent location updates destination and navigates',
         (WidgetTester tester) async {
       // Track B - Ticket #145: Test recent location selection
-      final testLocation = const RecentLocation(
+      const testLocation = RecentLocation(
         id: 'loc_1',
         title: 'Test Mall',
         subtitle: 'Test Street, Test City',
@@ -145,6 +152,7 @@ void main() {
       );
 
       final container = ProviderContainer(overrides: [
+        ...mapsOverrides,
         recentLocationsProvider.overrideWith(
           (_) => Stream.value([testLocation]),
         ),
@@ -194,21 +202,21 @@ void main() {
 
     testWidgets('destination input updates rideDraftProvider',
         (WidgetTester tester) async {
-      final container = ProviderContainer();
+      final container = ProviderContainer(overrides: mapsOverrides);
       addTearDown(container.dispose);
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const RideDestinationScreen(),
+            supportedLocales: [Locale('en')],
+            home: RideDestinationScreen(),
           ),
         ),
       );
@@ -281,7 +289,7 @@ void main() {
     testWidgets('continue button navigates to confirmation when destination is entered',
         (WidgetTester tester) async {
       // Track B - Ticket #143: Updated test to use Continue button instead of recent location tap
-      final container = ProviderContainer();
+      final container = ProviderContainer(overrides: mapsOverrides);
       addTearDown(container.dispose);
 
       await tester.pumpWidget(
@@ -333,21 +341,21 @@ void main() {
 
     testWidgets('pickup place is initialized with current location type',
         (WidgetTester tester) async {
-      final container = ProviderContainer();
+      final container = ProviderContainer(overrides: mapsOverrides);
       addTearDown(container.dispose);
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const RideDestinationScreen(),
+            supportedLocales: [Locale('en')],
+            home: RideDestinationScreen(),
           ),
         ),
       );
@@ -363,9 +371,9 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pump();
 
-      // The MapWidget from maps_shims should be present
-      // Since it's a stub, it shows "Maps not available" text
-      expect(find.text('Maps not available'), findsOneWidget);
+      // The mapViewBuilderProvider provides a placeholder when maps are disabled
+      // It shows "Maps unavailable" text
+      expect(find.text('Maps unavailable'), findsOneWidget);
     });
   });
 }

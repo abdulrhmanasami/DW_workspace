@@ -334,6 +334,52 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
 
   final Ref _ref;
 
+  /// Starts a new trip from quote and selected option.
+  ///
+  /// Track B - Ticket #156: Alternative API that takes quote and option directly
+  /// instead of requiring a full draft state.
+  ///
+  /// For now, this is purely client-side and does not talk to backend.
+  /// Later, this will call a quote/dispatch service before moving the FSM.
+  ///
+  /// The flow simulated here:
+  /// draft -> quoting -> requesting -> findingDriver
+  void startRideFromQuote({
+    required RideQuoteOption selectedOption,
+    required RideDraftUiState draft,
+  }) {
+    // Generate a local trip ID
+    final tripId = 'local-${DateTime.now().microsecondsSinceEpoch}';
+
+    // Create initial trip state in draft phase
+    var tripState = RideTripState(
+      tripId: tripId,
+      phase: RideTripPhase.draft,
+    );
+
+    // Simulate the basic flow up to findingDriver:
+    // draft -> quoting -> requesting -> findingDriver
+    tripState = applyRideTripEvent(tripState, RideTripEvent.requestQuote);
+    tripState = applyRideTripEvent(tripState, RideTripEvent.quoteReceived);
+    tripState = applyRideTripEvent(tripState, RideTripEvent.submitRequest);
+
+    // Build trip summary from selected option and draft
+    final summary = RideTripSummary(
+      selectedServiceId: selectedOption.id,
+      selectedServiceName: selectedOption.displayName,
+      fareDisplayText: selectedOption.formattedPrice,
+      selectedPaymentMethodId: draft.paymentMethodId,
+      etaMinutes: selectedOption.etaMinutes,
+    );
+
+    // Update state with the new active trip, summary, and frozen draft
+    state = state.copyWith(
+      activeTrip: tripState,
+      tripSummary: summary,
+      draftSnapshot: draft,
+    );
+  }
+
   /// Starts a new trip from the current draft.
   ///
   /// For now, this is purely client-side and does not talk to backend.

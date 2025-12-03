@@ -8,7 +8,6 @@ import 'package:parcels_shims/parcels_shims.dart';
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 import 'package:delivery_ways_clean/screens/parcels/parcels_shipments_list_screen.dart';
 import 'package:delivery_ways_clean/state/parcels/parcel_shipments_providers.dart';
-import 'package:design_system_shims/design_system_shims.dart';
 import '../support/design_system_harness.dart';
 
 void main() {
@@ -42,7 +41,7 @@ void main() {
       );
     }
     // Test helper to create a ParcelShipment
-    ParcelShipment _createTestShipment({
+    ParcelShipment createTestShipment({
       String? id,
       ParcelShipmentStatus? status,
       DateTime? createdAt,
@@ -90,8 +89,8 @@ void main() {
       ),
     );
 
-      // Allow widget to build
-      await tester.pump();
+      // Allow widget to build and localization to load
+      await tester.pumpAndSettle();
 
       // Verify empty state is displayed
       expect(find.text('No shipments yet'), findsOneWidget);
@@ -110,13 +109,13 @@ void main() {
     testWidgets('displays list of shipments when data exists', (tester) async {
       // Create test shipments
       final shipments = [
-        _createTestShipment(
+        createTestShipment(
           id: 'shipment-1',
           status: ParcelShipmentStatus.created,
           receiverName: 'John Doe',
           price: 75.50,
         ),
-        _createTestShipment(
+        createTestShipment(
           id: 'shipment-2',
           status: ParcelShipmentStatus.inTransit,
           receiverName: 'Jane Smith',
@@ -137,6 +136,9 @@ void main() {
         ],
       ),
     );
+
+      // Allow widget to build and localization to load
+      await tester.pumpAndSettle();
 
       // Verify shipment cards are displayed
       expect(find.text('To John Doe'), findsOneWidget);
@@ -211,6 +213,9 @@ void main() {
       ),
     );
 
+      // Allow widget to build and localization to load
+      await tester.pumpAndSettle();
+
       // Find and tap the empty state CTA button
       final ctaButton = find.text('Create first shipment');
       expect(ctaButton, findsOneWidget);
@@ -267,6 +272,9 @@ void main() {
       ),
     );
 
+      // Allow widget to build and localization to load
+      await tester.pumpAndSettle();
+
       // Verify error state is displayed
       expect(find.text('Something went wrong'), findsOneWidget);
       expect(find.text('Test error message'), findsOneWidget);
@@ -276,22 +284,22 @@ void main() {
     testWidgets('displays correct status colors for shipments', (tester) async {
       // Create test shipments with different statuses
       final shipments = [
-        _createTestShipment(
+        createTestShipment(
           id: 'shipment-1',
           status: ParcelShipmentStatus.created,
           receiverName: 'Created Order',
         ),
-        _createTestShipment(
+        createTestShipment(
           id: 'shipment-2',
           status: ParcelShipmentStatus.inTransit,
           receiverName: 'Transit Order',
         ),
-        _createTestShipment(
+        createTestShipment(
           id: 'shipment-3',
           status: ParcelShipmentStatus.delivered,
           receiverName: 'Delivered Order',
         ),
-        _createTestShipment(
+        createTestShipment(
           id: 'shipment-4',
           status: ParcelShipmentStatus.cancelled,
           receiverName: 'Cancelled Order',
@@ -311,6 +319,9 @@ void main() {
         ],
       ),
     );
+
+      // Allow widget to build and localization to load
+      await tester.pumpAndSettle();
 
       // Verify all status texts are displayed
       expect(find.text('Created'), findsOneWidget);
