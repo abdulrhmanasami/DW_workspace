@@ -1508,6 +1508,44 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get homeHubTitle => 'Where do you want to go?';
+
+  @override
+  String get homeHubCurrentLocationLabel => 'Current location';
+
+  @override
+  String get homeHubCurrentLocationLoading => 'Detecting your location...';
+
+  @override
+  String get homeHubCurrentLocationUnavailable => 'Location not available';
+
+  @override
+  String get homeHubServiceRide => 'Ride';
+
+  @override
+  String get homeHubServiceParcels => 'Parcels';
+
+  @override
+  String get homeHubServiceFood => 'Food';
+
+  @override
+  String get homeHubActiveRideTitle => 'Fahrt läuft';
+
+  @override
+  String get homeHubActiveRideSubtitle => 'Aktive Fahrt fortsetzen';
+
+  @override
+  String get homeHubParcelsComingSoonMessage =>
+      'Parcels service is coming soon to your city.';
+
+  @override
+  String get homeHubFoodComingSoonMessage =>
+      'Food ordering is coming soon to your city.';
+
+  @override
+  String get homeHubSearchPlaceholder => 'Where to?';
+
+  @override
   String get rideDestinationTitle => 'Where to?';
 
   @override
@@ -1641,15 +1679,20 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rideConfirmRecommendedBadge => 'Empfohlen';
 
   @override
-  String get rideQuoteErrorTitle => 'Preise konnten nicht geladen werden';
+  String get rideQuoteErrorTitle =>
+      'Fahrtoptionen konnten nicht geladen werden';
 
   @override
   String get rideQuoteErrorGeneric =>
-      'Beim Abrufen der Fahrpreise ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.';
+      'Bitte überprüfe deine Verbindung und versuche es erneut.';
 
   @override
   String get rideQuoteErrorNoOptions =>
       'Für diese Strecke sind derzeit keine Fahrtoptionen verfügbar.';
+
+  @override
+  String get ridePricingErrorGeneric =>
+      'Die Preise konnten nicht geladen werden. Bitte versuche es erneut.';
 
   @override
   String get rideQuoteRetryCta => 'Erneut versuchen';
@@ -1659,7 +1702,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get rideQuoteEmptyDescription =>
-      'Versuchen Sie eine andere Zeit oder passen Sie Abholort und Ziel an.';
+      'Bitte versuchen Sie es in ein paar Minuten erneut.';
 
   @override
   String get rideConfirmFromLabel => 'Von';
@@ -2314,6 +2357,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get rideReceiptDoneCta => 'Fertig';
 
   @override
+  String get rideDriverMockName => 'Ahmad M.';
+
+  @override
+  String get rideDriverMockCarInfo => 'Toyota Camry • ABC 1234';
+
+  @override
+  String get rideDriverMockRating => '4.9';
+
+  @override
   String get rideSummaryEndTripDebugCta => 'Fahrt beenden';
 
   @override
@@ -2617,6 +2669,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get parcelsShipmentStatusCancelled => 'Storniert';
 
   @override
+  String get parcelsShipmentsErrorTitle => 'Etwas ist schiefgelaufen';
+
+  @override
   String get parcelsCreateShipmentCta => 'Sendung erstellen';
 
   @override
@@ -2690,4 +2745,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get commonTotalLabel => 'Gesamt';
+
+  @override
+  String get homeHubRecentDestinationsTitle => 'Recent destinations';
+
+  @override
+  String get homeHubRecentDestinationsSeeAll => 'See all';
 }

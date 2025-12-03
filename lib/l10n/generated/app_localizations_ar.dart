@@ -1473,6 +1473,44 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get homeHubTitle => 'إلى أين تريد الذهاب؟';
+
+  @override
+  String get homeHubCurrentLocationLabel => 'موقعك الحالي';
+
+  @override
+  String get homeHubCurrentLocationLoading => 'جاري تحديد موقعك...';
+
+  @override
+  String get homeHubCurrentLocationUnavailable => 'لا يمكن تحديد موقعك';
+
+  @override
+  String get homeHubServiceRide => 'مشاوير';
+
+  @override
+  String get homeHubServiceParcels => 'طرود';
+
+  @override
+  String get homeHubServiceFood => 'طلبات الطعام';
+
+  @override
+  String get homeHubActiveRideTitle => 'رحلة قيد التنفيذ';
+
+  @override
+  String get homeHubActiveRideSubtitle => 'تابع رحلتك النشطة';
+
+  @override
+  String get homeHubParcelsComingSoonMessage =>
+      'خدمة الطرود قادمة قريبًا إلى مدينتك.';
+
+  @override
+  String get homeHubFoodComingSoonMessage =>
+      'خدمة طلبات الطعام قادمة قريبًا إلى مدينتك.';
+
+  @override
+  String get homeHubSearchPlaceholder => 'إلى أين؟';
+
+  @override
   String get rideDestinationTitle => 'إلى أين؟';
 
   @override
@@ -1600,15 +1638,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rideConfirmRecommendedBadge => 'موصى به';
 
   @override
-  String get rideQuoteErrorTitle => 'تعذّر تحميل الأسعار';
+  String get rideQuoteErrorTitle => 'تعذّر تحميل خيارات الرحلة';
 
   @override
   String get rideQuoteErrorGeneric =>
-      'حدث خطأ أثناء جلب أسعار الرحلات. يرجى المحاولة مرة أخرى.';
+      'يرجى التحقق من الاتصال بالإنترنت ثم المحاولة مرة أخرى.';
 
   @override
   String get rideQuoteErrorNoOptions =>
       'لا تتوفر خيارات رحلات لهذا المسار في الوقت الحالي.';
+
+  @override
+  String get ridePricingErrorGeneric =>
+      'تعذّر تحميل أسعار الرحلة، حاول مرة أخرى.';
 
   @override
   String get rideQuoteRetryCta => 'إعادة المحاولة';
@@ -1618,7 +1660,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get rideQuoteEmptyDescription =>
-      'جرّب وقتًا مختلفًا أو عدّل نقطة الانطلاق والوجهة.';
+      'يرجى المحاولة مرة أخرى خلال بضع دقائق.';
 
   @override
   String get rideConfirmFromLabel => 'من';
@@ -2258,6 +2300,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rideReceiptDoneCta => 'تم';
 
   @override
+  String get rideDriverMockName => 'أحمد م.';
+
+  @override
+  String get rideDriverMockCarInfo => 'تويوتا كامري • ABC 1234';
+
+  @override
+  String get rideDriverMockRating => '4.9';
+
+  @override
   String get rideSummaryEndTripDebugCta => 'إنهاء الرحلة';
 
   @override
@@ -2554,6 +2605,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get parcelsShipmentStatusCancelled => 'ملغاة';
 
   @override
+  String get parcelsShipmentsErrorTitle => 'حدث خطأ ما';
+
+  @override
   String get parcelsCreateShipmentCta => 'إنشاء شحنة';
 
   @override
@@ -2624,4 +2678,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get commonTotalLabel => 'المجموع';
+
+  @override
+  String get homeHubRecentDestinationsTitle => 'الوجهات الأخيرة';
+
+  @override
+  String get homeHubRecentDestinationsSeeAll => 'عرض الكل';
 }

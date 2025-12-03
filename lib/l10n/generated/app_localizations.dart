@@ -2698,6 +2698,78 @@ abstract class AppLocalizations {
   /// **'To {destination}'**
   String homeActiveRideSubtitleToDestination(String destination);
 
+  /// Main title for Home Hub screen - greeting asking user destination (Ticket #182)
+  ///
+  /// In en, this message translates to:
+  /// **'Where do you want to go?'**
+  String get homeHubTitle;
+
+  /// Label for current location indicator (Ticket #182)
+  ///
+  /// In en, this message translates to:
+  /// **'Current location'**
+  String get homeHubCurrentLocationLabel;
+
+  /// Temporary message while fetching current location on Home Hub
+  ///
+  /// In en, this message translates to:
+  /// **'Detecting your location...'**
+  String get homeHubCurrentLocationLoading;
+
+  /// Fallback message when current location cannot be determined on Home Hub
+  ///
+  /// In en, this message translates to:
+  /// **'Location not available'**
+  String get homeHubCurrentLocationUnavailable;
+
+  /// Label for Ride service chip (Ticket #182)
+  ///
+  /// In en, this message translates to:
+  /// **'Ride'**
+  String get homeHubServiceRide;
+
+  /// Label for Parcels service chip (Ticket #182)
+  ///
+  /// In en, this message translates to:
+  /// **'Parcels'**
+  String get homeHubServiceParcels;
+
+  /// Label for Food service chip (Ticket #182)
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get homeHubServiceFood;
+
+  /// Title for active ride card on home hub (Ticket #183)
+  ///
+  /// In en, this message translates to:
+  /// **'Ride in progress'**
+  String get homeHubActiveRideTitle;
+
+  /// Subtitle for active ride card on home hub (Ticket #183)
+  ///
+  /// In en, this message translates to:
+  /// **'Continue your active trip'**
+  String get homeHubActiveRideSubtitle;
+
+  /// SnackBar message shown when user taps Parcels chip on HomeHub (Ticket #184)
+  ///
+  /// In en, this message translates to:
+  /// **'Parcels service is coming soon to your city.'**
+  String get homeHubParcelsComingSoonMessage;
+
+  /// SnackBar message shown when user taps Food chip on HomeHub (Ticket #184)
+  ///
+  /// In en, this message translates to:
+  /// **'Food ordering is coming soon to your city.'**
+  String get homeHubFoodComingSoonMessage;
+
+  /// Placeholder text for the HomeHub search bar used to start a new ride (Ticket #188)
+  ///
+  /// In en, this message translates to:
+  /// **'Where to?'**
+  String get homeHubSearchPlaceholder;
+
   /// Title for the ride destination input screen (Screen 8)
   ///
   /// In en, this message translates to:
@@ -2941,13 +3013,13 @@ abstract class AppLocalizations {
   /// Title for the error state when ride pricing fails (Track B - Ticket #121)
   ///
   /// In en, this message translates to:
-  /// **'We couldn\'t load prices'**
+  /// **'We couldn\'t load ride options'**
   String get rideQuoteErrorTitle;
 
   /// Generic error message for pricing failures (Track B - Ticket #121)
   ///
   /// In en, this message translates to:
-  /// **'Something went wrong while fetching ride prices. Please try again.'**
+  /// **'Please check your connection and try again.'**
   String get rideQuoteErrorGeneric;
 
   /// Error message when no ride options are returned (Track B - Ticket #121)
@@ -2955,6 +3027,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No ride options are available for this route right now.'**
   String get rideQuoteErrorNoOptions;
+
+  /// Generic error message for pricing failures (Ticket #196)
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load prices. Please try again.'**
+  String get ridePricingErrorGeneric;
 
   /// CTA button text to retry fetching ride prices (Track B - Ticket #121)
   ///
@@ -2971,7 +3049,7 @@ abstract class AppLocalizations {
   /// Description for empty state when no ride options (Track B - Ticket #121)
   ///
   /// In en, this message translates to:
-  /// **'Try a different time or adjust your pickup and destination.'**
+  /// **'Please try again in a few minutes.'**
   String get rideQuoteEmptyDescription;
 
   /// Label for pickup location in trip summary (Ticket #91)
@@ -4168,6 +4246,24 @@ abstract class AppLocalizations {
   /// **'Done'**
   String get rideReceiptDoneCta;
 
+  /// Mock driver name for development (Track C - Ticket #171)
+  ///
+  /// In en, this message translates to:
+  /// **'Ahmad M.'**
+  String get rideDriverMockName;
+
+  /// Mock driver car info for development (Track C - Ticket #171)
+  ///
+  /// In en, this message translates to:
+  /// **'Toyota Camry • ABC 1234'**
+  String get rideDriverMockCarInfo;
+
+  /// Mock driver rating for development (Track C - Ticket #171)
+  ///
+  /// In en, this message translates to:
+  /// **'4.9'**
+  String get rideDriverMockRating;
+
   /// Debug CTA button to end trip (Track B - Ticket #62)
   ///
   /// In en, this message translates to:
@@ -4714,6 +4810,12 @@ abstract class AppLocalizations {
   /// **'Cancelled'**
   String get parcelsShipmentStatusCancelled;
 
+  /// Error state title for shipments list (Track C - Ticket #149)
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get parcelsShipmentsErrorTitle;
+
   /// Create shipment button label (Track C - Ticket #150)
   ///
   /// In en, this message translates to:
@@ -4857,6 +4959,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Total'**
   String get commonTotalLabel;
+
+  /// Title for the recent destinations shortcuts section on the HomeHub screen (Ticket #189)
+  ///
+  /// In en, this message translates to:
+  /// **'Recent destinations'**
+  String get homeHubRecentDestinationsTitle;
+
+  /// Button label to show all recent destinations from HomeHub (Ticket #194)
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get homeHubRecentDestinationsSeeAll;
 }
 
 class _AppLocalizationsDelegate

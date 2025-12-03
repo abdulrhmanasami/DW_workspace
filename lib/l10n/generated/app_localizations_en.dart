@@ -1492,6 +1492,44 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get homeHubTitle => 'Where do you want to go?';
+
+  @override
+  String get homeHubCurrentLocationLabel => 'Current location';
+
+  @override
+  String get homeHubCurrentLocationLoading => 'Detecting your location...';
+
+  @override
+  String get homeHubCurrentLocationUnavailable => 'Location not available';
+
+  @override
+  String get homeHubServiceRide => 'Ride';
+
+  @override
+  String get homeHubServiceParcels => 'Parcels';
+
+  @override
+  String get homeHubServiceFood => 'Food';
+
+  @override
+  String get homeHubActiveRideTitle => 'Ride in progress';
+
+  @override
+  String get homeHubActiveRideSubtitle => 'Continue your active trip';
+
+  @override
+  String get homeHubParcelsComingSoonMessage =>
+      'Parcels service is coming soon to your city.';
+
+  @override
+  String get homeHubFoodComingSoonMessage =>
+      'Food ordering is coming soon to your city.';
+
+  @override
+  String get homeHubSearchPlaceholder => 'Where to?';
+
+  @override
   String get rideDestinationTitle => 'Where to?';
 
   @override
@@ -1620,15 +1658,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rideConfirmRecommendedBadge => 'Recommended';
 
   @override
-  String get rideQuoteErrorTitle => 'We couldn\'t load prices';
+  String get rideQuoteErrorTitle => 'We couldn\'t load ride options';
 
   @override
   String get rideQuoteErrorGeneric =>
-      'Something went wrong while fetching ride prices. Please try again.';
+      'Please check your connection and try again.';
 
   @override
   String get rideQuoteErrorNoOptions =>
       'No ride options are available for this route right now.';
+
+  @override
+  String get ridePricingErrorGeneric =>
+      'We couldn\'t load prices. Please try again.';
 
   @override
   String get rideQuoteRetryCta => 'Retry';
@@ -1637,8 +1679,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rideQuoteEmptyTitle => 'No rides available';
 
   @override
-  String get rideQuoteEmptyDescription =>
-      'Try a different time or adjust your pickup and destination.';
+  String get rideQuoteEmptyDescription => 'Please try again in a few minutes.';
 
   @override
   String get rideConfirmFromLabel => 'From';
@@ -2289,6 +2330,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rideReceiptDoneCta => 'Done';
 
   @override
+  String get rideDriverMockName => 'Ahmad M.';
+
+  @override
+  String get rideDriverMockCarInfo => 'Toyota Camry • ABC 1234';
+
+  @override
+  String get rideDriverMockRating => '4.9';
+
+  @override
   String get rideSummaryEndTripDebugCta => 'End trip';
 
   @override
@@ -2590,6 +2640,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get parcelsShipmentStatusCancelled => 'Cancelled';
 
   @override
+  String get parcelsShipmentsErrorTitle => 'Something went wrong';
+
+  @override
   String get parcelsCreateShipmentCta => 'Create shipment';
 
   @override
@@ -2662,4 +2715,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commonTotalLabel => 'Total';
+
+  @override
+  String get homeHubRecentDestinationsTitle => 'Recent destinations';
+
+  @override
+  String get homeHubRecentDestinationsSeeAll => 'See all';
 }
