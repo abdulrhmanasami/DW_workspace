@@ -33,7 +33,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:parcels_shims/parcels_shims.dart' show Parcel, ParcelShipment, ParcelShipmentStatus;
 import 'package:design_system_shims/design_system_shims.dart'
-    show DWButton, DWSpacing, DWRadius;
+    show DWButton, DWSpacing, DWRadius, DWElevation;
 
 import '../config/feature_flags.dart';
 import '../router/app_router.dart';
@@ -61,6 +61,10 @@ import '../widgets/ride_map_from_commands.dart';
 import '../state/mobility/ride_map_commands_builder.dart';
 import '../state/orders/orders_history_providers.dart';
 
+/// App Tab enum for navigation
+/// Track A - Ticket #217: AppShell v1 + Bottom Navigation
+enum AppTab { home, orders, payments, profile }
+
 /// AppShell V1 - Unified App Container
 /// Created by: Ticket #179
 /// Purpose: Universal container for all app screens with background and SafeArea
@@ -69,51 +73,25 @@ import '../state/orders/orders_history_providers.dart';
 /// providing consistent background color and SafeArea across all screens.
 /// Navigation logic is handled separately in future tickets.
 
-/// AppShell V1
-/// حاوية عامة لكل شاشات التطبيق:
-/// - تضبط لون الخلفية من الـ Theme
-/// - تضيف SafeArea حول الـ child (إن وجد)
-///
-/// ملاحظة:
-/// - `child` اختياري لدعم الاستدعاءات القديمة `AppShell()` في الراوتر والاختبارات.
-/// - في حالة عدم تمرير child، يتم استخدام `SizedBox.shrink()` كـ محتوى افتراضي.
-class AppShell extends StatelessWidget {
-  final Widget? child;
 
-  const AppShell({
-    super.key,
-    this.child,
-  });
+
+/// AppShell with Bottom Navigation
+/// Track A - Ticket #217: AppShell v1 + Bottom Navigation
+/// Main app shell with 4-tab bottom navigation (Home, Orders, Payments, Profile)
+class AppShell extends StatefulWidget {
+  const AppShell({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final Widget content = child ?? const SizedBox.shrink();
-
-    return ColoredBox(
-      color: theme.colorScheme.surface,
-      child: content,
-    );
-  }
+  State<AppShell> createState() => _AppShellState();
 }
 
+class _AppShellState extends State<AppShell> {
+  AppTab _currentTab = AppTab.home;
 
-/// Legacy AppShell with Navigation - will be refactored in future tickets
-/// TODO: Move to navigation_shell.dart in future ticket
-class AppShellWithNavigation extends StatefulWidget {
-  const AppShellWithNavigation({super.key});
-
-  @override
-  State<AppShellWithNavigation> createState() => _AppShellWithNavigationState();
-}
-
-class _AppShellWithNavigationState extends State<AppShellWithNavigation> {
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    if (_selectedIndex == index) return;
+  void _onTabSelected(AppTab tab) {
+    if (_currentTab == tab) return;
     setState(() {
-      _selectedIndex = index;
+      _currentTab = tab;
     });
   }
 
@@ -121,12 +99,12 @@ class _AppShellWithNavigationState extends State<AppShellWithNavigation> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       // Track A - Ticket #135: Explicit background color from Theme
       backgroundColor: theme.colorScheme.surface,
       body: IndexedStack(
-        index: _selectedIndex,
+        index: _currentTab.index,
         children: const <Widget>[
           _HomeTab(), // Home Hub
           // Track C - Ticket #152: Orders tab → Custom _OrdersTab (ParcelShipments-based)
@@ -141,8 +119,10 @@ class _AppShellWithNavigationState extends State<AppShellWithNavigation> {
         backgroundColor: theme.colorScheme.surface,
         surfaceTintColor: theme.colorScheme.surfaceTint,
         indicatorColor: theme.colorScheme.secondaryContainer,
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: _onItemTapped,
+        // Track A - Ticket #217: Design system elevation.medium for bottom nav
+        elevation: DWElevation.medium,
+        selectedIndex: _currentTab.index,
+        onDestinationSelected: (index) => _onTabSelected(AppTab.values[index]),
         // Design System: 4 tabs as per spec (Home, Orders, Payments, Profile)
         // Track A - Ticket #82: L10n for navigation labels
         destinations: [
@@ -1019,7 +999,7 @@ class _OrdersFilterBar extends StatelessWidget {
           decoration: BoxDecoration(
             color: isSelected
                 ? colorScheme.primary
-                : Colors.transparent,
+                : colorScheme.surface.withValues(alpha: 0.0),
             borderRadius: BorderRadius.circular(DWRadius.md),
           ),
           child: Center(
