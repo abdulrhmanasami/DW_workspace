@@ -3202,6 +3202,24 @@ abstract class AppLocalizations {
   /// **'Start using Delivery Ways'**
   String get onboardingPreferencesDoneCta;
 
+  /// Title for notifications section in preferences
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get onboardingPreferencesNotificationsTitle;
+
+  /// Title for marketing notifications preference
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing notifications'**
+  String get onboardingPreferencesMarketingTitle;
+
+  /// Subtitle explaining marketing notifications preference
+  ///
+  /// In en, this message translates to:
+  /// **'Receive updates about promotions and new features'**
+  String get onboardingPreferencesMarketingSubtitle;
+
   /// Title for Parcels entry screen (Track C - Ticket #40)
   ///
   /// In en, this message translates to:

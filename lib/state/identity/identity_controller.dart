@@ -123,6 +123,58 @@ class IdentityController extends StateNotifier<IdentityControllerState> {
       );
     }
   }
+
+  /// Request login code for phone number
+  ///
+  /// Sends an OTP code to the specified phone number.
+  /// Track D - Ticket #235 (D-3): Phone login & OTP support.
+  Future<void> requestLoginCode(PhoneNumber phoneNumber) async {
+    try {
+      state = state.copyWith(
+        isRequestingLoginCode: true,
+        clearAuthError: true,
+        clearError: true,
+      );
+      await _shim.requestLoginCode(phoneNumber: phoneNumber);
+      state = state.copyWith(isRequestingLoginCode: false);
+    } catch (e) {
+      final errorMessage = e is AuthException ? e.message : 'Failed to request login code';
+      state = state.copyWith(
+        isRequestingLoginCode: false,
+        lastAuthErrorMessage: errorMessage,
+        lastError: e,
+      );
+    }
+  }
+
+  /// Verify login code and authenticate
+  ///
+  /// Verifies the OTP code and creates an authenticated session if valid.
+  /// Track D - Ticket #235 (D-3): Phone login & OTP support.
+  Future<void> verifyLoginCode({
+    required PhoneNumber phoneNumber,
+    required OtpCode code,
+  }) async {
+    try {
+      state = state.copyWith(
+        isVerifyingLoginCode: true,
+        clearAuthError: true,
+        clearError: true,
+      );
+      final session = await _shim.verifyLoginCode(phoneNumber: phoneNumber, code: code);
+      state = state.copyWith(
+        session: session,
+        isVerifyingLoginCode: false,
+      );
+    } catch (e) {
+      final errorMessage = e is AuthException ? e.message : 'Failed to verify login code';
+      state = state.copyWith(
+        isVerifyingLoginCode: false,
+        lastAuthErrorMessage: errorMessage,
+        lastError: e,
+      );
+    }
+  }
 }
 
 /// Provider for the IdentityShim implementation

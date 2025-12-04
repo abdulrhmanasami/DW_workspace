@@ -162,6 +162,61 @@ class HttpIdentityShim implements IdentityShim {
     _sessionController.add(_currentSession);
   }
 
+  @override
+  Future<void> requestLoginCode({required PhoneNumber phoneNumber}) async {
+    try {
+      await _client.requestOtp(phoneNumber);
+    } catch (e) {
+      // Re-throw auth exceptions as-is, wrap others
+      if (e is AuthException) rethrow;
+      throw AuthException.networkError('Failed to request login code: $e');
+    }
+  }
+
+  @override
+  Future<IdentitySession> verifyLoginCode({
+    required PhoneNumber phoneNumber,
+    required OtpCode code,
+  }) async {
+    try {
+      final authSession = await _client.verifyOtp(phoneNumber: phoneNumber, code: code);
+
+      // Convert AuthSession to IdentitySession
+      final tokens = AuthTokens(
+        accessToken: authSession.accessToken,
+        refreshToken: authSession.refreshToken,
+        accessTokenExpiresAt: authSession.expiresAt,
+      );
+
+      final user = IdentityUser(
+        userId: authSession.user.id,
+        phoneNumber: authSession.user.phoneNumber,
+        displayName: authSession.user.displayName,
+        countryCode: _extractCountryCode(authSession.user.phoneNumber),
+      );
+
+      final session = IdentitySession(
+        status: AuthStatus.authenticated,
+        user: user,
+        tokens: tokens,
+        isRefreshing: false,
+      );
+
+      // Save to storage
+      await _storage.saveSession(session);
+
+      // Update current session and emit
+      _currentSession = session;
+      _sessionController.add(_currentSession);
+
+      return session;
+    } catch (e) {
+      // Re-throw auth exceptions as-is, wrap others
+      if (e is AuthException) rethrow;
+      throw AuthException.networkError('Failed to verify login code: $e');
+    }
+  }
+
   /// Extract country code from phone number (simple implementation)
   String? _extractCountryCode(String? phoneNumber) {
     if (phoneNumber == null || !phoneNumber.startsWith('+')) {

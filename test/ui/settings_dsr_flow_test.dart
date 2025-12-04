@@ -22,7 +22,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: locale,
-          home: const AppShellWithNavigation(),
+          home: const AppShell(),
         ),
       );
     }
@@ -223,6 +223,42 @@ void main() {
 
         // Should have multiple chevron_right icons (one per list item)
         expect(find.byIcon(Icons.chevron_right), findsWidgets);
+      });
+    });
+
+    group('DSR Screen Navigation', () {
+      testWidgets('navigates to DSR Export screen from Profile tab', (tester) async {
+        await tester.pumpWidget(buildTestAppWithAppShell());
+        await tester.pumpAndSettle();
+
+        // Navigate to Profile tab
+        await tester.tap(find.byIcon(Icons.person_outline));
+        await tester.pumpAndSettle();
+
+        // Tap on "Export my data" item
+        await tester.tap(find.text('Export my data'));
+        await tester.pumpAndSettle();
+
+        // Verify DSR Export screen is displayed
+        expect(find.text('Export Data'), findsOneWidget);
+        expect(find.text('Request a copy of your personal data'), findsOneWidget);
+      });
+
+      testWidgets('navigates to DSR Erasure screen from Profile tab', (tester) async {
+        await tester.pumpWidget(buildTestAppWithAppShell());
+        await tester.pumpAndSettle();
+
+        // Navigate to Profile tab
+        await tester.tap(find.byIcon(Icons.person_outline));
+        await tester.pumpAndSettle();
+
+        // Tap on "Erase my data" item
+        await tester.tap(find.text('Erase my data'));
+        await tester.pumpAndSettle();
+
+        // Verify DSR Erasure screen is displayed
+        expect(find.text('Erase Account'), findsOneWidget);
+        expect(find.text('Request deletion of your personal data'), findsOneWidget);
       });
     });
   });

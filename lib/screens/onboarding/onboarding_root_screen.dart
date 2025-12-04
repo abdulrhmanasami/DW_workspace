@@ -1,26 +1,27 @@
 /// Onboarding Root Screen
-/// Created by: Cursor B-central
-/// Updated by: Ticket #57 - Track D Onboarding Flow (3 screens: Ride/Parcels/Food)
-/// Purpose: Main onboarding flow screen with PageView-based 3-step flow
-/// Last updated: 2025-11-29
+/// Created by: Ticket #238 - Track D-6 Onboarding Flow
+/// Purpose: Main onboarding flow screen with PageView-based Welcome/Permissions/Preferences flow
+/// Last updated: 2025-12-04
 
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:foundation_shims/foundation_shims.dart';
 
-import 'onboarding_page_ride_screen.dart';
-import 'onboarding_page_parcels_screen.dart';
-import 'onboarding_page_food_screen.dart';
+import 'welcome_screen.dart';
+import 'permissions_screen.dart';
+import 'screen_preferences.dart';
 
-/// Main onboarding screen that manages the product onboarding flow.
+/// Main onboarding screen that manages the user onboarding flow.
 ///
-/// Ticket #57: Implements 3-screen onboarding flow based on Mockups:
-/// Screen 1: Ride - "Get a Ride, Instantly."
-/// Screen 2: Parcels - "Deliver Anything, Effortlessly."
-/// Screen 3: Food - "Your Favorite Food, Delivered."
+/// Ticket #238: Implements 3-screen onboarding flow:
+/// Screen 1: Welcome - Introduction to Delivery Ways
+/// Screen 2: Permissions - Explain location/notifications permissions
+/// Screen 3: Preferences - Set initial preferences including marketing opt-in
 ///
-/// Uses internal state (index 0–2) to track current screen.
-/// Does not persist completion state (handled in separate ticket).
-class OnboardingRootScreen extends StatefulWidget {
+/// Uses PageView with PageController for smooth navigation.
+/// Persists completion state and marketing preferences using OnboardingPrefs shim.
+class OnboardingRootScreen extends ConsumerStatefulWidget {
   const OnboardingRootScreen({
     super.key,
     this.onComplete,
@@ -30,26 +31,57 @@ class OnboardingRootScreen extends StatefulWidget {
   final VoidCallback? onComplete;
 
   @override
-  State<OnboardingRootScreen> createState() => _OnboardingRootScreenState();
+  ConsumerState<OnboardingRootScreen> createState() => _OnboardingRootScreenState();
 }
 
-class _OnboardingRootScreenState extends State<OnboardingRootScreen> {
+class _OnboardingRootScreenState extends ConsumerState<OnboardingRootScreen> {
+  final PageController _pageController = PageController();
   int _currentIndex = 0;
   static const int _totalPages = 3;
+  late final OnboardingPrefs _onboardingPrefs;
+
+  @override
+  void initState() {
+    super.initState();
+    _onboardingPrefs = ref.read(onboardingPrefsServiceProvider);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
 
   void _goToNext() {
     if (_currentIndex < _totalPages - 1) {
-      setState(() => _currentIndex++);
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
       _finishOnboarding();
     }
   }
 
-  void _finishOnboarding() {
+  void _skipOnboarding() {
+    _finishOnboarding();
+  }
+
+  Future<void> _finishOnboarding() async {
+    // Mark onboarding as completed in persistent storage
+    await _onboardingPrefs.setCompletedOnboarding(true);
+
     // Notify completion if callback provided
     widget.onComplete?.call();
+
     // Pop back to root (initial route) - same behavior as previous flow
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    if (mounted) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
+  }
+
+  void _onPageChanged(int index) {
+    setState(() => _currentIndex = index);
   }
 
   @override
@@ -59,9 +91,9 @@ class _OnboardingRootScreenState extends State<OnboardingRootScreen> {
 
     // Build the page widgets
     final pages = [
-      OnboardingPageRideScreen(onNext: _goToNext),
-      OnboardingPageParcelsScreen(onNext: _goToNext),
-      OnboardingPageFoodScreen(onNext: _goToNext),
+      WelcomeScreen(onComplete: _skipOnboarding),
+      PermissionsScreen(onComplete: _skipOnboarding),
+      PreferencesScreen(onComplete: _finishOnboarding),
     ];
 
     return Scaffold(
@@ -69,20 +101,26 @@ class _OnboardingRootScreenState extends State<OnboardingRootScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            // Skip button in top right (except on last page)
+            if (_currentIndex < _totalPages - 1)
+              Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(DWSpacing.md),
+                  child: DWButton.tertiary(
+                    label: 'Skip', // TODO: Add to L10n
+                    onPressed: _skipOnboarding,
+                  ),
+                ),
+              ),
+
             // Main content area
             Expanded(
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                transitionBuilder: (child, animation) {
-                  return FadeTransition(
-                    opacity: animation,
-                    child: child,
-                  );
-                },
-                child: KeyedSubtree(
-                  key: ValueKey<int>(_currentIndex),
-                  child: pages[_currentIndex],
-                ),
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: _onPageChanged,
+                physics: const NeverScrollableScrollPhysics(), // Disable swipe
+                children: pages,
               ),
             ),
 

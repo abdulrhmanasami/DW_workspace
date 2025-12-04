@@ -1744,6 +1744,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onboardingPreferencesDoneCta => 'ابدأ استخدام Delivery Ways';
 
   @override
+  String get onboardingPreferencesNotificationsTitle => 'الإشعارات';
+
+  @override
+  String get onboardingPreferencesMarketingTitle => 'إشعارات التسويق';
+
+  @override
+  String get onboardingPreferencesMarketingSubtitle =>
+      'احصل على تحديثات حول العروض والميزات الجديدة';
+
+  @override
   String get parcelsEntryTitle => 'الطرود';
 
   @override

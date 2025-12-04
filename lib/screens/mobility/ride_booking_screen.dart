@@ -13,10 +13,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:design_system_shims/design_system_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
-import '../../state/mobility/ride_draft_state.dart';
+import '../../state/mobility/ride_booking_controller.dart';
 
 /// RideBookingScreen - Main entry point for Ride booking flow
 class RideBookingScreen extends ConsumerWidget {
@@ -72,7 +73,7 @@ class RideBookingScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: colorScheme.surface,
                 borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(24),
+                  top: Radius.circular(DWRadius.lg),
                 ),
                 boxShadow: [
                   BoxShadow(
@@ -82,7 +83,12 @@ class RideBookingScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+              padding: const EdgeInsets.fromLTRB(
+                DWSpacing.lg,
+                DWSpacing.sm,
+                DWSpacing.lg,
+                DWSpacing.lg,
+              ),
               child: const _RideBookingSheetContent(),
             ),
           ),
@@ -108,9 +114,10 @@ class _RideBookingSheetContentState
   @override
   void initState() {
     super.initState();
-    // Initialize controller with current state value
-    final currentDestination = ref.read(rideDraftProvider).destinationQuery;
-    _destinationController = TextEditingController(text: currentDestination);
+    // Start a new ride request when the screen opens
+    final controller = ref.read(rideBookingControllerProvider.notifier);
+    controller.startNewRide();
+    _destinationController = TextEditingController();
   }
 
   @override
@@ -126,22 +133,23 @@ class _RideBookingSheetContentState
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    final rideDraft = ref.watch(rideDraftProvider);
-    final rideDraftController = ref.read(rideDraftProvider.notifier);
+    final bookingState = ref.watch(rideBookingControllerProvider);
+    final bookingController = ref.read(rideBookingControllerProvider.notifier);
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
         // Drag handle
         Center(
           child: Container(
             width: 40,
             height: 4,
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: DWSpacing.sm),
             decoration: BoxDecoration(
               color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(999),
+              borderRadius: BorderRadius.circular(DWRadius.sm),
             ),
           ),
         ),
@@ -151,7 +159,7 @@ class _RideBookingSheetContentState
           l10n.rideBookingSheetTitle,
           style: textTheme.headlineSmall,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: DWSpacing.xxs),
 
         // Subtitle
         Text(
@@ -160,24 +168,27 @@ class _RideBookingSheetContentState
             color: colorScheme.onSurfaceVariant,
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: DWSpacing.md),
 
         // Pickup (Current Location - non editable)
         Text(
           l10n.rideBookingPickupLabel,
           style: textTheme.labelMedium,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: DWSpacing.xxs),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          padding: const EdgeInsets.symmetric(
+            horizontal: DWSpacing.md,
+            vertical: DWSpacing.sm,
+          ),
           decoration: BoxDecoration(
             color: colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(DWRadius.md),
           ),
           child: Row(
             children: [
               Icon(Icons.my_location, color: colorScheme.primary),
-              const SizedBox(width: 8),
+              const SizedBox(width: DWSpacing.xs),
               Expanded(
                 child: Text(
                   l10n.rideBookingPickupCurrentLocation,
@@ -187,33 +198,91 @@ class _RideBookingSheetContentState
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: DWSpacing.md),
 
         // Destination input
         Text(
           l10n.rideBookingDestinationLabel,
           style: textTheme.labelMedium,
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: DWSpacing.xxs),
         TextFormField(
           controller: _destinationController,
-          textInputAction: TextInputAction.search,
-          onChanged: (value) {
-            rideDraftController.updateDestination(value);
-          },
+          enabled: false, // Disabled in this ticket - use recent locations
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.search),
-            hintText: l10n.rideBookingDestinationHint,
+            hintText: 'Choose destination from recent locations below',
+            helperText: 'Tap on a recent location to select destination',
+            helperStyle: textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: DWSpacing.md),
+
+        // Price and duration display (when quote is available)
+        if (bookingState.hasQuote && bookingState.formattedPrice != null)
+          Container(
+            padding: const EdgeInsets.all(DWSpacing.md),
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(DWRadius.md),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  bookingState.formattedPrice!,
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.primary,
+                  ),
+                ),
+                if (bookingState.formattedDuration != null) ...[
+                  const SizedBox(width: DWSpacing.sm),
+                  Text(
+                    '•',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(width: DWSpacing.sm),
+                  Text(
+                    bookingState.formattedDuration!,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        if (bookingState.hasQuote) const SizedBox(height: DWSpacing.md),
+
+        // Error message display
+        if (bookingState.lastErrorMessage != null)
+          Container(
+            padding: const EdgeInsets.all(DWSpacing.sm),
+            decoration: BoxDecoration(
+              color: colorScheme.errorContainer,
+              borderRadius: BorderRadius.circular(DWRadius.md),
+            ),
+            child: Text(
+              bookingState.lastErrorMessage!,
+              style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.onErrorContainer,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        if (bookingState.lastErrorMessage != null) const SizedBox(height: DWSpacing.md),
 
         // Recent locations
         Text(
           l10n.rideBookingRecentTitle,
           style: textTheme.titleMedium,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: DWSpacing.xs),
         _RecentLocationTile(
           icon: Icons.home_outlined,
           title: l10n.rideBookingRecentHome,
@@ -229,31 +298,47 @@ class _RideBookingSheetContentState
           title: l10n.rideBookingRecentAddNew,
           subtitle: l10n.rideBookingRecentAddNewSubtitle,
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: DWSpacing.md),
         // See options CTA button (Track B - Ticket #7)
         SizedBox(
           width: double.infinity,
           height: 48,
           child: ElevatedButton(
-            onPressed: () {
-              final destination = rideDraft.destinationQuery.trim();
-              if (destination.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.rideBookingDestinationHint)),
-                );
-                return;
-              }
-              Navigator.of(context).pushNamed(RoutePaths.rideConfirmation);
-            },
-            child: Text(
-              l10n.rideBookingSeeOptionsCta,
-              style: textTheme.labelLarge?.copyWith(
-                color: colorScheme.onPrimary,
-              ),
-            ),
+            onPressed: bookingState.isRequestingQuote
+                ? null
+                : () async {
+                    if (bookingState.hasQuote) {
+                      // If we already have a quote, confirm the ride
+                      await bookingController.confirmRide();
+                      if (context.mounted) {
+                        Navigator.of(context).pushNamed(RoutePaths.rideConfirmation);
+                      }
+                    } else {
+                      // Request a quote first
+                      await bookingController.requestQuoteIfPossible();
+                    }
+                  },
+            child: bookingState.isRequestingQuote
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                : Text(
+                    bookingState.hasQuote
+                        ? 'Confirm Ride' // TODO: Use L10n key
+                        : l10n.rideBookingSeeOptionsCta,
+                    style: textTheme.labelLarge?.copyWith(
+                      color: colorScheme.onPrimary,
+                    ),
+                  ),
           ),
         ),
       ],
+    ),
     );
   }
 }
@@ -277,9 +362,9 @@ class _RecentLocationTile extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: DWSpacing.xxs),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(DWRadius.md),
       ),
       child: ListTile(
         leading: Icon(icon, color: colorScheme.primary),
@@ -291,7 +376,11 @@ class _RecentLocationTile extends StatelessWidget {
           ),
         ),
         onTap: () {
-          // TODO (Track B – later): Fill destination field and continue flow
+          // For now, just show that tapping works
+          // In a real implementation, this would use a callback or provider
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Selected: $title')),
+          );
         },
       ),
     );

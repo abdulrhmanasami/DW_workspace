@@ -1133,6 +1133,18 @@
   "@onboardingPreferencesDoneCta": {
     "description": "زر إنهاء الإعداد الأولي"
   },
+  "onboardingPreferencesNotificationsTitle": "الإشعارات",
+  "@onboardingPreferencesNotificationsTitle": {
+    "description": "عنوان قسم الإشعارات في التفضيلات"
+  },
+  "onboardingPreferencesMarketingTitle": "إشعارات التسويق",
+  "@onboardingPreferencesMarketingTitle": {
+    "description": "عنوان تفضيل إشعارات التسويق"
+  },
+  "onboardingPreferencesMarketingSubtitle": "احصل على تحديثات حول العروض والميزات الجديدة",
+  "@onboardingPreferencesMarketingSubtitle": {
+    "description": "النص التوضيحي لتفضيل إشعارات التسويق"
+  },
 
   "parcelsEntryTitle": "الطرود",
   "@parcelsEntryTitle": {

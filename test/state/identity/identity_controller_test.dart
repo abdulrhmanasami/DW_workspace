@@ -52,6 +52,17 @@ class FakeIdentityShim implements IdentityShim {
   bool refreshTokensCalled = false;
   bool signOutCalled = false;
   bool watchSessionCalled = false;
+  bool requestLoginCodeCalled = false;
+  bool verifyLoginCodeCalled = false;
+
+  /// Parameters passed to methods
+  PhoneNumber? lastRequestedPhoneNumber;
+  PhoneNumber? lastVerifiedPhoneNumber;
+  OtpCode? lastVerifiedCode;
+
+  /// Whether operations should throw errors
+  bool shouldThrowOnRequestLoginCode = false;
+  bool shouldThrowOnVerifyLoginCode = false;
 
   @override
   Future<IdentitySession> loadInitialSession() async {
@@ -83,6 +94,29 @@ class FakeIdentityShim implements IdentityShim {
   Stream<IdentitySession> watchSession() async* {
     watchSessionCalled = true;
     yield initialSession;
+  }
+
+  @override
+  Future<void> requestLoginCode({required PhoneNumber phoneNumber}) async {
+    requestLoginCodeCalled = true;
+    lastRequestedPhoneNumber = phoneNumber;
+    if (shouldThrowOnRequestLoginCode) {
+      throw AuthException.invalidPhone();
+    }
+  }
+
+  @override
+  Future<IdentitySession> verifyLoginCode({
+    required PhoneNumber phoneNumber,
+    required OtpCode code,
+  }) async {
+    verifyLoginCodeCalled = true;
+    lastVerifiedPhoneNumber = phoneNumber;
+    lastVerifiedCode = code;
+    if (shouldThrowOnVerifyLoginCode) {
+      throw AuthException.otpVerificationFailed();
+    }
+    return refreshedSession; // Return authenticated session on success
   }
 }
 
@@ -351,6 +385,147 @@ void main() {
       expect(controller.state.isLoading, false);
       expect(controller.state.lastError, isNotNull);
       expect(controller.state.lastError.toString(), contains('Refresh tokens failed'));
+    });
+
+    // ============================================================================
+    // Login/OTP Tests (Track D - D-3)
+    // ============================================================================
+
+    test('requestLoginCode success updates state correctly', () async {
+      // Given: Controller initialized
+      final controller = container.read(identityControllerProvider.notifier);
+      await Future.delayed(Duration.zero); // Wait for init
+
+      // When: Request login code
+      final phoneNumber = PhoneNumber('+966501234567');
+      await controller.requestLoginCode(phoneNumber);
+
+      // Then: Should call shim method and update state correctly
+      expect(fakeShim.requestLoginCodeCalled, true);
+      expect(fakeShim.lastRequestedPhoneNumber, phoneNumber);
+      expect(controller.state.isRequestingLoginCode, false);
+      expect(controller.state.lastAuthErrorMessage, null);
+      expect(controller.state.lastError, null);
+    });
+
+    test('requestLoginCode failure updates state with error message', () async {
+      // Given: Controller initialized and shim configured to throw
+      final controller = container.read(identityControllerProvider.notifier);
+      await Future.delayed(Duration.zero); // Wait for init
+      fakeShim.shouldThrowOnRequestLoginCode = true;
+
+      // When: Request login code with invalid phone
+      final phoneNumber = PhoneNumber('+966501234567');
+      await controller.requestLoginCode(phoneNumber);
+
+      // Then: Should handle error and set error message
+      expect(fakeShim.requestLoginCodeCalled, true);
+      expect(controller.state.isRequestingLoginCode, false);
+      expect(controller.state.lastAuthErrorMessage, 'Invalid phone number format');
+      expect(controller.state.lastError, isNotNull);
+    });
+
+    test('requestLoginCode sets loading state during operation', () async {
+      // Given: Controller initialized
+      final controller = container.read(identityControllerProvider.notifier);
+      await Future.delayed(Duration.zero); // Wait for init
+
+      // When: Request login code
+      final phoneNumber = PhoneNumber('+966501234567');
+      await controller.requestLoginCode(phoneNumber);
+
+      // Then: Should call shim and update state correctly
+      expect(fakeShim.requestLoginCodeCalled, true);
+      expect(fakeShim.lastRequestedPhoneNumber, phoneNumber);
+      expect(controller.state.isRequestingLoginCode, false);
+      expect(controller.state.lastAuthErrorMessage, null);
+    });
+
+    test('verifyLoginCode success authenticates user and updates session', () async {
+      // Given: Controller initialized
+      final controller = container.read(identityControllerProvider.notifier);
+      await Future.delayed(Duration.zero); // Wait for init
+
+      // When: Verify login code
+      final phoneNumber = PhoneNumber('+966501234567');
+      final otpCode = OtpCode('123456');
+      await controller.verifyLoginCode(phoneNumber: phoneNumber, code: otpCode);
+
+      // Then: Should call shim method, update session, and clear loading state
+      expect(fakeShim.verifyLoginCodeCalled, true);
+      expect(fakeShim.lastVerifiedPhoneNumber, phoneNumber);
+      expect(fakeShim.lastVerifiedCode, otpCode);
+      expect(controller.state.isVerifyingLoginCode, false);
+      expect(controller.state.lastAuthErrorMessage, null);
+      expect(controller.state.lastError, null);
+      expect(controller.state.session, fakeShim.refreshedSession);
+      expect(controller.state.isAuthenticated, true);
+    });
+
+    test('verifyLoginCode failure keeps unauthenticated state with error', () async {
+      // Given: Controller initialized and shim configured to throw
+      final controller = container.read(identityControllerProvider.notifier);
+      await Future.delayed(Duration.zero); // Wait for init
+      fakeShim.shouldThrowOnVerifyLoginCode = true;
+
+      // When: Verify login code with invalid OTP
+      final phoneNumber = PhoneNumber('+966501234567');
+      final otpCode = OtpCode('123456');
+      await controller.verifyLoginCode(phoneNumber: phoneNumber, code: otpCode);
+
+      // Then: Should handle error, keep unauthenticated state, and set error message
+      expect(fakeShim.verifyLoginCodeCalled, true);
+      expect(controller.state.isVerifyingLoginCode, false);
+      expect(controller.state.lastAuthErrorMessage, 'OTP verification failed');
+      expect(controller.state.lastError, isNotNull);
+      expect(controller.state.session, fakeShim.initialSession); // Should remain unauthenticated
+      expect(controller.state.isAuthenticated, false);
+    });
+
+    test('verifyLoginCode sets loading state during operation', () async {
+      // Given: Controller initialized
+      final controller = container.read(identityControllerProvider.notifier);
+      await Future.delayed(Duration.zero); // Wait for init
+
+      // When: Verify login code
+      final phoneNumber = PhoneNumber('+966501234567');
+      final otpCode = OtpCode('123456');
+      await controller.verifyLoginCode(phoneNumber: phoneNumber, code: otpCode);
+
+      // Then: Should call shim and update state correctly
+      expect(fakeShim.verifyLoginCodeCalled, true);
+      expect(fakeShim.lastVerifiedPhoneNumber, phoneNumber);
+      expect(fakeShim.lastVerifiedCode, otpCode);
+      expect(controller.state.isVerifyingLoginCode, false);
+      expect(controller.state.lastAuthErrorMessage, null);
+      expect(controller.state.isAuthenticated, true);
+    });
+
+    test('login operations handle AuthException messages correctly', () async {
+      // Given: Controller initialized and shim configured to throw AuthException
+      final controller = container.read(identityControllerProvider.notifier);
+      await Future.delayed(Duration.zero); // Wait for init
+      fakeShim.shouldThrowOnRequestLoginCode = true;
+
+      // When: Request login code with invalid phone (triggers AuthException.invalidPhone)
+      final phoneNumber = PhoneNumber('+966501234567');
+      await controller.requestLoginCode(phoneNumber);
+
+      // Then: Should use AuthException message
+      expect(controller.state.isRequestingLoginCode, false);
+      expect(controller.state.lastAuthErrorMessage, 'Invalid phone number format');
+      expect(controller.state.lastError, isNotNull);
+    });
+
+    test('state initializes with correct default values for login fields', () async {
+      // Given: Controller initialized
+      final controller = container.read(identityControllerProvider.notifier);
+      await Future.delayed(Duration.zero); // Wait for init
+
+      // Then: Login-related state fields should have correct defaults
+      expect(controller.state.isRequestingLoginCode, false);
+      expect(controller.state.isVerifyingLoginCode, false);
+      expect(controller.state.lastAuthErrorMessage, null);
     });
   });
 }

@@ -21,10 +21,22 @@ class IdentityControllerState {
   /// Last error that occurred (if any)
   final Object? lastError;
 
+  /// Whether login code is currently being requested (Track D - D-3)
+  final bool isRequestingLoginCode;
+
+  /// Whether login code is currently being verified (Track D - D-3)
+  final bool isVerifyingLoginCode;
+
+  /// Last authentication error message (Track D - D-3)
+  final String? lastAuthErrorMessage;
+
   const IdentityControllerState({
     required this.session,
     this.isLoading = false,
     this.lastError,
+    this.isRequestingLoginCode = false,
+    this.isVerifyingLoginCode = false,
+    this.lastAuthErrorMessage,
   });
 
   /// Create initial state with unknown session
@@ -44,11 +56,18 @@ class IdentityControllerState {
     IdentitySession? session,
     bool? isLoading,
     Object? lastError,
+    bool? isRequestingLoginCode,
+    bool? isVerifyingLoginCode,
+    String? lastAuthErrorMessage,
     bool clearError = false,
+    bool clearAuthError = false,
   }) => IdentityControllerState(
         session: session ?? this.session,
         isLoading: isLoading ?? this.isLoading,
         lastError: clearError ? null : (lastError ?? this.lastError),
+        isRequestingLoginCode: isRequestingLoginCode ?? this.isRequestingLoginCode,
+        isVerifyingLoginCode: isVerifyingLoginCode ?? this.isVerifyingLoginCode,
+        lastAuthErrorMessage: clearAuthError ? null : (lastAuthErrorMessage ?? this.lastAuthErrorMessage),
       );
 
   /// Whether the user is authenticated
@@ -73,11 +92,19 @@ class IdentityControllerState {
           runtimeType == other.runtimeType &&
           session == other.session &&
           isLoading == other.isLoading &&
-          lastError == other.lastError;
+          lastError == other.lastError &&
+          isRequestingLoginCode == other.isRequestingLoginCode &&
+          isVerifyingLoginCode == other.isVerifyingLoginCode &&
+          lastAuthErrorMessage == other.lastAuthErrorMessage;
 
   @override
   int get hashCode =>
-      session.hashCode ^ isLoading.hashCode ^ lastError.hashCode;
+      session.hashCode ^
+      isLoading.hashCode ^
+      lastError.hashCode ^
+      isRequestingLoginCode.hashCode ^
+      isVerifyingLoginCode.hashCode ^
+      lastAuthErrorMessage.hashCode;
 
   @override
   String toString() {

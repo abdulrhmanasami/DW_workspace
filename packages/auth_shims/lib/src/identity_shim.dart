@@ -4,6 +4,7 @@
 // Last updated: 2025-12-04
 
 import 'dart:async';
+import 'auth_models.dart';
 import 'identity_models.dart';
 
 /// Abstract interface for identity and session management.
@@ -44,4 +45,33 @@ abstract class IdentityShim {
   ///
   /// Returns: [Stream<IdentitySession>] emitting session updates
   Stream<IdentitySession> watchSession();
+
+  /// Request login code for phone number.
+  ///
+  /// Sends an OTP code to the specified phone number for login verification.
+  /// Track D - Ticket #235 (D-3): Phone login & OTP support.
+  ///
+  /// Parameters:
+  ///   - phoneNumber: The phone number to send OTP to
+  ///
+  /// Returns: Future<void> (completes when OTP request is sent)
+  Future<void> requestLoginCode({
+    required PhoneNumber phoneNumber,
+  });
+
+  /// Verify login code and create authenticated session.
+  ///
+  /// Verifies the OTP code and, if valid, creates an authenticated session
+  /// with tokens and user information.
+  /// Track D - Ticket #235 (D-3): Phone login & OTP support.
+  ///
+  /// Parameters:
+  ///   - phoneNumber: The phone number the OTP was sent to
+  ///   - code: The OTP code to verify
+  ///
+  /// Returns: [IdentitySession] authenticated session with tokens and user data
+  Future<IdentitySession> verifyLoginCode({
+    required PhoneNumber phoneNumber,
+    required OtpCode code,
+  });
 }

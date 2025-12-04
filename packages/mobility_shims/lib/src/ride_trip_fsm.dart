@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import 'ride_exceptions.dart';
+
 /// Ride Trip lifecycle phases.
 ///
 /// This is the *canonical* state machine for a single ride trip.
@@ -185,17 +187,6 @@ class RideTripState {
   }
 }
 
-/// Exception thrown when an invalid transition is attempted.
-class InvalidRideTransitionException implements Exception {
-  InvalidRideTransitionException(this.from, this.event);
-
-  final RideTripPhase from;
-  final RideTripEvent event;
-
-  @override
-  String toString() =>
-      'InvalidRideTransitionException: cannot apply $event from $from';
-}
 
 /// Pure function that applies a [RideTripEvent] to a [RideTripState].
 ///

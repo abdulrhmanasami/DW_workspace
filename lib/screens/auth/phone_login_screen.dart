@@ -7,11 +7,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auth_shims/auth_shims.dart';
 
 import '../../config/feature_flags.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
-import '../../state/auth/passwordless_auth_controller.dart';
+import '../../state/identity/identity_controller.dart';
 import '../../state/infra/auth_providers.dart';
 import 'package:b_ui/ui_components.dart';
 import 'legacy_auth_placeholder.dart';
@@ -28,13 +29,10 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
   final _phoneRegex = RegExp(r'^\+[1-9]\d{6,14}$');
 
   String? _localError;
-  Timer? _cooldownTicker;
-  DateTime? _cooldownTarget;
   bool _unlocking = false;
 
   @override
   void dispose() {
-    _cooldownTicker?.cancel();
     _phoneController.dispose();
     super.dispose();
   }
@@ -55,45 +53,32 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
       );
     }
 
-    ref.listen<PasswordlessAuthState>(
-      passwordlessAuthControllerProvider,
-      (prev, next) {
-        if (!FeatureFlags.enablePasswordlessAuth || !mounted) return;
+    // Listen to IdentityController state for navigation and errors
+    ref.listen(identityControllerProvider, (prev, next) {
+      if (!FeatureFlags.enablePasswordlessAuth || !mounted) return;
 
-        if (prev?.step != PasswordlessStep.codeSent &&
-            next.step == PasswordlessStep.codeSent) {
-          Navigator.of(context).pushNamed(RoutePaths.otpVerification);
-        } else if (prev?.step != PasswordlessStep.error &&
-            next.step == PasswordlessStep.error &&
-            next.errorMessage != null) {
-          _showError(next.errorMessage!);
-        }
-      },
-    );
+      // Navigate to OTP screen when login code request succeeds
+      if (prev?.isRequestingLoginCode == true && next.isRequestingLoginCode == false && next.lastAuthErrorMessage == null) {
+        Navigator.of(context).pushNamed(RoutePaths.otpVerification, arguments: _phoneController.text);
+      }
 
-    final flowState = ref.watch(passwordlessAuthControllerProvider);
+      // Show error message if request fails
+      if (next.lastAuthErrorMessage != null && (prev?.lastAuthErrorMessage != next.lastAuthErrorMessage)) {
+        _showError(next.lastAuthErrorMessage!);
+      }
+    });
+
+    final identityState = ref.watch(identityControllerProvider);
     final biometricSupportAsync = ref.watch(biometricSupportProvider);
-    _syncCooldownTimer(flowState);
 
-    final now = DateTime.now().toUtc();
-    final cooldown = flowState.cooldownRemaining(now);
-    final isCoolingDown = cooldown != null && cooldown > Duration.zero;
-    final cooldownSeconds = cooldown?.inSeconds ?? 0;
-    final attemptsRemaining = flowState.remainingRequests;
-    final canRequestOtp = flowState.canRequestOtp(now);
     final canUseBiometric = FeatureFlags.enableBiometricAuth &&
         biometricSupportAsync.maybeWhen(
           data: (status) => status.canAuthenticate,
           orElse: () => false,
         );
 
-    if (flowState.phoneE164 != null && _phoneController.text.isEmpty) {
-      _phoneController.text = flowState.phoneE164!;
-    }
-
-    final notifier = ref.read(passwordlessAuthControllerProvider.notifier);
-    final isLoading = flowState.step == PasswordlessStep.verifying;
-    final shouldDisableRequest = isLoading || !canRequestOtp;
+    final isLoading = identityState.isRequestingLoginCode;
+    final shouldDisableRequest = isLoading;
 
     return Scaffold(
       appBar: AppBar(
@@ -136,35 +121,10 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                   labelText: l10n?.authPhoneFieldLabel ?? 'Phone Number',
                   hintText: l10n?.authPhoneFieldHint ?? '+9665xxxxxxxx',
                   prefixIcon: Icon(Icons.phone, color: colorScheme.onSurfaceVariant),
-                  errorText: _localError ?? flowState.errorMessage,
+                  errorText: _localError ?? identityState.lastAuthErrorMessage,
                 ),
               ),
               const SizedBox(height: 8),
-
-              // Cooldown message (error style)
-              if (isCoolingDown)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    _cooldownLabel(l10n, cooldownSeconds: cooldownSeconds),
-                    textAlign: TextAlign.center,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.error,
-                    ),
-                  ),
-                ),
-
-              // Attempts remaining info
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  _attemptsLabel(l10n, attemptsRemaining: attemptsRemaining),
-                  textAlign: TextAlign.center,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
 
               // Biometric unlock option
               if (canUseBiometric) ...[
@@ -238,7 +198,8 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                       : () async {
                           final normalized = _validateAndNormalize(l10n);
                           if (normalized == null) return;
-                          await notifier.requestOtp(normalized);
+                          final phoneNumber = PhoneNumber(normalized);
+                          await ref.read(identityControllerProvider.notifier).requestLoginCode(phoneNumber);
                         },
                   child: UiLoadingButtonContent(
                     label: l10n?.authPhoneContinueButton ?? 'Continue',
@@ -311,54 +272,5 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
     }
   }
 
-  void _syncCooldownTimer(PasswordlessAuthState state) {
-    final target = state.nextRequestAllowedAt;
-    if (_cooldownTarget == target) return;
-
-    _cooldownTicker?.cancel();
-    _cooldownTarget = target;
-
-    if (target == null || !target.isAfter(DateTime.now().toUtc())) {
-      _cooldownTarget = null;
-      return;
-    }
-
-    _cooldownTicker = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (!mounted) {
-        _cooldownTicker?.cancel();
-        return;
-      }
-
-      final stillActive =
-          state.nextRequestAllowedAt?.isAfter(DateTime.now().toUtc()) ?? false;
-      if (!stillActive) {
-        _cooldownTicker?.cancel();
-        _cooldownTarget = null;
-      }
-      setState(() {});
-    });
-  }
-
-  String _cooldownLabel(
-    AppLocalizations? l10n, {
-    required int cooldownSeconds,
-  }) {
-    if (cooldownSeconds <= 0) {
-      return l10n?.authCooldownReady ?? 'You can resend now.';
-    }
-    return l10n?.authCooldownMessage(cooldownSeconds) ??
-        'Please wait ${cooldownSeconds}s before trying again.';
-  }
-
-  String _attemptsLabel(
-    AppLocalizations? l10n, {
-    required int attemptsRemaining,
-  }) {
-    if (attemptsRemaining <= 0) {
-      return l10n?.authNoAttemptsRemaining ?? 'No attempts remaining.';
-    }
-    return l10n?.authAttemptsRemaining(attemptsRemaining) ??
-        '$attemptsRemaining attempts remaining';
-  }
 }
 

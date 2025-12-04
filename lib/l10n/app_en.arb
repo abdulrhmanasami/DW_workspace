@@ -1364,6 +1364,18 @@
   "@onboardingPreferencesDoneCta": {
     "description": "Done button to complete onboarding"
   },
+  "onboardingPreferencesNotificationsTitle": "Notifications",
+  "@onboardingPreferencesNotificationsTitle": {
+    "description": "Title for notifications section in preferences"
+  },
+  "onboardingPreferencesMarketingTitle": "Marketing notifications",
+  "@onboardingPreferencesMarketingTitle": {
+    "description": "Title for marketing notifications preference"
+  },
+  "onboardingPreferencesMarketingSubtitle": "Receive updates about promotions and new features",
+  "@onboardingPreferencesMarketingSubtitle": {
+    "description": "Subtitle explaining marketing notifications preference"
+  },
 
   "parcelsEntryTitle": "Parcels",
   "@parcelsEntryTitle": {

@@ -11,10 +11,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart'
     show DWButton, DWTextField, DWSpacing;
+import 'package:auth_shims/auth_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
-import '../../state/auth/auth_state.dart';
+import '../../state/identity/identity_controller.dart';
 
 /// Screen for entering OTP verification code.
 ///
@@ -38,27 +39,61 @@ class _OtpVerificationScreenState
     super.dispose();
   }
 
-  void _onVerify(BuildContext context) {
-    final code = _codeController.text.trim();
-    if (code.isEmpty) return;
-
-    // Update auth state (stub: any code is accepted)
-    ref.read(simpleAuthStateProvider.notifier).verifyOtpCode(code);
-
-    // After successful verification: navigate to Home/AppShell
-    // Use pushNamedAndRemoveUntil to clear the navigation stack
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      RoutePaths.home,
-      (route) => false,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final textTheme = theme.textTheme;
+
+    // Get phone number from route arguments
+    final phoneNumberString = ModalRoute.of(context)?.settings.arguments as String?;
+    if (phoneNumberString == null) {
+      // If no phone number provided, go back
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) Navigator.of(context).pop();
+      });
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final phoneNumber = PhoneNumber(phoneNumberString);
+
+    // Listen to IdentityController state for success/error handling
+    ref.listen(identityControllerProvider, (prev, next) {
+      if (!mounted) return;
+
+      // Navigate to home when verification succeeds
+      if (prev?.isVerifyingLoginCode == true && next.isVerifyingLoginCode == false && next.isAuthenticated) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          RoutePaths.home,
+          (route) => false,
+        );
+      }
+
+      // Show error if verification fails
+      if (next.lastAuthErrorMessage != null && (prev?.lastAuthErrorMessage != next.lastAuthErrorMessage)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.lastAuthErrorMessage!),
+            backgroundColor: colors.error,
+          ),
+        );
+      }
+    });
+
+    final identityState = ref.watch(identityControllerProvider);
+    final isLoading = identityState.isVerifyingLoginCode;
+
+    void onVerify() {
+      final code = _codeController.text.trim();
+      if (code.isEmpty || isLoading) return;
+
+      final otpCode = OtpCode(code);
+      ref.read(identityControllerProvider.notifier).verifyLoginCode(
+        phoneNumber: phoneNumber,
+        code: otpCode,
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -82,12 +117,25 @@ class _OtpVerificationScreenState
                 keyboardType: TextInputType.number,
                 hintText: l10n.authOtpFieldHint,
                 textInputAction: TextInputAction.done,
-                onSubmitted: (_) => _onVerify(context),
+                onSubmitted: (_) => onVerify(),
               ),
+              // Show error message if present
+              if (identityState.lastAuthErrorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: DWSpacing.sm),
+                  child: Text(
+                    identityState.lastAuthErrorMessage!,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: colors.error,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               const Spacer(),
               DWButton.primary(
                 label: l10n.authOtpVerifyCta,
-                onPressed: () => _onVerify(context),
+                onPressed: isLoading ? null : onVerify,
+                isLoading: isLoading,
               ),
             ],
           ),

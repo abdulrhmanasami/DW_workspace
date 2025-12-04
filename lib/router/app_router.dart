@@ -12,7 +12,6 @@ import 'package:payments/payments.dart' as payments;
 import 'package:core/rbac/rbac_models.dart';
 import 'package:b_ui/router/app_router.dart' as bui show RoutePaths, buildNotificationRoutes;
 
-import '../config/feature_flags.dart';
 import '../screens/_placeholders.dart';
 import '../screens/onboarding/onboarding_root_screen.dart';
 import '../state/onboarding/onboarding_providers.dart';
@@ -37,7 +36,6 @@ import '../screens/parcels/parcels_list_screen.dart'; // Track C - Ticket #72
 import '../screens/parcels/parcels_shipments_list_screen.dart'; // Track C - Ticket #149
 import '../screens/parcels/parcels_create_shipment_screen.dart'; // Track C - Ticket #150
 import '../screens/parcels/parcels_shipment_details_screen.dart';
-import '../screens/home/home_hub_screen.dart'; // Track C - Ticket #151
 import '../screens/order_tracking_screen.dart';
 import '../screens/orders_history_screen.dart';
 import '../screens/orders_screen.dart';
@@ -48,10 +46,9 @@ import '../screens/settings/notifications_settings_screen.dart';
 import '../screens/settings/privacy_consent_screen.dart';
 import '../screens/settings/privacy_data_screen.dart';
 import '../screens/tracking_map_screen.dart';
-import '../state/infra/auth_providers.dart';
 import '../widgets/rbac_guard.dart';
+import '../widgets/auth/auth_gate.dart';
 import '../ui/ui.dart' as ui;
-import '../app_shell/app_shell.dart';
 
 /// Route Path Definitions
 /// Centralized route path constants
@@ -380,34 +377,14 @@ class OnboardingGateScreen extends ConsumerWidget {
 }
 
 /// Auth gate that switches between authenticated home (AppShell) and phone login.
-/// Track A - Ticket #2: AppShell is now the root UI for authenticated users.
+/// Track D - Ticket #237: Updated to use IdentityController instead of old authStateProvider.
+/// The new AuthGate widget handles the logic based on IdentitySession.status.
 class AuthGateScreen extends ConsumerWidget {
   const AuthGateScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!FeatureFlags.enablePasswordlessAuth) {
-      // Track A - Ticket #217: AppShell v1 with Bottom Navigation
-      return const AppShell();
-    }
-
-    final authState = ref.watch(authStateProvider);
-    return authState.when(
-      data: (state) {
-        if (state.isAuthenticated) {
-          // Track A - Ticket #217: AppShell v1 with Bottom Navigation
-          return const AppShell();
-        }
-        return const PhoneLoginScreen();
-      },
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
-      error: (error, stack) => Scaffold(
-        body: Center(
-          child: Text('Auth state unavailable: $error'),
-        ),
-      ),
-    );
+    // Track D - Ticket #237: Use the new AuthGate widget for complete IdentityController integration
+    return const AuthGate();
   }
 }

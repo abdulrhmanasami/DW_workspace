@@ -1787,6 +1787,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get onboardingPreferencesDoneCta => 'Start using Delivery Ways';
 
   @override
+  String get onboardingPreferencesNotificationsTitle => 'Notifications';
+
+  @override
+  String get onboardingPreferencesMarketingTitle => 'Marketing notifications';
+
+  @override
+  String get onboardingPreferencesMarketingSubtitle =>
+      'Receive updates about promotions and new features';
+
+  @override
   String get parcelsEntryTitle => 'Pakete';
 
   @override

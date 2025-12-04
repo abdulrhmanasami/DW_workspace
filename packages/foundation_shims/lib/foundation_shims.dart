@@ -38,3 +38,7 @@ export 'providers/observability_providers.dart';
 // App Info exports (no provider conflicts)
 export 'src/app_info/app_info.dart';
 export 'providers/app_info_providers.dart';
+
+// Onboarding Prefs exports (no provider conflicts)
+export 'src/onboarding_prefs.dart';
+export 'providers/onboarding_prefs_providers.dart';

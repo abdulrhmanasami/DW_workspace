@@ -50,3 +50,13 @@ export 'src/ride_map/ride_map_config.dart';
 
 // Recent Locations Repository - Track B Ticket #145: Real Recent Locations
 export 'src/recent_locations/recent_locations_repository.dart';
+
+// Ride FSM Domain - Track B Ticket #241: Ride booking lifecycle FSM
+export 'src/ride_status.dart';
+export 'src/ride_models.dart';
+export 'src/ride_repository.dart';
+export 'src/ride_fsm.dart';
+export 'src/ride_exceptions.dart';
+
+// In-Memory Ride Repository - Track B Ticket #242: Development stub
+export 'src/in_memory_ride_repository.dart';
