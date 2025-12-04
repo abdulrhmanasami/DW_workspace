@@ -1,7 +1,7 @@
 // Auth HTTP Implementation
 // Created by: CEN-AUTH001 Implementation
 // Purpose: HTTP implementation of authentication services
-// Last updated: 2025-11-25 (CENT-004: 2FA/MFA support)
+// Last updated: 2025-12-04 (Track D - Ticket #233: HTTP Identity Shim)
 
 import 'dart:async';
 import 'dart:convert';
@@ -17,6 +17,9 @@ export 'src/auth_backend_client.dart'
 export 'src/auth_backend_stub.dart'
     show StubAuthBackendClient, StubAuthBackendConfig;
 export 'src/auth_storage.dart' show AuthSecureStorage, createAuthSecureStorage;
+
+// Identity shim implementation (Track D - Ticket #233)
+export 'http_identity_shim.dart' show HttpIdentityShim;
 
 /// HTTP implementation of AuthService
 class HttpAuthService implements AuthService {

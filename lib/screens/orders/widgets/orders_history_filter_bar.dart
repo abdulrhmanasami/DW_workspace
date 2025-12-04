@@ -84,7 +84,7 @@ class OrdersHistoryFilterBar extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? colorScheme.primary
-                      : Colors.transparent,
+                      : colorScheme.surface.withValues(alpha: 0.0),
                   borderRadius: BorderRadius.circular(DWRadius.sm),
                 ),
                 alignment: Alignment.center,

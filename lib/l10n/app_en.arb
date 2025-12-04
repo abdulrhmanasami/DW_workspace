@@ -781,6 +781,18 @@
   "@profileLogoutDialogConfirm": {
     "description": "Confirm button label in logout dialog"
   },
+  "profileGuestName": "Guest User",
+  "@profileGuestName": {
+    "description": "Display name for guest/unregistered users in profile header"
+  },
+  "profileGuestPhonePlaceholder": "Add your phone number",
+  "@profileGuestPhonePlaceholder": {
+    "description": "Placeholder text for phone number when not set"
+  },
+  "profileLogoutSnack": "Logout not fully wired yet",
+  "@profileLogoutSnack": {
+    "description": "Snackbar message when logout is tapped but not fully implemented"
+  },
 
   "ridePhaseDraftLabel": "Draft",
   "ridePhaseQuotingLabel": "Getting quote…",
@@ -2290,6 +2302,43 @@
     "description": "Bottom navigation Profile tab label (Track A - Ticket #82)"
   },
 
+  "homeCurrentLocationLabel": "Current location",
+  "@homeCurrentLocationLabel": {
+    "description": "Label for current location in Home tab top bar (Track A - Ticket #228)"
+  },
+  "homeCurrentLocationPlaceholder": "Set pickup location",
+  "@homeCurrentLocationPlaceholder": {
+    "description": "Placeholder text for pickup location in Home tab top bar (Track A - Ticket #228)"
+  },
+  "homeServiceRideTitle": "Ride",
+  "@homeServiceRideTitle": {
+    "description": "Title for ride service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceParcelsTitle": "Parcels",
+  "@homeServiceParcelsTitle": {
+    "description": "Title for parcels service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceFoodTitle": "Food",
+  "@homeServiceFoodTitle": {
+    "description": "Title for food service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceRideSubtitle": "Get a ride in minutes",
+  "@homeServiceRideSubtitle": {
+    "description": "Subtitle for ride service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceParcelsSubtitle": "Send and track parcels",
+  "@homeServiceParcelsSubtitle": {
+    "description": "Subtitle for parcels service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceFoodSubtitle": "Order food from nearby restaurants",
+  "@homeServiceFoodSubtitle": {
+    "description": "Subtitle for food service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeSearchPlaceholder": "Where to?",
+  "@homeSearchPlaceholder": {
+    "description": "Placeholder text for search input in Home tab (Track A - Ticket #228)"
+  },
+
   "paymentsEntryTitle": "Payments",
   "@paymentsEntryTitle": {
     "description": "Payments stub screen title (Track A - Ticket #82)"
@@ -2330,6 +2379,40 @@
   "paymentsAddMethodComingSoon": "Adding new payment methods will be available soon.",
   "@paymentsAddMethodComingSoon": {
     "description": "Coming soon message for add payment method (Track B - Ticket #99)"
+  },
+  "paymentsCardExpiry": "Expiry {month}/{year}",
+  "@paymentsCardExpiry": {
+    "description": "Card expiry format for payment method subtitle (Track A - Ticket #225)",
+    "placeholders": {
+      "month": {
+        "type": "int",
+        "example": "08"
+      },
+      "year": {
+        "type": "int",
+        "example": "27"
+      }
+    }
+  },
+  "paymentsMethodTypeApplePay": "Apple Pay",
+  "@paymentsMethodTypeApplePay": {
+    "description": "Payment method type label for Apple Pay (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeGooglePay": "Google Pay",
+  "@paymentsMethodTypeGooglePay": {
+    "description": "Payment method type label for Google Pay (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeDigitalWallet": "Digital Wallet",
+  "@paymentsMethodTypeDigitalWallet": {
+    "description": "Payment method type label for Digital Wallet (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeBankTransfer": "Bank Transfer",
+  "@paymentsMethodTypeBankTransfer": {
+    "description": "Payment method type label for Bank Transfer (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeCashOnDelivery": "Cash on Delivery",
+  "@paymentsMethodTypeCashOnDelivery": {
+    "description": "Payment method type label for Cash on Delivery (Track A - Ticket #225)"
   },
 
   "profileEntryTitle": "Profile",

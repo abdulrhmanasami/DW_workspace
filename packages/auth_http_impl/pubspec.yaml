@@ -15,9 +15,14 @@ dependencies:
     path: ../auth_shims
   foundation_shims:
     path: ../foundation_shims
+  device_security_shims:
+    path: ../../stubs/device_security_shims
   meta: ^1.9.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
+  mockito: ^5.4.4
+  build_runner: ^2.4.0
+  test: ^1.24.0

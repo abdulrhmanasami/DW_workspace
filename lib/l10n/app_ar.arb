@@ -574,6 +574,18 @@
   "@profileLogoutDialogConfirm": {
     "description": "زر التأكيد في مربع حوار تسجيل الخروج"
   },
+  "profileGuestName": "مستخدم زائر",
+  "@profileGuestName": {
+    "description": "اسم العرض للمستخدمين الزوار/غير المسجلين في رأس الملف الشخصي"
+  },
+  "profileGuestPhonePlaceholder": "أضف رقم جوالك",
+  "@profileGuestPhonePlaceholder": {
+    "description": "نص العنصر النائب لرقم الجوال عندما لا يكون محدد"
+  },
+  "profileLogoutSnack": "تسجيل الخروج غير مفعّل بالكامل بعد",
+  "@profileLogoutSnack": {
+    "description": "رسالة الإشعار عند النقر على تسجيل الخروج ولكن لم يتم تنفيذه بالكامل"
+  },
 
   "ridePhaseDraftLabel": "مسودة",
   "ridePhaseQuotingLabel": "جارٍ حساب السعر…",
@@ -2059,6 +2071,43 @@
     "description": "تسمية تبويب الحساب في شريط التنقل السفلي (Track A - Ticket #82)"
   },
 
+  "homeCurrentLocationLabel": "الموقع الحالي",
+  "@homeCurrentLocationLabel": {
+    "description": "Label for current location in Home tab top bar (Track A - Ticket #228)"
+  },
+  "homeCurrentLocationPlaceholder": "حدد موقع الانطلاق",
+  "@homeCurrentLocationPlaceholder": {
+    "description": "Placeholder text for pickup location in Home tab top bar (Track A - Ticket #228)"
+  },
+  "homeServiceRideTitle": "الرحلات",
+  "@homeServiceRideTitle": {
+    "description": "Title for ride service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceParcelsTitle": "الطرود",
+  "@homeServiceParcelsTitle": {
+    "description": "Title for parcels service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceFoodTitle": "الطعام",
+  "@homeServiceFoodTitle": {
+    "description": "Title for food service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceRideSubtitle": "احصل على رحلة خلال دقائق",
+  "@homeServiceRideSubtitle": {
+    "description": "Subtitle for ride service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceParcelsSubtitle": "أرسل وتابع طرودك",
+  "@homeServiceParcelsSubtitle": {
+    "description": "Subtitle for parcels service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceFoodSubtitle": "اطلب الطعام من المطاعم القريبة",
+  "@homeServiceFoodSubtitle": {
+    "description": "Subtitle for food service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeSearchPlaceholder": "إلى أين؟",
+  "@homeSearchPlaceholder": {
+    "description": "Placeholder text for search input in Home tab (Track A - Ticket #228)"
+  },
+
   "paymentsEntryTitle": "المدفوعات",
   "@paymentsEntryTitle": {
     "description": "عنوان شاشة المدفوعات المؤقتة (Track A - Ticket #82)"
@@ -2099,6 +2148,40 @@
   "paymentsAddMethodComingSoon": "إضافة طرق دفع جديدة ستكون متاحة قريبًا.",
   "@paymentsAddMethodComingSoon": {
     "description": "رسالة قريبًا لإضافة طريقة دفع (Track B - Ticket #99)"
+  },
+  "paymentsCardExpiry": "انتهاء الصلاحية {month}/{year}",
+  "@paymentsCardExpiry": {
+    "description": "Card expiry format for payment method subtitle (Track A - Ticket #225)",
+    "placeholders": {
+      "month": {
+        "type": "int",
+        "example": "08"
+      },
+      "year": {
+        "type": "int",
+        "example": "27"
+      }
+    }
+  },
+  "paymentsMethodTypeApplePay": "أبل باي",
+  "@paymentsMethodTypeApplePay": {
+    "description": "Payment method type label for Apple Pay (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeGooglePay": "غوغل باي",
+  "@paymentsMethodTypeGooglePay": {
+    "description": "Payment method type label for Google Pay (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeDigitalWallet": "محفظة رقمية",
+  "@paymentsMethodTypeDigitalWallet": {
+    "description": "Payment method type label for Digital Wallet (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeBankTransfer": "تحويل بنكي",
+  "@paymentsMethodTypeBankTransfer": {
+    "description": "Payment method type label for Bank Transfer (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeCashOnDelivery": "الدفع عند الاستلام",
+  "@paymentsMethodTypeCashOnDelivery": {
+    "description": "Payment method type label for Cash on Delivery (Track A - Ticket #225)"
   },
 
   "profileEntryTitle": "الملف الشخصي",

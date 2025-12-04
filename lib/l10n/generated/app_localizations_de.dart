@@ -1266,6 +1266,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileLogoutDialogConfirm => 'Logout';
 
   @override
+  String get profileGuestName => 'Guest User';
+
+  @override
+  String get profileGuestPhonePlaceholder => 'Add your phone number';
+
+  @override
+  String get profileLogoutSnack => 'Logout not fully wired yet';
+
+  @override
   String get ridePhaseDraftLabel => 'Draft';
 
   @override
@@ -2467,6 +2476,34 @@ class AppLocalizationsDe extends AppLocalizations {
   String get bottomNavProfileLabel => 'Profil';
 
   @override
+  String get homeCurrentLocationLabel => 'Aktueller Standort';
+
+  @override
+  String get homeCurrentLocationPlaceholder => 'Abholort festlegen';
+
+  @override
+  String get homeServiceRideTitle => 'Fahrt';
+
+  @override
+  String get homeServiceParcelsTitle => 'Pakete';
+
+  @override
+  String get homeServiceFoodTitle => 'Essen';
+
+  @override
+  String get homeServiceRideSubtitle => 'Fahrt in Minuten bekommen';
+
+  @override
+  String get homeServiceParcelsSubtitle => 'Pakete senden und verfolgen';
+
+  @override
+  String get homeServiceFoodSubtitle =>
+      'Essen von nahegelegenen Restaurants bestellen';
+
+  @override
+  String get homeSearchPlaceholder => 'Wohin?';
+
+  @override
   String get paymentsEntryTitle => 'Zahlungen';
 
   @override
@@ -2498,6 +2535,26 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get paymentsAddMethodComingSoon =>
       'Das Hinzufügen neuer Zahlungsmethoden ist bald verfügbar.';
+
+  @override
+  String paymentsCardExpiry(int month, int year) {
+    return 'Gültig bis $month/$year';
+  }
+
+  @override
+  String get paymentsMethodTypeApplePay => 'Apple Pay';
+
+  @override
+  String get paymentsMethodTypeGooglePay => 'Google Pay';
+
+  @override
+  String get paymentsMethodTypeDigitalWallet => 'Digitale Geldbörse';
+
+  @override
+  String get paymentsMethodTypeBankTransfer => 'Banküberweisung';
+
+  @override
+  String get paymentsMethodTypeCashOnDelivery => 'Zahlung bei Lieferung';
 
   @override
   String get profileEntryTitle => 'Profil';

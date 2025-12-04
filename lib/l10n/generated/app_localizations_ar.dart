@@ -1232,6 +1232,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get profileLogoutDialogConfirm => 'تسجيل الخروج';
 
   @override
+  String get profileGuestName => 'مستخدم زائر';
+
+  @override
+  String get profileGuestPhonePlaceholder => 'أضف رقم جوالك';
+
+  @override
+  String get profileLogoutSnack => 'تسجيل الخروج غير مفعّل بالكامل بعد';
+
+  @override
   String get ridePhaseDraftLabel => 'مسودة';
 
   @override
@@ -2408,6 +2417,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String get bottomNavProfileLabel => 'الحساب';
 
   @override
+  String get homeCurrentLocationLabel => 'الموقع الحالي';
+
+  @override
+  String get homeCurrentLocationPlaceholder => 'حدد موقع الانطلاق';
+
+  @override
+  String get homeServiceRideTitle => 'الرحلات';
+
+  @override
+  String get homeServiceParcelsTitle => 'الطرود';
+
+  @override
+  String get homeServiceFoodTitle => 'الطعام';
+
+  @override
+  String get homeServiceRideSubtitle => 'احصل على رحلة خلال دقائق';
+
+  @override
+  String get homeServiceParcelsSubtitle => 'أرسل وتابع طرودك';
+
+  @override
+  String get homeServiceFoodSubtitle => 'اطلب الطعام من المطاعم القريبة';
+
+  @override
+  String get homeSearchPlaceholder => 'إلى أين؟';
+
+  @override
   String get paymentsEntryTitle => 'المدفوعات';
 
   @override
@@ -2437,6 +2473,26 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get paymentsAddMethodComingSoon =>
       'إضافة طرق دفع جديدة ستكون متاحة قريبًا.';
+
+  @override
+  String paymentsCardExpiry(int month, int year) {
+    return 'انتهاء الصلاحية $month/$year';
+  }
+
+  @override
+  String get paymentsMethodTypeApplePay => 'أبل باي';
+
+  @override
+  String get paymentsMethodTypeGooglePay => 'غوغل باي';
+
+  @override
+  String get paymentsMethodTypeDigitalWallet => 'محفظة رقمية';
+
+  @override
+  String get paymentsMethodTypeBankTransfer => 'تحويل بنكي';
+
+  @override
+  String get paymentsMethodTypeCashOnDelivery => 'الدفع عند الاستلام';
 
   @override
   String get profileEntryTitle => 'الملف الشخصي';

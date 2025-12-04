@@ -44,6 +44,7 @@ import '../screens/orders_screen.dart';
 import '../screens/payment_screen.dart';
 import '../screens/settings/dsr_erasure_screen.dart';
 import '../screens/settings/dsr_export_screen.dart';
+import '../screens/settings/notifications_settings_screen.dart';
 import '../screens/settings/privacy_consent_screen.dart';
 import '../screens/settings/privacy_data_screen.dart';
 import '../screens/tracking_map_screen.dart';
@@ -70,6 +71,11 @@ class RoutePaths {
   static const String privacyData = '/settings/privacy-data';
   static const String dsrExport = '/settings/dsr-export';
   static const String dsrErasure = '/settings/dsr-erasure';
+  // Track A - Ticket #227: Settings routes for Profile tab
+  static const String settingsPersonalInfo = '/settings/personal-info';
+  static const String settingsRidePreferences = '/settings/ride-preferences';
+  static const String settingsNotifications = '/settings/notifications';
+  static const String settingsHelpSupport = '/settings/help-support';
   static const String phoneLogin = '/auth/login-phone';
   static const String otpVerification = '/auth/otp';
   static const String twoFactor = '/auth/two-factor';
@@ -188,6 +194,24 @@ class AppRouter {
       RoutePaths.dsrErasure: (c) => const RbacGuard(
         screenId: 'dsr_erasure',
         child: DsrErasureScreen(),
+      ),
+
+      // Track A - Ticket #227: Settings routes for Profile tab
+      RoutePaths.settingsPersonalInfo: (c) => const RbacGuard(
+        screenId: 'settings_personal_info',
+        child: Placeholder(), // TODO: Implement PersonalInfoScreen
+      ),
+      RoutePaths.settingsRidePreferences: (c) => const RbacGuard(
+        screenId: 'settings_ride_preferences',
+        child: Placeholder(), // TODO: Implement RidePreferencesScreen
+      ),
+      RoutePaths.settingsNotifications: (c) => const RbacGuard(
+        screenId: 'settings_notifications',
+        child: NotificationsSettingsScreen(),
+      ),
+      RoutePaths.settingsHelpSupport: (c) => const RbacGuard(
+        screenId: 'settings_help_support',
+        child: Placeholder(), // TODO: Implement HelpSupportScreen
       ),
 
       // Auth routes (CENT-003 + CENT-004)

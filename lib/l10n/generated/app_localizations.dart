@@ -2272,6 +2272,24 @@ abstract class AppLocalizations {
   /// **'Logout'**
   String get profileLogoutDialogConfirm;
 
+  /// Display name for guest/unregistered users in profile header
+  ///
+  /// In en, this message translates to:
+  /// **'Guest User'**
+  String get profileGuestName;
+
+  /// Placeholder text for phone number when not set
+  ///
+  /// In en, this message translates to:
+  /// **'Add your phone number'**
+  String get profileGuestPhonePlaceholder;
+
+  /// Snackbar message when logout is tapped but not fully implemented
+  ///
+  /// In en, this message translates to:
+  /// **'Logout not fully wired yet'**
+  String get profileLogoutSnack;
+
   /// No description provided for @ridePhaseDraftLabel.
   ///
   /// In en, this message translates to:
@@ -4444,6 +4462,60 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get bottomNavProfileLabel;
 
+  /// Label for current location in Home tab top bar (Track A - Ticket #228)
+  ///
+  /// In en, this message translates to:
+  /// **'Current location'**
+  String get homeCurrentLocationLabel;
+
+  /// Placeholder text for pickup location in Home tab top bar (Track A - Ticket #228)
+  ///
+  /// In en, this message translates to:
+  /// **'Set pickup location'**
+  String get homeCurrentLocationPlaceholder;
+
+  /// Title for ride service card in Home tab (Track A - Ticket #228)
+  ///
+  /// In en, this message translates to:
+  /// **'Ride'**
+  String get homeServiceRideTitle;
+
+  /// Title for parcels service card in Home tab (Track A - Ticket #228)
+  ///
+  /// In en, this message translates to:
+  /// **'Parcels'**
+  String get homeServiceParcelsTitle;
+
+  /// Title for food service card in Home tab (Track A - Ticket #228)
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get homeServiceFoodTitle;
+
+  /// Subtitle for ride service card in Home tab (Track A - Ticket #228)
+  ///
+  /// In en, this message translates to:
+  /// **'Get a ride in minutes'**
+  String get homeServiceRideSubtitle;
+
+  /// Subtitle for parcels service card in Home tab (Track A - Ticket #228)
+  ///
+  /// In en, this message translates to:
+  /// **'Send and track parcels'**
+  String get homeServiceParcelsSubtitle;
+
+  /// Subtitle for food service card in Home tab (Track A - Ticket #228)
+  ///
+  /// In en, this message translates to:
+  /// **'Order food from nearby restaurants'**
+  String get homeServiceFoodSubtitle;
+
+  /// Placeholder text for search input in Home tab (Track A - Ticket #228)
+  ///
+  /// In en, this message translates to:
+  /// **'Where to?'**
+  String get homeSearchPlaceholder;
+
   /// Payments stub screen title (Track A - Ticket #82)
   ///
   /// In en, this message translates to:
@@ -4503,6 +4575,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Adding new payment methods will be available soon.'**
   String get paymentsAddMethodComingSoon;
+
+  /// Card expiry format for payment method subtitle (Track A - Ticket #225)
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry {month}/{year}'**
+  String paymentsCardExpiry(int month, int year);
+
+  /// Payment method type label for Apple Pay (Track A - Ticket #225)
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Pay'**
+  String get paymentsMethodTypeApplePay;
+
+  /// Payment method type label for Google Pay (Track A - Ticket #225)
+  ///
+  /// In en, this message translates to:
+  /// **'Google Pay'**
+  String get paymentsMethodTypeGooglePay;
+
+  /// Payment method type label for Digital Wallet (Track A - Ticket #225)
+  ///
+  /// In en, this message translates to:
+  /// **'Digital Wallet'**
+  String get paymentsMethodTypeDigitalWallet;
+
+  /// Payment method type label for Bank Transfer (Track A - Ticket #225)
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer'**
+  String get paymentsMethodTypeBankTransfer;
+
+  /// Payment method type label for Cash on Delivery (Track A - Ticket #225)
+  ///
+  /// In en, this message translates to:
+  /// **'Cash on Delivery'**
+  String get paymentsMethodTypeCashOnDelivery;
 
   /// Profile stub screen title - unused as full profile exists (Track A - Ticket #82)
   ///

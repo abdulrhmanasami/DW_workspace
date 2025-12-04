@@ -1,59 +1,240 @@
-/// Payments Tab Screen (Screen 16)
+/// Payments Screen (Screen 16)
 /// Created by: Track B - Ticket #99
 /// Updated by: Track B - Ticket #100 (Added selection support for Ride flow)
+/// Updated by: Track A - Ticket #225 (Design System alignment + Payments shim integration)
 /// Purpose: Payment methods list screen for BottomNav Payments tab
-/// Last updated: 2025-11-30
+/// Last updated: 2025-12-04
 ///
 /// This screen shows the payment methods list as per Screen 16 in Hi-Fi Mockups:
-/// - List of payment methods (Cash + Cards)
+/// - List of payment methods from payments shim
 /// - Default badge for default payment method
-/// - Selection support (tapping a card selects it)
-/// - Empty state when no methods saved
-/// - Add new payment method CTA (stub)
+/// - Empty state using DWEmptyState
+/// - Add new payment method CTA using DWButton.secondary
+/// - Proper RTL/LTR support and accessibility
 ///
-/// NOTE: This is MVP UI Stub. Backend integration in future ticket.
+/// Track A - Ticket #225: Design System Integration
+/// - Uses DWSpacing, DWRadius, DWButton.secondary
+/// - Integrates with payments shim (SavedPaymentMethod)
+/// - Uses DWEmptyState for empty state
+/// - Card/Generic spec via PaymentMethodCard
 
-// Design System imports (Ticket #221 - Track A Design System Integration)
-import 'package:design_system_foundation/design_system_foundation.dart';
-import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:payments/payments.dart';
+import 'package:design_system_shims/design_system_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
-import '../../state/payments/payment_methods_ui_state.dart';
+import '../../state/payments/payment_methods_controller.dart';
+import '../../ui/common/empty_state.dart';
+import '../../ui/payments/payment_method_card.dart';
 
-/// Payments Tab Screen - Shows list of saved payment methods
-/// Track B - Ticket #99
+/// Payments Screen - Shows list of saved payment methods from payments shim
+/// Track A - Ticket #225: Design System aligned implementation
 class PaymentsTabScreen extends ConsumerWidget {
   const PaymentsTabScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final state = ref.watch(paymentMethodsUiProvider);
+    final theme = Theme.of(context);
+    final paymentMethodsState = ref.watch(paymentMethodsControllerProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.paymentsTitle),
+        title: Text(
+          l10n.paymentsTitle,
+          style: theme.textTheme.titleLarge,
+        ),
+        centerTitle: false,
         automaticallyImplyLeading: false,
       ),
       body: SafeArea(
-        child: state.methods.isEmpty
-            ? _PaymentsEmptyState(l10n: l10n)
-            : _PaymentsMethodsList(
-                methods: state.methods,
-                l10n: l10n,
-              ),
+        child: Padding(
+          padding: EdgeInsets.all(DWSpacing.md),
+          child: paymentMethodsState.methods.when(
+            loading: () => const _PaymentsLoadingState(),
+            error: (error, stackTrace) => _PaymentsErrorState(
+              error: error.toString(),
+              onRetry: () => ref.read(paymentMethodsControllerProvider.notifier).refresh(),
+            ),
+            data: (methods) => methods.isEmpty
+                ? _PaymentsEmptyState(l10n: l10n)
+                : _PaymentsMethodsList(
+                    methods: methods,
+                    l10n: l10n,
+                  ),
+          ),
+        ),
       ),
     );
   }
 }
 
 /// Empty state widget when no payment methods are saved
+/// Track A - Ticket #225: Uses DWEmptyState following design system
 class _PaymentsEmptyState extends StatelessWidget {
   const _PaymentsEmptyState({required this.l10n});
 
   final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return DWEmptyState(
+      icon: Icons.account_balance_wallet,
+      title: l10n.paymentsEmptyTitle,
+      description: l10n.paymentsEmptyBody,
+      primaryActionLabel: l10n.paymentsAddMethodCta,
+      onPrimaryActionTap: () => _showComingSoonSnackbar(context, l10n),
+    );
+  }
+}
+
+/// List of payment methods with Add CTA at bottom
+/// Track A - Ticket #225: Uses PaymentMethodCard + proper design tokens
+class _PaymentsMethodsList extends StatelessWidget {
+  const _PaymentsMethodsList({
+    required this.methods,
+    required this.l10n,
+  });
+
+  final List<SavedPaymentMethod> methods;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // List of methods
+        Expanded(
+          child: ListView.separated(
+            itemCount: methods.length,
+            separatorBuilder: (_, __) => SizedBox(height: DWSpacing.sm),
+            itemBuilder: (context, index) {
+              final method = methods[index];
+              final mapping = _mapPaymentMethodToUi(method, l10n);
+              return PaymentMethodCard(
+                icon: mapping.icon,
+                title: mapping.title,
+                subtitle: mapping.subtitle,
+                isDefault: mapping.isDefault,
+                onTap: () {
+                  // TODO: Future ticket - Navigate to payment method details
+                },
+              );
+            },
+          ),
+        ),
+
+        // Add new method CTA
+        SizedBox(height: DWSpacing.md),
+        SizedBox(
+          width: double.infinity,
+          child: DWButton.secondary(
+            label: l10n.paymentsAddMethodCta,
+            onPressed: () => _showComingSoonSnackbar(context, l10n),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// UI mapping for PaymentMethodCard props
+/// Track A - Ticket #225: Maps SavedPaymentMethod to PaymentMethodCard props
+class _PaymentMethodUiMapping {
+  const _PaymentMethodUiMapping({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.isDefault,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool isDefault;
+}
+
+/// Maps SavedPaymentMethod from payments shim to UI props for PaymentMethodCard
+/// Track A - Ticket #225: Integration with payments shim without duplicating models
+_PaymentMethodUiMapping _mapPaymentMethodToUi(SavedPaymentMethod method, AppLocalizations l10n) {
+  return _PaymentMethodUiMapping(
+    icon: _getMethodIcon(method.type),
+    title: method.displayName,
+    subtitle: _getMethodSubtitle(method, l10n),
+    isDefault: method.isDefault,
+  );
+}
+
+/// Gets appropriate icon for payment method type
+IconData _getMethodIcon(PaymentMethodType type) {
+  switch (type) {
+    case PaymentMethodType.card:
+      return Icons.credit_card;
+    case PaymentMethodType.cash:
+      return Icons.payments_outlined;
+    case PaymentMethodType.applePay:
+      return Icons.apple;
+    case PaymentMethodType.googlePay:
+      return Icons.account_balance_wallet;
+    case PaymentMethodType.digitalWallet:
+    case PaymentMethodType.bankTransfer:
+    case PaymentMethodType.cashOnDelivery:
+      return Icons.account_balance;
+  }
+}
+
+/// Gets subtitle for payment method based on type
+String _getMethodSubtitle(SavedPaymentMethod method, AppLocalizations l10n) {
+  switch (method.type) {
+    case PaymentMethodType.card:
+      if (method.expMonth != null && method.expYear != null) {
+        return l10n.paymentsCardExpiry(method.expMonth!, method.expYear!);
+      }
+      return l10n.paymentsMethodTypeCard;
+    case PaymentMethodType.cash:
+      return l10n.paymentsMethodTypeCash;
+    case PaymentMethodType.applePay:
+      return l10n.paymentsMethodTypeApplePay;
+    case PaymentMethodType.googlePay:
+      return l10n.paymentsMethodTypeGooglePay;
+    case PaymentMethodType.digitalWallet:
+      return l10n.paymentsMethodTypeDigitalWallet;
+    case PaymentMethodType.bankTransfer:
+      return l10n.paymentsMethodTypeBankTransfer;
+    case PaymentMethodType.cashOnDelivery:
+      return l10n.paymentsMethodTypeCashOnDelivery;
+  }
+}
+
+/// Loading state for payment methods
+/// Track A - Ticket #225: Proper loading state
+class _PaymentsLoadingState extends StatelessWidget {
+  const _PaymentsLoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Center(
+      child: CircularProgressIndicator(
+        color: colorScheme.primary,
+      ),
+    );
+  }
+}
+
+/// Error state for payment methods
+/// Track A - Ticket #225: Error state with retry capability
+class _PaymentsErrorState extends StatelessWidget {
+  const _PaymentsErrorState({
+    required this.error,
+    this.onRetry,
+  });
+
+  final String error;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -63,44 +244,45 @@ class _PaymentsEmptyState extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(DwSpacing().lg),
+        padding: EdgeInsets.all(DWSpacing.lg),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Icon
             Icon(
-              Icons.credit_card_off_outlined,
-              size: 72,
-              color: colorScheme.outline,
+              Icons.error_outline,
+              size: 48,
+              color: colorScheme.error,
             ),
-            SizedBox(height: DwSpacing().lg),
-
-            // Title
+            SizedBox(height: DWSpacing.md),
             Text(
-              l10n.paymentsEmptyTitle,
-              style: textTheme.titleLarge,
+              'Unable to load payment methods',
+              style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.error,
+              ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: DwSpacing().sm),
-
-            // Body
+            SizedBox(height: DWSpacing.xs),
             Text(
-              l10n.paymentsEmptyBody,
+              error,
               style: textTheme.bodyMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: DwSpacing().xl),
-
-            // Add CTA
-            SizedBox(
-              width: double.infinity,
-              child: DWButton.secondary(
-                label: l10n.paymentsAddMethodCta,
-                onPressed: () => _showComingSoonSnackbar(context, l10n),
+            if (onRetry != null) ...[
+              SizedBox(height: DWSpacing.lg),
+              TextButton(
+                onPressed: onRetry,
+                child: Text(
+                  'Retry',
+                  style: textTheme.labelLarge?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-            ),
+            ],
           ],
         ),
       ),
@@ -108,220 +290,8 @@ class _PaymentsEmptyState extends StatelessWidget {
   }
 }
 
-/// List of payment methods with Add CTA at bottom
-/// Track B - Ticket #100: Now passes state for selection tracking
-class _PaymentsMethodsList extends ConsumerWidget {
-  const _PaymentsMethodsList({
-    required this.methods,
-    required this.l10n,
-  });
-
-  final List<PaymentMethodUiModel> methods;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(paymentMethodsUiProvider);
-    
-    return Column(
-      children: [
-        // List of methods
-        Expanded(
-          child: ListView.separated(
-            padding: EdgeInsets.all(DwSpacing().md),
-            itemCount: methods.length,
-            separatorBuilder: (_, __) => SizedBox(height: DwSpacing().sm),
-            itemBuilder: (context, index) {
-              final method = methods[index];
-              final isSelected = method.id == state.selectedMethodId;
-              return _PaymentMethodCard(
-                method: method,
-                l10n: l10n,
-                isSelected: isSelected,
-                onTap: () {
-                  // Track B - Ticket #100: Update selected method
-                  ref.read(paymentMethodsUiProvider.notifier).state =
-                      state.copyWith(selectedMethodId: method.id);
-                },
-              );
-            },
-          ),
-        ),
-
-        // Add new method CTA
-        Padding(
-          padding: EdgeInsets.all(DwSpacing().md),
-          child: SafeArea(
-            child: SizedBox(
-              width: double.infinity,
-              child: DWButton.secondary(
-                label: l10n.paymentsAddMethodCta,
-                onPressed: () => _showComingSoonSnackbar(context, l10n),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Card widget for displaying a single payment method
-/// Track B - Ticket #100: Added selection support with visual feedback
-class _PaymentMethodCard extends StatelessWidget {
-  const _PaymentMethodCard({
-    required this.method,
-    required this.l10n,
-    this.isSelected = false,
-    this.onTap,
-  });
-
-  final PaymentMethodUiModel method;
-  final AppLocalizations l10n;
-  final bool isSelected;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(DwBorders().largeRadius),
-      child: Card(
-        elevation: 0,
-        color: colorScheme.surfaceContainerHighest,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DwBorders().largeRadius),
-          side: isSelected
-              ? BorderSide(color: colorScheme.primary, width: 2)
-              : BorderSide.none,
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(DwSpacing().md),
-          child: Row(
-            children: [
-              // Icon
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? colorScheme.primary.withValues(alpha: 0.15)
-                      : colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(DwBorders().largeRadius),
-                ),
-                child: Icon(
-                  _getMethodIcon(method.type),
-                  color: isSelected
-                      ? colorScheme.primary
-                      : colorScheme.onPrimaryContainer,
-                  size: 24,
-                ),
-              ),
-              SizedBox(width: DwSpacing().md),
-
-              // Content
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Display name
-                    Text(
-                      method.displayName,
-                      style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: DwSpacing().xxs),
-
-                    // Type label
-                    Text(
-                      _getTypeLabel(method.type, l10n),
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Default badge
-              if (method.isDefault) ...[
-                SizedBox(width: DwSpacing().sm),
-                _DefaultBadge(label: l10n.paymentsDefaultBadge),
-              ],
-
-              // Track B - Ticket #100: Selection check icon
-              if (isSelected) ...[
-                SizedBox(width: DwSpacing().sm),
-                Icon(
-                  Icons.check_circle,
-                  color: colorScheme.primary,
-                  size: 24,
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  IconData _getMethodIcon(PaymentMethodUiType type) {
-    switch (type) {
-      case PaymentMethodUiType.cash:
-        return Icons.payments_outlined;
-      case PaymentMethodUiType.card:
-        return Icons.credit_card;
-    }
-  }
-
-  String _getTypeLabel(PaymentMethodUiType type, AppLocalizations l10n) {
-    switch (type) {
-      case PaymentMethodUiType.cash:
-        return l10n.paymentsMethodTypeCash;
-      case PaymentMethodUiType.card:
-        return l10n.paymentsMethodTypeCard;
-    }
-  }
-}
-
-/// Default badge chip
-class _DefaultBadge extends StatelessWidget {
-  const _DefaultBadge({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: DwSpacing().xs,
-        vertical: DwSpacing().xxs,
-      ),
-      decoration: BoxDecoration(
-        color: colorScheme.primary.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(DwBorders().largeRadius),
-      ),
-      child: Text(
-        label,
-        style: textTheme.labelSmall?.copyWith(
-          color: colorScheme.primary,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-}
-
 /// Shows coming soon snackbar
+/// Track A - Ticket #225: Placeholder for Add Payment Method functionality
 void _showComingSoonSnackbar(BuildContext context, AppLocalizations l10n) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(

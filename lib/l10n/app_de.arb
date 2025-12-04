@@ -1765,6 +1765,43 @@
     "description": "Beschriftung der Profil-Registerkarte in der unteren Navigation (Track A - Ticket #82)"
   },
 
+  "homeCurrentLocationLabel": "Aktueller Standort",
+  "@homeCurrentLocationLabel": {
+    "description": "Label for current location in Home tab top bar (Track A - Ticket #228)"
+  },
+  "homeCurrentLocationPlaceholder": "Abholort festlegen",
+  "@homeCurrentLocationPlaceholder": {
+    "description": "Placeholder text for pickup location in Home tab top bar (Track A - Ticket #228)"
+  },
+  "homeServiceRideTitle": "Fahrt",
+  "@homeServiceRideTitle": {
+    "description": "Title for ride service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceParcelsTitle": "Pakete",
+  "@homeServiceParcelsTitle": {
+    "description": "Title for parcels service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceFoodTitle": "Essen",
+  "@homeServiceFoodTitle": {
+    "description": "Title for food service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceRideSubtitle": "Fahrt in Minuten bekommen",
+  "@homeServiceRideSubtitle": {
+    "description": "Subtitle for ride service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceParcelsSubtitle": "Pakete senden und verfolgen",
+  "@homeServiceParcelsSubtitle": {
+    "description": "Subtitle for parcels service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeServiceFoodSubtitle": "Essen von nahegelegenen Restaurants bestellen",
+  "@homeServiceFoodSubtitle": {
+    "description": "Subtitle for food service card in Home tab (Track A - Ticket #228)"
+  },
+  "homeSearchPlaceholder": "Wohin?",
+  "@homeSearchPlaceholder": {
+    "description": "Placeholder text for search input in Home tab (Track A - Ticket #228)"
+  },
+
   "paymentsEntryTitle": "Zahlungen",
   "@paymentsEntryTitle": {
     "description": "Titel des Zahlungen-Stub-Bildschirms (Track A - Ticket #82)"
@@ -1805,6 +1842,40 @@
   "paymentsAddMethodComingSoon": "Das Hinzufügen neuer Zahlungsmethoden ist bald verfügbar.",
   "@paymentsAddMethodComingSoon": {
     "description": "Demnächst Nachricht für Zahlungsmethode hinzufügen (Track B - Ticket #99)"
+  },
+  "paymentsCardExpiry": "Gültig bis {month}/{year}",
+  "@paymentsCardExpiry": {
+    "description": "Card expiry format for payment method subtitle (Track A - Ticket #225)",
+    "placeholders": {
+      "month": {
+        "type": "int",
+        "example": "08"
+      },
+      "year": {
+        "type": "int",
+        "example": "27"
+      }
+    }
+  },
+  "paymentsMethodTypeApplePay": "Apple Pay",
+  "@paymentsMethodTypeApplePay": {
+    "description": "Payment method type label for Apple Pay (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeGooglePay": "Google Pay",
+  "@paymentsMethodTypeGooglePay": {
+    "description": "Payment method type label for Google Pay (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeDigitalWallet": "Digitale Geldbörse",
+  "@paymentsMethodTypeDigitalWallet": {
+    "description": "Payment method type label for Digital Wallet (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeBankTransfer": "Banküberweisung",
+  "@paymentsMethodTypeBankTransfer": {
+    "description": "Payment method type label for Bank Transfer (Track A - Ticket #225)"
+  },
+  "paymentsMethodTypeCashOnDelivery": "Zahlung bei Lieferung",
+  "@paymentsMethodTypeCashOnDelivery": {
+    "description": "Payment method type label for Cash on Delivery (Track A - Ticket #225)"
   },
 
   "profileEntryTitle": "Profil",
@@ -2234,5 +2305,17 @@
   "homeHubRecentDestinationsSeeAll": "See all",
   "@homeHubRecentDestinationsSeeAll": {
     "description": "Button label to show all recent destinations from HomeHub (Ticket #194, German uses English text for now)"
+  },
+  "profileGuestName": "Guest User",
+  "@profileGuestName": {
+    "description": "Display name for guest/unregistered users in profile header"
+  },
+  "profileGuestPhonePlaceholder": "Add your phone number",
+  "@profileGuestPhonePlaceholder": {
+    "description": "Placeholder text for phone number when not set"
+  },
+  "profileLogoutSnack": "Logout not fully wired yet",
+  "@profileLogoutSnack": {
+    "description": "Snackbar message when logout is tapped but not fully implemented"
   }
 }

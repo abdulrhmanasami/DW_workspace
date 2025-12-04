@@ -91,3 +91,8 @@ final authStateProvider = StreamProvider<AuthState>((ref) {
   return service.onAuthStateChanged;
 });
 
+/// Session storage shim for identity/session persistence.
+final sessionStorageShimProvider = Provider<SessionStorageShim>((ref) {
+  return createSessionStorageShim();
+});
+

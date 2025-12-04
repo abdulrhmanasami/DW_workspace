@@ -1250,6 +1250,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileLogoutDialogConfirm => 'Logout';
 
   @override
+  String get profileGuestName => 'Guest User';
+
+  @override
+  String get profileGuestPhonePlaceholder => 'Add your phone number';
+
+  @override
+  String get profileLogoutSnack => 'Logout not fully wired yet';
+
+  @override
   String get ridePhaseDraftLabel => 'Draft';
 
   @override
@@ -2438,6 +2447,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bottomNavProfileLabel => 'Profile';
 
   @override
+  String get homeCurrentLocationLabel => 'Current location';
+
+  @override
+  String get homeCurrentLocationPlaceholder => 'Set pickup location';
+
+  @override
+  String get homeServiceRideTitle => 'Ride';
+
+  @override
+  String get homeServiceParcelsTitle => 'Parcels';
+
+  @override
+  String get homeServiceFoodTitle => 'Food';
+
+  @override
+  String get homeServiceRideSubtitle => 'Get a ride in minutes';
+
+  @override
+  String get homeServiceParcelsSubtitle => 'Send and track parcels';
+
+  @override
+  String get homeServiceFoodSubtitle => 'Order food from nearby restaurants';
+
+  @override
+  String get homeSearchPlaceholder => 'Where to?';
+
+  @override
   String get paymentsEntryTitle => 'Payments';
 
   @override
@@ -2469,6 +2505,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get paymentsAddMethodComingSoon =>
       'Adding new payment methods will be available soon.';
+
+  @override
+  String paymentsCardExpiry(int month, int year) {
+    return 'Expiry $month/$year';
+  }
+
+  @override
+  String get paymentsMethodTypeApplePay => 'Apple Pay';
+
+  @override
+  String get paymentsMethodTypeGooglePay => 'Google Pay';
+
+  @override
+  String get paymentsMethodTypeDigitalWallet => 'Digital Wallet';
+
+  @override
+  String get paymentsMethodTypeBankTransfer => 'Bank Transfer';
+
+  @override
+  String get paymentsMethodTypeCashOnDelivery => 'Cash on Delivery';
 
   @override
   String get profileEntryTitle => 'Profile';

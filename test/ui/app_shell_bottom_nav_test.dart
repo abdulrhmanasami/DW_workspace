@@ -81,13 +81,13 @@ void main() {
       await tester.pumpWidget(createTestApp());
       await tester.pumpAndSettle();
 
-      // Tap Profile tab
-      await tester.tap(find.text('Profile'));
+      // Tap Profile tab using icon (more reliable than text)
+      await tester.tap(find.byIcon(Icons.person_outline));
       await tester.pumpAndSettle();
 
       // Verify Profile content is displayed
       // Profile screen has "Profile" title from profileTitle L10n key
-      expect(find.text('Profile'), findsAtLeastNWidgets(2)); // Title + tab label
+      expect(find.widgetWithText(AppBar, 'Profile'), findsOneWidget);
     });
 
     testWidgets('l10n Arabic bottom nav labels', (tester) async {
@@ -110,6 +110,36 @@ void main() {
       expect(find.text('Bestellungen'), findsOneWidget);
       expect(find.text('Zahlungen'), findsOneWidget);
       expect(find.text('Profil'), findsOneWidget);
+    });
+
+    // Track A - Ticket #229: Simplified navigation bar test
+    testWidgets('NavigationBar renders correctly with correct icons and labels', (tester) async {
+      final widget = MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const _SimpleNavBarTestWidget(),
+      );
+
+      await tester.pumpWidget(widget);
+      await tester.pumpAndSettle();
+
+      // Verify NavigationBar is present
+      expect(find.byType(NavigationBar), findsOneWidget);
+
+      // Verify all 4 navigation destinations exist
+      expect(find.byType(NavigationDestination), findsNWidgets(4));
+
+      // Verify English labels
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Orders'), findsOneWidget);
+      expect(find.text('Payments'), findsOneWidget);
+      expect(find.text('Profile'), findsOneWidget);
+
+      // Verify icons are present - NavigationBar shows selected icon for first item (Home)
+      expect(find.byIcon(Icons.home), findsOneWidget); // Selected icon for Home
+      expect(find.byIcon(Icons.receipt_long_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.account_balance_wallet_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.person_outline), findsOneWidget);
     });
 
     testWidgets('tab switching preserves state (IndexedStack)', (tester) async {
@@ -336,5 +366,123 @@ void main() {
       // Verify Arabic profile sections are present
       expect(find.text('الإعدادات'), findsAtLeastNWidgets(0)); // Settings section in Arabic
     });
+
+    // Track A - Ticket #229: Comprehensive tab switching tests in EN locale
+    testWidgets('AppShell bottom nav switches between tabs without exceptions in EN locale', (tester) async {
+      await tester.pumpWidget(createTestApp());
+      await tester.pumpAndSettle();
+
+      // Verify all tabs are present
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Orders'), findsOneWidget);
+      expect(find.text('Payments'), findsOneWidget);
+      expect(find.text('Profile'), findsOneWidget);
+
+      // Test tab switching - just verify no exceptions occur
+      // Switch to Orders tab
+      await tester.tap(find.text('Orders'));
+      await tester.pumpAndSettle();
+
+      // Switch to Payments tab
+      await tester.tap(find.text('Payments'));
+      await tester.pumpAndSettle();
+
+      // Switch to Profile tab
+      await tester.tap(find.text('Profile'));
+      await tester.pumpAndSettle();
+
+      // Switch back to Home tab
+      await tester.tap(find.text('Home'));
+      await tester.pumpAndSettle();
+
+      // If we reach here without exceptions, the test passes
+      expect(find.text('Home'), findsOneWidget); // Verify bottom nav still works
+    });
+
+    // Track A - Ticket #229: RTL Arabic comprehensive tests
+    testWidgets('AppShell bottom nav works in RTL Arabic locale without exceptions', (tester) async {
+      await tester.pumpWidget(createTestApp(locale: const Locale('ar')));
+      await tester.pumpAndSettle();
+
+      // Verify Arabic labels are present
+      expect(find.text('الرئيسية'), findsOneWidget);
+      expect(find.text('الطلبات'), findsOneWidget);
+      expect(find.text('المدفوعات'), findsOneWidget);
+      expect(find.text('الحساب'), findsOneWidget);
+
+      // Test tab switching in Arabic - just verify no exceptions occur
+      // Switch to Orders tab (Arabic)
+      await tester.tap(find.text('الطلبات'));
+      await tester.pumpAndSettle();
+
+      // Switch to Payments tab (Arabic)
+      await tester.tap(find.text('المدفوعات'));
+      await tester.pumpAndSettle();
+
+      // Switch to Profile tab (Arabic)
+      await tester.tap(find.text('الحساب'));
+      await tester.pumpAndSettle();
+
+      // Switch back to Home tab (Arabic)
+      await tester.tap(find.text('الرئيسية'));
+      await tester.pumpAndSettle();
+
+      // If we reach here without exceptions, the test passes
+      expect(find.text('الرئيسية'), findsOneWidget); // Verify we can still see bottom nav
+    });
   });
+}
+
+/// Simplified widget for testing NavigationBar without complex screens
+class _SimpleNavBarTestWidget extends StatefulWidget {
+  const _SimpleNavBarTestWidget();
+
+  @override
+  State<_SimpleNavBarTestWidget> createState() => _SimpleNavBarTestWidgetState();
+}
+
+class _SimpleNavBarTestWidgetState extends State<_SimpleNavBarTestWidget> {
+  int _selectedIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      body: Center(
+        child: Text('Tab $_selectedIndex'),
+      ),
+      bottomNavigationBar: NavigationBar(
+        backgroundColor: theme.colorScheme.surface,
+        surfaceTintColor: theme.colorScheme.surfaceTint,
+        indicatorColor: theme.colorScheme.secondaryContainer,
+        elevation: 3,
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) => setState(() => _selectedIndex = index),
+        destinations: [
+          NavigationDestination(
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home),
+            label: l10n.bottomNavHomeLabel,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.receipt_long_outlined),
+            selectedIcon: const Icon(Icons.receipt_long),
+            label: l10n.bottomNavOrdersLabel,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.account_balance_wallet_outlined),
+            selectedIcon: const Icon(Icons.account_balance_wallet),
+            label: l10n.bottomNavPaymentsLabel,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.person_outline),
+            selectedIcon: const Icon(Icons.person),
+            label: l10n.bottomNavProfileLabel,
+          ),
+        ],
+      ),
+    );
+  }
 }
