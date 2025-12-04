@@ -12,7 +12,8 @@
 /// Track B - Ticket #125: Segmented Control + Empty State per filter
 /// Track B - Ticket #127: Skeleton Loader while data is loading
 
-import 'package:design_system_shims/design_system_shims.dart';
+// Design System imports (Ticket #221 - Track A Design System Integration)
+import 'package:design_system_foundation/design_system_foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:food_shims/food_shims.dart';
@@ -204,7 +205,7 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(DWSpacing.lg),
+        padding: EdgeInsets.all(DwSpacing().lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -213,13 +214,13 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
               size: 64,
               color: colorScheme.outline,
             ),
-            const SizedBox(height: DWSpacing.md),
+            SizedBox(height: DwSpacing().md),
             Text(
               title,
               style: textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: DWSpacing.xs),
+            SizedBox(height: DwSpacing().xs),
             Text(
               description,
               style: textTheme.bodyMedium?.copyWith(
@@ -245,7 +246,7 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
     TextTheme textTheme,
   ) {
     return ListView(
-      padding: const EdgeInsets.all(DWSpacing.md),
+      padding: EdgeInsets.all(DwSpacing().md),
       children: [
         // Track B - Ticket #96: Rides section
         // Track B - Ticket #98: Added navigation to Trip Summary
@@ -256,7 +257,7 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: DWSpacing.sm),
+          SizedBox(height: DwSpacing().sm),
           for (final entry in rides)
             RideOrderCard(
               entry: entry,
@@ -270,7 +271,7 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
               },
             ),
           if (parcels.isNotEmpty || foodOrders.isNotEmpty)
-            const SizedBox(height: DWSpacing.lg),
+            SizedBox(height: DwSpacing().lg),
         ],
 
         // Parcels section
@@ -281,7 +282,7 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: DWSpacing.sm),
+          SizedBox(height: DwSpacing().sm),
           for (final parcel in parcels)
             ParcelOrderCard(
               parcel: parcel,
@@ -293,7 +294,7 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
                 );
               },
             ),
-          if (foodOrders.isNotEmpty) const SizedBox(height: DWSpacing.lg),
+          if (foodOrders.isNotEmpty) SizedBox(height: DwSpacing().lg),
         ],
 
         // Food orders section
@@ -304,7 +305,7 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: DWSpacing.sm),
+          SizedBox(height: DwSpacing().sm),
           for (final order in foodOrders) FoodOrderCard(order: order),
         ],
       ],

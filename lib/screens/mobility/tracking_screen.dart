@@ -426,7 +426,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
 
           // Control buttons
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: EdgeInsets.symmetric(horizontal: DwSpacing().md), // Design System: md spacing instead of hardcoded 16.0
             child: _buildControlButtons(sessionState),
           ),
 

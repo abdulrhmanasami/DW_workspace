@@ -49,7 +49,7 @@ class RideDestinationScreen extends ConsumerWidget {
       applyPadding: false, // Full screen map
       useSafeArea: false, // Map extends to edges
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: colorScheme.surface.withValues(alpha: 0.0),
         elevation: 0,
         title: Text(
           l10n.rideLocationPickerTitle,
@@ -246,7 +246,7 @@ class _LocationPickerBottomSheetState
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: colorScheme.surface.withValues(alpha: 0.0),
       builder: (context) => _LocationSearchSheet(
         fieldType: fieldType,
         onLocationSelected: (place) {

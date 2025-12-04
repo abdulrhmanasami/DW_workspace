@@ -10,6 +10,7 @@
 import 'package:flutter/material.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// Main widget for displaying ride quote options.
 ///
@@ -24,6 +25,7 @@ class RideQuoteOptionsSheet extends StatelessWidget {
     this.onClose,
     this.showHandle = true,
     this.vehicleListKey,
+    required this.l10n,
   });
 
   /// The quote containing available options.
@@ -43,6 +45,9 @@ class RideQuoteOptionsSheet extends StatelessWidget {
 
   /// Key for the vehicle list (for testing).
   final Key? vehicleListKey;
+
+  /// Localization strings.
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -124,6 +129,7 @@ class RideQuoteOptionsSheet extends StatelessWidget {
                   isSelected: isSelected,
                   isRecommended: option.isRecommended,
                   onTap: () => onOptionSelected(option),
+                  l10n: l10n,
                 );
               },
             ),
@@ -141,12 +147,14 @@ class _RideQuoteOptionTile extends StatelessWidget {
     required this.isSelected,
     required this.isRecommended,
     required this.onTap,
+    required this.l10n,
   });
 
   final RideQuoteOption option;
   final bool isSelected;
   final bool isRecommended;
   final VoidCallback onTap;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -200,7 +208,7 @@ class _RideQuoteOptionTile extends StatelessWidget {
                       ),
                       if (isRecommended) ...[
                         const SizedBox(width: DWSpacing.xs),
-                        const _RecommendedBadge(),
+                        _RecommendedBadge(l10n: l10n),
                       ],
                     ],
                   ),
@@ -294,7 +302,9 @@ class _RideQuoteOptionTile extends StatelessWidget {
 
 /// Recommended badge widget.
 class _RecommendedBadge extends StatelessWidget {
-  const _RecommendedBadge();
+  const _RecommendedBadge({required this.l10n});
+
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +321,7 @@ class _RecommendedBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(DWRadius.xs),
       ),
       child: Text(
-        'Recommended',
+        l10n.rideConfirmRecommendedBadge,
         style: theme.textTheme.labelSmall?.copyWith(
           color: colors.onSecondaryContainer,
           fontWeight: FontWeight.w600,
@@ -327,12 +337,15 @@ Future<RideQuoteOption?> showRideQuoteOptionsSheet({
   required BuildContext context,
   required RideQuote quote,
   RideQuoteOption? selectedOption,
+  AppLocalizations? l10n,
 }) async {
+  final colorScheme = Theme.of(context).colorScheme;
+
   return await showModalBottomSheet<RideQuoteOption>(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.transparent,
-    barrierColor: Colors.black.withValues(alpha: 0.5),
+    backgroundColor: colorScheme.surface.withValues(alpha: 0.0),
+    barrierColor: colorScheme.scrim.withValues(alpha: 0.5),
     builder: (context) {
       return RideQuoteOptionsSheet(
         quote: quote,
@@ -343,6 +356,7 @@ Future<RideQuoteOption?> showRideQuoteOptionsSheet({
         onClose: () {
           Navigator.of(context).pop();
         },
+        l10n: l10n ?? AppLocalizations.of(context)!,
       );
     },
   );

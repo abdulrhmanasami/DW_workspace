@@ -15,6 +15,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// Design System imports (Ticket #216 - Design System Integration)
+import 'package:design_system_foundation/design_system_foundation.dart';
+
 // Shims only - no direct SDK imports
 import 'package:maps_shims/maps_shims.dart';
 
@@ -30,14 +33,20 @@ import '../../state/mobility/ride_map_projection.dart';
 ///
 /// Track B - Ticket #204: استهلاك mapStage/mapSnapshot في الـ UI
 class RideTripMapView extends ConsumerWidget {
-  const RideTripMapView({super.key});
+  const RideTripMapView({
+    super.key,
+    this.mapSnapshot,
+  });
+
+  /// Optional snapshot to display. If null, reads from provider.
+  final RideMapSnapshot? mapSnapshot;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(rideTripSessionProvider);
     final mapPort = ref.watch(rideMapPortProvider);
 
-    final snapshot = state.mapSnapshot;
+    final snapshot = mapSnapshot ?? state.mapSnapshot;
     final stage = state.mapStage;
 
     // لو ما فيه snapshot: نعرض placeholder بسيط بدون "ديمو" مزيف
@@ -77,8 +86,9 @@ class RideTripMapView extends ConsumerWidget {
     // return MapView(props: MapViewProps(controller: mapControllerFromPort(port)));
 
     return Container(
-      color: Colors.blueGrey.shade100,
-      padding: const EdgeInsets.all(16),
+      key: const Key('ride_trip_map'),
+      color: DwColors().surfaceVariant, // Design System: surfaceVariant instead of hardcoded Colors.blueGrey.shade100
+      padding: EdgeInsets.all(DwSpacing().md), // Design System: md spacing instead of hardcoded 16
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,

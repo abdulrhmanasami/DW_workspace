@@ -20,6 +20,7 @@ import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_quote_controller.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
 import 'package:delivery_ways_clean/state/mobility/ride_map_projection.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_map_port_providers.dart';
 // Track B - Ticket #207: RideTripMapView integration tests
 import 'package:delivery_ways_clean/widgets/mobility/ride_trip_map_view.dart';
 // Track B - Ticket #100: Payment method integration
@@ -27,8 +28,35 @@ import 'package:delivery_ways_clean/state/payments/payment_methods_ui_state.dart
 import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
+import 'package:design_system_components/design_system_components.dart';
 import 'package:pricing_shims/pricing_shims.dart' as pricing;
 import '../support/design_system_harness.dart';
+
+/// Recording MapPort implementation for testing.
+/// Records all commands sent to it for verification.
+class _RecordingMapPort implements MapPort {
+  final List<MapCommand> recorded = <MapCommand>[];
+
+  @override
+  Sink<MapCommand> get commands => _RecordingSink(recorded);
+
+  @override
+  Stream<MapEvent> get events => const Stream<MapEvent>.empty();
+
+  @override
+  void dispose() {}
+}
+
+class _RecordingSink implements Sink<MapCommand> {
+  _RecordingSink(this._commands);
+  final List<MapCommand> _commands;
+
+  @override
+  void add(MapCommand data) => _commands.add(data);
+
+  @override
+  void close() {}
+}
 
 void main() {
   setUpAll(() {
@@ -144,6 +172,10 @@ void main() {
             }
             return RideTripSessionController(ref);
           }),
+          paymentMethodsUiProvider.overrideWith((ref) {
+            return PaymentMethodsUiState.defaultStub();
+          }),
+          rideMapPortProvider.overrideWithValue(_RecordingMapPort()),
         ],
         child: MaterialApp(
           locale: locale,
@@ -292,10 +324,21 @@ void main() {
 
     testWidgets('retry button triggers quote refresh on error state',
         (WidgetTester tester) async {
-      final testController = _TestRideQuoteControllerWithRetryCount(
-        const RideQuoteUiState(
-          isLoading: false,
-          error: RideQuoteError.unexpected('Network error'),
+      final testSessionController = _TestRideTripSessionControllerWithRetryCount(
+        RideTripSessionUiState(
+          isQuoting: false,
+          activeQuote: null,
+          lastQuoteFailure: pricing.RideQuoteFailureReason.networkError,
+          draftSnapshot: RideDraftUiState(
+            pickupLabel: 'Current location',
+            destinationQuery: 'Test Destination',
+            pickupPlace: MobilityPlace.currentLocation(label: 'Current location'),
+            destinationPlace: const MobilityPlace(
+              id: 'test_dest',
+              label: 'Test Destination',
+              type: MobilityPlaceType.searchResult,
+            ),
+          ),
         ),
       );
 
@@ -307,9 +350,13 @@ void main() {
               controller.updateDestination('Test Destination');
               return controller;
             }),
-            rideQuoteControllerProvider.overrideWith((ref) => testController),
-            rideTripSessionProvider.overrideWith(
-                (ref) => RideTripSessionController(ref)),
+            rideQuoteControllerProvider.overrideWith((ref) {
+              return _TestRideQuoteController(RideQuoteUiState(
+                isLoading: false,
+                quote: createMockQuote(),
+              ));
+            }),
+            rideTripSessionProvider.overrideWith((ref) => testSessionController),
           ],
           // ignore: prefer_const_constructors
           child: MaterialApp(
@@ -329,15 +376,15 @@ void main() {
       // Verify retry button exists
       expect(find.text('Retry'), findsOneWidget);
 
-      // Initial call count should be 1 (from initState)
-      expect(testController.refreshFromDraftCallCount, 1);
+      // Initial call count should be 1 (called in initState)
+      expect(testSessionController.prepareConfirmationCallCount, 1);
 
       // Tap retry button
       await tester.tap(find.text('Retry'));
       await tester.pumpAndSettle();
 
-      // Verify refresh was called again
-      expect(testController.refreshFromDraftCallCount, 2);
+      // Verify prepareConfirmation was called again (total 2 calls)
+      expect(testSessionController.prepareConfirmationCallCount, 2);
     });
 
     testWidgets('shows empty state when no quote is available',
@@ -620,8 +667,8 @@ void main() {
       // Check for German title
       expect(find.text('Fahrt bestätigen'), findsOneWidget);
       
-      // Check for recommended badge (Note: RideQuoteOptionsSheet uses hardcoded English)
-      expect(find.text('Recommended'), findsOneWidget);
+      // Check for recommended badge in German
+      expect(find.text('Empfohlen'), findsOneWidget);
       
       // Check for German CTA
       expect(find.text('Fahrt anfordern'), findsOneWidget);
@@ -731,6 +778,31 @@ void main() {
       expect(find.text('Markers: 2, Polylines: 1'), findsOneWidget);
       expect(find.textContaining('Camera: 24.7320, 46.6877'), findsOneWidget);
     });
+
+    // Ticket #216: RTL/LTR Support Test
+    testWidgets('RideConfirmationScreen supports RTL layout without throwing exceptions',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.rtl,
+          child: createTestWidget(),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Verify the screen renders without throwing exceptions in RTL mode
+      expect(find.byType(RideConfirmationScreen), findsOneWidget,
+          reason: 'RideConfirmationScreen should render successfully in RTL mode');
+
+      // Verify key UI elements are present
+      expect(find.byKey(RideConfirmationScreen.vehicleListKey), findsOneWidget,
+          reason: 'Vehicle list should be present in RTL layout');
+      expect(find.byKey(RideConfirmationScreen.paymentMethodCardKey), findsOneWidget,
+          reason: 'Payment method card should be present in RTL layout');
+      expect(find.byKey(RideConfirmationScreen.ctaRequestRideKey), findsOneWidget,
+          reason: 'Request Ride CTA should be present in RTL layout');
+    });
   });
 }
 
@@ -752,22 +824,52 @@ class _TestRideQuoteController extends RideQuoteController {
 
 /// Test controller that returns a fixed session state
 class _TestRideTripSessionController extends RideTripSessionController {
-  _TestRideTripSessionController(this._initialState) : super(_MockRef());
+  _TestRideTripSessionController(RideTripSessionUiState initialState)
+      : super(_MockRef()) {
+    state = initialState;
+  }
 
-  final RideTripSessionUiState _initialState;
-
-  @override
-  RideTripSessionUiState get state => _initialState;
-
-  // Override to prevent tracking subscription in tests
-  @override
+  // Prevent tracking subscription in tests (not a real override)
   void _setupTrackingSubscription() {
     // Do nothing in tests - we don't need tracking functionality
+  }
+
+  // Override methods that might access providers
+  @override
+  Future<bool> prepareConfirmation(RideDraftUiState draft) async {
+    // Do nothing in tests
+    return true;
+  }
+
+  @override
+  void startRideFromQuote({required RideQuoteOption selectedOption, required RideDraftUiState draft}) {
+    // Do nothing in tests
   }
 }
 
 /// Mock Ref implementation for tests
 class _MockRef implements Ref {
+  @override
+  ProviderSubscription<T> listen<T>(
+    ProviderListenable<T> provider,
+    void Function(T?, T) listener, {
+    void Function(Object, StackTrace)? onError,
+    bool fireImmediately = false,
+  }) {
+    // Return a mock subscription that does nothing
+    return _MockProviderSubscription<T>();
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _MockProviderSubscription<T> implements ProviderSubscription<T> {
+  @override
+  void close() {
+    // Do nothing
+  }
+
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -786,6 +888,24 @@ class _TestRideQuoteControllerWithRetryCount extends RideQuoteController {
   @override
   Future<void> refreshFromDraft(RideDraftUiState draft) async {
     refreshFromDraftCallCount++;
+  }
+}
+
+/// Test session controller with retry counter for verifying Retry button behavior
+class _TestRideTripSessionControllerWithRetryCount extends RideTripSessionController {
+  _TestRideTripSessionControllerWithRetryCount([RideTripSessionUiState? initialState])
+      : super(_MockRef()) {
+    if (initialState != null) {
+      state = initialState;
+    }
+  }
+
+  int prepareConfirmationCallCount = 0;
+
+  @override
+  Future<bool> prepareConfirmation(RideDraftUiState draft) async {
+    prepareConfirmationCallCount++;
+    return true; // Simulate success
   }
 }
 
@@ -2294,6 +2414,10 @@ void runPricingUiTests() {
             }
             return RideTripSessionController(ref);
           }),
+          paymentMethodsUiProvider.overrideWith((ref) {
+            return PaymentMethodsUiState.defaultStub();
+          }),
+          rideMapPortProvider.overrideWithValue(_RecordingMapPort()),
         ],
         child: MaterialApp(
           locale: locale,
@@ -2373,18 +2497,19 @@ void runPricingUiTests() {
           ),
         ),
       ));
-      await tester.pumpAndSettle();
+      // Track B - Ticket #219: Use pump instead of pumpAndSettle to avoid infinite wait on loading state
+      await tester.pump();
 
       // Check for loading indicator
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
       // Check for loading title
-      expect(find.text('Getting your price...'), findsOneWidget);
+      expect(find.text('Fetching ride options...'), findsOneWidget);
 
       // Check that Request Ride button is disabled
       final requestButton = find.byKey(RideConfirmationScreen.ctaRequestRideKey);
       expect(requestButton, findsOneWidget);
-      final buttonWidget = tester.widget<ElevatedButton>(requestButton);
+      final buttonWidget = tester.widget<DWButton>(requestButton);
       expect(buttonWidget.onPressed, isNull);
     });
 
@@ -2394,7 +2519,7 @@ void runPricingUiTests() {
       await tester.pumpWidget(createTestWidget(
         sessionState: RideTripSessionUiState(
           isQuoting: false,
-          activeQuote: mockQuote,
+          activeQuote: null,
           lastQuoteFailure: null,
           draftSnapshot: RideDraftUiState(
             pickupLabel: 'Current location',
@@ -2407,6 +2532,10 @@ void runPricingUiTests() {
             ),
           ),
         ),
+        quoteState: RideQuoteUiState(
+          isLoading: false,
+          quote: mockQuote,
+        ),
       ));
       await tester.pumpAndSettle();
 
@@ -2418,14 +2547,15 @@ void runPricingUiTests() {
       expect(find.textContaining('18.00 SAR'), findsOneWidget);
       expect(find.textContaining('25.00 SAR'), findsOneWidget);
 
-      // Check for distance and duration
-      expect(find.textContaining('2.5 km'), findsOneWidget);
-      expect(find.textContaining('15 min'), findsOneWidget);
+      // Track B - Ticket #219: Distance display removed from UI - keeping ETA only
+      // Check for duration (ETA)
+      expect(find.textContaining('5 min'), findsOneWidget);
+      expect(find.textContaining('7 min'), findsOneWidget);
 
       // Check that Request Ride button is enabled
       final requestButton = find.byKey(RideConfirmationScreen.ctaRequestRideKey);
       expect(requestButton, findsOneWidget);
-      final buttonWidget = tester.widget<ElevatedButton>(requestButton);
+      final buttonWidget = tester.widget<DWButton>(requestButton);
       expect(buttonWidget.onPressed, isNotNull);
     });
 
@@ -2452,16 +2582,17 @@ void runPricingUiTests() {
       // Check for error icon
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
 
+      // Track B - Ticket #219: Updated to use current l10n key value (English locale)
       // Check for error message
-      expect(find.textContaining('حدث خطأ في الاتصال'), findsOneWidget);
+      expect(find.textContaining('Please check your connection'), findsOneWidget);
 
       // Check for retry button
-      expect(find.text('Try again'), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
 
       // Check that Request Ride button is disabled
       final requestButton = find.byKey(RideConfirmationScreen.ctaRequestRideKey);
       expect(requestButton, findsOneWidget);
-      final buttonWidget = tester.widget<ElevatedButton>(requestButton);
+      final buttonWidget = tester.widget<DWButton>(requestButton);
       expect(buttonWidget.onPressed, isNull);
     });
 
@@ -2485,11 +2616,12 @@ void runPricingUiTests() {
       ));
       await tester.pumpAndSettle();
 
+      // Track B - Ticket #219: Updated to use current l10n key value (English locale)
       // Check for error message
-      expect(find.textContaining('تحقق من النقاط المحددة'), findsOneWidget);
+      expect(find.textContaining('We couldn\'t load ride options'), findsOneWidget);
 
       // Check for retry button
-      expect(find.text('Try again'), findsOneWidget);
+      expect(find.text('Retry'), findsOneWidget);
     });
   });
 }
@@ -2614,10 +2746,11 @@ void runRequestRideHappyPathTests() {
       );
       await tester.pumpAndSettle();
 
-      // Verify initial state has no draftSnapshot
+      // Track B - Ticket #219: draftSnapshot is now populated during screen init (prepareConfirmation)
+      // Verify initial state has draftSnapshot populated
       final initialSession = container.read(rideTripSessionProvider);
-      expect(initialSession.draftSnapshot, isNull,
-          reason: 'Before Request Ride, draftSnapshot should be null');
+      expect(initialSession.draftSnapshot, isNotNull,
+          reason: 'After screen init, draftSnapshot should be populated');
 
       // Tap Request Ride
       await tester.tap(find.text('Request Ride'));

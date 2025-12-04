@@ -34,6 +34,8 @@ import 'package:mobility_shims/mobility_shims.dart';
 import 'package:parcels_shims/parcels_shims.dart' show Parcel, ParcelShipment, ParcelShipmentStatus;
 import 'package:design_system_shims/design_system_shims.dart'
     show DWButton, DWSpacing, DWRadius, DWElevation;
+import '../ui/orders/order_card.dart';
+import '../ui/common/empty_state.dart';
 
 import '../config/feature_flags.dart';
 import '../router/app_router.dart';
@@ -853,11 +855,11 @@ class _OrdersTabState extends ConsumerState<_OrdersTab> {
               data: (items) {
                 final filtered = _applyFilter(items, _selectedFilter);
                 if (filtered.isEmpty) {
-                  return _OrdersEmptyState(
-                    l10n: l10n,
-                    textTheme: textTheme,
-                    colorScheme: colorScheme,
-                    onCreateFirstParcel: () {
+                  return DWEmptyState(
+                    title: l10n.ordersHistoryEmptyTitle,
+                    description: l10n.ordersHistoryEmptySubtitle,
+                    primaryActionLabel: 'Create first shipment',
+                    onPrimaryActionTap: () {
                       // Navigate to parcels flow
                       Navigator.of(context).pushNamed(RoutePaths.parcelsList);
                     },
@@ -865,31 +867,14 @@ class _OrdersTabState extends ConsumerState<_OrdersTab> {
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.symmetric(
+                  padding: const EdgeInsetsDirectional.symmetric(
                     horizontal: DWSpacing.md,
                     vertical: DWSpacing.md,
                   ),
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
                     final item = filtered[index];
-
-                    switch (item.serviceType) {
-                      case OrderHistoryServiceType.parcel:
-                        final parcelItem = item as ParcelOrderHistoryItem;
-                        return _ParcelOrderCard(
-                          shipment: parcelItem.shipment,
-                          l10n: l10n,
-                        );
-                      case OrderHistoryServiceType.ride:
-                        final rideItem = item as RideOrderHistoryItem;
-                        return _RideOrderCard(
-                          entry: rideItem.entry,
-                          l10n: l10n,
-                        );
-                      case OrderHistoryServiceType.food:
-                        // TODO (future): Food order card
-                        return const SizedBox.shrink();
-                    }
+                    return _buildOrderCard(item, l10n);
                   },
                 );
               },
@@ -898,6 +883,102 @@ class _OrdersTabState extends ConsumerState<_OrdersTab> {
         ],
       ),
     );
+  }
+
+  Widget _buildOrderCard(OrderHistoryItem item, AppLocalizations l10n) {
+    switch (item.serviceType) {
+      case OrderHistoryServiceType.parcel:
+        final parcelItem = item as ParcelOrderHistoryItem;
+        return _buildParcelOrderCard(parcelItem.shipment, l10n);
+      case OrderHistoryServiceType.ride:
+        final rideItem = item as RideOrderHistoryItem;
+        return _buildRideOrderCard(rideItem.entry, l10n);
+      case OrderHistoryServiceType.food:
+        // TODO (future): Food order card
+        return const SizedBox.shrink();
+    }
+  }
+
+  Widget _buildParcelOrderCard(ParcelShipment shipment, AppLocalizations l10n) {
+    final statusLabel = _mapParcelStatusToLabel(l10n, shipment.status);
+    final priceText = _buildPriceText(shipment) ?? '—';
+
+    return OrderCard(
+      serviceType: OrderServiceType.parcel,
+      title: shipment.dropoffAddress.label,
+      subtitle: '${shipment.pickupAddress.label} → ${shipment.dropoffAddress.label}',
+      statusLabel: statusLabel,
+      priceLabel: priceText,
+      onTap: () {
+        // TODO: Navigate to parcel details when implemented
+      },
+    );
+  }
+
+  Widget _buildRideOrderCard(RideHistoryEntry entry, AppLocalizations l10n) {
+    final statusLabel = _mapRideStatusToLabel(l10n, entry.trip.phase);
+    final priceText = entry.amountFormatted ?? '—';
+
+    final subtitle = entry.originLabel != null && entry.destinationLabel.isNotEmpty
+        ? '${entry.originLabel} → ${entry.destinationLabel}'
+        : MaterialLocalizations.of(context).formatMediumDate(entry.completedAt);
+
+    return OrderCard(
+      serviceType: OrderServiceType.ride,
+      title: entry.destinationLabel,
+      subtitle: subtitle,
+      statusLabel: statusLabel,
+      priceLabel: priceText,
+      onTap: () {
+        // TODO: Navigate to ride details when implemented
+      },
+    );
+  }
+
+  String _mapParcelStatusToLabel(AppLocalizations l10n, ParcelShipmentStatus status) {
+    switch (status) {
+      case ParcelShipmentStatus.created:
+        return l10n.parcelsShipmentStatusCreated;
+      case ParcelShipmentStatus.inTransit:
+        return l10n.parcelsShipmentStatusInTransit;
+      case ParcelShipmentStatus.delivered:
+        return l10n.parcelsShipmentStatusDelivered;
+      case ParcelShipmentStatus.cancelled:
+        return l10n.parcelsShipmentStatusCancelled;
+    }
+  }
+
+  String _mapRideStatusToLabel(AppLocalizations l10n, RideTripPhase phase) {
+    switch (phase) {
+      case RideTripPhase.draft:
+        return l10n.rideStatusShortDraft;
+      case RideTripPhase.quoting:
+        return l10n.rideStatusShortQuoting;
+      case RideTripPhase.requesting:
+        return l10n.rideStatusShortRequesting;
+      case RideTripPhase.findingDriver:
+        return l10n.rideStatusShortFindingDriver;
+      case RideTripPhase.driverAccepted:
+        return l10n.rideStatusShortDriverAccepted;
+      case RideTripPhase.driverArrived:
+        return l10n.rideStatusShortDriverArrived;
+      case RideTripPhase.inProgress:
+      case RideTripPhase.payment:
+        return l10n.rideStatusShortInProgress;
+      case RideTripPhase.completed:
+        return l10n.rideStatusShortCompleted;
+      case RideTripPhase.cancelled:
+        return l10n.rideStatusShortCancelled;
+      case RideTripPhase.failed:
+        return l10n.rideStatusShortFailed;
+    }
+  }
+
+  String? _buildPriceText(ParcelShipment shipment) {
+    if (shipment.estimatedPrice == null || shipment.currencyCode == null) {
+      return null;
+    }
+    return '${shipment.estimatedPrice!.toStringAsFixed(2)} ${shipment.currencyCode}';
   }
 
   List<OrderHistoryItem> _applyFilter(
@@ -948,7 +1029,7 @@ class _OrdersFilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(
+      padding: const EdgeInsetsDirectional.symmetric(
         horizontal: DWSpacing.md,
         vertical: DWSpacing.sm,
       ),
@@ -1019,362 +1100,7 @@ class _OrdersFilterBar extends StatelessWidget {
   }
 }
 
-/// Parcel Order Card for Orders Tab
-class _ParcelOrderCard extends StatelessWidget {
-  const _ParcelOrderCard({
-    required this.shipment,
-    required this.l10n,
-  });
 
-  final ParcelShipment shipment;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    final statusLabel = _mapParcelStatusToLabel(l10n, shipment.status);
-    final statusColor = _mapParcelStatusToColor(colorScheme, shipment.status);
-
-    final dateText = MaterialLocalizations.of(context)
-        .formatMediumDate(shipment.createdAt);
-
-    final priceText = _buildPriceText(shipment);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: DWSpacing.sm),
-      padding: const EdgeInsets.all(DWSpacing.md),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(DWRadius.lg),
-        boxShadow: kElevationToShadow[1],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Service icon
-          Container(
-            padding: const EdgeInsets.all(DWSpacing.sm),
-            decoration: BoxDecoration(
-              color: colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(DWRadius.md),
-            ),
-            child: Icon(
-              Icons.local_shipping_outlined,
-              size: 24,
-              color: colorScheme.onPrimaryContainer,
-            ),
-          ),
-          const SizedBox(width: DWSpacing.md),
-          // Main content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title + status chip
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        shipment.dropoffAddress.label,
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: DWSpacing.xs),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: DWSpacing.sm,
-                        vertical: DWSpacing.xs,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(DWRadius.sm),
-                      ),
-                      child: Text(
-                        statusLabel,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: statusColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: DWSpacing.xs),
-                // Route
-                Text(
-                  '${shipment.pickupAddress.label} → ${shipment.dropoffAddress.label}',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: DWSpacing.xs),
-                // Date + price
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      dateText,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    if (priceText != null)
-                      Text(
-                        priceText,
-                        style: textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _mapParcelStatusToLabel(
-    AppLocalizations l10n,
-    ParcelShipmentStatus status,
-  ) {
-    // Use same l10n used in details screen
-    switch (status) {
-      case ParcelShipmentStatus.created:
-        return l10n.parcelsShipmentStatusCreated;
-      case ParcelShipmentStatus.inTransit:
-        return l10n.parcelsShipmentStatusInTransit;
-      case ParcelShipmentStatus.delivered:
-        return l10n.parcelsShipmentStatusDelivered;
-      case ParcelShipmentStatus.cancelled:
-        return l10n.parcelsShipmentStatusCancelled;
-    }
-  }
-
-  Color _mapParcelStatusToColor(
-    ColorScheme colorScheme,
-    ParcelShipmentStatus status,
-  ) {
-    switch (status) {
-      case ParcelShipmentStatus.created:
-        return colorScheme.primary;
-      case ParcelShipmentStatus.inTransit:
-        return colorScheme.tertiary;
-      case ParcelShipmentStatus.delivered:
-        return colorScheme.secondary;
-      case ParcelShipmentStatus.cancelled:
-        return colorScheme.error;
-    }
-  }
-
-  String? _buildPriceText(ParcelShipment shipment) {
-    if (shipment.estimatedPrice == null ||
-        shipment.currencyCode == null) {
-      return null;
-    }
-    // Very simple formatting
-    return '${shipment.estimatedPrice!.toStringAsFixed(2)} ${shipment.currencyCode}';
-  }
-}
-
-/// Ride Order Card for Orders Tab
-/// Track B - Ticket #157: Ride history integration with Orders History
-class _RideOrderCard extends StatelessWidget {
-  const _RideOrderCard({
-    required this.entry,
-    required this.l10n,
-  });
-
-  final RideHistoryEntry entry;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    final dateText = MaterialLocalizations.of(context)
-        .formatMediumDate(entry.completedAt);
-
-    final statusLabel = _mapRideStatusToLabel(l10n, entry.trip.phase);
-    final statusColor = _mapRideStatusToColor(colorScheme, entry.trip.phase);
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: DWSpacing.sm),
-      padding: const EdgeInsets.all(DWSpacing.md),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(DWRadius.lg),
-        boxShadow: kElevationToShadow[1],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Icon
-          Container(
-            padding: const EdgeInsets.all(DWSpacing.sm),
-            decoration: BoxDecoration(
-              color: colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(DWRadius.md),
-            ),
-            child: Icon(
-              Icons.directions_car_outlined,
-              size: 24,
-              color: colorScheme.onPrimaryContainer,
-            ),
-          ),
-          const SizedBox(width: DWSpacing.md),
-          // Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title + status chip
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        entry.destinationLabel,
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: DWSpacing.xs),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: DWSpacing.sm,
-                        vertical: DWSpacing.xs,
-                      ),
-                      decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(DWRadius.sm),
-                      ),
-                      child: Text(
-                        statusLabel,
-                        style: textTheme.labelSmall?.copyWith(
-                          color: statusColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: DWSpacing.xs),
-                // Route line (pickup -> dest) if available
-                if (entry.originLabel != null && entry.destinationLabel.isNotEmpty)
-                  Text(
-                    '${entry.originLabel} → ${entry.destinationLabel}',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                const SizedBox(height: DWSpacing.xs),
-                // Service name + date and fare
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Service name and date
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (entry.serviceName != null)
-                            Text(
-                              entry.serviceName!,
-                              style: textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          Text(
-                            dateText,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Fare
-                    if (entry.amountFormatted != null)
-                      Text(
-                        entry.amountFormatted!,
-                        style: textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _mapRideStatusToLabel(AppLocalizations l10n, RideTripPhase phase) {
-    switch (phase) {
-      case RideTripPhase.draft:
-        return l10n.rideStatusShortDraft;
-      case RideTripPhase.quoting:
-        return l10n.rideStatusShortQuoting;
-      case RideTripPhase.requesting:
-        return l10n.rideStatusShortRequesting;
-      case RideTripPhase.findingDriver:
-        return l10n.rideStatusShortFindingDriver;
-      case RideTripPhase.driverAccepted:
-        return l10n.rideStatusShortDriverAccepted;
-      case RideTripPhase.driverArrived:
-        return l10n.rideStatusShortDriverArrived;
-      case RideTripPhase.inProgress:
-      case RideTripPhase.payment:
-        return l10n.rideStatusShortInProgress;
-      case RideTripPhase.completed:
-        return l10n.rideStatusShortCompleted;
-      case RideTripPhase.cancelled:
-        return l10n.rideStatusShortCancelled;
-      case RideTripPhase.failed:
-        return l10n.rideStatusShortFailed;
-    }
-  }
-
-  Color _mapRideStatusToColor(ColorScheme colorScheme, RideTripPhase phase) {
-    switch (phase) {
-      case RideTripPhase.draft:
-      case RideTripPhase.quoting:
-      case RideTripPhase.requesting:
-      case RideTripPhase.findingDriver:
-      case RideTripPhase.driverAccepted:
-      case RideTripPhase.driverArrived:
-      case RideTripPhase.inProgress:
-      case RideTripPhase.payment:
-        return colorScheme.primary;
-      case RideTripPhase.completed:
-        return colorScheme.secondary;
-      case RideTripPhase.cancelled:
-      case RideTripPhase.failed:
-        return colorScheme.error;
-    }
-  }
-}
 
 /// Loading State for Orders Tab
 /// Track C - Ticket #153: Enhanced with skeleton loader matching Card/Order design
@@ -1572,72 +1298,6 @@ class _OrdersErrorState extends StatelessWidget {
   }
 }
 
-/// Empty State for Orders Tab
-/// Track C - Ticket #153: Enhanced to match Utility/EmptyState design pattern
-class _OrdersEmptyState extends StatelessWidget {
-  const _OrdersEmptyState({
-    required this.l10n,
-    required this.textTheme,
-    required this.colorScheme,
-    required this.onCreateFirstParcel,
-  });
-
-  final AppLocalizations l10n;
-  final TextTheme textTheme;
-  final ColorScheme colorScheme;
-  final VoidCallback onCreateFirstParcel;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(DWSpacing.lg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Icon in a subtle circular background
-            Container(
-              padding: const EdgeInsets.all(DWSpacing.lg),
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.history,
-                size: 64,
-                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-              ),
-            ),
-            const SizedBox(height: DWSpacing.lg),
-            // Title
-            Text(
-              l10n.ordersHistoryEmptyTitle,
-              style: textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: DWSpacing.sm),
-            // Description
-            Text(
-              l10n.ordersHistoryEmptySubtitle,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: DWSpacing.xl),
-            // Primary CTA
-            DWButton.primary(
-              label: 'Create first shipment',
-              onPressed: onCreateFirstParcel,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 /// Profile Tab - Track D - Ticket #5
 /// Full Profile/Settings implementation with DSR integration

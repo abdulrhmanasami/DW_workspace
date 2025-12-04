@@ -13,9 +13,11 @@
 ///
 /// NOTE: This is MVP UI Stub. Backend integration in future ticket.
 
+// Design System imports (Ticket #221 - Track A Design System Integration)
+import 'package:design_system_foundation/design_system_foundation.dart';
+import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:design_system_shims/design_system_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../state/payments/payment_methods_ui_state.dart';
@@ -61,7 +63,7 @@ class _PaymentsEmptyState extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(DWSpacing.lg),
+        padding: EdgeInsets.all(DwSpacing().lg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -71,7 +73,7 @@ class _PaymentsEmptyState extends StatelessWidget {
               size: 72,
               color: colorScheme.outline,
             ),
-            SizedBox(height: DWSpacing.lg),
+            SizedBox(height: DwSpacing().lg),
 
             // Title
             Text(
@@ -79,7 +81,7 @@ class _PaymentsEmptyState extends StatelessWidget {
               style: textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: DWSpacing.sm),
+            SizedBox(height: DwSpacing().sm),
 
             // Body
             Text(
@@ -89,7 +91,7 @@ class _PaymentsEmptyState extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: DWSpacing.xl),
+            SizedBox(height: DwSpacing().xl),
 
             // Add CTA
             SizedBox(
@@ -126,9 +128,9 @@ class _PaymentsMethodsList extends ConsumerWidget {
         // List of methods
         Expanded(
           child: ListView.separated(
-            padding: EdgeInsets.all(DWSpacing.md),
+            padding: EdgeInsets.all(DwSpacing().md),
             itemCount: methods.length,
-            separatorBuilder: (_, __) => SizedBox(height: DWSpacing.sm),
+            separatorBuilder: (_, __) => SizedBox(height: DwSpacing().sm),
             itemBuilder: (context, index) {
               final method = methods[index];
               final isSelected = method.id == state.selectedMethodId;
@@ -148,7 +150,7 @@ class _PaymentsMethodsList extends ConsumerWidget {
 
         // Add new method CTA
         Padding(
-          padding: EdgeInsets.all(DWSpacing.md),
+          padding: EdgeInsets.all(DwSpacing().md),
           child: SafeArea(
             child: SizedBox(
               width: double.infinity,
@@ -187,19 +189,18 @@ class _PaymentMethodCard extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(DWRadius.md),
+      borderRadius: BorderRadius.circular(DwBorders().largeRadius),
       child: Card(
         elevation: 0,
         color: colorScheme.surfaceContainerHighest,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DWRadius.md),
-          // Track B - Ticket #100: Visual selection indicator
+          borderRadius: BorderRadius.circular(DwBorders().largeRadius),
           side: isSelected
               ? BorderSide(color: colorScheme.primary, width: 2)
               : BorderSide.none,
         ),
         child: Padding(
-          padding: EdgeInsets.all(DWSpacing.md),
+          padding: EdgeInsets.all(DwSpacing().md),
           child: Row(
             children: [
               // Icon
@@ -210,7 +211,7 @@ class _PaymentMethodCard extends StatelessWidget {
                   color: isSelected
                       ? colorScheme.primary.withValues(alpha: 0.15)
                       : colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(DWRadius.sm),
+                  borderRadius: BorderRadius.circular(DwBorders().largeRadius),
                 ),
                 child: Icon(
                   _getMethodIcon(method.type),
@@ -220,7 +221,7 @@ class _PaymentMethodCard extends StatelessWidget {
                   size: 24,
                 ),
               ),
-              SizedBox(width: DWSpacing.md),
+              SizedBox(width: DwSpacing().md),
 
               // Content
               Expanded(
@@ -234,7 +235,7 @@ class _PaymentMethodCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: DWSpacing.xxs),
+                    SizedBox(height: DwSpacing().xxs),
 
                     // Type label
                     Text(
@@ -249,13 +250,13 @@ class _PaymentMethodCard extends StatelessWidget {
 
               // Default badge
               if (method.isDefault) ...[
-                SizedBox(width: DWSpacing.sm),
+                SizedBox(width: DwSpacing().sm),
                 _DefaultBadge(label: l10n.paymentsDefaultBadge),
               ],
 
               // Track B - Ticket #100: Selection check icon
               if (isSelected) ...[
-                SizedBox(width: DWSpacing.sm),
+                SizedBox(width: DwSpacing().sm),
                 Icon(
                   Icons.check_circle,
                   color: colorScheme.primary,
@@ -302,12 +303,12 @@ class _DefaultBadge extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: DWSpacing.xs,
-        vertical: DWSpacing.xxs,
+        horizontal: DwSpacing().xs,
+        vertical: DwSpacing().xxs,
       ),
       decoration: BoxDecoration(
         color: colorScheme.primary.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(DWRadius.sm),
+        borderRadius: BorderRadius.circular(DwBorders().largeRadius),
       ),
       child: Text(
         label,

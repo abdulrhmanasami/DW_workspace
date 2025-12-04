@@ -2802,9 +2802,13 @@ void main() {
     test('pricing state is cleared when trip completes', () {
       final controller = _createControllerWithMockPricing();
 
-      // Start a trip
+      // Start a trip and progress it to inProgress phase
       const draft = RideDraftUiState(destinationQuery: 'Test');
       controller.startFromDraft(draft);
+      controller.applyEvent(RideTripEvent.driverAccepted);
+      controller.applyEvent(RideTripEvent.driverArrived);
+      controller.applyEvent(RideTripEvent.startTrip);
+      expect(controller.state.activeTrip?.phase, RideTripPhase.inProgress);
 
       // Set some pricing state
       final mockQuote = createMobilityTestQuote();

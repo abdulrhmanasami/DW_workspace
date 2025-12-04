@@ -363,18 +363,16 @@ class AuthGateScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (!FeatureFlags.enablePasswordlessAuth) {
-      // AppShell is the main entry point for authenticated users (Track A - Ticket #2)
-      // Ticket #180: Use HomeHubScreen as the main entry point
-      return const AppShell(child: HomeHubScreen());
+      // Track A - Ticket #217: AppShell v1 with Bottom Navigation
+      return const AppShell();
     }
 
     final authState = ref.watch(authStateProvider);
     return authState.when(
       data: (state) {
         if (state.isAuthenticated) {
-          // AppShell is the main entry point for authenticated users (Track A - Ticket #2)
-          // Ticket #180: Use HomeHubScreen as the main entry point
-          return const AppShell(child: HomeHubScreen());
+          // Track A - Ticket #217: AppShell v1 with Bottom Navigation
+          return const AppShell();
         }
         return const PhoneLoginScreen();
       },

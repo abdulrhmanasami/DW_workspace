@@ -404,6 +404,21 @@ class RideTripSessionUiState {
   }
 }
 
+/// Extension to provide pricing state clearing functionality.
+extension RideTripSessionUiStatePricingX on RideTripSessionUiState {
+  /// Returns a new state with pricing fields cleared.
+  ///
+  /// Track B - Ticket #211: Used when trip ends or session is cleared to ensure
+  /// pricing state (activeQuote, lastQuoteFailure, isQuoting) is reset.
+  RideTripSessionUiState clearedPricing() {
+    return copyWith(
+      clearActiveQuote: true,
+      clearLastQuoteFailure: true,
+      isQuoting: false,
+    );
+  }
+}
+
 /// FSM for ride lifecycle (Draft -> Quoting -> Requesting -> FindingDriver -> DriverAccepted -> DriverArrived -> InProgress -> Payment -> Completed/Cancelled).
 ///
 /// This controller manages the active ride trip session using the canonical FSM from mobility_shims.
@@ -447,8 +462,8 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
   // Track B - Ticket #208: Subscription to tracking controller for driver location updates
   late final ProviderSubscription<TrackingSessionState?> _trackingSubscription;
 
-  // Track B - Ticket #211: Counter for quote request IDs to handle stale responses
-  int _currentQuoteRequestId = 0;
+  // Track B - Ticket #211: Counter for quote request tokens to handle stale responses
+  int _lastQuoteRequestToken = 0;
 
   /// Track B - Ticket #208: Setup subscription to tracking controller for driver location updates.
   ///
@@ -548,6 +563,8 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
     return await requestQuoteForCurrentDraft();
   }
 
+  /// Request quote for a specific draft (used by prepareConfirmation)
+
   /// Starts a new trip from the current draft.
   ///
   /// For now, this is purely client-side and does not talk to backend.
@@ -562,6 +579,9 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
     RideDraftUiState draft, {
     RideQuoteOption? selectedOption,
   }) {
+    // Save draft snapshot when actually starting the trip
+    state = state.copyWith(draftSnapshot: draft);
+
     // Generate a local trip ID
     final tripId = 'local-${DateTime.now().microsecondsSinceEpoch}';
 
@@ -660,8 +680,11 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
       return false;
     }
 
-    // Increment request ID to handle stale responses
-    final requestId = ++_currentQuoteRequestId;
+    // Take snapshot of draft for comparison later
+    final draftSnapshot = draft;
+
+    // Increment request token to handle stale responses
+    final requestToken = ++_lastQuoteRequestToken;
 
     // Set quoting state
     state = state.copyWith(
@@ -670,23 +693,34 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
       clearLastQuoteFailure: true,
     );
 
-    // Build quote request
+    // Build quote request from draft snapshot
     final request = pricing.RideQuoteRequest(
       pickup: GeoPoint(pickup.latitude, pickup.longitude),
       dropoff: GeoPoint(dropoff.latitude, dropoff.longitude),
       requestedAt: DateTime.now(),
-      serviceTierCode: draft.selectedOptionId,
+      serviceTierCode: draftSnapshot.selectedOptionId,
     );
 
     try {
       final result = await _pricingService.requestQuote(request);
 
-      // Check if this response is still relevant (not stale)
-      if (requestId != _currentQuoteRequestId) {
-        // Stale response - ignore it
+      // First check: if there's a newer request, ignore this response completely
+      if (requestToken != _lastQuoteRequestToken) {
+        // Stale response - ignore it completely, don't touch state
         return false;
       }
 
+      // Second check: if draft changed since snapshot, stop quoting but don't update quote/failure
+      final currentDraft = state.draftSnapshot;
+      if (currentDraft == null || !_isSameDraft(currentDraft, draftSnapshot)) {
+        // Draft changed - just stop quoting, don't update activeQuote or lastQuoteFailure
+        state = state.copyWith(
+          isQuoting: false,
+        );
+        return false;
+      }
+
+      // Only update state if both checks pass
       if (result.isSuccess) {
         // Success: convert pricing.RideQuote to RideQuote and set active quote
         final pricingQuote = result.quote!;
@@ -726,9 +760,19 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
 
       return result.isSuccess;
     } catch (error) {
-      // Check if this response is still relevant (not stale)
-      if (requestId != _currentQuoteRequestId) {
-        // Stale response - ignore it
+      // First check: if there's a newer request, ignore this response completely
+      if (requestToken != _lastQuoteRequestToken) {
+        // Stale response - ignore it completely, don't touch state
+        return false;
+      }
+
+      // Second check: if draft changed since snapshot, stop quoting but don't update quote/failure
+      final currentDraft = state.draftSnapshot;
+      if (currentDraft == null || !_isSameDraft(currentDraft, draftSnapshot)) {
+        // Draft changed - just stop quoting, don't update activeQuote or lastQuoteFailure
+        state = state.copyWith(
+          isQuoting: false,
+        );
         return false;
       }
 
@@ -755,7 +799,7 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
   /// Track B - Ticket #111: Also clears draftSnapshot.
   /// Track B - Ticket #211: Also clears pricing state (activeQuote, lastQuoteFailure, isQuoting).
   void clear() {
-    state = RideTripSessionUiState(historyTrips: state.historyTrips);
+    state = RideTripSessionUiState(historyTrips: state.historyTrips).clearedPricing();
 
     // Track B - Ticket #209: Assert invariants after state change
     _debugAssertInvariants();
@@ -1073,7 +1117,7 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
 
     // Step 5: Clear temporary state while preserving history
     // Track B - Ticket #211: Also clears pricing state (activeQuote, lastQuoteFailure, isQuoting)
-    state = RideTripSessionUiState(historyTrips: updatedHistory);
+    state = RideTripSessionUiState(historyTrips: updatedHistory).clearedPricing();
 
     return true;
   }
@@ -1157,7 +1201,7 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
 
     // Step 4: Clear temporary state while preserving history
     // Track B - Ticket #211: Also clears pricing state (activeQuote, lastQuoteFailure, isQuoting)
-    state = RideTripSessionUiState(historyTrips: updatedHistory);
+    state = RideTripSessionUiState(historyTrips: updatedHistory).clearedPricing();
 
     // Track B - Ticket #145: Add destination to recent locations
     _addToRecentLocations();
@@ -1245,7 +1289,7 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
 
     // Step 5: Clear temporary state while preserving history
     // Track B - Ticket #211: Also clears pricing state (activeQuote, lastQuoteFailure, isQuoting)
-    state = RideTripSessionUiState(historyTrips: updatedHistory);
+    state = RideTripSessionUiState(historyTrips: updatedHistory).clearedPricing();
 
     // Track B - Ticket #209: Assert invariants after state change
     _debugAssertInvariants();
@@ -1425,6 +1469,28 @@ class RideTripSessionController extends StateNotifier<RideTripSessionUiState> {
       case RideVehicleCategory.premium:
         return 'Premium';
     }
+  }
+
+  /// Track B - Ticket #211: Helper to compare draft snapshots for pricing relevance.
+  ///
+  /// Returns true if both drafts have the same pickup, dropoff location,
+  /// and service tier that affect pricing calculations.
+  bool _isSameDraft(RideDraftUiState a, RideDraftUiState b) {
+    // Compare locations (pickup and dropoff)
+    final pickupA = a.pickupPlace?.location;
+    final pickupB = b.pickupPlace?.location;
+    final dropoffA = a.destinationPlace?.location;
+    final dropoffB = b.destinationPlace?.location;
+
+    if (pickupA?.latitude != pickupB?.latitude ||
+        pickupA?.longitude != pickupB?.longitude ||
+        dropoffA?.latitude != dropoffB?.latitude ||
+        dropoffA?.longitude != dropoffB?.longitude) {
+      return false;
+    }
+
+    // Compare service tier
+    return a.selectedOptionId == b.selectedOptionId;
   }
 
   /// Track B - Ticket #208: Dispose tracking subscription when controller is disposed.
