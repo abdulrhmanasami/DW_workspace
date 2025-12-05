@@ -1,9 +1,0 @@
-name: network_shims
-publish_to: 'none'
-resolution: workspace
-environment:
-  sdk: ">=3.4.0 <4.0.0"
-dependencies:
-  meta: any
-dev_dependencies:
-  lints: any

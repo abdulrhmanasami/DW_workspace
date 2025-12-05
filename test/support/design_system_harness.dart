@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/src/components.dart';
 import 'package:design_system_shims/src/providers.dart';
-import 'package:maps_shims/maps_shims.dart' show MapViewBuilder, MapViewParams, mapViewBuilderProvider;
+import 'package:maps_shims/maps_shims.dart' show MapViewParams, mapViewBuilderProvider;
 import 'package:foundation_shims/foundation_shims.dart' show trackingEnabledProvider;
 import 'package:mobility_shims/mobility.dart' show LocationProvider, LocationPoint, PermissionStatus, BackgroundTracker, TrackingStatus, locationProvider, backgroundTrackerProvider;
 

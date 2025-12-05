@@ -294,11 +294,10 @@ class _RideBookingSheetContentState
   void initState() {
     super.initState();
     _destinationController = TextEditingController();
-    // FIX-4: Wrap initialize() in Future.microtask to avoid modifying provider during build
+    // FIX-4: Use addPostFrameCallback to avoid modifying provider during build
     // Initialize ride booking with current location when the screen opens
-    Future.microtask(() {
-      final controller = ref.read(rideBookingControllerProvider.notifier);
-      controller.initialize();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(rideBookingControllerProvider.notifier).initialize();
     });
   }
 
