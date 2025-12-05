@@ -48,6 +48,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
+  crypto:
+    dependency: transitive
+    description:
+      name: crypto
+      sha256: c8ea0233063ba03258fbcf2ca4d6dadfefe14f02fab57702265467a19f27fadf
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.7"
   design_system_components:
     dependency: "direct overridden"
     description:
@@ -194,6 +202,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.16.0"
+  network_shims:
+    dependency: "direct overridden"
+    description:
+      path: "../network_shims"
+      relative: true
+    source: path
+    version: "0.0.0"
   package_info_plus:
     dependency: transitive
     description:

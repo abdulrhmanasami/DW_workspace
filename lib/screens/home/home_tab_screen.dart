@@ -6,6 +6,7 @@ import '../../router/app_router.dart';
 import '../../widgets/app_button_unified.dart';
 import '../../ui/home/home_service_card.dart';
 import '../../ui/home/home_map_placeholder.dart';
+import '../../config/feature_flags.dart';
 
 /// Home Tab Screen - Screen 6 (Home Hub – Default State)
 /// Created by: Track A - Ticket #228
@@ -117,19 +118,30 @@ class HomeTabScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: DWSpacing.md),
 
-                        // Food Service (Coming Soon)
-                        HomeServiceCard(
-                          icon: Icons.restaurant,
-                          title: l10n.homeServiceFoodTitle,
-                          subtitle: l10n.homeServiceFoodSubtitle,
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Food ordering will be enabled soon.'),
-                              ),
-                            );
-                          },
-                        ),
+                        // Food Service Button
+                        if (FeatureFlags.enableFoodMvp) ...[
+                          AppButtonUnified(
+                            label: l10n.homeServiceFoodTitle,
+                            onPressed: () {
+                              Navigator.of(context).pushNamed(RoutePaths.foodRestaurants);
+                            },
+                            leadingIcon: const Icon(Icons.restaurant),
+                            style: AppButtonStyle.secondary,
+                          ),
+                        ] else ...[
+                          HomeServiceCard(
+                            icon: Icons.restaurant,
+                            title: l10n.homeServiceFoodTitle,
+                            subtitle: l10n.homeServiceFoodSubtitle,
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Food ordering will be enabled soon.'),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ],
                     ),
                   ],

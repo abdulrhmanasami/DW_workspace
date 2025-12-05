@@ -38,7 +38,7 @@ class FeatureFlags {
   factory FeatureFlags._fromEnv() {
     const String foodEnvValue = String.fromEnvironment(
       'ENABLE_FOOD_MVP',
-      defaultValue: 'false',
+      defaultValue: 'true',
     );
     const String parcelsEnvValue = String.fromEnvironment(
       'ENABLE_PARCELS_MVP',

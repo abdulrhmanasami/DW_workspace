@@ -1,4 +1,4 @@
-package com.example.delivery_ways_clean
+package com.delivery.ways
 
 import io.flutter.embedding.android.FlutterActivity
 

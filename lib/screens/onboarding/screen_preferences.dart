@@ -312,10 +312,20 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               DWButton.primary(
                 label: l10n?.onboardingPreferencesDoneCta ??
                     'Start using Delivery Ways',
-                onPressed: () {
+                onPressed: () async {
                   // Preferences are already saved when toggled
                   // Notify completion if callback provided
-                  widget.onComplete?.call();
+                  if (widget.onComplete != null) {
+                    widget.onComplete!();
+                  } else {
+                    // Fallback: Navigate directly to home
+                    if (context.mounted) {
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/',
+                        (route) => false,
+                      );
+                    }
+                  }
                 },
               ),
               const SizedBox(height: DWSpacing.md),

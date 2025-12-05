@@ -245,6 +245,13 @@ packages:
       relative: true
     source: path
     version: "0.0.0"
+  network_shims:
+    dependency: "direct overridden"
+    description:
+      path: "../network_shims"
+      relative: true
+    source: path
+    version: "0.0.0"
   package_info_plus:
     dependency: transitive
     description:

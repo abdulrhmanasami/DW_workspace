@@ -72,12 +72,8 @@ class _OnboardingRootScreenState extends ConsumerState<OnboardingRootScreen> {
     await _onboardingPrefs.setCompletedOnboarding(true);
 
     // Notify completion if callback provided
+    // This will trigger a rebuild in OnboardingGateScreen via ref.invalidate
     widget.onComplete?.call();
-
-    // Pop back to root (initial route) - same behavior as previous flow
-    if (mounted) {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    }
   }
 
   void _onPageChanged(int index) {
