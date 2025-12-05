@@ -91,30 +91,41 @@ void main() {
         );
       });
 
-      test('loadFromStorage stub completes without error', () async {
+      test('completeOnboarding persists state via OnboardingPrefs', () async {
         final container = ProviderContainer();
         addTearDown(container.dispose);
 
         final controller = container.read(onboardingStateProvider.notifier);
 
-        // Should complete without throwing
-        await expectLater(controller.loadFromStorage(), completes);
+        // Should complete without throwing and update state
+        await expectLater(controller.completeOnboarding(), completes);
 
-        // State should remain default (false) since stub doesn't load anything
+        // State should be updated to true
         expect(
           container.read(onboardingStateProvider).hasCompletedOnboarding,
-          isFalse,
+          isTrue,
         );
       });
 
-      test('persistCompletionFlag stub completes without error', () async {
+      test('completeOnboarding handles multiple calls correctly', () async {
         final container = ProviderContainer();
         addTearDown(container.dispose);
 
         final controller = container.read(onboardingStateProvider.notifier);
 
-        // Should complete without throwing
-        await expectLater(controller.persistCompletionFlag(), completes);
+        // First call
+        await controller.completeOnboarding();
+        expect(
+          container.read(onboardingStateProvider).hasCompletedOnboarding,
+          isTrue,
+        );
+
+        // Second call should still work (idempotent)
+        await expectLater(controller.completeOnboarding(), completes);
+        expect(
+          container.read(onboardingStateProvider).hasCompletedOnboarding,
+          isTrue,
+        );
       });
     });
 

@@ -16,6 +16,7 @@ import 'package:auth_shims/auth_shims.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
 import '../../state/identity/identity_controller.dart';
+import '../../widgets/app_shell.dart';
 
 /// Screen for entering OTP verification code.
 ///
@@ -95,50 +96,49 @@ class _OtpVerificationScreenState
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.authOtpTitle),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(DWSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                l10n.authOtpSubtitle,
-                style: textTheme.bodyLarge?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
+    return AppShell(
+      title: l10n.authOtpTitle,
+      showAppBar: true,
+      showBottomNav: false,
+      safeArea: true,
+      body: Padding(
+        padding: const EdgeInsets.all(DWSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.authOtpSubtitle,
+              style: textTheme.bodyLarge?.copyWith(
+                color: colors.onSurfaceVariant,
               ),
-              const SizedBox(height: DWSpacing.lg),
-              DWTextField(
-                controller: _codeController,
-                keyboardType: TextInputType.number,
-                hintText: l10n.authOtpFieldHint,
-                textInputAction: TextInputAction.done,
-                onSubmitted: (_) => onVerify(),
-              ),
-              // Show error message if present
-              if (identityState.lastAuthErrorMessage != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: DWSpacing.sm),
-                  child: Text(
-                    identityState.lastAuthErrorMessage!,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colors.error,
-                    ),
-                    textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: DWSpacing.lg),
+            DWTextField(
+              controller: _codeController,
+              keyboardType: TextInputType.number,
+              hintText: l10n.authOtpFieldHint,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => onVerify(),
+            ),
+            // Show error message if present
+            if (identityState.lastAuthErrorMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(top: DWSpacing.sm),
+                child: Text(
+                  identityState.lastAuthErrorMessage!,
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colors.error,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-              const Spacer(),
-              DWButton.primary(
-                label: l10n.authOtpVerifyCta,
-                onPressed: isLoading ? null : onVerify,
-                isLoading: isLoading,
               ),
-            ],
-          ),
+            const Spacer(),
+            DWButton.primary(
+              label: l10n.authOtpVerifyCta,
+              onPressed: isLoading ? null : onVerify,
+              isLoading: isLoading,
+            ),
+          ],
         ),
       ),
     );

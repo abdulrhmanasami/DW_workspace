@@ -27,6 +27,7 @@ import '../screens/mobility/ride_confirmation_screen.dart';
 import '../screens/mobility/ride_destination_screen.dart';
 import '../screens/mobility/ride_trip_summary_screen.dart';
 import '../screens/mobility/tracking_screen.dart';
+import '../screens/mobility/trip_tracking_screen.dart';
 import '../screens/parcels/parcel_destination_screen.dart';
 import '../screens/parcels/parcel_details_screen.dart';
 import '../screens/parcels/parcel_quote_screen.dart';
@@ -222,8 +223,8 @@ class AppRouter {
       // Ride Booking route (Track B - Ticket #6)
       RoutePaths.rideBooking: (c) => const RideBookingScreen(),
 
-      // Ride Trip Confirmation route (Track B - Ticket #7)
-      RoutePaths.rideConfirmation: (c) => const RideConfirmationScreen(),
+      // Ride Trip Confirmation route (Track B - Ticket #7) - Updated for B-5: Now routes to TripTrackingScreen
+      RoutePaths.rideConfirmation: (c) => const TripTrackingScreen(),
 
       // Ride Trip Confirmation route (Track B - Ticket #21) - alias for Screen 9
       RoutePaths.rideTripConfirmation: (c) => const RideConfirmationScreen(),

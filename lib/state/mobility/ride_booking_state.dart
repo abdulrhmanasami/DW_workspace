@@ -4,78 +4,133 @@
 /// Last updated: 2025-12-04
 ///
 /// State object for RideBookingController.
-/// Contains current request and loading states.
+/// Contains current request and UI status states.
 
 import 'package:mobility_shims/mobility_shims.dart';
+
+/// UI status for ride booking operations.
+enum RideBookingUiStatus {
+  /// No operation is currently in progress.
+  idle,
+
+  /// An operation is currently loading.
+  loading,
+
+  /// The last operation completed successfully.
+  success,
+
+  /// The last operation failed with an error.
+  error,
+}
 
 /// Immutable state for the ride booking UI.
 ///
 /// This state represents the current status of the ride booking process
 /// from the UI perspective. It contains the current ride request and
-/// various loading states for different operations.
+/// UI status for different operations.
 class RideBookingState {
   /// Creates a ride booking state.
   const RideBookingState({
-    this.currentRequest,
-    this.isRequestingQuote = false,
-    this.isConfirmingRide = false,
-    this.isCancelling = false,
-    this.lastErrorMessage,
+    this.rideId,
+    this.ride,
+    this.uiStatus = RideBookingUiStatus.idle,
+    this.errorMessage,
+    this.rating,
+    this.ratingComment,
   });
+
+  /// Factory for initial state.
+  factory RideBookingState.initial() => const RideBookingState();
+
+  /// The ID of the current ride request.
+  final String? rideId;
 
   /// The current ride request being worked on.
   /// Null if no request has been started yet.
-  final RideRequest? currentRequest;
+  final RideRequest? ride;
 
-  /// Whether a quote request is currently in progress.
-  final bool isRequestingQuote;
-
-  /// Whether ride confirmation is currently in progress.
-  final bool isConfirmingRide;
-
-  /// Whether ride cancellation is currently in progress.
-  final bool isCancelling;
+  /// Current UI status for operations.
+  final RideBookingUiStatus uiStatus;
 
   /// Last error message to display to the user.
   /// Null if no error has occurred.
-  final String? lastErrorMessage;
+  final String? errorMessage;
+
+  /// User rating for the completed ride (1–5 stars).
+  final int? rating;
+
+  /// Optional user comment for the completed ride.
+  final String? ratingComment;
+
+  /// Whether there is an active ride request.
+  bool get hasRide => ride != null;
 
   /// Gets the current status of the ride request.
-  RideStatus get status => currentRequest?.status ?? RideStatus.draft;
+  RideStatus? get status => ride?.status;
+
+  /// Whether the ride has valid locations set.
+  bool get hasValidLocations => ride?.hasValidLocations ?? false;
+
+  /// Whether the ride has pricing information.
+  bool get hasPricing => ride?.hasPricing ?? false;
 
   /// Whether the current request can have a quote requested.
   bool get canRequestQuote =>
-      currentRequest?.hasValidLocations == true &&
-      status == RideStatus.draft &&
-      !isRequestingQuote;
+      status == RideStatus.draft && hasValidLocations && hasPricing;
 
-  /// Whether the current request has a ready quote.
-  bool get hasQuote => currentRequest?.status == RideStatus.quoteReady;
+  /// Whether the current request can be confirmed.
+  bool get canConfirmRide =>
+      status == RideStatus.quoteReady && hasPricing;
+
+  /// Whether the current request can be cancelled.
+  bool get canCancel =>
+      status == RideStatus.draft ||
+      status == RideStatus.quoting ||
+      status == RideStatus.quoteReady ||
+      status == RideStatus.findingDriver;
+
+  /// Whether the ride has a quote (for UI compatibility).
+  bool get hasQuote => status == RideStatus.quoteReady ||
+      status == RideStatus.findingDriver ||
+      status == RideStatus.inProgress ||
+      status == RideStatus.completed;
+
+  /// Alias for errorMessage for UI compatibility.
+  String? get lastErrorMessage => errorMessage;
+
+  /// Whether a quote is currently being requested.
+  bool get isRequestingQuote => status == RideStatus.quoting;
 
   /// Formatted price string for display (e.g., "18.50 SAR").
-  String? get formattedPrice => currentRequest?.formattedEstimatedPrice;
+  String? get formattedPrice => ride?.formattedEstimatedPrice;
 
   /// Formatted duration string for display (e.g., "10 min").
-  String? get formattedDuration => currentRequest?.formattedEstimatedDuration;
+  String? get formattedDuration => ride?.formattedEstimatedDuration;
 
   /// Whether any loading operation is in progress.
-  bool get isLoading =>
-      isRequestingQuote || isConfirmingRide || isCancelling;
+  bool get isLoading => uiStatus == RideBookingUiStatus.loading;
+
+  /// Whether the user has already submitted a rating for this ride.
+  bool get hasSubmittedRating => rating != null;
 
   /// Creates a copy of this state with the given fields replaced.
   RideBookingState copyWith({
-    RideRequest? currentRequest,
-    bool? isRequestingQuote,
-    bool? isConfirmingRide,
-    bool? isCancelling,
-    String? lastErrorMessage,
+    String? rideId,
+    RideRequest? ride,
+    RideBookingUiStatus? uiStatus,
+    String? errorMessage,
+    bool clearError = false,
+    int? rating,
+    String? ratingComment,
+    bool clearRating = false,
   }) {
     return RideBookingState(
-      currentRequest: currentRequest ?? this.currentRequest,
-      isRequestingQuote: isRequestingQuote ?? this.isRequestingQuote,
-      isConfirmingRide: isConfirmingRide ?? this.isConfirmingRide,
-      isCancelling: isCancelling ?? this.isCancelling,
-      lastErrorMessage: lastErrorMessage ?? this.lastErrorMessage,
+      rideId: rideId ?? this.rideId,
+      ride: ride ?? this.ride,
+      uiStatus: uiStatus ?? this.uiStatus,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      rating: clearRating ? null : (rating ?? this.rating),
+      ratingComment: clearRating ? null : (ratingComment ?? this.ratingComment),
     );
   }
 
@@ -83,30 +138,36 @@ class RideBookingState {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is RideBookingState &&
-        other.currentRequest == currentRequest &&
-        other.isRequestingQuote == isRequestingQuote &&
-        other.isConfirmingRide == isConfirmingRide &&
-        other.isCancelling == isCancelling &&
-        other.lastErrorMessage == lastErrorMessage;
+        other.rideId == rideId &&
+        other.ride == ride &&
+        other.uiStatus == uiStatus &&
+        other.errorMessage == errorMessage &&
+        other.rating == rating &&
+        other.ratingComment == ratingComment;
   }
 
   @override
   int get hashCode => Object.hash(
-        currentRequest,
-        isRequestingQuote,
-        isConfirmingRide,
-        isCancelling,
-        lastErrorMessage,
+        rideId,
+        ride,
+        uiStatus,
+        errorMessage,
+        rating,
+        ratingComment,
       );
 
   @override
   String toString() {
     return 'RideBookingState('
+        'rideId: $rideId, '
         'status: $status, '
-        'isLoading: $isLoading, '
+        'uiStatus: $uiStatus, '
         'canRequestQuote: $canRequestQuote, '
-        'hasQuote: $hasQuote, '
-        'error: $lastErrorMessage'
+        'canConfirmRide: $canConfirmRide, '
+        'canCancel: $canCancel, '
+        'error: $errorMessage, '
+        'rating: $rating, '
+        'hasSubmittedRating: $hasSubmittedRating'
         ')';
   }
 }

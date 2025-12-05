@@ -8,7 +8,7 @@ import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
 
 import '../../l10n/generated/app_localizations.dart';
-import 'permissions_screen.dart';
+import '../../widgets/app_shell.dart';
 
 /// Welcome screen - First step of onboarding flow.
 /// Shows app introduction and "Get Started" CTA.
@@ -29,62 +29,57 @@ class WelcomeScreen extends StatelessWidget {
     final colors = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    return Scaffold(
-      backgroundColor: colors.surface,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(DWSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-              
-              // App icon
-              Icon(
-                Icons.local_shipping_outlined,
-                size: 80,
-                color: colors.primary,
+    return AppShell(
+      showAppBar: false,
+      showBottomNav: false,
+      safeArea: true,
+      body: Padding(
+        padding: const EdgeInsets.all(DWSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Spacer(),
+
+            // App icon
+            Icon(
+              Icons.local_shipping_outlined,
+              size: 80,
+              color: colors.primary,
+            ),
+            const SizedBox(height: DWSpacing.xl),
+
+            // Title
+            Text(
+              l10n?.onboardingWelcomeTitle ?? 'Welcome to Delivery Ways',
+              style: textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: DWSpacing.xl),
-              
-              // Title
-              Text(
-                l10n?.onboardingWelcomeTitle ?? 'Welcome to Delivery Ways',
-                style: textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: DWSpacing.sm),
+
+            // Subtitle
+            Text(
+              l10n?.onboardingWelcomeSubtitle ??
+                  'All your rides, parcels, and deliveries in one place.',
+              style: textTheme.bodyLarge?.copyWith(
+                color: colors.onSurfaceVariant,
               ),
-              const SizedBox(height: DWSpacing.sm),
-              
-              // Subtitle
-              Text(
-                l10n?.onboardingWelcomeSubtitle ?? 
-                    'All your rides, parcels, and deliveries in one place.',
-                style: textTheme.bodyLarge?.copyWith(
-                  color: colors.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const Spacer(),
-              
-              // Get Started button
-              DWButton.primary(
-                label: l10n?.onboardingWelcomeGetStartedCta ?? 'Get started',
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => PermissionsScreen(
-                        onComplete: onComplete,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: DWSpacing.md),
-            ],
-          ),
+              textAlign: TextAlign.center,
+            ),
+
+            const Spacer(),
+
+            // Get Started button
+            DWButton.primary(
+              label: l10n?.onboardingWelcomeGetStartedCta ?? 'Get started',
+              onPressed: () {
+                // Call onComplete to advance to next screen in PageView
+                onComplete?.call();
+              },
+            ),
+            const SizedBox(height: DWSpacing.md),
+          ],
         ),
       ),
     );

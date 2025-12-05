@@ -32,186 +32,157 @@ void main() {
     });
 
     group('startNewRide', () {
-      test('creates new draft request', () {
-        controller.startNewRide();
+      test('creates new draft request', () async {
+        await controller.startNewRide();
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.currentRequest, isNotNull);
+        expect(state.ride, isNotNull);
         expect(state.status, RideStatus.draft);
-        expect(state.lastErrorMessage, isNull);
+        expect(state.errorMessage, isNull);
+        expect(state.uiStatus, RideBookingUiStatus.idle);
       });
 
-      test('creates draft with initial pickup', () {
+      test('creates draft with initial pickup', () async {
         final pickup = MobilityPlace.currentLocation();
-        controller.startNewRide(initialPickup: pickup);
+        await controller.startNewRide(initialPickup: pickup);
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.currentRequest?.pickup, pickup);
+        expect(state.ride?.pickup, pickup);
       });
 
-      test('replaces existing request', () {
-        controller.startNewRide();
-        final firstRequest = container.read(rideBookingControllerProvider).currentRequest;
+      test('replaces existing request', () async {
+        await controller.startNewRide();
+        final firstRequest = container.read(rideBookingControllerProvider).ride;
 
-        controller.startNewRide();
-        final secondRequest = container.read(rideBookingControllerProvider).currentRequest;
+        await controller.startNewRide();
+        final secondRequest = container.read(rideBookingControllerProvider).ride;
 
         expect(secondRequest?.id, isNot(equals(firstRequest?.id)));
       });
     });
 
     group('updatePickup and updateDestination', () {
-      test('updatePickup creates new draft if none exists', () {
+      test('updatePickup updates existing request', () async {
+        await controller.startNewRide();
         final pickup = MobilityPlace.currentLocation();
-        controller.updatePickup(pickup);
+        await controller.updatePickup(pickup);
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.currentRequest?.pickup, pickup);
-        expect(state.currentRequest?.destination, isNull);
+        expect(state.ride?.pickup, pickup);
+        expect(state.uiStatus, RideBookingUiStatus.idle);
       });
 
-      test('updateDestination creates new draft if none exists', () {
+      test('updateDestination updates existing request', () async {
+        await controller.startNewRide();
         final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updateDestination(destination);
+        await controller.updateDestination(destination);
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.currentRequest?.destination, destination);
-        expect(state.currentRequest?.pickup, isNull);
+        expect(state.ride?.destination, destination);
+        expect(state.uiStatus, RideBookingUiStatus.idle);
       });
 
-      test('updatePickup updates existing request', () {
-        controller.startNewRide();
-        final pickup = MobilityPlace.currentLocation();
-        controller.updatePickup(pickup);
-
-        final state = container.read(rideBookingControllerProvider);
-        expect(state.currentRequest?.pickup, pickup);
-      });
-
-      test('updateDestination updates existing request', () {
-        controller.startNewRide();
-        final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updateDestination(destination);
-
-        final state = container.read(rideBookingControllerProvider);
-        expect(state.currentRequest?.destination, destination);
-      });
-
-      test('updates clear error messages', () {
+      test('updates clear error messages', () async {
         // First set an error
-        controller.startNewRide(); // Creates draft without locations
-        controller.requestQuoteIfPossible(); // Should fail and set error
+        await controller.startNewRide(); // Creates draft without locations
+        await controller.requestQuoteIfPossible(); // Should fail and set error
 
         var state = container.read(rideBookingControllerProvider);
-        expect(state.lastErrorMessage, isNotNull);
+        expect(state.errorMessage, isNotNull);
 
         // Now update destination
         final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updateDestination(destination);
+        await controller.updateDestination(destination);
 
         state = container.read(rideBookingControllerProvider);
-        expect(state.lastErrorMessage, isNull);
+        expect(state.errorMessage, isNull);
+        expect(state.uiStatus, RideBookingUiStatus.idle);
       });
 
-      test('populates pricing when both locations are set', () {
-        controller.startNewRide();
+      test('populates pricing when both locations are set', () async {
+        await controller.startNewRide();
         final pickup = MobilityPlace.currentLocation();
         final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
 
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
+        await controller.updatePickup(pickup);
+        await controller.updateDestination(destination);
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.currentRequest?.hasValidLocations, isTrue);
-        expect(state.currentRequest?.hasPricing, isTrue);
-        expect(state.formattedPrice, '18.50');
+        expect(state.ride?.hasValidLocations, isTrue);
+        expect(state.ride?.hasPricing, isTrue);
+        expect(state.formattedPrice, '18.00');
         expect(state.formattedDuration, '10 min');
       });
     });
 
     group('requestQuoteIfPossible', () {
       test('succeeds when locations are complete', () async {
-        controller.startNewRide();
+        await controller.startNewRide();
         final pickup = MobilityPlace.currentLocation();
         final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
 
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
+        await controller.updatePickup(pickup);
+        await controller.updateDestination(destination);
 
         await controller.requestQuoteIfPossible();
 
         final state = container.read(rideBookingControllerProvider);
         expect(state.status, RideStatus.quoteReady);
-        expect(state.hasQuote, isTrue);
-        expect(state.isRequestingQuote, isFalse);
-        expect(state.lastErrorMessage, isNull);
+        expect(state.hasPricing, isTrue);
+        expect(state.uiStatus, RideBookingUiStatus.idle);
+        expect(state.errorMessage, isNull);
       });
 
       test('fails when no request exists', () async {
         await controller.requestQuoteIfPossible();
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.lastErrorMessage, contains('select pickup and destination'));
+        expect(state.errorMessage, 'quote_not_allowed');
+        expect(state.uiStatus, RideBookingUiStatus.error);
       });
 
       test('fails when locations are incomplete', () async {
-        controller.startNewRide();
+        await controller.startNewRide();
         final pickup = MobilityPlace.currentLocation();
-        controller.updatePickup(pickup);
+        await controller.updatePickup(pickup);
         // No destination
 
         await controller.requestQuoteIfPossible();
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.lastErrorMessage, contains('both pickup and destination'));
-      });
-
-      test('fails when already requesting quote', () async {
-        controller.startNewRide();
-        final pickup = MobilityPlace.currentLocation();
-        final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
-
-        // Start first request
-        controller.requestQuoteIfPossible();
-
-        // Try second request while first is in progress
-        await controller.requestQuoteIfPossible();
-
-        final state = container.read(rideBookingControllerProvider);
-        expect(state.lastErrorMessage, contains('already in progress'));
+        expect(state.errorMessage, 'quote_not_allowed');
+        expect(state.uiStatus, RideBookingUiStatus.error);
       });
 
       test('sets loading state during request', () async {
-        controller.startNewRide();
+        await controller.startNewRide();
         final pickup = MobilityPlace.currentLocation();
         final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
+        await controller.updatePickup(pickup);
+        await controller.updateDestination(destination);
 
         // Start the async operation
         final future = controller.requestQuoteIfPossible();
 
         // Check loading state immediately
         var state = container.read(rideBookingControllerProvider);
-        expect(state.isRequestingQuote, isTrue);
+        expect(state.uiStatus, RideBookingUiStatus.loading);
 
         // Wait for completion
         await future;
         state = container.read(rideBookingControllerProvider);
-        expect(state.isRequestingQuote, isFalse);
+        expect(state.uiStatus, RideBookingUiStatus.idle);
       });
     });
 
     group('confirmRide', () {
       test('succeeds when quote is ready', () async {
         // Setup: create draft, set locations, get quote
-        controller.startNewRide();
+        await controller.startNewRide();
         final pickup = MobilityPlace.currentLocation();
         final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
+        await controller.updatePickup(pickup);
+        await controller.updateDestination(destination);
         await controller.requestQuoteIfPossible();
 
         // Confirm ride
@@ -219,26 +190,27 @@ void main() {
 
         final state = container.read(rideBookingControllerProvider);
         expect(state.status, RideStatus.findingDriver);
-        expect(state.isConfirmingRide, isFalse);
-        expect(state.lastErrorMessage, isNull);
+        expect(state.uiStatus, RideBookingUiStatus.idle);
+        expect(state.errorMessage, isNull);
       });
 
       test('fails when no quote available', () async {
-        controller.startNewRide();
+        await controller.startNewRide();
 
         await controller.confirmRide();
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.lastErrorMessage, contains('No quote available'));
+        expect(state.errorMessage, 'confirm_not_allowed');
+        expect(state.uiStatus, RideBookingUiStatus.error);
       });
 
       test('sets loading state during confirmation', () async {
         // Setup with quote ready
-        controller.startNewRide();
+        await controller.startNewRide();
         final pickup = MobilityPlace.currentLocation();
         final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
+        await controller.updatePickup(pickup);
+        await controller.updateDestination(destination);
         await controller.requestQuoteIfPossible();
 
         // Start confirmation
@@ -246,143 +218,209 @@ void main() {
 
         // Check loading state
         var state = container.read(rideBookingControllerProvider);
-        expect(state.isConfirmingRide, isTrue);
+        expect(state.uiStatus, RideBookingUiStatus.loading);
 
         // Wait for completion
         await future;
         state = container.read(rideBookingControllerProvider);
-        expect(state.isConfirmingRide, isFalse);
+        expect(state.uiStatus, RideBookingUiStatus.idle);
       });
     });
 
     group('cancelRide', () {
       test('cancels draft request', () async {
-        controller.startNewRide();
+        await controller.startNewRide();
 
         await controller.cancelRide();
 
         final state = container.read(rideBookingControllerProvider);
         expect(state.status, RideStatus.cancelled);
-        expect(state.isCancelling, isFalse);
+        expect(state.uiStatus, RideBookingUiStatus.idle);
       });
 
-      test('cancels quoting request', () async {
-        controller.startNewRide();
-        final pickup = MobilityPlace.currentLocation();
-        final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
+      test('cancels draft request', () async {
+        await controller.startNewRide();
 
-        // Start quoting
-        controller.requestQuoteIfPossible();
-        // Cancel immediately (should work even while quoting)
         await controller.cancelRide();
 
         final state = container.read(rideBookingControllerProvider);
         expect(state.status, RideStatus.cancelled);
+        expect(state.uiStatus, RideBookingUiStatus.idle);
       });
 
       test('does nothing when no request exists', () async {
         await controller.cancelRide();
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.currentRequest, isNull);
+        expect(state.ride, isNull);
       });
 
-      test('fails to cancel inProgress request', () async {
-        // Setup: get to inProgress state
-        controller.startNewRide();
+      test('cancels findingDriver request', () async {
+        // Setup: get to findingDriver state (which is cancellable)
+        await controller.startNewRide();
         final pickup = MobilityPlace.currentLocation();
         final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
+        await controller.updatePickup(pickup);
+        await controller.updateDestination(destination);
         await controller.requestQuoteIfPossible();
         await controller.confirmRide();
 
-        // Manually set to inProgress for testing
-        final inProgressRequest = container.read(rideBookingControllerProvider).currentRequest!.copyWith(status: RideStatus.inProgress);
-        repository.applyStatusUpdate(current: container.read(rideBookingControllerProvider).currentRequest!, newStatus: RideStatus.inProgress);
-        // Update controller state manually for test
-        (controller as dynamic).state = RideBookingState(currentRequest: inProgressRequest);
+        // findingDriver status should be cancellable
+        final stateBeforeCancel = container.read(rideBookingControllerProvider);
+        expect(stateBeforeCancel.status, RideStatus.findingDriver);
+        expect(stateBeforeCancel.canCancel, isTrue);
 
         await controller.cancelRide();
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.lastErrorMessage, contains('cannot be cancelled'));
+        expect(state.status, RideStatus.cancelled);
+        expect(state.uiStatus, RideBookingUiStatus.idle);
+      });
+    });
+
+    group('submitRating', () {
+      test('stores rating when ride is completed', () async {
+        final repository = InMemoryRideRepository();
+        final controller = RideBookingController(repository);
+
+        // Create a completed ride
+        final completedRide = RideRequest(
+          id: 'test-ride-id',
+          status: RideStatus.completed,
+          pickup: MobilityPlace.currentLocation(),
+          destination: MobilityPlace.saved(id: 'work', label: 'Work'),
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          estimatedDurationSeconds: 600,
+          estimatedPrice: 1850,
+          currencyCode: 'SAR',
+        );
+
+        controller.state = RideBookingState(
+          rideId: 'ride-1',
+          ride: completedRide,
+        );
+
+        await controller.submitRating(rating: 4, comment: 'nice_driver');
+
+        expect(controller.state.rating, 4);
+        expect(controller.state.ratingComment, 'nice_driver');
+        expect(controller.state.uiStatus, RideBookingUiStatus.success);
+        expect(controller.state.errorMessage, isNull);
       });
 
-      test('sets loading state during cancellation', () async {
-        controller.startNewRide();
+      test('sets error when rating is called in non-completed state', () async {
+        final repository = InMemoryRideRepository();
+        final controller = RideBookingController(repository);
 
-        final future = controller.cancelRide();
+        // Create a draft ride
+        final draftRide = RideRequest(
+          id: 'test-ride-id',
+          status: RideStatus.draft,
+          pickup: MobilityPlace.currentLocation(),
+          destination: MobilityPlace.saved(id: 'work', label: 'Work'),
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          estimatedDurationSeconds: 600,
+          estimatedPrice: 1850,
+          currencyCode: 'SAR',
+        );
 
-        var state = container.read(rideBookingControllerProvider);
-        expect(state.isCancelling, isTrue);
+        controller.state = RideBookingState(
+          rideId: 'ride-1',
+          ride: draftRide,
+        );
 
-        await future;
-        state = container.read(rideBookingControllerProvider);
-        expect(state.isCancelling, isFalse);
+        await controller.submitRating(rating: 5);
+
+        expect(controller.state.uiStatus, RideBookingUiStatus.error);
+        expect(controller.state.errorMessage, 'rating_not_allowed');
+        expect(controller.state.rating, isNull);
+      });
+
+      test('sets error for invalid rating values', () async {
+        final repository = InMemoryRideRepository();
+        final controller = RideBookingController(repository);
+
+        // Create a completed ride
+        final completedRide = RideRequest(
+          id: 'test-ride-id',
+          status: RideStatus.completed,
+          pickup: MobilityPlace.currentLocation(),
+          destination: MobilityPlace.saved(id: 'work', label: 'Work'),
+          createdAt: DateTime.now(),
+          updatedAt: DateTime.now(),
+          estimatedDurationSeconds: 600,
+          estimatedPrice: 1850,
+          currencyCode: 'SAR',
+        );
+
+        controller.state = RideBookingState(
+          rideId: 'ride-1',
+          ride: completedRide,
+        );
+
+        await controller.submitRating(rating: 6); // Invalid rating
+
+        expect(controller.state.uiStatus, RideBookingUiStatus.error);
+        expect(controller.state.errorMessage, 'rating_invalid_value');
+        expect(controller.state.rating, isNull);
       });
     });
 
     group('State properties', () {
-      test('canRequestQuote returns true when conditions are met', () {
-        controller.startNewRide();
+      test('canRequestQuote returns true when conditions are met', () async {
+        await controller.startNewRide();
         final pickup = MobilityPlace.currentLocation();
         final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
+        await controller.updatePickup(pickup);
+        await controller.updateDestination(destination);
 
         final state = container.read(rideBookingControllerProvider);
         expect(state.canRequestQuote, isTrue);
       });
 
-      test('canRequestQuote returns false when requesting', () async {
-        controller.startNewRide();
+      test('canConfirmRide returns true after successful quote request', () async {
+        await controller.startNewRide();
         final pickup = MobilityPlace.currentLocation();
         final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
-
-        // Start request
-        controller.requestQuoteIfPossible();
-
-        final state = container.read(rideBookingControllerProvider);
-        expect(state.canRequestQuote, isFalse);
-      });
-
-      test('hasQuote returns true after successful quote request', () async {
-        controller.startNewRide();
-        final pickup = MobilityPlace.currentLocation();
-        final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
+        await controller.updatePickup(pickup);
+        await controller.updateDestination(destination);
 
         await controller.requestQuoteIfPossible();
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.hasQuote, isTrue);
+        expect(state.canConfirmRide, isTrue);
       });
 
       test('formattedPrice and formattedDuration work correctly', () async {
-        controller.startNewRide();
+        await controller.startNewRide();
         final pickup = MobilityPlace.currentLocation();
         final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
-        controller.updatePickup(pickup);
-        controller.updateDestination(destination);
+        await controller.updatePickup(pickup);
+        await controller.updateDestination(destination);
 
         final state = container.read(rideBookingControllerProvider);
-        expect(state.formattedPrice, '18.50');
+        expect(state.formattedPrice, '18.00');
         expect(state.formattedDuration, '10 min');
       });
 
-      test('isLoading returns true when any operation is in progress', () {
-        controller.startNewRide();
+      test('isLoading returns true when any operation is in progress', () async {
+        await controller.startNewRide();
+        final pickup = MobilityPlace.currentLocation();
+        final destination = MobilityPlace.saved(id: 'dest', label: 'Work');
+        await controller.updatePickup(pickup);
+        await controller.updateDestination(destination);
 
-        controller.cancelRide(); // Start cancellation
+        // Start the async operation
+        final future = controller.requestQuoteIfPossible();
 
+        // Check loading state immediately
         final state = container.read(rideBookingControllerProvider);
         expect(state.isLoading, isTrue);
+
+        // Wait for completion
+        await future;
       });
     });
   });

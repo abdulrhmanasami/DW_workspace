@@ -7,7 +7,7 @@ import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
 
 import '../../l10n/generated/app_localizations.dart';
-import 'screen_preferences.dart';
+import '../../widgets/app_shell.dart';
 
 /// Permissions screen - Second step of onboarding flow.
 /// Shows explanation of required permissions without actually requesting them.
@@ -27,87 +27,88 @@ class PermissionsScreen extends StatelessWidget {
     final colors = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    return Scaffold(
-      backgroundColor: colors.surface,
-      appBar: AppBar(
-        backgroundColor: colors.surface,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(DWSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Title
-              Text(
-                l10n?.onboardingPermissionsTitle ?? 'Allow permissions',
-                style: textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
+    return AppShell(
+      showAppBar: false,
+      showBottomNav: false,
+      safeArea: true,
+      body: Padding(
+        padding: const EdgeInsets.all(DWSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Custom back button area (replacing AppBar)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back_rounded),
+                onPressed: () => Navigator.of(context).pop(),
               ),
-              const SizedBox(height: DWSpacing.xl),
-              
-              // Permission items
-              Expanded(
-                child: ListView(
-                  children: [
-                    // Location permission
-                    _PermissionTile(
-                      icon: Icons.location_on_outlined,
-                      iconColor: colors.primary,
-                      title: l10n?.onboardingPermissionsLocation ?? 
-                          'Location access',
-                      subtitle: l10n?.onboardingPermissionsLocationSubtitle ??
-                          'We use your location to find nearby drivers.',
-                    ),
-                    const SizedBox(height: DWSpacing.md),
-                    
-                    // Notifications permission
-                    _PermissionTile(
-                      icon: Icons.notifications_outlined,
-                      iconColor: colors.secondary,
-                      title: l10n?.onboardingPermissionsNotifications ?? 
-                          'Notifications',
-                      subtitle: l10n?.onboardingPermissionsNotificationsSubtitle ??
-                          'Stay updated about your rides and deliveries.',
-                    ),
-                  ],
-                ),
+            ),
+            const SizedBox(height: DWSpacing.md),
+
+            // Title
+            Text(
+              l10n?.onboardingPermissionsTitle ?? 'Allow permissions',
+              style: textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-              
-              // Continue button
-              DWButton.primary(
-                label: l10n?.onboardingPermissionsContinueCta ?? 'Continue',
-                onPressed: () => _navigateToPreferences(context),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: DWSpacing.xl),
+
+            // Permission items
+            Expanded(
+              child: ListView(
+                children: [
+                  // Location permission
+                  _PermissionTile(
+                    icon: Icons.location_on_outlined,
+                    iconColor: colors.primary,
+                    title: l10n?.onboardingPermissionsLocation ??
+                        'Location access',
+                    subtitle: l10n?.onboardingPermissionsLocationSubtitle ??
+                        'We use your location to find nearby drivers.',
+                  ),
+                  const SizedBox(height: DWSpacing.md),
+
+                  // Notifications permission
+                  _PermissionTile(
+                    icon: Icons.notifications_outlined,
+                    iconColor: colors.secondary,
+                    title: l10n?.onboardingPermissionsNotifications ??
+                        'Notifications',
+                    subtitle: l10n?.onboardingPermissionsNotificationsSubtitle ??
+                        'Stay updated about your rides and deliveries.',
+                  ),
+                ],
               ),
-              const SizedBox(height: DWSpacing.sm),
-              
-              // Skip button
-              DWButton.tertiary(
-                label: l10n?.onboardingPermissionsSkipCta ?? 'Skip for now',
-                onPressed: () => _navigateToPreferences(context),
-              ),
-              const SizedBox(height: DWSpacing.md),
-            ],
-          ),
+            ),
+
+            // Continue button
+            DWButton.primary(
+              label: l10n?.onboardingPermissionsContinueCta ?? 'Continue',
+              onPressed: () {
+                // Call onComplete to advance to next screen in PageView
+                onComplete?.call();
+              },
+            ),
+            const SizedBox(height: DWSpacing.sm),
+
+            // Skip button
+            DWButton.tertiary(
+              label: l10n?.onboardingPermissionsSkipCta ?? 'Skip for now',
+              onPressed: () {
+                // Call onComplete to advance to next screen in PageView
+                onComplete?.call();
+              },
+            ),
+            const SizedBox(height: DWSpacing.md),
+          ],
         ),
       ),
     );
   }
 
-  void _navigateToPreferences(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => PreferencesScreen(onComplete: onComplete),
-      ),
-    );
-  }
 }
 
 /// A tile displaying a permission with icon, title and description.

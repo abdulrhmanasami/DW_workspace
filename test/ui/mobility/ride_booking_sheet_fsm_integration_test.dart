@@ -12,6 +12,7 @@ import '../../../lib/l10n/generated/app_localizations.dart';
 import '../../../lib/l10n/generated/app_localizations_en.dart';
 import '../../../lib/screens/mobility/ride_booking_screen.dart';
 import '../../../lib/state/mobility/ride_booking_controller.dart';
+import 'package:maps_shims/maps.dart';
 
 void main() {
   group('RideBookingScreen FSM Integration', () {
@@ -25,7 +26,12 @@ void main() {
       List<Override> overrides = const [],
     }) {
       return ProviderScope(
-        overrides: overrides,
+        overrides: [
+          mapViewBuilderProvider.overrideWith(
+            (ref) => (params) => Container(key: const ValueKey('ride_booking_map')),
+          ),
+          ...overrides,
+        ],
         child: MaterialApp(
           locale: const Locale('en'),
           localizationsDelegates: const [
@@ -51,6 +57,9 @@ void main() {
       expect(find.text(l10n.rideBookingPickupLabel), findsOneWidget);
       expect(find.text(l10n.rideBookingDestinationLabel), findsOneWidget);
       expect(find.text(l10n.rideBookingSeeOptionsCta), findsOneWidget);
+
+      // Check that map is displayed
+      expect(find.byKey(const ValueKey('ride_booking_map')), findsOneWidget);
     });
 
     testWidgets('shows CTA button enabled initially', (tester) async {
@@ -111,7 +120,7 @@ void main() {
       await tester.pump();
 
       // Should show error message
-      expect(find.text(contains('select pickup and destination')), findsOneWidget);
+      expect(find.text('quote_not_allowed'), findsOneWidget);
     });
 
     testWidgets('clears error when location is set', (tester) async {
@@ -123,14 +132,14 @@ void main() {
       await tester.pump();
 
       // Error should be visible
-      expect(find.text(contains('select pickup and destination')), findsOneWidget);
+      expect(find.text('quote_not_allowed'), findsOneWidget);
 
       // Now set a location
       await tester.tap(find.text(l10n.rideBookingRecentHome));
       await tester.pump();
 
       // Error should be cleared
-      expect(find.text(contains('select pickup and destination')), findsNothing);
+      expect(find.text('quote_not_allowed'), findsNothing);
     });
 
     testWidgets('destination field shows helper text', (tester) async {

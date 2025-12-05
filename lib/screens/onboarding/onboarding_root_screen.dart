@@ -91,8 +91,8 @@ class _OnboardingRootScreenState extends ConsumerState<OnboardingRootScreen> {
 
     // Build the page widgets
     final pages = [
-      WelcomeScreen(onComplete: _skipOnboarding),
-      PermissionsScreen(onComplete: _skipOnboarding),
+      WelcomeScreen(onComplete: _goToNext),
+      PermissionsScreen(onComplete: _goToNext),
       PreferencesScreen(onComplete: _finishOnboarding),
     ];
 

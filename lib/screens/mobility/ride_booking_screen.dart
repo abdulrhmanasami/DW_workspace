@@ -14,55 +14,81 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart';
+import 'package:maps_shims/maps.dart';
+import 'package:mobility_shims/mobility_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
 import '../../state/mobility/ride_booking_controller.dart';
+import '../../state/mobility/ride_booking_state.dart';
+import '../../widgets/app_shell.dart';
+import '../../widgets/app_button_unified.dart';
+
+/// Key for ride booking map widget (for testing)
+const rideBookingMapKey = ValueKey('ride_booking_map');
 
 /// RideBookingScreen - Main entry point for Ride booking flow
 class RideBookingScreen extends ConsumerWidget {
   const RideBookingScreen({super.key});
 
+  Widget _buildMapView(WidgetRef ref) {
+    final buildMap = ref.watch(mapViewBuilderProvider);
+    final bookingState = ref.watch(rideBookingControllerProvider);
+
+    // Determine camera position: use pickup location if available, otherwise default to Riyadh
+    final MapCamera initialCameraPosition;
+    if (bookingState.ride?.pickup?.location != null) {
+      final pickupLocation = bookingState.ride!.pickup!.location!;
+      initialCameraPosition = MapCamera(
+        target: MapPoint(
+          latitude: pickupLocation.latitude,
+          longitude: pickupLocation.longitude,
+        ),
+        zoom: 15.0,
+      );
+    } else {
+      // Default to Riyadh
+      initialCameraPosition = MapCamera(
+        target: MapPoint(
+          latitude: 24.7136,
+          longitude: 46.6753,
+        ),
+        zoom: 12.0,
+      );
+    }
+
+    return Container(
+      key: rideBookingMapKey,
+      child: buildMap(
+        MapViewParams(
+          initialCameraPosition: initialCameraPosition,
+          onMapReady: (_) {
+            // Map is ready - could add markers here if needed
+          },
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          l10n.rideBookingTitle,
-          style: textTheme.titleLarge,
-        ),
-        centerTitle: true,
-      ),
-      body: Stack(
+    return AppShell(
+      showBottomNav: false,
+      showAppBar: true,
+      title: l10n.rideBookingTitle,
+      safeArea: false,
+      body: SafeArea(
+        child: Stack(
         children: [
-          // Map stub (background)
+          // Map view (background)
           Positioned.fill(
             child: Container(
               margin: const EdgeInsets.only(bottom: 200), // Space for the Sheet
-              decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest,
-              ),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.map_outlined,
-                        size: 64, color: colorScheme.onSurfaceVariant),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.rideBookingMapStubLabel,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: _buildMapView(ref),
             ),
           ),
 
@@ -94,6 +120,7 @@ class RideBookingScreen extends ConsumerWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -110,6 +137,46 @@ class _RideBookingSheetContent extends ConsumerStatefulWidget {
 class _RideBookingSheetContentState
     extends ConsumerState<_RideBookingSheetContent> {
   late TextEditingController _destinationController;
+
+  String _primaryCtaLabel(RideBookingState state, AppLocalizations l10n) {
+    if (state.isLoading) {
+      return '...'; // Loading state - text won't be visible due to progress indicator
+    }
+
+    if (state.canConfirmRide) {
+      return 'Confirm Ride'; // TODO: Use L10n key when available
+    }
+
+    if (state.canRequestQuote) {
+      return l10n.rideBookingSeeOptionsCta;
+    }
+
+    // Default state before locations are complete
+    return 'Select destination'; // TODO: Use L10n key when available
+  }
+
+  bool _primaryCtaEnabled(RideBookingState state) {
+    if (state.isLoading) return false;
+    return state.canConfirmRide || state.canRequestQuote;
+  }
+
+  void _onPrimaryCtaPressed(RideBookingState state, RideBookingController controller) async {
+    if (state.isLoading) return;
+
+    if (state.canConfirmRide) {
+      await controller.confirmRide();
+      if (!mounted) return;
+      Navigator.of(context).pushNamed(RoutePaths.rideConfirmation);
+      return;
+    }
+
+    if (state.canRequestQuote) {
+      await controller.requestQuoteIfPossible();
+      return;
+    }
+
+    // In other states, do nothing (button should be disabled)
+  }
 
   @override
   void initState() {
@@ -287,55 +354,38 @@ class _RideBookingSheetContentState
           icon: Icons.home_outlined,
           title: l10n.rideBookingRecentHome,
           subtitle: l10n.rideBookingRecentHomeSubtitle,
+          onTap: () => bookingController.updateDestination(
+            MobilityPlace.saved(id: 'home', label: l10n.rideBookingRecentHome),
+          ),
         ),
         _RecentLocationTile(
           icon: Icons.work_outline,
           title: l10n.rideBookingRecentWork,
           subtitle: l10n.rideBookingRecentWorkSubtitle,
+          onTap: () => bookingController.updateDestination(
+            MobilityPlace.saved(id: 'work', label: l10n.rideBookingRecentWork),
+          ),
         ),
         _RecentLocationTile(
           icon: Icons.add_location_alt_outlined,
           title: l10n.rideBookingRecentAddNew,
           subtitle: l10n.rideBookingRecentAddNewSubtitle,
+          onTap: () {
+            // TODO: Navigate to location picker screen
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Add new location - not implemented yet')),
+            );
+          },
         ),
         const SizedBox(height: DWSpacing.md),
-        // See options CTA button (Track B - Ticket #7)
-        SizedBox(
-          width: double.infinity,
-          height: 48,
-          child: ElevatedButton(
-            onPressed: bookingState.isRequestingQuote
-                ? null
-                : () async {
-                    if (bookingState.hasQuote) {
-                      // If we already have a quote, confirm the ride
-                      await bookingController.confirmRide();
-                      if (context.mounted) {
-                        Navigator.of(context).pushNamed(RoutePaths.rideConfirmation);
-                      }
-                    } else {
-                      // Request a quote first
-                      await bookingController.requestQuoteIfPossible();
-                    }
-                  },
-            child: bookingState.isRequestingQuote
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                : Text(
-                    bookingState.hasQuote
-                        ? 'Confirm Ride' // TODO: Use L10n key
-                        : l10n.rideBookingSeeOptionsCta,
-                    style: textTheme.labelLarge?.copyWith(
-                      color: colorScheme.onPrimary,
-                    ),
-                  ),
-          ),
+        // Primary CTA button
+        AppButtonUnified.primary(
+          label: _primaryCtaLabel(bookingState, l10n),
+          onPressed: _primaryCtaEnabled(bookingState)
+              ? () => _onPrimaryCtaPressed(bookingState, bookingController)
+              : null,
+          isLoading: bookingState.isRequestingQuote,
+          fullWidth: true,
         ),
       ],
     ),
@@ -349,11 +399,13 @@ class _RecentLocationTile extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
+    required this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -363,8 +415,8 @@ class _RecentLocationTile extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: DWSpacing.xxs),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(DWRadius.md),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(DWRadius.md)),
       ),
       child: ListTile(
         leading: Icon(icon, color: colorScheme.primary),
@@ -375,13 +427,7 @@ class _RecentLocationTile extends StatelessWidget {
             color: colorScheme.onSurfaceVariant,
           ),
         ),
-        onTap: () {
-          // For now, just show that tapping works
-          // In a real implementation, this would use a callback or provider
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Selected: $title')),
-          );
-        },
+        onTap: onTap,
       ),
     );
   }

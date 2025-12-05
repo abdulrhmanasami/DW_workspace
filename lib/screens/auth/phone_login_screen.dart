@@ -14,6 +14,7 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
 import '../../state/identity/identity_controller.dart';
 import '../../state/infra/auth_providers.dart';
+import '../../widgets/app_shell.dart';
 import 'package:b_ui/ui_components.dart';
 import 'legacy_auth_placeholder.dart';
 
@@ -80,137 +81,132 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
     final isLoading = identityState.isRequestingLoginCode;
     final shouldDisableRequest = isLoading;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          l10n?.authPhoneLoginTitle ?? 'Sign In',
-          style: textTheme.titleLarge,
-        ),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Welcome title
-              Text(
-                l10n?.authPhoneLoginTitle ?? 'Sign In',
-                style: textTheme.headlineMedium,
+    return AppShell(
+      title: l10n?.authPhoneLoginTitle ?? 'Sign In',
+      showAppBar: true,
+      showBottomNav: false,
+      safeArea: true,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Welcome title
+            Text(
+              l10n?.authPhoneLoginTitle ?? 'Sign In',
+              style: textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 8),
+
+            // Helper text
+            Text(
+              l10n?.authPhoneLoginSubtitle ??
+                  'Enter your phone number to receive a verification code.',
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
+            ),
+            const SizedBox(height: 24),
+
+            // Phone number input field
+            TextFormField(
+              controller: _phoneController,
+              keyboardType: TextInputType.phone,
+              textDirection: TextDirection.ltr,
+              textAlign: TextAlign.start,
+              decoration: InputDecoration(
+                labelText: l10n?.authPhoneFieldLabel ?? 'Phone Number',
+                hintText: l10n?.authPhoneFieldHint ?? '+9665xxxxxxxx',
+                prefixIcon: Icon(Icons.phone, color: colorScheme.onSurfaceVariant),
+                errorText: _localError ?? identityState.lastAuthErrorMessage,
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Biometric unlock option
+            if (canUseBiometric) ...[
               const SizedBox(height: 8),
-
-              // Helper text
-              Text(
-                l10n?.authPhoneLoginSubtitle ??
-                    'Enter your phone number to receive a verification code.',
-                style: textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Phone number input field
-              TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.start,
-                decoration: InputDecoration(
-                  labelText: l10n?.authPhoneFieldLabel ?? 'Phone Number',
-                  hintText: l10n?.authPhoneFieldHint ?? '+9665xxxxxxxx',
-                  prefixIcon: Icon(Icons.phone, color: colorScheme.onSurfaceVariant),
-                  errorText: _localError ?? identityState.lastAuthErrorMessage,
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // Biometric unlock option
-              if (canUseBiometric) ...[
-                const SizedBox(height: 8),
-                AnimatedOpacity(
-                  opacity: _unlocking ? 0.7 : 1.0,
-                  duration: const Duration(milliseconds: 200),
-                  child: OutlinedButton.icon(
-                    onPressed: _unlocking
-                        ? null
-                        : () => _attemptBiometricUnlock(l10n),
-                    icon: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 200),
-                      child: _unlocking
-                          ? SizedBox(
-                              key: const ValueKey('loading'),
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: colorScheme.primary,
-                              ),
-                            )
-                          : Icon(
-                              Icons.fingerprint,
-                              key: const ValueKey('icon'),
+              AnimatedOpacity(
+                opacity: _unlocking ? 0.7 : 1.0,
+                duration: const Duration(milliseconds: 200),
+                child: OutlinedButton.icon(
+                  onPressed: _unlocking
+                      ? null
+                      : () => _attemptBiometricUnlock(l10n),
+                  icon: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: _unlocking
+                        ? SizedBox(
+                            key: const ValueKey('loading'),
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
                               color: colorScheme.primary,
                             ),
-                    ),
-                    label: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 200),
-                      child: Text(
-                        _unlocking
-                            ? (l10n?.loading ?? 'Verifying...')
-                            : (l10n?.authBiometricButtonLabel ?? 'Use biometrics'),
-                        key: ValueKey(_unlocking ? 'loading' : 'label'),
-                        style: textTheme.labelLarge?.copyWith(
-                          color: colorScheme.primary,
-                        ),
+                          )
+                        : Icon(
+                            Icons.fingerprint,
+                            key: const ValueKey('icon'),
+                            color: colorScheme.primary,
+                          ),
+                  ),
+                  label: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Text(
+                      _unlocking
+                          ? (l10n?.loading ?? 'Verifying...')
+                          : (l10n?.authBiometricButtonLabel ?? 'Use biometrics'),
+                      key: ValueKey(_unlocking ? 'loading' : 'label'),
+                      style: textTheme.labelLarge?.copyWith(
+                        color: colorScheme.primary,
                       ),
                     ),
                   ),
                 ),
-              ],
-
-              const Spacer(),
-
-              // Privacy policy link
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(RoutePaths.privacyConsent);
-                  },
-                  child: Text(
-                    l10n?.legalPrivacyPolicyTitle ?? 'Privacy Policy & Terms',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.primary,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // Continue button (full width)
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: shouldDisableRequest
-                      ? null
-                      : () async {
-                          final normalized = _validateAndNormalize(l10n);
-                          if (normalized == null) return;
-                          final phoneNumber = PhoneNumber(normalized);
-                          await ref.read(identityControllerProvider.notifier).requestLoginCode(phoneNumber);
-                        },
-                  child: UiLoadingButtonContent(
-                    label: l10n?.authPhoneContinueButton ?? 'Continue',
-                    isLoading: isLoading,
-                    loadingLabel: l10n?.loading ?? 'Loading...',
-                    spinnerColor: colorScheme.onPrimary,
-                  ),
-                ),
               ),
             ],
-          ),
+
+            const Spacer(),
+
+            // Privacy policy link
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(RoutePaths.privacyConsent);
+                },
+                child: Text(
+                  l10n?.legalPrivacyPolicyTitle ?? 'Privacy Policy & Terms',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.primary,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+
+            // Continue button (full width)
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: shouldDisableRequest
+                    ? null
+                    : () async {
+                        final normalized = _validateAndNormalize(l10n);
+                        if (normalized == null) return;
+                        final phoneNumber = PhoneNumber(normalized);
+                        await ref.read(identityControllerProvider.notifier).requestLoginCode(phoneNumber);
+                      },
+                child: UiLoadingButtonContent(
+                  label: l10n?.authPhoneContinueButton ?? 'Continue',
+                  isLoading: isLoading,
+                  loadingLabel: l10n?.loading ?? 'Loading...',
+                  spinnerColor: colorScheme.onPrimary,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

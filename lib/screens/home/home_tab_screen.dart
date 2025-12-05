@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../router/app_router.dart';
+import '../../widgets/app_button_unified.dart';
 import '../../ui/home/home_service_card.dart';
 import '../../ui/home/home_map_placeholder.dart';
 
@@ -79,7 +81,7 @@ class HomeTabScreen extends StatelessWidget {
 
                 const SizedBox(height: DWSpacing.lg),
 
-                // Service cards
+                // Service Actions
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -90,40 +92,32 @@ class HomeTabScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: DWSpacing.md),
 
-                    // Service Cards Grid
+                    // Service Action Buttons
                     Column(
                       children: [
-                        // Ride Service Card
-                        HomeServiceCard(
-                          icon: Icons.directions_car,
-                          title: l10n.homeServiceRideTitle,
-                          subtitle: l10n.homeServiceRideSubtitle,
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Ride booking flow will be enabled soon.'),
-                              ),
-                            );
+                        // Book a Ride Button
+                        AppButtonUnified(
+                          label: l10n.homeServiceRideTitle,
+                          onPressed: () {
+                            Navigator.of(context).pushNamed(RoutePaths.rideBooking);
                           },
+                          leadingIcon: const Icon(Icons.directions_car),
+                          style: AppButtonStyle.primary,
                         ),
                         const SizedBox(height: DWSpacing.md),
 
-                        // Parcels Service Card
-                        HomeServiceCard(
-                          icon: Icons.local_shipping,
-                          title: l10n.homeServiceParcelsTitle,
-                          subtitle: l10n.homeServiceParcelsSubtitle,
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Parcels service will be enabled soon.'),
-                              ),
-                            );
+                        // Send Package Button
+                        AppButtonUnified(
+                          label: l10n.homeServiceParcelsTitle,
+                          onPressed: () {
+                            Navigator.of(context).pushNamed(RoutePaths.parcelsList);
                           },
+                          leadingIcon: const Icon(Icons.local_shipping),
+                          style: AppButtonStyle.secondary,
                         ),
                         const SizedBox(height: DWSpacing.md),
 
-                        // Food Service Card
+                        // Food Service (Coming Soon)
                         HomeServiceCard(
                           icon: Icons.restaurant,
                           title: l10n.homeServiceFoodTitle,

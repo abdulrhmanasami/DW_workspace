@@ -355,12 +355,10 @@ class _RootAppState extends ConsumerState<RootApp> {
         MaterialPageRoute<void>(
           builder: (_) => OnboardingRootScreen(
             onComplete: () {
-              // 1) Update state
+              // 1) Update state (includes persistence via OnboardingPrefs shim)
               final controller =
                   ref.read(onboardingStateProvider.notifier);
               controller.completeOnboarding();
-              // 2) Stub: persist flag (future ticket)
-              controller.persistCompletionFlag();
             },
           ),
         ),

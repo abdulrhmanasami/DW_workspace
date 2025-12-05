@@ -18,55 +18,89 @@ import 'ride_booking_state.dart';
 /// loading states, error handling, and state transitions.
 class RideBookingController extends StateNotifier<RideBookingState> {
   /// Creates a ride booking controller with the given repository.
-  RideBookingController({
-    required RideRepository repository,
-  })  : _repository = repository,
-        super(const RideBookingState());
+  RideBookingController(this._rideRepository)
+      : super(RideBookingState.initial());
 
-  final RideRepository _repository;
+  final RideRepository _rideRepository;
 
   /// Starts a new ride booking request.
   ///
   /// If there's already an active request, this will replace it.
   /// If [initialPickup] is provided, it will be set as the pickup location.
-  void startNewRide({MobilityPlace? initialPickup}) {
-    final newRequest = _repository.createDraft(initialPickup: initialPickup);
+  Future<void> startNewRide({MobilityPlace? initialPickup}) async {
     state = state.copyWith(
-      currentRequest: newRequest,
-      lastErrorMessage: null, // Clear any previous errors
+      uiStatus: RideBookingUiStatus.loading,
+      clearError: true,
     );
+
+    try {
+    final draft = _rideRepository.createDraft(
+      initialPickup: initialPickup,
+    );
+
+    state = RideBookingState(
+      rideId: draft.id,
+      ride: draft,
+      uiStatus: RideBookingUiStatus.idle,
+    );
+    } catch (e) {
+      state = state.copyWith(
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'ride_start_failed',
+      );
+    }
   }
 
   /// Updates the pickup location for the current request.
   ///
   /// If no current request exists, automatically starts a new one.
-  void updatePickup(MobilityPlace? pickup) {
-    final currentRequest = state.currentRequest ?? _createNewDraft();
-    final updatedRequest = _repository.updateLocations(
-      request: currentRequest,
+  Future<void> updatePickup(MobilityPlace pickup) async {
+    if (state.ride == null) return;
+    state = state.copyWith(uiStatus: RideBookingUiStatus.loading, clearError: true);
+
+    try {
+    final updated = _rideRepository.updateLocations(
+        request: state.ride!,
       pickup: pickup,
+        destination: state.ride!.destination,
     );
 
     state = state.copyWith(
-      currentRequest: updatedRequest,
-      lastErrorMessage: null,
+      ride: updated,
+      uiStatus: RideBookingUiStatus.idle,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'update_pickup_failed',
     );
+    }
   }
 
   /// Updates the destination location for the current request.
   ///
   /// If no current request exists, automatically starts a new one.
-  void updateDestination(MobilityPlace? destination) {
-    final currentRequest = state.currentRequest ?? _createNewDraft();
-    final updatedRequest = _repository.updateLocations(
-      request: currentRequest,
+  Future<void> updateDestination(MobilityPlace destination) async {
+    if (state.ride == null) return;
+    state = state.copyWith(uiStatus: RideBookingUiStatus.loading, clearError: true);
+
+    try {
+    final updated = _rideRepository.updateLocations(
+        request: state.ride!,
+        pickup: state.ride!.pickup,
       destination: destination,
     );
 
     state = state.copyWith(
-      currentRequest: updatedRequest,
-      lastErrorMessage: null,
+      ride: updated,
+      uiStatus: RideBookingUiStatus.idle,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'update_destination_failed',
     );
+    }
   }
 
   /// Requests a quote for the current request if possible.
@@ -75,29 +109,35 @@ class RideBookingController extends StateNotifier<RideBookingState> {
   /// - No current request exists
   /// - Locations are not complete
   /// - Request is not in draft status
-  /// - A quote request is already in progress
   Future<void> requestQuoteIfPossible() async {
     if (!state.canRequestQuote) {
-      final errorMessage = _getQuoteRequestErrorMessage();
-      state = state.copyWith(lastErrorMessage: errorMessage);
+      state = state.copyWith(
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'quote_not_allowed',
+      );
       return;
     }
 
     state = state.copyWith(
-      isRequestingQuote: true,
-      lastErrorMessage: null,
+      uiStatus: RideBookingUiStatus.loading,
+      clearError: true,
     );
 
     try {
-      final quotedRequest = await _repository.requestQuote(state.currentRequest!);
+      final quotedRequest = await _rideRepository.requestQuote(state.ride!);
       state = state.copyWith(
-        currentRequest: quotedRequest,
-        isRequestingQuote: false,
+        ride: quotedRequest,
+        uiStatus: RideBookingUiStatus.idle,
+      );
+    } on ArgumentError {
+      state = state.copyWith(
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'quote_argument_error',
       );
     } catch (e) {
       state = state.copyWith(
-        isRequestingQuote: false,
-        lastErrorMessage: _formatErrorMessage(e),
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'quote_failed',
       );
     }
   }
@@ -107,28 +147,34 @@ class RideBookingController extends StateNotifier<RideBookingState> {
   /// This will transition the request to findingDriver status.
   /// Requires that a quote has been successfully obtained.
   Future<void> confirmRide() async {
-    if (!state.hasQuote) {
+    if (!state.canConfirmRide) {
       state = state.copyWith(
-        lastErrorMessage: 'No quote available. Please request a quote first.',
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'confirm_not_allowed',
       );
       return;
     }
 
     state = state.copyWith(
-      isConfirmingRide: true,
-      lastErrorMessage: null,
+      uiStatus: RideBookingUiStatus.loading,
+      clearError: true,
     );
 
     try {
-      final confirmedRequest = await _repository.confirmRide(state.currentRequest!);
+      final confirmedRequest = await _rideRepository.confirmRide(state.ride!);
       state = state.copyWith(
-        currentRequest: confirmedRequest,
-        isConfirmingRide: false,
+        ride: confirmedRequest,
+        uiStatus: RideBookingUiStatus.idle,
+      );
+    } on ArgumentError {
+      state = state.copyWith(
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'confirm_argument_error',
       );
     } catch (e) {
       state = state.copyWith(
-        isConfirmingRide: false,
-        lastErrorMessage: _formatErrorMessage(e),
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'confirm_failed',
       );
     }
   }
@@ -138,91 +184,98 @@ class RideBookingController extends StateNotifier<RideBookingState> {
   /// This will only work for requests that are still cancellable
   /// (not inProgress or later stages).
   Future<void> cancelRide() async {
-    final currentRequest = state.currentRequest;
-    if (currentRequest == null) {
-      return; // Nothing to cancel
-    }
-
-    if (!currentRequest.status.isCancellable) {
+    if (!state.canCancel || state.ride == null) {
       state = state.copyWith(
-        lastErrorMessage: 'This ride cannot be cancelled at this stage.',
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'cancel_not_allowed',
       );
       return;
     }
 
-    state = state.copyWith(
-      isCancelling: true,
-      lastErrorMessage: null,
-    );
+    state = state.copyWith(uiStatus: RideBookingUiStatus.loading, clearError: true);
 
     try {
-      final cancelledRequest = _repository.cancelRide(currentRequest);
+      final cancelled = _rideRepository.cancelRide(state.ride!);
+
       state = state.copyWith(
-        currentRequest: cancelledRequest,
-        isCancelling: false,
+        ride: cancelled,
+        uiStatus: RideBookingUiStatus.idle,
+      );
+    } on InvalidRideTransitionException {
+      state = state.copyWith(
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'cancel_invalid_transition',
       );
     } catch (e) {
       state = state.copyWith(
-        isCancelling: false,
-        lastErrorMessage: _formatErrorMessage(e),
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'cancel_failed',
       );
     }
   }
 
-  /// Helper method to create a new draft request.
-  RideRequest _createNewDraft() {
-    final newRequest = _repository.createDraft();
-    state = state.copyWith(currentRequest: newRequest);
-    return newRequest;
+  /// Submits a rating for the current ride (1–5 stars) with optional comment.
+  ///
+  /// For now this is stored locally in [RideBookingState] only.
+  /// In a future phase it can call a dedicated ratings repository shim.
+  Future<void> submitRating({
+    required int rating,
+    String? comment,
+  }) async {
+    // Must have a completed ride to rate.
+    if (state.ride == null || state.status != RideStatus.completed) {
+      state = state.copyWith(
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'rating_not_allowed',
+      );
+      return;
+    }
+
+    // Basic validation on rating value.
+    if (rating < 1 || rating > 5) {
+      state = state.copyWith(
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'rating_invalid_value',
+      );
+      return;
+    }
+
+    // Local-only update; no backend call for now.
+    state = state.copyWith(
+      uiStatus: RideBookingUiStatus.loading,
+      clearError: true,
+    );
+
+    try {
+      // If we want async-feel without real IO.
+      // await Future<void>.delayed(const Duration(milliseconds: 150));
+
+      state = state.copyWith(
+        uiStatus: RideBookingUiStatus.success,
+        rating: rating,
+        ratingComment: comment,
+      );
+    } catch (_) {
+      state = state.copyWith(
+        uiStatus: RideBookingUiStatus.error,
+        errorMessage: 'rating_submit_failed',
+      );
+    }
   }
 
-  /// Gets appropriate error message for quote request failures.
-  String _getQuoteRequestErrorMessage() {
-    final currentRequest = state.currentRequest;
-    if (currentRequest == null) {
-      return 'Please select pickup and destination locations first.';
-    }
-
-    if (!currentRequest.hasValidLocations) {
-      return 'Please select both pickup and destination locations.';
-    }
-
-    if (currentRequest.status != RideStatus.draft) {
-      return 'Cannot request quote for this ride at this stage.';
-    }
-
-    if (state.isRequestingQuote) {
-      return 'Quote request already in progress.';
-    }
-
-    return 'Unable to request quote. Please try again.';
-  }
-
-  /// Formats exceptions into user-friendly error messages.
-  String _formatErrorMessage(Object error) {
-    if (error is InvalidRideTransitionException) {
-      return 'Invalid operation for current ride status.';
-    }
-
-    if (error is ArgumentError) {
-      return error.message ?? 'Invalid request parameters.';
-    }
-
-    // For other exceptions, provide a generic message
-    return 'An error occurred. Please try again.';
-  }
 }
 
 /// Riverpod providers for ride booking.
 
 /// Provider for the ride repository implementation.
 final rideRepositoryProvider = Provider<RideRepository>((ref) {
+  // استخدم InMemoryRideRepository للآن، لحين ربط Backend حقيقي
   return InMemoryRideRepository();
 });
 
 /// Provider for the ride booking controller.
 final rideBookingControllerProvider =
     StateNotifierProvider<RideBookingController, RideBookingState>((ref) {
-  final repository = ref.watch(rideRepositoryProvider);
-  return RideBookingController(repository: repository);
+  final repo = ref.watch(rideRepositoryProvider);
+  return RideBookingController(repo);
 });

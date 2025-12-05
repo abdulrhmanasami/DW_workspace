@@ -26,6 +26,8 @@ import '../../router/app_router.dart';
 import '../../state/parcels/parcel_orders_state.dart';
 // Track C - Ticket #78: Unified parcel status helpers
 import '../../state/parcels/parcel_status_utils.dart';
+import '../../widgets/app_button_unified.dart';
+import '../../widgets/app_shell.dart';
 import 'parcel_shipment_details_screen.dart';
 
 /// Screen that displays list of all parcels.
@@ -42,27 +44,20 @@ class ParcelsListScreen extends ConsumerWidget {
     final parcels = parcelsState.parcels;
     final hasParcels = parcels.isNotEmpty;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.parcelsListTitle),
-        actions: [
-          // Track C - Ticket #73: New Shipment action
-          IconButton(
-            tooltip: l10n.parcelsListNewShipmentTooltip,
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.of(context).pushNamed(RoutePaths.parcelsDestination);
-            },
-          ),
-        ],
+    return AppShell(
+      title: l10n.parcelsListTitle,
+      body: Padding(
+        padding: EdgeInsets.all(DWSpacing.md),
+        child: hasParcels
+            ? _ParcelsListView(parcels: parcels)
+            : const _ParcelsEmptyState(),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(DWSpacing.md),
-          child: hasParcels
-              ? _ParcelsListView(parcels: parcels)
-              : const _ParcelsEmptyState(),
-        ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: l10n.parcelsListNewShipmentTooltip,
+        onPressed: () {
+          Navigator.of(context).pushNamed(RoutePaths.parcelsDestination);
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -263,11 +258,11 @@ class _ParcelsEmptyState extends StatelessWidget {
             ),
             SizedBox(height: DWSpacing.lg),
             // Track C - Ticket #73: CTA to create first shipment
-            FilledButton(
+            AppButtonUnified.primary(
+              label: l10n.parcelsListEmptyCta,
               onPressed: () {
                 Navigator.of(context).pushNamed(RoutePaths.parcelsDestination);
               },
-              child: Text(l10n.parcelsListEmptyCta),
             ),
           ],
         ),
