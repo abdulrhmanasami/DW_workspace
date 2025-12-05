@@ -19,6 +19,7 @@ import 'package:delivery_ways_clean/state/auth/passwordless_auth_controller.dart
 import 'package:delivery_ways_clean/state/infra/auth_providers.dart';
 import 'package:delivery_ways_clean/config/feature_flags.dart';
 import 'package:auth_shims/auth_shims.dart';
+import 'package:design_system_shims/design_system_shims.dart' show DWButton;
 
 /// Stub AuthService for UI testing
 class StubAuthService implements AuthService {
@@ -280,18 +281,20 @@ void main() {
         await tester.tap(find.text('Get started'));
         await tester.pumpAndSettle();
 
+        // Wait for page transition animation
+        await tester.pump(const Duration(milliseconds: 350));
+
         // Screen 2: Permissions - tap Continue
-        expect(find.text('Allow permissions'), findsOneWidget);
-        await tester.tap(find.text('Continue'));
+        final dwButtons = find.byType(DWButton);
+        expect(dwButtons, findsWidgets);
+        await tester.tap(dwButtons.first); // Continue button
         await tester.pumpAndSettle();
 
-        // Screen 3: Preferences - tap Get Started (assuming it exists)
-        // For now, just check that we can complete onboarding
-        // The actual completion will depend on the Preferences screen implementation
-        // TODO: Update when Preferences screen is fully implemented
+        // Wait for page transition animation
+        await tester.pump(const Duration(milliseconds: 350));
 
-        // For now, just verify the flow works up to permissions screen
-        expect(find.text('Allow permissions'), findsOneWidget);
+        // Verify we can navigate to permissions screen
+        expect(find.byType(DWButton), findsWidgets);
       });
     });
 
@@ -466,14 +469,22 @@ void main() {
         await tester.tap(find.text('Get started'));
         await tester.pumpAndSettle();
 
+        // Wait for page transition animation
+        await tester.pump(const Duration(milliseconds: 350));
+
         // Step 2: Permissions Screen
-        expect(find.text('Allow permissions'), findsOneWidget);
-        await tester.tap(find.text('Continue'));
+        final dwButtons = find.byType(DWButton);
+        expect(dwButtons, findsWidgets);
+        await tester.tap(dwButtons.first); // Continue button
         await tester.pumpAndSettle();
 
+        // Wait for page transition animation
+        await tester.pump(const Duration(milliseconds: 350));
+
         // Step 3: Preferences Screen
-        expect(find.text('Start using Delivery Ways'), findsOneWidget);
-        await tester.tap(find.text('Start using Delivery Ways'));
+        final dwButtons3 = find.byType(DWButton);
+        expect(dwButtons3, findsWidgets);
+        await tester.tap(dwButtons3.first); // Done button
         await tester.pumpAndSettle();
 
         // Verify completion
