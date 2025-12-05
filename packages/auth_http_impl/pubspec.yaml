@@ -19,6 +19,7 @@ dependencies:
     path: ../../stubs/device_security_shims
   meta: ^1.9.0
 
+  http: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

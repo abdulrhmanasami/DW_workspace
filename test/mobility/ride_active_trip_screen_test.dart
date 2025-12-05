@@ -26,7 +26,6 @@ import 'package:delivery_ways_clean/state/mobility/ride_map_commands_builder.dar
 import 'package:delivery_ways_clean/state/mobility/ride_map_port_providers.dart';
 import 'package:delivery_ways_clean/widgets/ride_map_from_commands.dart';
 import 'package:delivery_ways_clean/widgets/mobility/ride_trip_map_view.dart';
-import 'package:delivery_ways_clean/state/mobility/ride_map_projection.dart';
 
 /// Recording MapPort implementation for testing.
 /// Records all commands sent to it for verification.
@@ -95,7 +94,7 @@ void main() {
 
       test('returns null when trip is in terminal phase (completed)', () {
         // Arrange
-        final completedTrip = RideTripState(
+        const completedTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.completed,
         );
@@ -113,7 +112,7 @@ void main() {
 
       test('returns null when trip is in terminal phase (cancelled)', () {
         // Arrange
-        final cancelledTrip = RideTripState(
+        const cancelledTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.cancelled,
         );
@@ -131,7 +130,7 @@ void main() {
 
       test('returns null when trip is in terminal phase (failed)', () {
         // Arrange
-        final failedTrip = RideTripState(
+        const failedTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.failed,
         );
@@ -149,11 +148,11 @@ void main() {
 
       test('returns null when no draftSnapshot available', () {
         // Arrange
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.findingDriver,
         );
-        final state = RideTripSessionUiState(activeTrip: activeTrip);
+        const state = RideTripSessionUiState(activeTrip: activeTrip);
 
         // Act
         final commands = state.activeTripMapCommands;
@@ -164,7 +163,7 @@ void main() {
 
       test('returns commands for findingDriver phase', () {
         // Arrange
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.findingDriver,
         );
@@ -183,7 +182,7 @@ void main() {
 
       test('returns commands for driverAccepted phase', () {
         // Arrange
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.driverAccepted,
         );
@@ -201,7 +200,7 @@ void main() {
 
       test('returns commands for driverArrived phase', () {
         // Arrange
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.driverArrived,
         );
@@ -219,7 +218,7 @@ void main() {
 
       test('returns commands for inProgress phase', () {
         // Arrange
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.inProgress,
         );
@@ -237,7 +236,7 @@ void main() {
 
       test('returns commands for payment phase', () {
         // Arrange
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.payment,
         );
@@ -314,7 +313,7 @@ void main() {
       test('activeTripMapCommands and draftMapCommands produce identical results', () {
         // Arrange
         final draft = createValidDraft();
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.findingDriver,
         );
@@ -353,7 +352,7 @@ void main() {
       test('both getters use the same frozen draftSnapshot', () {
         // Arrange - Create state with frozen draft
         final draft = createValidDraft();
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.inProgress,
         );
@@ -391,11 +390,11 @@ void main() {
 
       test('returns null when state has no draftSnapshot', () {
         // Arrange
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.findingDriver,
         );
-        final state = RideTripSessionUiState(activeTrip: activeTrip);
+        const state = RideTripSessionUiState(activeTrip: activeTrip);
 
         // Act
         final commands = buildActiveTripMapCommands(state);
@@ -406,7 +405,7 @@ void main() {
 
       test('returns commands when activeTrip and draftSnapshot are present', () {
         // Arrange
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.findingDriver,
         );
@@ -428,8 +427,8 @@ void main() {
     group('RideMapFromCommands edge cases', () {
       testWidgets('handles empty markers gracefully', (tester) async {
         // Arrange
-        final commands = RideMapCommands(
-          setContent: const DWSetContentCommand(
+        const commands = RideMapCommands(
+          setContent: DWSetContentCommand(
             markers: [],
             polylines: [],
           ),
@@ -437,7 +436,7 @@ void main() {
 
         // Act
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: RideMapFromCommands(commands: commands),
             ),
@@ -451,23 +450,23 @@ void main() {
 
       testWidgets('uses first marker position when no bounds', (tester) async {
         // Arrange
-        final commands = RideMapCommands(
+        const commands = RideMapCommands(
           setContent: DWSetContentCommand(
             markers: [
               DWMapMarker(
                 id: 'test',
-                position: const DWLatLng(24.7136, 46.6753),
+                position: DWLatLng(24.7136, 46.6753),
                 type: DWMapMarkerType.userPickup,
               ),
             ],
-            polylines: const [],
+            polylines: [],
           ),
           // No animateToBounds
         );
 
         // Act
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: RideMapFromCommands(commands: commands),
             ),
@@ -480,8 +479,8 @@ void main() {
 
       testWidgets('falls back to default location when no data', (tester) async {
         // Arrange
-        final commands = RideMapCommands(
-          setContent: const DWSetContentCommand(
+        const commands = RideMapCommands(
+          setContent: DWSetContentCommand(
             markers: [],
             polylines: [],
           ),
@@ -490,7 +489,7 @@ void main() {
 
         // Act
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: RideMapFromCommands(commands: commands),
             ),
@@ -534,7 +533,7 @@ void main() {
             rideMapPortProvider.overrideWith((ref) => _RecordingMapPort()),
             // Mock the session with an active trip to show RideTripMapView
             rideTripSessionProvider.overrideWith(
-              (ref) => RideTripSessionController(ref)..state = RideTripSessionUiState(
+              (ref) => RideTripSessionController(ref)..state = const RideTripSessionUiState(
                 activeTrip: RideTripState(
                   tripId: 'test-trip-123',
                   phase: RideTripPhase.driverAccepted,

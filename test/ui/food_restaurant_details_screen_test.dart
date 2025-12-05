@@ -317,14 +317,14 @@ void main() {
             MockFoodRepository(menus: {testRestaurant.id: testMenuItems}),
           ),
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
+        child: const MaterialApp(
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en')],
+          supportedLocales: [Locale('en')],
           home: FoodRestaurantDetailsScreen(restaurant: testRestaurant),
         ),
       );
@@ -357,14 +357,14 @@ void main() {
         overrides: [
           foodRepositoryProvider.overrideWithValue(mockRepo),
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
+        child: const MaterialApp(
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en')],
+          supportedLocales: [Locale('en')],
           home: FoodRestaurantDetailsScreen(restaurant: testRestaurant),
         ),
       );
@@ -408,14 +408,14 @@ void main() {
         overrides: [
           foodRepositoryProvider.overrideWithValue(mockRepo),
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
+        child: const MaterialApp(
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('en')],
+          supportedLocales: [Locale('en')],
           home: FoodRestaurantDetailsScreen(restaurant: testRestaurant),
         ),
       );
@@ -469,7 +469,7 @@ void main() {
               home: Consumer(
                 builder: (context, ref, _) {
                   // Capture container reference
-                  return FoodRestaurantDetailsScreen(restaurant: testRestaurant);
+                  return const FoodRestaurantDetailsScreen(restaurant: testRestaurant);
                 },
               ),
             );

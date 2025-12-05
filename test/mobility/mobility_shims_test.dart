@@ -22,7 +22,7 @@ void main() {
 
     group('Stub Implementations', () {
       test('StubLocationProvider returns empty stream', () async {
-        final provider = const StubLocationProvider();
+        const provider = StubLocationProvider();
 
         final stream = provider.watch();
         expect(stream, emitsDone);
@@ -31,7 +31,7 @@ void main() {
       test(
         'StubLocationProvider throws on getCurrent when consent denied',
         () async {
-          final provider = const StubLocationProvider();
+          const provider = StubLocationProvider();
 
           expect(
             () => provider.getCurrent(),
@@ -41,28 +41,28 @@ void main() {
       );
 
       test('StubLocationProvider returns denied permission', () async {
-        final provider = const StubLocationProvider();
+        const provider = StubLocationProvider();
 
         final permission = await provider.requestPermission();
         expect(permission, equals(PermissionStatus.denied));
       });
 
       test('StubLocationProvider returns service disabled', () async {
-        final provider = const StubLocationProvider();
+        const provider = StubLocationProvider();
 
         final enabled = await provider.serviceEnabled();
         expect(enabled, isFalse);
       });
 
       test('StubBackgroundTracker does nothing on start/stop', () async {
-        final tracker = const StubBackgroundTracker();
+        const tracker = StubBackgroundTracker();
 
         await expectLater(tracker.start(), completes);
         await expectLater(tracker.stop(), completes);
       });
 
       test('StubBackgroundTracker returns stopped status stream', () async {
-        final tracker = const StubBackgroundTracker();
+        const tracker = StubBackgroundTracker();
 
         final statusStream = tracker.status();
         expect(statusStream, emits(TrackingStatus.stopped));

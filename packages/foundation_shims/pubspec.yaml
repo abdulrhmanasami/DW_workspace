@@ -11,3 +11,5 @@ dependencies:
   http: ^1.2.1
   flutter_riverpod: ^2.6.1
   package_info_plus: ^8.0.0
+  network_shims:
+    path: ../network_shims

@@ -142,9 +142,6 @@ class DeviceBiometricAuthenticator implements BiometricAuthenticator {
         return BiometricType.fingerprint;
       case local_auth.BiometricType.iris:
         return BiometricType.iris;
-      default:
-        // Handle any future local_auth biometric types as unknown
-        return BiometricType.unknown;
     }
   }
 }

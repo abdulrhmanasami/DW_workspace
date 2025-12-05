@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
-import 'package:delivery_ways_clean/app_shell/app_shell.dart';
 import 'package:delivery_ways_clean/ui/common/empty_state.dart';
 import 'package:delivery_ways_clean/ui/payments/payment_method_card.dart';
 import 'package:delivery_ways_clean/screens/payments/payments_tab_screen.dart';
@@ -110,52 +109,12 @@ class _FakePaymentGateway implements PaymentGateway {
 }
 
 void main() {
-  /// Creates a test widget with necessary L10n and provider setup.
-  /// Uses same pattern as orders_history_screen_test.dart for consistency.
-  Widget createTestApp({
-    Locale locale = const Locale('en'),
-    required PaymentMethodsState paymentsState,
-    AppTab startTab = AppTab.home,
-  }) {
-    final fakeController = FakePaymentMethodsController(initialState: paymentsState);
-
-    return ProviderScope(
-      overrides: [
-        paymentMethodsControllerProvider.overrideWith((ref) => fakeController),
-      ],
-      child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: locale,
-        home: AppShell(startTab: startTab),
-      ),
-    );
-  }
-
-  /// Helper to create AppShell with specific starting tab
-  Widget createAppShellWithStartTab(AppTab startTab, {
-    Locale locale = const Locale('en'),
-    required PaymentMethodsState paymentsState,
-  }) {
-    final fakeController = FakePaymentMethodsController(initialState: paymentsState);
-
-    return ProviderScope(
-      overrides: [
-        paymentMethodsControllerProvider.overrideWith((ref) => fakeController),
-      ],
-      child: MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: locale,
-        home: AppShell(startTab: startTab),
-      ),
-    );
-  }
+  // Test helpers will be added when tests are implemented
 
   group('Payments Screen - Ticket #225', () {
     testWidgets('Payments screen loads without exceptions (LTR)', (tester) async {
-      final loadingState = PaymentMethodsState(
-        methods: const AsyncValue.loading(),
+      const loadingState = PaymentMethodsState(
+        methods: AsyncValue.loading(),
       );
       await tester.pumpWidget(createPaymentsScreenTest(paymentsState: loadingState));
       await tester.pumpAndSettle();
@@ -166,8 +125,8 @@ void main() {
     });
 
     testWidgets('Payments screen shows DWEmptyState when no payment methods (LTR)', (tester) async {
-      final emptyState = PaymentMethodsState(
-        methods: const AsyncValue.data(<SavedPaymentMethod>[]),
+      const emptyState = PaymentMethodsState(
+        methods: AsyncValue.data(<SavedPaymentMethod>[]),
       );
       await tester.pumpWidget(createPaymentsScreenTest(paymentsState: emptyState));
       await tester.pumpAndSettle();
@@ -183,7 +142,7 @@ void main() {
 
     testWidgets('Payments screen shows payment methods list when data exists (LTR)', (tester) async {
       final testMethods = [
-        SavedPaymentMethod(
+        const SavedPaymentMethod(
           id: 'card_1',
           brand: 'Visa',
           last4: '4242',
@@ -191,7 +150,7 @@ void main() {
           expMonth: 8,
           expYear: 27,
         ),
-        SavedPaymentMethod(
+        const SavedPaymentMethod(
           id: 'cash_1',
           brand: 'Cash',
           last4: '',
@@ -222,8 +181,8 @@ void main() {
     });
 
     testWidgets('Payments screen handles loading state', (tester) async {
-      final loadingState = PaymentMethodsState(
-        methods: const AsyncValue.loading(),
+      const loadingState = PaymentMethodsState(
+        methods: AsyncValue.loading(),
       );
 
       await tester.pumpWidget(createPaymentsScreenTest(paymentsState: loadingState));
@@ -248,8 +207,8 @@ void main() {
     });
 
     testWidgets('Payments screen works correctly in Arabic (RTL)', (tester) async {
-      final emptyState = PaymentMethodsState(
-        methods: const AsyncValue.data(<SavedPaymentMethod>[]),
+      const emptyState = PaymentMethodsState(
+        methods: AsyncValue.data(<SavedPaymentMethod>[]),
       );
 
       await tester.pumpWidget(createPaymentsScreenTest(
@@ -266,7 +225,7 @@ void main() {
 
     testWidgets('Payments screen shows payment methods with Arabic labels (RTL)', (tester) async {
       final testMethods = [
-        SavedPaymentMethod(
+        const SavedPaymentMethod(
           id: 'card_1',
           brand: 'Visa',
           last4: '4242',
@@ -274,7 +233,7 @@ void main() {
           expMonth: 8,
           expYear: 27,
         ),
-        SavedPaymentMethod(
+        const SavedPaymentMethod(
           id: 'apple_pay_1',
           brand: 'Apple Pay',
           last4: '',
@@ -304,7 +263,7 @@ void main() {
 
     testWidgets('Payments screen displays multiple payment method types correctly', (tester) async {
       final testMethods = [
-        SavedPaymentMethod(
+        const SavedPaymentMethod(
           id: 'card_1',
           brand: 'Visa',
           last4: '4242',
@@ -312,13 +271,13 @@ void main() {
           expMonth: 8,
           expYear: 27,
         ),
-        SavedPaymentMethod(
+        const SavedPaymentMethod(
           id: 'apple_pay_1',
           brand: 'Apple Pay',
           last4: '',
           type: PaymentMethodType.applePay,
         ),
-        SavedPaymentMethod(
+        const SavedPaymentMethod(
           id: 'cash_1',
           brand: 'Cash',
           last4: '',

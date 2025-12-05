@@ -78,7 +78,7 @@ class _NoActiveParcelState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(DWSpacing.lg),
+        padding: const EdgeInsets.all(DWSpacing.lg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -87,13 +87,13 @@ class _NoActiveParcelState extends StatelessWidget {
               size: 64,
               color: colorScheme.onSurfaceVariant,
             ),
-            SizedBox(height: DWSpacing.md),
+            const SizedBox(height: DWSpacing.md),
             Text(
               l10n.parcelsActiveShipmentNoActiveTitle,
               style: textTheme.headlineSmall,
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: DWSpacing.xs),
+            const SizedBox(height: DWSpacing.xs),
             Text(
               l10n.parcelsActiveShipmentNoActiveSubtitle,
               style: textTheme.bodyMedium?.copyWith(
@@ -101,7 +101,7 @@ class _NoActiveParcelState extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: DWSpacing.lg),
+            const SizedBox(height: DWSpacing.lg),
             FilledButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(l10n.back),
@@ -133,7 +133,7 @@ class _ActiveParcelContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(DWSpacing.md),
+      padding: const EdgeInsets.all(DWSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -154,7 +154,7 @@ class _ActiveParcelContent extends StatelessWidget {
                       size: 48,
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    SizedBox(height: DWSpacing.xs),
+                    const SizedBox(height: DWSpacing.xs),
                     Text(
                       l10n.parcelsActiveShipmentMapStub,
                       style: textTheme.bodySmall?.copyWith(
@@ -166,12 +166,12 @@ class _ActiveParcelContent extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: DWSpacing.lg),
+          const SizedBox(height: DWSpacing.lg),
 
           // Shipment info card
           Card(
             child: Padding(
-              padding: EdgeInsets.all(DWSpacing.md),
+              padding: const EdgeInsets.all(DWSpacing.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -181,7 +181,7 @@ class _ActiveParcelContent extends StatelessWidget {
                         Icons.local_shipping_outlined,
                         color: colorScheme.primary,
                       ),
-                      SizedBox(width: DWSpacing.sm),
+                      const SizedBox(width: DWSpacing.sm),
                       Expanded(
                         child: Text(
                           l10n.parcelsActiveShipmentStatusLabel(status),
@@ -193,7 +193,7 @@ class _ActiveParcelContent extends StatelessWidget {
                     ],
                   ),
                   if (destination.isNotEmpty) ...[
-                    SizedBox(height: DWSpacing.sm),
+                    const SizedBox(height: DWSpacing.sm),
                     Text(
                       l10n.homeActiveParcelSubtitleToDestination(destination),
                       style: textTheme.bodyMedium?.copyWith(
@@ -201,7 +201,7 @@ class _ActiveParcelContent extends StatelessWidget {
                       ),
                     ),
                   ],
-                  SizedBox(height: DWSpacing.sm),
+                  const SizedBox(height: DWSpacing.sm),
                   Text(
                     l10n.parcelsActiveShipmentIdLabel(parcelId),
                     style: textTheme.bodySmall?.copyWith(
@@ -212,11 +212,11 @@ class _ActiveParcelContent extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: DWSpacing.lg),
+          const SizedBox(height: DWSpacing.lg),
 
           // TODO notice
           Container(
-            padding: EdgeInsets.all(DWSpacing.md),
+            padding: const EdgeInsets.all(DWSpacing.md),
             decoration: BoxDecoration(
               color: colorScheme.secondaryContainer,
               borderRadius: BorderRadius.circular(DWRadius.sm),
@@ -228,7 +228,7 @@ class _ActiveParcelContent extends StatelessWidget {
                   color: colorScheme.onSecondaryContainer,
                   size: 20,
                 ),
-                SizedBox(width: DWSpacing.sm),
+                const SizedBox(width: DWSpacing.sm),
                 Expanded(
                   child: Text(
                     l10n.parcelsActiveShipmentStubNote,

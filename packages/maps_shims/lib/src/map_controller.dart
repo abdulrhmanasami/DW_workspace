@@ -16,6 +16,11 @@ class NoOpMapController implements MapController {
   }
 
   @override
+  Future<void> setPolylines(List<MapPolyline> polylines) async {
+    // No-op
+  }
+
+  @override
   void dispose() {
     // No-op
   }

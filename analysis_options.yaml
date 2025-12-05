@@ -1,10 +1,6 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
-  include:
-    - lib/**
-    - B-*/lib/**
-    - B-*/packages/**/lib/**
   exclude:
     - packages/core/lib/src/forecasting/**
     - packages/core/lib/src/marketplace/**
@@ -33,11 +29,11 @@ analyzer:
     - lib/_examples/**
     # Documentation example code (not production)
     - docs/**
-    # Legacy nested folder with broken imports
-    - B-ui/B-ui/**
-    # Temporarily exclude test files that need updates after interface stabilization
-    - B-ux/test/**
-    - B-ux/packages/**/test/**
+    # Legacy/Separate modules - excluded from main analysis
+    # B-ui: Legacy UI components module
+    - B-ui/**
+    # B-ux: UX patterns module (separate codebase)
+    - B-ux/**
     # Integration tests that depend on excluded packages
     - integration_test/**
   errors:

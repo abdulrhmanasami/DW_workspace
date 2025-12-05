@@ -18,7 +18,7 @@ class TrackingMapController extends StateNotifier<TrackingMapState> {
     await _recorder.beginTrip(tripId);
     _sub = _recorder.points.listen((point) async {
       final marker = MapMarker(
-        id: MapMarkerId('last'),
+        id: const MapMarkerId('last'),
         position: GeoPoint(
           point.latitude,
           point.longitude,

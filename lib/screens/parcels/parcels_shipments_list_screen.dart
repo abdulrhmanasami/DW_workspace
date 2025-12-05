@@ -288,10 +288,10 @@ class _ShipmentCard extends StatelessWidget {
                             vertical: DWSpacing.xxs,
                           ),
                           decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.1),
+                            color: statusColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(DWRadius.sm),
                             border: Border.all(
-                              color: statusColor.withOpacity(0.3),
+                              color: statusColor.withValues(alpha: 0.3),
                             ),
                           ),
                           child: Text(

@@ -51,7 +51,7 @@ class AppButton extends StatelessWidget {
     this.leadingIcon,
     this.expanded = false,
     this.loading = false,
-  }) : variant = _AppButtonVariant.primary;
+  }) : variant = AppButtonVariant.primary;
 
   const AppButton.secondary({
     super.key,
@@ -60,14 +60,14 @@ class AppButton extends StatelessWidget {
     this.leadingIcon,
     this.expanded = false,
     this.loading = false,
-  }) : variant = _AppButtonVariant.secondary;
+  }) : variant = AppButtonVariant.secondary;
 
   final String label;
   final VoidCallback? onPressed;
   final IconData? leadingIcon;
   final bool expanded;
   final bool loading;
-  final _AppButtonVariant variant;
+  final AppButtonVariant variant;
 
   @override
   Widget build(BuildContext context) {
@@ -83,4 +83,5 @@ class AppButton extends StatelessWidget {
   }
 }
 
-enum _AppButtonVariant { primary, secondary }
+/// Button variant type for AppButton
+enum AppButtonVariant { primary, secondary }

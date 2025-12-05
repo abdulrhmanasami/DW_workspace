@@ -9,3 +9,5 @@ dependencies:
     sdk: flutter
   payments_shims:
     path: ../payments_shims
+  payments:
+    path: ../payments

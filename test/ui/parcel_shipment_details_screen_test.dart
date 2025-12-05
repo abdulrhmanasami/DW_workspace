@@ -558,15 +558,15 @@ void main() {
                 ),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelsEntryScreen(),
+            supportedLocales: [Locale('en')],
+            home: ParcelsEntryScreen(),
           ),
         ),
       );
@@ -603,15 +603,15 @@ void main() {
                 ),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelsEntryScreen(),
+            supportedLocales: [Locale('en')],
+            home: ParcelsEntryScreen(),
           ),
         ),
       );

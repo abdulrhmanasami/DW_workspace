@@ -293,7 +293,7 @@ class UiSkeletonTile extends StatelessWidget {
               children: [
                 const UiSkeletonLine(height: 14),
                 SizedBox(height: _spacing.xs),
-                UiSkeletonLine(width: 180, height: 12),
+                const UiSkeletonLine(width: 180, height: 12),
               ],
             ),
           ),

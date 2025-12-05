@@ -65,9 +65,7 @@ void main() {
             Locale('ar'),
             Locale('de'),
           ],
-          home: const AppShell(
-            child: HomeHubScreen(),
-          ),
+          home: const AppShell(),
           routes: routes ??
               {
                 RoutePaths.rideDestination: (_) => const Scaffold(

@@ -20,7 +20,7 @@ class AppCard {
     EdgeInsets? padding,
     EdgeInsets? margin,
   }) {
-    return DwCard(child: child, padding: padding, margin: margin);
+    return DwCard(padding: padding, margin: margin, child: child);
   }
 }
 

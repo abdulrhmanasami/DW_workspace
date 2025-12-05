@@ -63,7 +63,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
 
         // Update current location marker
         final marker = maps.MapMarker(
-          id: maps.MapMarkerId('current_location'),
+          id: const maps.MapMarkerId('current_location'),
           position: maps.GeoPoint(lastPoint.latitude, lastPoint.longitude),
           label: 'موقعك الحالي',
         );
@@ -117,7 +117,7 @@ class _TrackingScreenState extends ConsumerState<TrackingScreen> {
       if (lastPoint != null) {
         markers.add(
           maps.MapMarker(
-            id: maps.MapMarkerId('current_location'),
+            id: const maps.MapMarkerId('current_location'),
             position: maps.GeoPoint(lastPoint.latitude, lastPoint.longitude),
             label: 'موقعك الحالي',
           ),

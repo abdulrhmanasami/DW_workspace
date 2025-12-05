@@ -14,6 +14,9 @@ dependencies:
     path: ../foundation_shims
   payments_stripe_impl:
     path: ../payments_stripe_impl
+  flutter_riverpod: any
+  payments_shims:
+    path: ../payments_shims
 dev_dependencies:
   flutter_test:
     sdk: flutter

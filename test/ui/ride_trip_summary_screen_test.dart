@@ -30,7 +30,7 @@ void main() {
 
   group('RideTripSummaryScreen Widget Tests (Ticket #92)', () {
     /// Helper to get AppLocalizations from the test widget
-    AppLocalizations _l10n(WidgetTester tester) =>
+    AppLocalizations l10n0(WidgetTester tester) =>
         AppLocalizations.of(tester.element(find.byType(RideTripSummaryScreen)))!;
 
     /// Helper to create a completed trip state
@@ -352,7 +352,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify mock driver info using l10n
-      final l10n = _l10n(tester);
+      final l10n = l10n0(tester);
       expect(find.text(l10n.rideDriverMockName), findsOneWidget);
       expect(find.text(l10n.rideDriverMockCarInfo), findsOneWidget);
       expect(find.text(l10n.rideDriverMockRating), findsOneWidget); // Rating badge

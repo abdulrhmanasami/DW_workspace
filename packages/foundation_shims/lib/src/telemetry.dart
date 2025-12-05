@@ -5,6 +5,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 
 /// Telemetry consent manager for GDPR compliance
 class TelemetryConsent {
@@ -171,17 +172,17 @@ class Telemetry {
 
   /// Basic logging without timeout (for error recovery)
   void _logWithoutTimeout(String message, [dynamic data]) {
-    print(message);
+    debugPrint(message);
     if (data != null) {
       try {
         final jsonData = jsonEncode(data);
         if (jsonData.length > 2000) {
-          print('Data: [TRUNCATED - ${jsonData.length} chars]');
+          debugPrint('Data: [TRUNCATED - ${jsonData.length} chars]');
         } else {
-          print('Data: $jsonData');
+          debugPrint('Data: $jsonData');
         }
       } catch (e) {
-        print('Data: [SERIALIZATION ERROR: $e]');
+        debugPrint('Data: [SERIALIZATION ERROR: $e]');
       }
     }
   }
@@ -279,7 +280,7 @@ class TelemetrySpan {
       }).timeout(const Duration(seconds: 2));
     } catch (e) {
       // Timeout or error - continue without attributes
-      print('TelemetrySpan attribute setting failed: $e');
+      debugPrint('TelemetrySpan attribute setting failed: $e');
     }
   }
 
@@ -308,12 +309,12 @@ class TelemetrySpan {
         final attributes = Map<String, String>.from(_attributes)
           ..['duration_ms'] = duration.inMilliseconds.toString();
 
-        print('Telemetry Span "$name" completed');
-        print('Attributes: $attributes');
+        debugPrint('Telemetry Span "$name" completed');
+        debugPrint('Attributes: $attributes');
       }).timeout(const Duration(seconds: 2));
     } catch (e) {
       // Timeout occurred - log minimal completion
-      print('Telemetry Span "$name" completed (timeout)');
+      debugPrint('Telemetry Span "$name" completed (timeout)');
     }
   }
 }

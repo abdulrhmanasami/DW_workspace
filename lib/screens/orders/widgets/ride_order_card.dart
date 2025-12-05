@@ -156,7 +156,7 @@ class RideOrderCard extends StatelessWidget {
                       const SizedBox(height: DWSpacing.xxs),
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.star,
                             size: 14,
                             color: Colors.amber,

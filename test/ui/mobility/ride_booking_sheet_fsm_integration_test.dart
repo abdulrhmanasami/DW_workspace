@@ -8,10 +8,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import '../../../lib/l10n/generated/app_localizations.dart';
-import '../../../lib/l10n/generated/app_localizations_en.dart';
-import '../../../lib/screens/mobility/ride_booking_screen.dart';
-import '../../../lib/state/mobility/ride_booking_controller.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations_en.dart';
+import 'package:delivery_ways_clean/screens/mobility/ride_booking_screen.dart';
 import 'package:maps_shims/maps.dart';
 
 void main() {
@@ -32,18 +31,18 @@ void main() {
           ),
           ...overrides,
         ],
-        child: MaterialApp(
-          locale: const Locale('en'),
-          localizationsDelegates: const [
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
+          supportedLocales: [
             Locale('en'),
           ],
-          home: const RideBookingScreen(),
+          home: RideBookingScreen(),
         ),
       );
     }

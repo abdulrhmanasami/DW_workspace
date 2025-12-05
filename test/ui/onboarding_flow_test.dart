@@ -9,12 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // App imports
-import 'package:delivery_ways_clean/screens/onboarding/welcome_screen.dart';
-import 'package:delivery_ways_clean/screens/onboarding/permissions_screen.dart';
-import 'package:delivery_ways_clean/screens/onboarding/screen_preferences.dart';
 import 'package:delivery_ways_clean/screens/onboarding/onboarding_root_screen.dart';
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
-import 'package:delivery_ways_clean/screens/auth/phone_login_screen.dart';
 import 'package:foundation_shims/foundation_shims.dart';
 
 // Import the stub implementation for testing
@@ -152,11 +148,11 @@ void main() {
           overrides: [
             onboardingPrefsServiceProvider.overrideWithValue(stubPrefs),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
-            home: const OnboardingRootScreen(),
+            locale: Locale('en'),
+            home: OnboardingRootScreen(),
           ),
         ));
         await tester.pumpAndSettle();
@@ -184,11 +180,11 @@ void main() {
           overrides: [
             onboardingPrefsServiceProvider.overrideWithValue(stubPrefs),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
-            home: const OnboardingRootScreen(),
+            locale: Locale('en'),
+            home: OnboardingRootScreen(),
           ),
         ));
         await tester.pumpAndSettle();
@@ -243,11 +239,11 @@ void main() {
           overrides: [
             onboardingPrefsServiceProvider.overrideWithValue(stubPrefs),
           ],
-          child: MaterialApp(
+          child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
-            home: const OnboardingRootScreen(),
+            locale: Locale('en'),
+            home: OnboardingRootScreen(),
           ),
         ));
         await tester.pumpAndSettle();
@@ -293,11 +289,11 @@ void main() {
         overrides: [
           onboardingPrefsServiceProvider.overrideWithValue(stubPrefs),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: const OnboardingRootScreen(),
+          locale: Locale('en'),
+          home: OnboardingRootScreen(),
         ),
       ));
       await tester.pumpAndSettle();
@@ -321,11 +317,11 @@ void main() {
         overrides: [
           onboardingPrefsServiceProvider.overrideWithValue(stubPrefs),
         ],
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: const Locale('en'),
-          home: const OnboardingRootScreen(),
+          locale: Locale('en'),
+          home: OnboardingRootScreen(),
         ),
       ));
       await tester.pumpAndSettle();

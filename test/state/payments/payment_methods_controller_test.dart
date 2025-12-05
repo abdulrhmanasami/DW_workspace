@@ -3,7 +3,6 @@
 // Purpose: Unit tests for payment methods state management
 // Last updated: 2025-11-25
 
-import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -480,7 +479,7 @@ void main() {
   // --------------------------------------------------------------------------
   group('SavedPaymentMethod', () {
     test('displayName format is correct', () {
-      final method = SavedPaymentMethod(
+      const method = SavedPaymentMethod(
         id: 'pm_test',
         brand: 'Visa',
         last4: '4242',
@@ -493,7 +492,7 @@ void main() {
     });
 
     test('isAvailable returns true by default', () {
-      final method = SavedPaymentMethod(
+      const method = SavedPaymentMethod(
         id: 'pm_test',
         brand: 'Visa',
         last4: '4242',

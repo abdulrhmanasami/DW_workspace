@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
+import '../../state/auth/passwordless_auth_controller.dart';
+import '../../state/identity/identity_controller.dart';
 import '../../ui/profile/profile_header_card.dart';
 import '../../ui/profile/profile_menu_item.dart';
 import '../../widgets/app_button_unified.dart';
@@ -10,16 +13,17 @@ import 'package:design_system_shims/design_system_shims.dart';
 /// Profile Tab Screen
 /// Displays user profile information and settings menu
 /// Track A - Ticket #227: Profile / Settings Tab UI implementation
-class ProfileTabScreen extends StatelessWidget {
+class ProfileTabScreen extends ConsumerWidget {
   const ProfileTabScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
+    final authState = ref.watch(passwordlessAuthControllerProvider);
 
-    // TODO (Track D): Replace with actual user data from auth_shims/accounts_shims
+    // Track D-3: Use actual user data from PasswordlessAuthController
     final displayName = l10n.profileGuestName;
-    final phoneNumber = l10n.profileGuestPhonePlaceholder;
+    final phoneNumber = authState.phoneE164 ?? l10n.profileGuestPhonePlaceholder;
 
     return AppShell(
       title: l10n.profileTitle,
@@ -85,7 +89,7 @@ class ProfileTabScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: DWSpacing.md),
             child: AppButtonUnified(
               label: l10n.profileLogoutTitle,
-              onPressed: () => _handleLogout(context),
+              onPressed: () => _handleLogout(context, ref),
               style: AppButtonStyle.secondary,
               leadingIcon: const Icon(Icons.logout),
             ),
@@ -136,8 +140,11 @@ class ProfileTabScreen extends StatelessWidget {
     Navigator.of(context).pushNamed(RoutePaths.dsrErasure);
   }
 
-  void _handleLogout(BuildContext context) {
-    // Track D: Replace with actual logout logic from auth_shims
+  void _handleLogout(BuildContext context, WidgetRef ref) {
+    // Track D-3: Use actual logout logic from IdentityController
+    final identityController = ref.read(identityControllerProvider.notifier);
+    identityController.signOut();
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(AppLocalizations.of(context)!.profileLogoutSnack)),
     );

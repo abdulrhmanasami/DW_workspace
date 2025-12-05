@@ -50,7 +50,7 @@ class PaymentsTabScreen extends ConsumerWidget {
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(DWSpacing.md),
+          padding: const EdgeInsets.all(DWSpacing.md),
           child: paymentMethodsState.methods.when(
             loading: () => const _PaymentsLoadingState(),
             error: (error, stackTrace) => _PaymentsErrorState(
@@ -108,7 +108,7 @@ class _PaymentsMethodsList extends StatelessWidget {
         Expanded(
           child: ListView.separated(
             itemCount: methods.length,
-            separatorBuilder: (_, __) => SizedBox(height: DWSpacing.sm),
+            separatorBuilder: (_, __) => const SizedBox(height: DWSpacing.sm),
             itemBuilder: (context, index) {
               final method = methods[index];
               final mapping = _mapPaymentMethodToUi(method, l10n);
@@ -126,7 +126,7 @@ class _PaymentsMethodsList extends StatelessWidget {
         ),
 
         // Add new method CTA
-        SizedBox(height: DWSpacing.md),
+        const SizedBox(height: DWSpacing.md),
         SizedBox(
           width: double.infinity,
           child: DWButton.secondary(
@@ -244,7 +244,7 @@ class _PaymentsErrorState extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.all(DWSpacing.lg),
+        padding: const EdgeInsets.all(DWSpacing.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -253,7 +253,7 @@ class _PaymentsErrorState extends StatelessWidget {
               size: 48,
               color: colorScheme.error,
             ),
-            SizedBox(height: DWSpacing.md),
+            const SizedBox(height: DWSpacing.md),
             Text(
               'Unable to load payment methods',
               style: textTheme.titleMedium?.copyWith(
@@ -262,7 +262,7 @@ class _PaymentsErrorState extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: DWSpacing.xs),
+            const SizedBox(height: DWSpacing.xs),
             Text(
               error,
               style: textTheme.bodyMedium?.copyWith(
@@ -271,7 +271,7 @@ class _PaymentsErrorState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[
-              SizedBox(height: DWSpacing.lg),
+              const SizedBox(height: DWSpacing.lg),
               TextButton(
                 onPressed: onRetry,
                 child: Text(

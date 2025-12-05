@@ -75,7 +75,7 @@ void main() {
       });
 
       test('creates parcel with correct pickup address', () async {
-        final request = ParcelCreateRequest(
+        const request = ParcelCreateRequest(
           senderName: 'John Doe',
           senderPhone: '+1234567890',
           senderAddress: '123 Main Street',
@@ -95,7 +95,7 @@ void main() {
       });
 
       test('creates parcel with correct dropoff address', () async {
-        final request = ParcelCreateRequest(
+        const request = ParcelCreateRequest(
           senderName: 'John Doe',
           senderPhone: '+1234567890',
           senderAddress: '123 Main Street',
@@ -115,7 +115,7 @@ void main() {
       });
 
       test('creates parcel with correct size', () async {
-        final request = ParcelCreateRequest(
+        const request = ParcelCreateRequest(
           senderName: 'John Doe',
           senderPhone: '+1234567890',
           senderAddress: '123 Main Street',
@@ -134,7 +134,7 @@ void main() {
       });
 
       test('parses weight correctly', () async {
-        final request = ParcelCreateRequest(
+        const request = ParcelCreateRequest(
           senderName: 'John Doe',
           senderPhone: '+1234567890',
           senderAddress: '123 Main Street',
@@ -153,7 +153,7 @@ void main() {
       });
 
       test('handles comma as decimal separator in weight', () async {
-        final request = ParcelCreateRequest(
+        const request = ParcelCreateRequest(
           senderName: 'John Doe',
           senderPhone: '+1234567890',
           senderAddress: '123 Main Street',
@@ -172,7 +172,7 @@ void main() {
       });
 
       test('defaults to 1.0 kg for invalid weight', () async {
-        final request = ParcelCreateRequest(
+        const request = ParcelCreateRequest(
           senderName: 'John Doe',
           senderPhone: '+1234567890',
           senderAddress: '123 Main Street',
@@ -191,7 +191,7 @@ void main() {
       });
 
       test('sets notes as description', () async {
-        final request = ParcelCreateRequest(
+        const request = ParcelCreateRequest(
           senderName: 'John Doe',
           senderPhone: '+1234567890',
           senderAddress: '123 Main Street',
@@ -286,7 +286,7 @@ void main() {
         });
 
         test('price varies by parcel size - small', () async {
-          final request = ParcelCreateRequest(
+          const request = ParcelCreateRequest(
             senderName: 'Test Sender',
             senderPhone: '+1234567890',
             senderAddress: '123 Test Street',
@@ -306,7 +306,7 @@ void main() {
         });
 
         test('price varies by parcel size - large', () async {
-          final request = ParcelCreateRequest(
+          const request = ParcelCreateRequest(
             senderName: 'Test Sender',
             senderPhone: '+1234567890',
             senderAddress: '123 Test Street',
@@ -326,7 +326,7 @@ void main() {
         });
 
         test('express service costs more than standard', () async {
-          final standardRequest = ParcelCreateRequest(
+          const standardRequest = ParcelCreateRequest(
             senderName: 'Test Sender',
             senderPhone: '+1234567890',
             senderAddress: '123 Test Street',
@@ -339,7 +339,7 @@ void main() {
             serviceType: ParcelServiceType.standard,
           );
 
-          final expressRequest = ParcelCreateRequest(
+          const expressRequest = ParcelCreateRequest(
             senderName: 'Test Sender',
             senderPhone: '+1234567890',
             senderAddress: '123 Test Street',
@@ -362,7 +362,7 @@ void main() {
         });
 
         test('handles comma decimal separator in weight for pricing', () async {
-          final request = ParcelCreateRequest(
+          const request = ParcelCreateRequest(
             senderName: 'Test Sender',
             senderPhone: '+1234567890',
             senderAddress: '123 Test Street',

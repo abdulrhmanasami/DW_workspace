@@ -95,32 +95,32 @@ class PaymentsConfig {
 PaymentsConfig loadPaymentsConfig({ConfigManager? manager}) {
   final cfg = manager ?? ConfigManager.instance;
 
-  String _string(String key, {String defaultValue = ''}) =>
+  String string(String key, {String defaultValue = ''}) =>
       cfg.getString(key, defaultValue: defaultValue) ?? defaultValue;
 
-  bool _flag(String key, {bool defaultValue = false}) {
-    final raw = _string(key, defaultValue: defaultValue ? 'true' : 'false');
+  bool flag(String key, {bool defaultValue = false}) {
+    final raw = string(key, defaultValue: defaultValue ? 'true' : 'false');
     return raw == '1' || raw.toLowerCase() == 'true';
   }
 
   Uri? backendBaseUrl;
-  final backendUrlValue = _string('payments_backend_base_url');
+  final backendUrlValue = string('payments_backend_base_url');
   if (backendUrlValue.isNotEmpty) {
     backendBaseUrl = Uri.tryParse(backendUrlValue);
   }
 
   return PaymentsConfig(
-    publishableKey: _string('stripe_publishable_key'),
-    merchantCountryCode: _string('merchant_country_code', defaultValue: 'US'),
-    merchantDisplayName: _string(
+    publishableKey: string('stripe_publishable_key'),
+    merchantCountryCode: string('merchant_country_code', defaultValue: 'US'),
+    merchantDisplayName: string(
       'stripe_merchant_display_name',
       defaultValue: 'Delivery Ways',
     ),
-    usePaymentSheet: _flag('payments_use_payment_sheet', defaultValue: true),
-    environment: _string('payments_env', defaultValue: 'test'),
+    usePaymentSheet: flag('payments_use_payment_sheet', defaultValue: true),
+    environment: string('payments_env', defaultValue: 'test'),
     backendBaseUrl: backendBaseUrl,
-    googlePayEnabled: _flag('stripe_gpay_enabled'),
-    merchantCategoryCode: _string('merchant_category_code'),
+    googlePayEnabled: flag('stripe_gpay_enabled'),
+    merchantCategoryCode: string('merchant_category_code'),
   );
 }
 

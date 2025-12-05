@@ -63,9 +63,9 @@ class MfaStubAuthService implements AuthService {
       throw verifyOtpError!;
     }
     return sessionToReturn ??
-        AuthSession(
+        const AuthSession(
           accessToken: 'test_access_token',
-          user: const AuthUser(id: 'test_user_id', phoneNumber: '+491234567890'),
+          user: AuthUser(id: 'test_user_id', phoneNumber: '+491234567890'),
         );
   }
 

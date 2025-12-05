@@ -52,11 +52,11 @@ class DwText extends StatelessWidget {
         return typography.body1.copyWith(color: colors.onSurface);
       case DwTextVariant.bodyMuted:
         return typography.body2.copyWith(
-          color: colors.onSurface.withOpacity(0.7),
+          color: colors.onSurface.withValues(alpha: 0.7),
         );
       case DwTextVariant.label:
         return typography.caption.copyWith(
-          color: colors.onSurface.withOpacity(0.6),
+          color: colors.onSurface.withValues(alpha: 0.6),
           letterSpacing: 0.2,
         );
     }

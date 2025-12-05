@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:design_system_shims/design_system_shims.dart';
 
-import '../../../lib/l10n/generated/app_localizations.dart';
-import '../../../lib/screens/home/home_tab_screen.dart';
-import '../../../lib/ui/home/home_service_card.dart';
-import '../../../lib/ui/home/home_map_placeholder.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/screens/home/home_tab_screen.dart';
+import 'package:delivery_ways_clean/ui/home/home_service_card.dart';
+import 'package:delivery_ways_clean/ui/home/home_map_placeholder.dart';
 
 void main() {
   group('HomeTabScreen', () {
@@ -21,12 +20,12 @@ void main() {
         (WidgetTester tester) async {
       // Build the HomeTabScreen inside MaterialApp with theme and localizations
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
-            home: const HomeTabScreen(),
+            locale: Locale('en'),
+            home: HomeTabScreen(),
           ),
         ),
       );
@@ -66,12 +65,12 @@ void main() {
 
       // Build the HomeTabScreen inside MaterialApp with RTL locale
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('ar'),
-            home: const HomeTabScreen(),
+            locale: Locale('ar'),
+            home: HomeTabScreen(),
           ),
         ),
       );
@@ -130,9 +129,9 @@ void main() {
     testWidgets('HomeMapPlaceholder displays correctly',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
-            body: const HomeMapPlaceholder(),
+            body: HomeMapPlaceholder(),
           ),
         ),
       );
@@ -148,12 +147,12 @@ void main() {
     testWidgets('service cards show snackbar on tap (placeholder behavior)',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
-            locale: const Locale('en'),
-            home: const HomeTabScreen(),
+            locale: Locale('en'),
+            home: HomeTabScreen(),
           ),
         ),
       );

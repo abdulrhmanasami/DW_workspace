@@ -34,6 +34,30 @@ import 'package:mobility_shims/mobility_shims.dart';
 // Test support
 import '../support/design_system_harness.dart';
 
+/// Creates a test widget with necessary L10n and provider setup.
+Widget createTestApp({
+  required Widget home,
+  Locale locale = const Locale('en'),
+  Map<String, WidgetBuilder>? routes,
+}) {
+  return MaterialApp(
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: const [
+      Locale('en'),
+      Locale('ar'),
+      Locale('de'),
+    ],
+    locale: locale,
+    routes: routes ?? const {},
+    home: home,
+  );
+}
+
 void main() {
   setUpAll(() {
     ensureDesignSystemStubsForTests();
@@ -67,18 +91,7 @@ void main() {
           ),
           ...additionalOverrides,
         ],
-        child: MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('ar'),
-            Locale('de'),
-          ],
+        child: createTestApp(
           locale: locale,
           routes: routes ??
               {
@@ -89,7 +102,7 @@ void main() {
                       body: Center(child: Text('Ride Destination Screen')),
                     ),
               },
-          home: const AppShellWithNavigation(),
+          home: const AppShell(),
         ),
       );
     }
@@ -360,7 +373,7 @@ void main() {
                       body: Center(child: Text('Ride Destination Screen')),
                     ),
               },
-              home: const AppShellWithNavigation(),
+              home: const AppShell(),
             ),
           ),
         );
@@ -423,7 +436,7 @@ void main() {
                 GlobalCupertinoLocalizations.delegate,
               ],
               supportedLocales: [Locale('en')],
-              home: AppShellWithNavigation(),
+              home: AppShell(),
             ),
           ),
         );
@@ -483,7 +496,7 @@ void main() {
                 GlobalCupertinoLocalizations.delegate,
               ],
               supportedLocales: [Locale('en')],
-              home: AppShellWithNavigation(),
+              home: AppShell(),
             ),
           ),
         );
@@ -563,7 +576,7 @@ void main() {
                 GlobalCupertinoLocalizations.delegate,
               ],
               supportedLocales: [Locale('en')],
-              home: AppShellWithNavigation(),
+              home: AppShell(),
             ),
           ),
         );
@@ -630,7 +643,7 @@ void main() {
                 GlobalCupertinoLocalizations.delegate,
               ],
               supportedLocales: [Locale('en')],
-              home: AppShellWithNavigation(),
+              home: AppShell(),
             ),
           ),
         );

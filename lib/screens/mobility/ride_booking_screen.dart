@@ -14,8 +14,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart';
-import 'package:maps_shims/maps.dart';
-import 'package:mobility_shims/mobility_shims.dart';
+import 'package:maps_shims/maps.dart' as maps;
+import 'package:mobility_shims/mobility_shims.dart' as mobility;
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
@@ -23,6 +23,7 @@ import '../../state/mobility/ride_booking_controller.dart';
 import '../../state/mobility/ride_booking_state.dart';
 import '../../widgets/app_shell.dart';
 import '../../widgets/app_button_unified.dart';
+import 'ride_quote_options_sheet.dart';
 
 /// Key for ride booking map widget (for testing)
 const rideBookingMapKey = ValueKey('ride_booking_map');
@@ -32,24 +33,91 @@ class RideBookingScreen extends ConsumerWidget {
   const RideBookingScreen({super.key});
 
   Widget _buildMapView(WidgetRef ref) {
-    final buildMap = ref.watch(mapViewBuilderProvider);
+    final buildMap = ref.watch(maps.mapViewBuilderProvider);
     final bookingState = ref.watch(rideBookingControllerProvider);
 
-    // Determine camera position: use pickup location if available, otherwise default to Riyadh
-    final MapCamera initialCameraPosition;
-    if (bookingState.ride?.pickup?.location != null) {
+    // Determine camera position, markers, and polylines based on booking state
+    final maps.MapCamera initialCameraPosition;
+    final List<maps.MapMarker> markers = [];
+    final List<maps.MapPolyline> polylines = bookingState.polylines ?? [];
+
+    if (bookingState.hasValidLocations) {
+      final pickup = bookingState.ride!.pickup!;
+      final destination = bookingState.ride!.destination!;
+
+      // Add pickup marker
+      if (pickup.location != null) {
+        markers.add(maps.MapMarker(
+          id: const maps.MapMarkerId('pickup'),
+          position: maps.GeoPoint(pickup.location!.latitude, pickup.location!.longitude),
+          label: pickup.label,
+        ));
+      }
+
+      // Add destination marker
+      if (destination.location != null) {
+        markers.add(maps.MapMarker(
+          id: const maps.MapMarkerId('destination'),
+          position: maps.GeoPoint(destination.location!.latitude, destination.location!.longitude),
+          label: destination.label,
+        ));
+      }
+
+      // Set camera to show both locations with route
+      if (pickup.location != null && destination.location != null) {
+        // Calculate center point
+        final centerLat = (pickup.location!.latitude + destination.location!.latitude) / 2;
+        final centerLng = (pickup.location!.longitude + destination.location!.longitude) / 2;
+
+        // Calculate zoom level based on distance (simple approximation)
+        final latDiff = (pickup.location!.latitude - destination.location!.latitude).abs();
+        final lngDiff = (pickup.location!.longitude - destination.location!.longitude).abs();
+        final maxDiff = latDiff > lngDiff ? latDiff : lngDiff;
+        final zoom = maxDiff > 0.01 ? 13.0 : 14.0; // Zoom out for longer distances
+
+        initialCameraPosition = maps.MapCamera(
+          target: maps.MapPoint(latitude: centerLat, longitude: centerLng),
+          zoom: zoom,
+        );
+      } else if (pickup.location != null) {
+        initialCameraPosition = maps.MapCamera(
+          target: maps.MapPoint(
+            latitude: pickup.location!.latitude,
+            longitude: pickup.location!.longitude,
+          ),
+          zoom: 15.0,
+        );
+      } else {
+        // Fallback to Riyadh
+        initialCameraPosition = maps.MapCamera(
+          target: maps.MapPoint(
+            latitude: 24.7136,
+            longitude: 46.6753,
+          ),
+          zoom: 12.0,
+        );
+      }
+    } else if (bookingState.ride?.pickup?.location != null) {
+      // Only pickup available
       final pickupLocation = bookingState.ride!.pickup!.location!;
-      initialCameraPosition = MapCamera(
-        target: MapPoint(
+      initialCameraPosition = maps.MapCamera(
+        target: maps.MapPoint(
           latitude: pickupLocation.latitude,
           longitude: pickupLocation.longitude,
         ),
         zoom: 15.0,
       );
+
+      // Add pickup marker
+      markers.add(maps.MapMarker(
+        id: const maps.MapMarkerId('pickup'),
+        position: maps.GeoPoint(pickupLocation.latitude, pickupLocation.longitude),
+        label: bookingState.ride!.pickup!.label,
+      ));
     } else {
       // Default to Riyadh
-      initialCameraPosition = MapCamera(
-        target: MapPoint(
+      initialCameraPosition = maps.MapCamera(
+        target: maps.MapPoint(
           latitude: 24.7136,
           longitude: 46.6753,
         ),
@@ -60,20 +128,68 @@ class RideBookingScreen extends ConsumerWidget {
     return Container(
       key: rideBookingMapKey,
       child: buildMap(
-        MapViewParams(
+        maps.MapViewParams(
           initialCameraPosition: initialCameraPosition,
-          onMapReady: (_) {
-            // Map is ready - could add markers here if needed
+          onMapReady: (controller) {
+            // Set markers when map is ready
+            if (markers.isNotEmpty) {
+              controller.setMarkers(markers);
+            }
+            // Set polylines when map is ready
+            if (polylines.isNotEmpty) {
+              controller.setPolylines(polylines);
+            }
           },
         ),
       ),
     );
   }
 
+  Widget _buildBottomSheet(WidgetRef ref, AppLocalizations l10n) {
+    final bookingState = ref.watch(rideBookingControllerProvider);
+    final bookingController = ref.read(rideBookingControllerProvider.notifier);
+
+    // If we have quotes available, show the quote options sheet
+    if (bookingState.hasQuotes) {
+      return RideQuoteOptionsSheet(
+        quote: bookingState.quotes!,
+        selectedOption: bookingState.selectedQuote,
+        onOptionSelected: bookingController.selectQuote,
+        l10n: l10n,
+        showHandle: true,
+      );
+    }
+
+    // Otherwise, show the regular booking sheet
+    final theme = Theme.of(ref.context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(DWRadius.lg),
+        ),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 12,
+            offset: const Offset(0, -4),
+            color: colorScheme.shadow.withValues(alpha: 0.1),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(
+        DWSpacing.lg,
+        DWSpacing.sm,
+        DWSpacing.lg,
+        DWSpacing.lg,
+      ),
+      child: const _RideBookingSheetContent(),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return AppShell(
@@ -95,28 +211,7 @@ class RideBookingScreen extends ConsumerWidget {
           // Booking Sheet (Bottom)
           Align(
             alignment: Alignment.bottomCenter,
-            child: Container(
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(DWRadius.lg),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    blurRadius: 12,
-                    offset: const Offset(0, -4),
-                    color: colorScheme.shadow.withValues(alpha: 0.1),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.fromLTRB(
-                DWSpacing.lg,
-                DWSpacing.sm,
-                DWSpacing.lg,
-                DWSpacing.lg,
-              ),
-              child: const _RideBookingSheetContent(),
-            ),
+            child: _buildBottomSheet(ref, l10n),
           ),
         ],
       ),
@@ -147,6 +242,10 @@ class _RideBookingSheetContentState
       return 'Confirm Ride'; // TODO: Use L10n key when available
     }
 
+    if (state.hasQuotes && state.selectedQuote != null) {
+      return 'Confirm Ride'; // User has selected a quote, can now confirm
+    }
+
     if (state.canRequestQuote) {
       return l10n.rideBookingSeeOptionsCta;
     }
@@ -157,13 +256,21 @@ class _RideBookingSheetContentState
 
   bool _primaryCtaEnabled(RideBookingState state) {
     if (state.isLoading) return false;
-    return state.canConfirmRide || state.canRequestQuote;
+    return state.canConfirmRide || state.canRequestQuote || (state.hasQuotes && state.selectedQuote != null);
   }
 
   void _onPrimaryCtaPressed(RideBookingState state, RideBookingController controller) async {
     if (state.isLoading) return;
 
     if (state.canConfirmRide) {
+      await controller.confirmRide();
+      if (!mounted) return;
+      Navigator.of(context).pushNamed(RoutePaths.rideConfirmation);
+      return;
+    }
+
+    if (state.hasQuotes && state.selectedQuote != null) {
+      // User has selected a quote, confirm the ride
       await controller.confirmRide();
       if (!mounted) return;
       Navigator.of(context).pushNamed(RoutePaths.rideConfirmation);
@@ -181,9 +288,9 @@ class _RideBookingSheetContentState
   @override
   void initState() {
     super.initState();
-    // Start a new ride request when the screen opens
+    // Initialize ride booking with current location when the screen opens
     final controller = ref.read(rideBookingControllerProvider.notifier);
-    controller.startNewRide();
+    controller.initialize();
     _destinationController = TextEditingController();
   }
 
@@ -275,11 +382,23 @@ class _RideBookingSheetContentState
         const SizedBox(height: DWSpacing.xxs),
         TextFormField(
           controller: _destinationController,
-          enabled: false, // Disabled in this ticket - use recent locations
+          readOnly: true, // Make it read-only to prevent direct editing
+          onTap: () async {
+            // Navigate to destination selection screen
+            final result = await Navigator.of(context).pushNamed(
+              RoutePaths.rideDestination,
+              arguments: true, // returnResult = true
+            );
+            if (result is mobility.MobilityPlace && mounted) {
+              // Update destination in controller
+              final controller = ref.read(rideBookingControllerProvider.notifier);
+              await controller.updateDestination(result);
+            }
+          },
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.search),
-            hintText: 'Choose destination from recent locations below',
-            helperText: 'Tap on a recent location to select destination',
+            hintText: bookingState.ride?.destination?.label ?? 'Where to?',
+            helperText: 'Tap to search for a destination',
             helperStyle: textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -355,7 +474,7 @@ class _RideBookingSheetContentState
           title: l10n.rideBookingRecentHome,
           subtitle: l10n.rideBookingRecentHomeSubtitle,
           onTap: () => bookingController.updateDestination(
-            MobilityPlace.saved(id: 'home', label: l10n.rideBookingRecentHome),
+            mobility.MobilityPlace.saved(id: 'home', label: l10n.rideBookingRecentHome),
           ),
         ),
         _RecentLocationTile(
@@ -363,18 +482,24 @@ class _RideBookingSheetContentState
           title: l10n.rideBookingRecentWork,
           subtitle: l10n.rideBookingRecentWorkSubtitle,
           onTap: () => bookingController.updateDestination(
-            MobilityPlace.saved(id: 'work', label: l10n.rideBookingRecentWork),
+            mobility.MobilityPlace.saved(id: 'work', label: l10n.rideBookingRecentWork),
           ),
         ),
         _RecentLocationTile(
           icon: Icons.add_location_alt_outlined,
           title: l10n.rideBookingRecentAddNew,
           subtitle: l10n.rideBookingRecentAddNewSubtitle,
-          onTap: () {
-            // TODO: Navigate to location picker screen
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Add new location - not implemented yet')),
+          onTap: () async {
+            // Navigate to destination selection screen
+            final result = await Navigator.of(context).pushNamed(
+              RoutePaths.rideDestination,
+              arguments: true, // returnResult = true
             );
+            if (result is mobility.MobilityPlace && mounted) {
+              // Update destination in controller
+              final controller = ref.read(rideBookingControllerProvider.notifier);
+              await controller.updateDestination(result);
+            }
           },
         ),
         const SizedBox(height: DWSpacing.md),

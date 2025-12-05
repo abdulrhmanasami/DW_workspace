@@ -44,11 +44,11 @@ class _RecordingSink implements Sink<MapCommand> {
 void main() {
   group('RideMapProjector.project', () {
     test('confirmation stage shows pickup + dropoff + route', () {
-      final pickup = const GeoPoint(24.7136, 46.6753);
-      final dropoff = const GeoPoint(24.7743, 46.7386);
+      const pickup = GeoPoint(24.7136, 46.6753);
+      const dropoff = GeoPoint(24.7743, 46.7386);
 
-      final route = MapPolyline(
-        id: const MapPolylineId('route'),
+      const route = MapPolyline(
+        id: MapPolylineId('route'),
         points: [pickup, dropoff],
         isPrimaryRoute: true,
       );
@@ -76,8 +76,8 @@ void main() {
     });
 
     test('waitingForDriver shows driver + pickup markers', () {
-      final pickup = const GeoPoint(24.7136, 46.6753);
-      final driver = const GeoPoint(24.7200, 46.6800);
+      const pickup = GeoPoint(24.7136, 46.6753);
+      const driver = GeoPoint(24.7200, 46.6800);
 
       final snapshot = RideMapProjector.project(
         stage: RideMapStage.waitingForDriver,
@@ -98,11 +98,11 @@ void main() {
     });
 
     test('inProgress shows driver + dropoff + route when available', () {
-      final driver = const GeoPoint(24.7200, 46.6800);
-      final dropoff = const GeoPoint(24.7743, 46.7386);
+      const driver = GeoPoint(24.7200, 46.6800);
+      const dropoff = GeoPoint(24.7743, 46.7386);
 
-      final route = MapPolyline(
-        id: const MapPolylineId('route'),
+      const route = MapPolyline(
+        id: MapPolylineId('route'),
         points: [driver, dropoff],
         isPrimaryRoute: true,
       );
@@ -123,7 +123,7 @@ void main() {
     });
 
     test('idle stage shows only pickup marker with close zoom', () {
-      final userLocation = const GeoPoint(24.7136, 46.6753);
+      const userLocation = GeoPoint(24.7136, 46.6753);
 
       final snapshot = RideMapProjector.project(
         stage: RideMapStage.idle,
@@ -140,8 +140,8 @@ void main() {
     });
 
     test('completed stage does not show driver marker', () {
-      final pickup = const GeoPoint(24.7136, 46.6753);
-      final driver = const GeoPoint(24.7200, 46.6800);
+      const pickup = GeoPoint(24.7136, 46.6753);
+      const driver = GeoPoint(24.7200, 46.6800);
 
       final snapshot = RideMapProjector.project(
         stage: RideMapStage.completed,
@@ -155,11 +155,11 @@ void main() {
     });
 
     test('error stage does not show route polyline', () {
-      final pickup = const GeoPoint(24.7136, 46.6753);
-      final dropoff = const GeoPoint(24.7743, 46.7386);
+      const pickup = GeoPoint(24.7136, 46.6753);
+      const dropoff = GeoPoint(24.7743, 46.7386);
 
-      final route = MapPolyline(
-        id: const MapPolylineId('route'),
+      const route = MapPolyline(
+        id: MapPolylineId('route'),
         points: [pickup, dropoff],
         isPrimaryRoute: true,
       );
@@ -183,8 +183,8 @@ void main() {
     });
 
     test('searchingDestination shows only pickup marker', () {
-      final pickup = const GeoPoint(24.7136, 46.6753);
-      final dropoff = const GeoPoint(24.7743, 46.7386);
+      const pickup = GeoPoint(24.7136, 46.6753);
+      const dropoff = GeoPoint(24.7743, 46.7386);
 
       final snapshot = RideMapProjector.project(
         stage: RideMapStage.searchingDestination,
@@ -200,7 +200,7 @@ void main() {
 
   group('RideMapProjector.toCommands & pumpToPort', () {
     test('toCommands creates camera + markers + optional polylines commands', () {
-      final pickup = const GeoPoint(24.7136, 46.6753);
+      const pickup = GeoPoint(24.7136, 46.6753);
 
       final snapshot = RideMapProjector.project(
         stage: RideMapStage.idle,
@@ -225,11 +225,11 @@ void main() {
     });
 
     test('toCommands includes SetPolylinesCommand when polylines present', () {
-      final pickup = const GeoPoint(24.7136, 46.6753);
-      final dropoff = const GeoPoint(24.7743, 46.7386);
+      const pickup = GeoPoint(24.7136, 46.6753);
+      const dropoff = GeoPoint(24.7743, 46.7386);
 
-      final route = MapPolyline(
-        id: const MapPolylineId('route'),
+      const route = MapPolyline(
+        id: MapPolylineId('route'),
         points: [pickup, dropoff],
         isPrimaryRoute: true,
       );
@@ -258,11 +258,11 @@ void main() {
     });
 
     test('pumpToPort pushes commands into MapPort (RecordingMapPort)', () async {
-      final pickup = const GeoPoint(24.7136, 46.6753);
-      final dropoff = const GeoPoint(24.7743, 46.7386);
+      const pickup = GeoPoint(24.7136, 46.6753);
+      const dropoff = GeoPoint(24.7743, 46.7386);
 
-      final route = MapPolyline(
-        id: const MapPolylineId('route'),
+      const route = MapPolyline(
+        id: MapPolylineId('route'),
         points: [pickup, dropoff],
         isPrimaryRoute: true,
       );

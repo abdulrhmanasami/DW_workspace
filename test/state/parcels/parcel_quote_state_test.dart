@@ -221,7 +221,7 @@ void main() {
 
     group('refreshFromDraft', () {
       test('success path - returns quote with options', () async {
-        final draft = ParcelDraftUiState(
+        const draft = ParcelDraftUiState(
           pickupAddress: '123 Main Street',
           dropoffAddress: '456 Oak Avenue',
           size: ParcelSize.medium,
@@ -254,7 +254,7 @@ void main() {
       });
 
       test('missing weight returns error', () async {
-        final draft = ParcelDraftUiState(
+        const draft = ParcelDraftUiState(
           pickupAddress: '123 Main Street',
           dropoffAddress: '456 Oak Avenue',
           size: ParcelSize.medium,
@@ -270,7 +270,7 @@ void main() {
       });
 
       test('missing pickup address returns error', () async {
-        final draft = ParcelDraftUiState(
+        const draft = ParcelDraftUiState(
           pickupAddress: '',
           dropoffAddress: '456 Oak Avenue',
           size: ParcelSize.medium,
@@ -286,7 +286,7 @@ void main() {
       });
 
       test('missing dropoff address returns error', () async {
-        final draft = ParcelDraftUiState(
+        const draft = ParcelDraftUiState(
           pickupAddress: '123 Main Street',
           dropoffAddress: '',
           size: ParcelSize.medium,
@@ -303,7 +303,7 @@ void main() {
 
       test('pricing failure returns error', () async {
         // Use a mock service with 100% failure rate
-        final failingService = const MockParcelPricingService(
+        const failingService = MockParcelPricingService(
           baseLatency: Duration.zero,
           failureRate: 1.0,
         );
@@ -311,7 +311,7 @@ void main() {
           pricingService: failingService,
         );
 
-        final draft = ParcelDraftUiState(
+        const draft = ParcelDraftUiState(
           pickupAddress: '123 Main Street',
           dropoffAddress: '456 Oak Avenue',
           size: ParcelSize.medium,
@@ -327,7 +327,7 @@ void main() {
       });
 
       test('handles weight with comma as decimal separator', () async {
-        final draft = ParcelDraftUiState(
+        const draft = ParcelDraftUiState(
           pickupAddress: '123 Main Street',
           dropoffAddress: '456 Oak Avenue',
           size: ParcelSize.medium,
@@ -343,7 +343,7 @@ void main() {
       });
 
       test('handles invalid weight gracefully (defaults to 1.0)', () async {
-        final draft = ParcelDraftUiState(
+        const draft = ParcelDraftUiState(
           pickupAddress: '123 Main Street',
           dropoffAddress: '456 Oak Avenue',
           size: ParcelSize.medium,
@@ -381,7 +381,7 @@ void main() {
     group('reset', () {
       test('resets state to initial values', () async {
         // First load some data
-        final draft = ParcelDraftUiState(
+        const draft = ParcelDraftUiState(
           pickupAddress: '123 Main Street',
           dropoffAddress: '456 Oak Avenue',
           size: ParcelSize.medium,

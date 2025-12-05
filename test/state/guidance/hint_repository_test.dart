@@ -159,7 +159,7 @@ void main() {
   group('InAppHintDisplayState', () {
     group('incrementShowCount', () {
       test('creates new state with incremented count', () {
-        final original = InAppHintDisplayState(
+        const original = InAppHintDisplayState(
           hintId: 'test',
           showCount: 2,
           lastShownAt: null,

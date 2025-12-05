@@ -101,7 +101,7 @@ class UplinkClient {
       }
     }
 
-    throw UplinkHttpException('Max retries exceeded');
+    throw const UplinkHttpException('Max retries exceeded');
   }
 
   /// Exponential backoff delay bounded by configuration.

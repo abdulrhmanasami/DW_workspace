@@ -149,16 +149,16 @@ void main() {
     testWidgets('FoodComingSoonScreen displays correct AppBar title',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            localizationsDelegates: const [
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const FoodComingSoonScreen(),
+            supportedLocales: [Locale('en')],
+            home: FoodComingSoonScreen(),
           ),
         ),
       );
@@ -171,16 +171,16 @@ void main() {
     testWidgets('FoodComingSoonScreen displays icon correctly',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            localizationsDelegates: const [
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const FoodComingSoonScreen(),
+            supportedLocales: [Locale('en')],
+            home: FoodComingSoonScreen(),
           ),
         ),
       );
@@ -193,20 +193,20 @@ void main() {
     testWidgets('FoodComingSoonScreen displays Arabic content when locale is ar',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            locale: const Locale('ar'),
-            localizationsDelegates: const [
+            locale: Locale('ar'),
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
+            supportedLocales: [
               Locale('en'),
               Locale('ar'),
             ],
-            home: const FoodComingSoonScreen(),
+            home: FoodComingSoonScreen(),
           ),
         ),
       );
@@ -224,20 +224,20 @@ void main() {
     testWidgets('FoodComingSoonScreen displays German content when locale is de',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            locale: const Locale('de'),
-            localizationsDelegates: const [
+            locale: Locale('de'),
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
+            supportedLocales: [
               Locale('en'),
               Locale('de'),
             ],
-            home: const FoodComingSoonScreen(),
+            home: FoodComingSoonScreen(),
           ),
         ),
       );
@@ -320,16 +320,16 @@ void main() {
     testWidgets('FoodRestaurantsListScreen displays restaurant list when enabled',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            localizationsDelegates: const [
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const FoodRestaurantsListScreen(),
+            supportedLocales: [Locale('en')],
+            home: FoodRestaurantsListScreen(),
           ),
         ),
       );

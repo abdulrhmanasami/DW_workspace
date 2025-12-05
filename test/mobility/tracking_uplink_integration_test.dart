@@ -6,7 +6,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobility_shims/mobility.dart';
-import '../../lib/state/mobility/tracking_controller.dart';
+import 'package:delivery_ways_clean/state/mobility/tracking_controller.dart';
 import '../support/mobility_stubs.dart';
 import '../support/path_provider_stub.dart';
 import '../support/uplink_spy.dart';
@@ -35,11 +35,11 @@ void main() {
         overrides: [
           mobilityConfigProvider.overrideWithValue(true),
           consentBackgroundLocationProvider.overrideWithValue(true),
-          locationProvider.overrideWithProvider(
-            Provider<LocationProvider>((ref) => const TestLocationProvider()),
+          locationProvider.overrideWith(
+            ((ref) => const TestLocationProvider()),
           ),
-          backgroundTrackerProvider.overrideWithProvider(
-            Provider<BackgroundTracker>((ref) => const TestBackgroundTracker()),
+          backgroundTrackerProvider.overrideWith(
+            ((ref) => const TestBackgroundTracker()),
           ),
           uplinkServiceProvider.overrideWithValue(uplinkSpy),
         ],
@@ -79,11 +79,11 @@ void main() {
         overrides: [
           mobilityConfigProvider.overrideWithValue(true),
           consentBackgroundLocationProvider.overrideWithValue(true),
-          locationProvider.overrideWithProvider(
-            Provider<LocationProvider>((ref) => const TestLocationProvider()),
+          locationProvider.overrideWith(
+            ((ref) => const TestLocationProvider()),
           ),
-          backgroundTrackerProvider.overrideWithProvider(
-            Provider<BackgroundTracker>((ref) => const TestBackgroundTracker()),
+          backgroundTrackerProvider.overrideWith(
+            ((ref) => const TestBackgroundTracker()),
           ),
           uplinkServiceProvider.overrideWithValue(uplinkSpy),
         ],
@@ -114,11 +114,11 @@ void main() {
         overrides: [
           mobilityConfigProvider.overrideWithValue(false), // Disabled
           consentBackgroundLocationProvider.overrideWithValue(true),
-          locationProvider.overrideWithProvider(
-            Provider<LocationProvider>((ref) => const StubLocationProvider()),
+          locationProvider.overrideWith(
+            ((ref) => const StubLocationProvider()),
           ),
-          backgroundTrackerProvider.overrideWithProvider(
-            Provider<BackgroundTracker>((ref) => const StubBackgroundTracker()),
+          backgroundTrackerProvider.overrideWith(
+            ((ref) => const StubBackgroundTracker()),
           ),
           uplinkServiceProvider.overrideWithValue(uplinkSpy),
         ],
@@ -144,11 +144,11 @@ void main() {
         overrides: [
           mobilityConfigProvider.overrideWithValue(true),
           consentBackgroundLocationProvider.overrideWithValue(true),
-          locationProvider.overrideWithProvider(
-            Provider<LocationProvider>((ref) => const TestLocationProvider()),
+          locationProvider.overrideWith(
+            ((ref) => const TestLocationProvider()),
           ),
-          backgroundTrackerProvider.overrideWithProvider(
-            Provider<BackgroundTracker>((ref) => const TestBackgroundTracker()),
+          backgroundTrackerProvider.overrideWith(
+            ((ref) => const TestBackgroundTracker()),
           ),
           uplinkServiceProvider.overrideWithValue(uplinkSpy),
         ],
@@ -175,11 +175,11 @@ void main() {
         overrides: [
           mobilityConfigProvider.overrideWithValue(true),
           consentBackgroundLocationProvider.overrideWithValue(true),
-          locationProvider.overrideWithProvider(
-            Provider<LocationProvider>((ref) => const TestLocationProvider()),
+          locationProvider.overrideWith(
+            ((ref) => const TestLocationProvider()),
           ),
-          backgroundTrackerProvider.overrideWithProvider(
-            Provider<BackgroundTracker>((ref) => const TestBackgroundTracker()),
+          backgroundTrackerProvider.overrideWith(
+            ((ref) => const TestBackgroundTracker()),
           ),
           uplinkServiceProvider.overrideWithValue(uplinkSpy),
         ],

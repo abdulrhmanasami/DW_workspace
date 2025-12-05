@@ -8,6 +8,9 @@ abstract class MapViewController {
   /// Replace displayed markers.
   Future<void> setMarkers(List<MapMarker> markers);
 
+  /// Replace displayed polylines.
+  Future<void> setPolylines(List<MapPolyline> polylines);
+
   /// Optional hook for cleanup.
   void dispose();
 }

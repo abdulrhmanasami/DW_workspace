@@ -264,7 +264,7 @@ void main() {
         ParcelPhase.failed,
       ];
 
-      final allEvents = ParcelEvent.values;
+      const allEvents = ParcelEvent.values;
 
       for (final terminalPhase in terminalPhases) {
         group('from $terminalPhase', () {

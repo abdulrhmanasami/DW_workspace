@@ -146,8 +146,8 @@ void main() {
 
     test('pricing scales with distance', () async {
       // Arrange
-      final closeDropoff = const GeoPoint(24.7146, 46.6763); // Very close
-      final farDropoff = const GeoPoint(24.8136, 46.7753); // Much farther
+      const closeDropoff = GeoPoint(24.7146, 46.6763); // Very close
+      const farDropoff = GeoPoint(24.8136, 46.7753); // Much farther
 
       final closeRequest = RideQuoteRequest(
         pickup: pickup,

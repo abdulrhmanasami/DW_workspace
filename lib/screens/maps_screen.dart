@@ -64,11 +64,10 @@ class _MapsScreenContentState extends ConsumerState<MapsScreenContent> {
       // Test 2: Set a marker at test location
       if (_mapController != null) {
         await _mapController!.setMarkers([
-          MapMarker(
-            id: 'test_location',
-            point: MapPoint(latitude: 40.7128, longitude: -74.0060),
-            title: 'Test Location',
-            snippet: 'New York City',
+          const MapMarker(
+            id: MapMarkerId('test_location'),
+            position: GeoPoint(40.7128, -74.0060),
+            label: 'Test Location - New York City',
           ),
         ]);
       }

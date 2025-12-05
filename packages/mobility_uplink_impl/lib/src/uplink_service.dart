@@ -4,6 +4,7 @@
 // Last updated: 2025-11-14
 
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:mobility_shims/mobility.dart';
 import '../uplink_config.dart';
 import 'uplink_client.dart';
@@ -88,7 +89,7 @@ class UplinkService {
       } catch (e) {
         // Log error but continue with other sessions
         // In production, this would use proper logging
-        print('Failed to upload batch for session $sessionId: $e');
+        debugPrint('Failed to upload batch for session $sessionId: $e');
 
         // If not forced and this is a network/server error, don't remove from queue
         if (!force && _isRetryableError(e)) {

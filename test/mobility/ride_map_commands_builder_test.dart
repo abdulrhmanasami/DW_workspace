@@ -40,7 +40,7 @@ void main() {
 
   /// Create a basic active trip session in findingDriver phase
   RideTripSessionUiState createActiveSession() {
-    return RideTripSessionUiState(
+    return const RideTripSessionUiState(
       activeTrip: RideTripState(
         tripId: 'test-trip-1',
         phase: RideTripPhase.findingDriver,
@@ -50,7 +50,7 @@ void main() {
 
   /// Create a completed trip session
   RideTripSessionUiState createCompletedSession() {
-    return RideTripSessionUiState(
+    return const RideTripSessionUiState(
       activeTrip: RideTripState(
         tripId: 'test-trip-1',
         phase: RideTripPhase.completed,
@@ -304,7 +304,7 @@ void main() {
       );
 
       final sessionState = RideTripSessionUiState(
-        activeTrip: RideTripState(
+        activeTrip: const RideTripState(
           tripId: 'trip-with-snapshot',
           phase: RideTripPhase.findingDriver,
         ),
@@ -358,7 +358,7 @@ void main() {
       );
 
       final sessionState = RideTripSessionUiState(
-        activeTrip: RideTripState(
+        activeTrip: const RideTripState(
           tripId: 'consistency-test',
           phase: RideTripPhase.driverAccepted,
         ),
@@ -571,11 +571,11 @@ void main() {
       final bounds = commands.animateToBounds!.bounds;
 
       // Verify bounds contain pickup
-      final pickupPos = DWLatLng(24.5000, 46.5000);
+      const pickupPos = DWLatLng(24.5000, 46.5000);
       expect(bounds.contains(pickupPos), isTrue);
 
       // Verify bounds contain destination
-      final destPos = DWLatLng(25.0000, 47.0000);
+      const destPos = DWLatLng(25.0000, 47.0000);
       expect(bounds.contains(destPos), isTrue);
 
       // Verify bounds corners
@@ -637,8 +637,8 @@ void main() {
       const cmd1 = DWSetContentCommand(markers: [], polylines: []);
       const cmd2 = DWSetContentCommand(markers: [], polylines: []);
 
-      final commands1 = RideMapCommands(setContent: cmd1);
-      final commands2 = RideMapCommands(setContent: cmd2);
+      const commands1 = RideMapCommands(setContent: cmd1);
+      const commands2 = RideMapCommands(setContent: cmd2);
 
       // Assert
       expect(commands1, equals(commands2));
@@ -648,7 +648,7 @@ void main() {
     test('toString includes command info', () {
       // Arrange
       const cmd = DWSetContentCommand(markers: [], polylines: []);
-      final commands = RideMapCommands(setContent: cmd);
+      const commands = RideMapCommands(setContent: cmd);
 
       // Act
       final str = commands.toString();
@@ -705,7 +705,7 @@ void main() {
       );
 
       final sessionState = RideTripSessionUiState(
-        activeTrip: RideTripState(
+        activeTrip: const RideTripState(
           tripId: 'getter-test',
           phase: RideTripPhase.inProgress,
         ),
@@ -728,7 +728,7 @@ void main() {
 
     test('getter returns null when no draftSnapshot', () {
       // Arrange
-      final sessionState = RideTripSessionUiState(
+      const sessionState = RideTripSessionUiState(
         activeTrip: RideTripState(
           tripId: 'no-snapshot',
           phase: RideTripPhase.findingDriver,

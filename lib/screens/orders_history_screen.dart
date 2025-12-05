@@ -113,7 +113,7 @@ class _OrdersHistoryScreenState extends ConsumerState<OrdersHistoryScreen> {
 
   Widget _buildEmptyState(BuildContext context, AppLocalizations? l10n) {
     // Show orders empty hint
-    final hint = OrderHints.emptyState;
+    const hint = OrderHints.emptyState;
     
     return Column(
       key: const ValueKey('empty'),

@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:auth_shims/auth_shims.dart';
 import 'package:delivery_ways_clean/state/identity/identity_controller.dart';
-import 'package:delivery_ways_clean/state/identity/identity_state.dart';
 
 // ============================================================================
 // Test Doubles (Fakes)
@@ -101,7 +100,7 @@ class FakeIdentityShim implements IdentityShim {
     requestLoginCodeCalled = true;
     lastRequestedPhoneNumber = phoneNumber;
     if (shouldThrowOnRequestLoginCode) {
-      throw AuthException.invalidPhone();
+      throw const AuthException.invalidPhone();
     }
   }
 
@@ -114,7 +113,7 @@ class FakeIdentityShim implements IdentityShim {
     lastVerifiedPhoneNumber = phoneNumber;
     lastVerifiedCode = code;
     if (shouldThrowOnVerifyLoginCode) {
-      throw AuthException.otpVerificationFailed();
+      throw const AuthException.otpVerificationFailed();
     }
     return refreshedSession; // Return authenticated session on success
   }
@@ -397,7 +396,7 @@ void main() {
       await Future.delayed(Duration.zero); // Wait for init
 
       // When: Request login code
-      final phoneNumber = PhoneNumber('+966501234567');
+      const phoneNumber = PhoneNumber('+966501234567');
       await controller.requestLoginCode(phoneNumber);
 
       // Then: Should call shim method and update state correctly
@@ -415,7 +414,7 @@ void main() {
       fakeShim.shouldThrowOnRequestLoginCode = true;
 
       // When: Request login code with invalid phone
-      final phoneNumber = PhoneNumber('+966501234567');
+      const phoneNumber = PhoneNumber('+966501234567');
       await controller.requestLoginCode(phoneNumber);
 
       // Then: Should handle error and set error message
@@ -431,7 +430,7 @@ void main() {
       await Future.delayed(Duration.zero); // Wait for init
 
       // When: Request login code
-      final phoneNumber = PhoneNumber('+966501234567');
+      const phoneNumber = PhoneNumber('+966501234567');
       await controller.requestLoginCode(phoneNumber);
 
       // Then: Should call shim and update state correctly
@@ -447,8 +446,8 @@ void main() {
       await Future.delayed(Duration.zero); // Wait for init
 
       // When: Verify login code
-      final phoneNumber = PhoneNumber('+966501234567');
-      final otpCode = OtpCode('123456');
+      const phoneNumber = PhoneNumber('+966501234567');
+      const otpCode = OtpCode('123456');
       await controller.verifyLoginCode(phoneNumber: phoneNumber, code: otpCode);
 
       // Then: Should call shim method, update session, and clear loading state
@@ -469,8 +468,8 @@ void main() {
       fakeShim.shouldThrowOnVerifyLoginCode = true;
 
       // When: Verify login code with invalid OTP
-      final phoneNumber = PhoneNumber('+966501234567');
-      final otpCode = OtpCode('123456');
+      const phoneNumber = PhoneNumber('+966501234567');
+      const otpCode = OtpCode('123456');
       await controller.verifyLoginCode(phoneNumber: phoneNumber, code: otpCode);
 
       // Then: Should handle error, keep unauthenticated state, and set error message
@@ -488,8 +487,8 @@ void main() {
       await Future.delayed(Duration.zero); // Wait for init
 
       // When: Verify login code
-      final phoneNumber = PhoneNumber('+966501234567');
-      final otpCode = OtpCode('123456');
+      const phoneNumber = PhoneNumber('+966501234567');
+      const otpCode = OtpCode('123456');
       await controller.verifyLoginCode(phoneNumber: phoneNumber, code: otpCode);
 
       // Then: Should call shim and update state correctly
@@ -508,7 +507,7 @@ void main() {
       fakeShim.shouldThrowOnRequestLoginCode = true;
 
       // When: Request login code with invalid phone (triggers AuthException.invalidPhone)
-      final phoneNumber = PhoneNumber('+966501234567');
+      const phoneNumber = PhoneNumber('+966501234567');
       await controller.requestLoginCode(phoneNumber);
 
       // Then: Should use AuthException message

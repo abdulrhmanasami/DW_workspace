@@ -81,7 +81,7 @@ class StubCheckoutSession implements CheckoutSession {
     // Stub: Return success result (no actual payment processing)
     final request = _sessions[sessionId];
     if (request == null) {
-      return CheckoutResult(
+      return const CheckoutResult(
         status: CheckoutStatus.failure,
         errorMessage: 'Session not found',
       );

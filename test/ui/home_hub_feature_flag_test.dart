@@ -113,16 +113,16 @@ void main() {
     testWidgets('FoodComingSoonScreen shows correct content (English)',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            localizationsDelegates: const [
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const FoodComingSoonScreen(),
+            supportedLocales: [Locale('en')],
+            home: FoodComingSoonScreen(),
           ),
         ),
       );
@@ -256,16 +256,16 @@ void main() {
     testWidgets('FoodRestaurantsListScreen shows restaurant list',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            localizationsDelegates: const [
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const FoodRestaurantsListScreen(),
+            supportedLocales: [Locale('en')],
+            home: FoodRestaurantsListScreen(),
           ),
         ),
       );
@@ -284,20 +284,20 @@ void main() {
     testWidgets('FoodComingSoonScreen displays Arabic content',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            locale: const Locale('ar'),
-            localizationsDelegates: const [
+            locale: Locale('ar'),
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
+            supportedLocales: [
               Locale('en'),
               Locale('ar'),
             ],
-            home: const FoodComingSoonScreen(),
+            home: FoodComingSoonScreen(),
           ),
         ),
       );
@@ -315,20 +315,20 @@ void main() {
     testWidgets('FoodComingSoonScreen displays German content',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            locale: const Locale('de'),
-            localizationsDelegates: const [
+            locale: Locale('de'),
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
+            supportedLocales: [
               Locale('en'),
               Locale('de'),
             ],
-            home: const FoodComingSoonScreen(),
+            home: FoodComingSoonScreen(),
           ),
         ),
       );

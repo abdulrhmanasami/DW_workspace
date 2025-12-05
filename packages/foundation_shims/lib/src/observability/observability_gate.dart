@@ -3,6 +3,7 @@
 /// Purpose: Consent-aware gate for telemetry and crash reporting services
 /// Last updated: 2025-11-12
 
+import 'package:flutter/foundation.dart';
 import 'consent_guard.dart';
 
 /// Abstract interface for observability services with consent enforcement
@@ -88,7 +89,7 @@ class RealObservabilityGate implements ObservabilityGate {
 
     // TODO: Connect to real analytics SDK (Firebase Analytics, etc.)
     // For now, just log to console with consent marker
-    print('REAL_ANALYTICS: Event logged - $event with data: $data');
+    debugPrint('REAL_ANALYTICS: Event logged - $event with data: $data');
   }
 
   @override
@@ -103,7 +104,7 @@ class RealObservabilityGate implements ObservabilityGate {
 
     // TODO: Connect to real crash reporting SDK (Firebase Crashlytics, Sentry, etc.)
     // For now, just log to console with consent marker
-    print('REAL_CRASH: Error logged - $message with context: $context');
+    debugPrint('REAL_CRASH: Error logged - $message with context: $context');
   }
 
   @override
@@ -130,7 +131,7 @@ class RealObservabilityGate implements ObservabilityGate {
     }
 
     // TODO: Connect to real SDK user identification
-    print('REAL_OBSERVABILITY: User ID set to $userId');
+    debugPrint('REAL_OBSERVABILITY: User ID set to $userId');
   }
 
   @override
@@ -143,19 +144,19 @@ class RealObservabilityGate implements ObservabilityGate {
     }
 
     // TODO: Connect to real SDK user properties
-    print('REAL_OBSERVABILITY: User property set - $name: $value');
+    debugPrint('REAL_OBSERVABILITY: User property set - $name: $value');
   }
 
   @override
   Future<void> enableCrashCollection(bool enabled) async {
     // TODO: Connect to real crash reporting SDK enable/disable
-    print('REAL_CRASH_COLLECTION: ${enabled ? 'ENABLED' : 'DISABLED'}');
+    debugPrint('REAL_CRASH_COLLECTION: ${enabled ? 'ENABLED' : 'DISABLED'}');
   }
 
   @override
   Future<void> enableAnalytics(bool enabled) async {
     // TODO: Connect to real analytics SDK enable/disable
-    print('REAL_ANALYTICS: ${enabled ? 'ENABLED' : 'DISABLED'}');
+    debugPrint('REAL_ANALYTICS: ${enabled ? 'ENABLED' : 'DISABLED'}');
   }
 }
 
@@ -168,25 +169,25 @@ class NoOpObservabilityGate implements ObservabilityGate {
   @override
   Future<void> init({required Consent initialConsent}) async {
     // No-op - do nothing
-    print('NO_OP_OBSERVABILITY: Initialized with consent: $initialConsent');
+    debugPrint('NO_OP_OBSERVABILITY: Initialized with consent: $initialConsent');
   }
 
   @override
   Future<void> setConsent(Consent consent) async {
     // No-op - ignore consent changes
-    print('NO_OP_OBSERVABILITY: Consent change ignored - $consent');
+    debugPrint('NO_OP_OBSERVABILITY: Consent change ignored - $consent');
   }
 
   @override
   Future<void> logEvent(String event, [Map<String, dynamic>? data]) async {
     // Kill operation completely - no logging, no network calls
-    print('KILLED_BY_CONSENT: Analytics event blocked - $event');
+    debugPrint('KILLED_BY_CONSENT: Analytics event blocked - $event');
   }
 
   @override
   Future<void> logError(String message, {Map<String, dynamic>? context}) async {
     // Kill operation completely - no logging, no network calls
-    print('KILLED_BY_CONSENT: Crash report blocked - $message');
+    debugPrint('KILLED_BY_CONSENT: Crash report blocked - $message');
   }
 
   @override
@@ -198,25 +199,25 @@ class NoOpObservabilityGate implements ObservabilityGate {
   @override
   Future<void> setUserId(String? userId) async {
     // Kill operation
-    print('KILLED_BY_CONSENT: User ID setting blocked');
+    debugPrint('KILLED_BY_CONSENT: User ID setting blocked');
   }
 
   @override
   Future<void> setUserProperty(String name, dynamic value) async {
     // Kill operation
-    print('KILLED_BY_CONSENT: User property setting blocked');
+    debugPrint('KILLED_BY_CONSENT: User property setting blocked');
   }
 
   @override
   Future<void> enableCrashCollection(bool enabled) async {
     // No-op - ignore
-    print('KILLED_BY_CONSENT: Crash collection toggle ignored');
+    debugPrint('KILLED_BY_CONSENT: Crash collection toggle ignored');
   }
 
   @override
   Future<void> enableAnalytics(bool enabled) async {
     // No-op - ignore
-    print('KILLED_BY_CONSENT: Analytics toggle ignored');
+    debugPrint('KILLED_BY_CONSENT: Analytics toggle ignored');
   }
 }
 
@@ -239,13 +240,13 @@ class RealObservabilitySpan implements ObservabilitySpan {
   @override
   Future<void> setAttributes(Map<String, String> attributes) async {
     // TODO: Connect to real tracing SDK
-    print('REAL_SPAN: $name attributes set: $attributes');
+    debugPrint('REAL_SPAN: $name attributes set: $attributes');
   }
 
   @override
   Future<void> setStatus(String status, [String? description]) async {
     // TODO: Connect to real tracing SDK
-    print(
+    debugPrint(
       'REAL_SPAN: $name status set to $status${description != null ? ' ($description)' : ''}',
     );
   }
@@ -254,7 +255,7 @@ class RealObservabilitySpan implements ObservabilitySpan {
   Future<void> stop() async {
     final duration = DateTime.now().difference(startTime);
     // TODO: Connect to real tracing SDK
-    print('REAL_SPAN: $name stopped after ${duration.inMilliseconds}ms');
+    debugPrint('REAL_SPAN: $name stopped after ${duration.inMilliseconds}ms');
   }
 }
 
@@ -268,18 +269,18 @@ class NoOpObservabilitySpan implements ObservabilitySpan {
   @override
   Future<void> setAttributes(Map<String, String> attributes) async {
     // Kill operation
-    print('KILLED_BY_CONSENT: Span $name attributes blocked');
+    debugPrint('KILLED_BY_CONSENT: Span $name attributes blocked');
   }
 
   @override
   Future<void> setStatus(String status, [String? description]) async {
     // Kill operation
-    print('KILLED_BY_CONSENT: Span $name status blocked');
+    debugPrint('KILLED_BY_CONSENT: Span $name status blocked');
   }
 
   @override
   Future<void> stop() async {
     // Kill operation
-    print('KILLED_BY_CONSENT: Span $name stop blocked');
+    debugPrint('KILLED_BY_CONSENT: Span $name stop blocked');
   }
 }

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:auth_shims/auth_shims.dart';
 
-import '../../../lib/screens/auth/otp_verification_screen.dart';
+import 'package:delivery_ways_clean/screens/auth/otp_verification_screen.dart';
 import '../../support/dw_test_app.dart';
 
 /// Fake IdentityShim for testing OTP verification scenarios
@@ -60,7 +60,7 @@ class FakeIdentityShimForOtpVerification extends Fake implements IdentityShim {
     lastVerifiedPhoneNumber = phoneNumber;
     lastVerifiedCode = code;
     if (shouldThrowOnVerifyLoginCode) {
-      throw AuthException.otpVerificationFailed();
+      throw const AuthException.otpVerificationFailed();
     }
     return authenticatedSession;
   }
@@ -88,14 +88,6 @@ void main() {
     fakeIdentityShim = FakeIdentityShimForOtpVerification();
   });
 
-  Widget buildOtpScreenWithPhoneNumber(String phoneNumber) {
-    return DwTestApp.withIdentityShim(
-      home: const OtpVerificationScreen(),
-      fakeIdentityShim: fakeIdentityShim,
-      additionalOverrides: [], // Could add navigation overrides if needed
-    );
-  }
-
   group('OtpVerificationScreen - UI Elements', () {
     testWidgets('displays OTP form with code field and verify button', (tester) async {
       await tester.pumpWidget(
@@ -107,7 +99,7 @@ void main() {
                   home: const OtpVerificationScreen(),
                   fakeIdentityShim: fakeIdentityShim,
                 ),
-                settings: RouteSettings(arguments: '+966501234567'),
+                settings: const RouteSettings(arguments: '+966501234567'),
               );
             },
           ),
@@ -147,7 +139,7 @@ void main() {
                   home: const OtpVerificationScreen(),
                   fakeIdentityShim: fakeIdentityShim,
                 ),
-                settings: RouteSettings(arguments: '+966501234567'),
+                settings: const RouteSettings(arguments: '+966501234567'),
               );
             },
           ),
@@ -181,7 +173,7 @@ void main() {
                   home: const OtpVerificationScreen(),
                   fakeIdentityShim: fakeIdentityShim,
                 ),
-                settings: RouteSettings(arguments: '+966501234567'),
+                settings: const RouteSettings(arguments: '+966501234567'),
               );
             },
           ),
@@ -200,8 +192,10 @@ void main() {
       // Button should be disabled during loading
       final buttonFinder = find.byType(ElevatedButton);
       if (buttonFinder.evaluate().isNotEmpty) {
-        final buttonWidget = tester.widget<ElevatedButton>(buttonFinder);
+        final button = tester.widget<ElevatedButton>(buttonFinder);
         // The button might be replaced with a loading version, so check if it's disabled
+        expect(button.onPressed == null || button.enabled == false, isTrue,
+            reason: 'Button should be disabled during loading');
       }
     });
 
@@ -215,7 +209,7 @@ void main() {
                   home: const OtpVerificationScreen(),
                   fakeIdentityShim: fakeIdentityShim,
                 ),
-                settings: RouteSettings(arguments: '+966501234567'),
+                settings: const RouteSettings(arguments: '+966501234567'),
               );
             },
           ),
@@ -253,7 +247,7 @@ void main() {
                   home: const OtpVerificationScreen(),
                   fakeIdentityShim: fakeIdentityShim,
                 ),
-                settings: RouteSettings(arguments: '+966501234567'),
+                settings: const RouteSettings(arguments: '+966501234567'),
               );
             },
           ),
@@ -289,7 +283,7 @@ void main() {
                   home: const OtpVerificationScreen(),
                   fakeIdentityShim: fakeIdentityShim,
                 ),
-                settings: RouteSettings(arguments: '+966501234567'),
+                settings: const RouteSettings(arguments: '+966501234567'),
               );
             },
           ),
@@ -328,7 +322,7 @@ void main() {
                   home: const OtpVerificationScreen(),
                   fakeIdentityShim: fakeIdentityShim,
                 ),
-                settings: RouteSettings(arguments: '+966501234567'),
+                settings: const RouteSettings(arguments: '+966501234567'),
               );
             },
           ),
@@ -360,7 +354,7 @@ void main() {
                   home: const OtpVerificationScreen(),
                   fakeIdentityShim: fakeIdentityShim,
                 ),
-                settings: RouteSettings(arguments: '+966501234567'),
+                settings: const RouteSettings(arguments: '+966501234567'),
               );
             },
           ),

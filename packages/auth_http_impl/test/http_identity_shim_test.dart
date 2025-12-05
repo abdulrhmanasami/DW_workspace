@@ -7,6 +7,7 @@ import 'dart:async';
 
 import 'package:test/test.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:auth_shims/auth_shims.dart';
 import 'package:device_security_shims/device_security_shims.dart';
 import 'package:auth_http_impl/auth_http_impl.dart';
@@ -46,7 +47,7 @@ void main() {
     });
 
     test('returns stored session when storage has valid session', () async {
-      final storedSession = IdentitySession(
+      const storedSession = IdentitySession(
         status: AuthStatus.authenticated,
         user: IdentityUser(userId: '123', displayName: 'Test User'),
         tokens: AuthTokens(accessToken: 'stored_token'),
@@ -86,7 +87,7 @@ void main() {
 
     test('returns unauthenticated session when refreshToken is null', () async {
       // Set up initial session with tokens but no refresh token
-      final initialTokens = AuthTokens(accessToken: 'access_token');
+      // Note: AuthTokens with only accessToken (no refreshToken) should fail refresh
       shim = HttpIdentityShim(
         authApiClient: mockClient,
         storage: mockStorage,
@@ -104,11 +105,11 @@ void main() {
 
     test('successfully refreshes tokens and updates session', () async {
       // Set up initial session with refreshable tokens
-      final initialTokens = AuthTokens(
+      const initialTokens = AuthTokens(
         accessToken: 'old_access',
         refreshToken: 'refresh_token',
       );
-      final initialSession = IdentitySession(
+      const initialSession = IdentitySession(
         status: AuthStatus.authenticated,
         user: IdentityUser(userId: '123'),
         tokens: initialTokens,
@@ -125,7 +126,7 @@ void main() {
         accessToken: 'new_access_token',
         refreshToken: 'new_refresh_token',
         expiresAt: DateTime.now().add(const Duration(hours: 1)),
-        user: AuthUser(id: '123', displayName: 'Updated User'),
+        user: const AuthUser(id: '123', displayName: 'Updated User'),
       );
       when(mockClient.refreshSession('refresh_token'))
           .thenAnswer((_) async => refreshedAuthSession);
@@ -145,11 +146,11 @@ void main() {
 
     test('returns unauthenticated session when refresh fails', () async {
       // Set up initial session with refreshable tokens
-      final initialTokens = AuthTokens(
+      const initialTokens = AuthTokens(
         accessToken: 'old_access',
         refreshToken: 'refresh_token',
       );
-      final initialSession = IdentitySession(
+      const initialSession = IdentitySession(
         status: AuthStatus.authenticated,
         user: IdentityUser(userId: '123'),
         tokens: initialTokens,
@@ -163,7 +164,7 @@ void main() {
 
       // Mock refresh failure
       when(mockClient.refreshSession('refresh_token'))
-          .thenThrow(AuthException.sessionExpired());
+          .thenThrow(const AuthException.sessionExpired());
 
       final session = await shim.refreshTokens();
 
@@ -179,7 +180,7 @@ void main() {
   group('signOut', () {
     test('clears session and storage', () async {
       // Set up initial session
-      final initialSession = IdentitySession(
+      const initialSession = IdentitySession(
         status: AuthStatus.authenticated,
         user: IdentityUser(userId: '123'),
         tokens: AuthTokens(accessToken: 'token', refreshToken: 'refresh'),
@@ -200,7 +201,7 @@ void main() {
 
     test('handles logout failure gracefully', () async {
       // Set up initial session
-      final initialSession = IdentitySession(
+      const initialSession = IdentitySession(
         status: AuthStatus.authenticated,
         user: IdentityUser(userId: '123'),
         tokens: AuthTokens(accessToken: 'token', refreshToken: 'refresh'),

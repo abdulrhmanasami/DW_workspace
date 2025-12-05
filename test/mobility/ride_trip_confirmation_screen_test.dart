@@ -10,7 +10,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:maps_shims/maps_shims.dart';
@@ -150,7 +149,7 @@ void main() {
         );
 
         // Create active trip state with frozen draft
-        final activeTrip = RideTripState(
+        const activeTrip = RideTripState(
           tripId: 'test-123',
           phase: RideTripPhase.findingDriver,
         );
@@ -180,18 +179,18 @@ void main() {
     group('RideMapFromCommands widget', () {
       testWidgets('renders MapWidget with converted markers', (tester) async {
         // Arrange
-        final commands = RideMapCommands(
+        const commands = RideMapCommands(
           setContent: DWSetContentCommand(
             markers: [
               DWMapMarker(
                 id: 'pickup',
-                position: const DWLatLng(24.7136, 46.6753),
+                position: DWLatLng(24.7136, 46.6753),
                 type: DWMapMarkerType.userPickup,
                 label: 'Home',
               ),
               DWMapMarker(
                 id: 'destination',
-                position: const DWLatLng(24.9500, 46.7100),
+                position: DWLatLng(24.9500, 46.7100),
                 type: DWMapMarkerType.destination,
                 label: 'Work',
               ),
@@ -200,8 +199,8 @@ void main() {
               DWMapPolyline(
                 id: 'route',
                 points: [
-                  const DWLatLng(24.7136, 46.6753),
-                  const DWLatLng(24.9500, 46.7100),
+                  DWLatLng(24.7136, 46.6753),
+                  DWLatLng(24.9500, 46.7100),
                 ],
                 style: DWMapPolylineStyle.route,
               ),
@@ -209,15 +208,15 @@ void main() {
           ),
           animateToBounds: DWAnimateToBoundsCommand(
             DWLatLngBounds(
-              southWest: const DWLatLng(24.7136, 46.6753),
-              northEast: const DWLatLng(24.9500, 46.7100),
+              southWest: DWLatLng(24.7136, 46.6753),
+              northEast: DWLatLng(24.9500, 46.7100),
             ),
           ),
         );
 
         // Act
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: RideMapFromCommands(commands: commands),
             ),
@@ -230,22 +229,22 @@ void main() {
 
       testWidgets('calculates initialPosition from bounds center', (tester) async {
         // Arrange
-        final commands = RideMapCommands(
-          setContent: const DWSetContentCommand(
+        const commands = RideMapCommands(
+          setContent: DWSetContentCommand(
             markers: [],
             polylines: [],
           ),
           animateToBounds: DWAnimateToBoundsCommand(
             DWLatLngBounds(
-              southWest: const DWLatLng(24.0, 46.0),
-              northEast: const DWLatLng(26.0, 48.0),
+              southWest: DWLatLng(24.0, 46.0),
+              northEast: DWLatLng(26.0, 48.0),
             ),
           ),
         );
 
         // Act
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: RideMapFromCommands(commands: commands),
             ),

@@ -40,5 +40,5 @@ final uiThemeProvider = Provider<String>((_) => _uiTheme);
 /// dart-define: MAINTENANCE_MESSAGE (String, default: '')
 /// Maintenance mode message to display
 final maintenanceMessageProvider = Provider<String>(
-  (_) => String.fromEnvironment('MAINTENANCE_MESSAGE', defaultValue: ''),
+  (_) => const String.fromEnvironment('MAINTENANCE_MESSAGE', defaultValue: ''),
 );

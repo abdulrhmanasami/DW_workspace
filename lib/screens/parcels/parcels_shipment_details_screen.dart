@@ -115,7 +115,7 @@ class _HeaderSection extends StatelessWidget {
                 vertical: DWSpacing.xs,
               ),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
+                color: statusColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(DWRadius.sm),
               ),
               child: Text(
@@ -415,7 +415,7 @@ class _ContactItem extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.1),
+            color: iconColor.withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(

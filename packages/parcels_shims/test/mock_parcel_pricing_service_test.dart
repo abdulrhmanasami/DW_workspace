@@ -280,7 +280,7 @@ void main() {
 
       final quote = ParcelQuote(
         quoteId: 'quote-123',
-        options: [option],
+        options: const [option],
       );
 
       expect(quote.quoteId, 'quote-123');

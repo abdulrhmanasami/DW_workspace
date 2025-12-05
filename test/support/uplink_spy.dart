@@ -4,14 +4,13 @@
 // Last updated: 2025-11-26
 
 import 'package:mobility_shims/mobility.dart';
-import 'package:mobility_uplink_impl/mobility_uplink_impl.dart' show UplinkService, UplinkConfig;
+import 'package:mobility_uplink_impl/mobility_uplink_impl.dart' show UplinkService;
 
 /// Spy implementation for tests:
 /// - يجمع كل النقاط التي تم تمريرها لـ enqueue.
 /// - لا يكتب على الشبكة ولا على القرص.
 class SpyUplinkService implements UplinkService {
   final List<EnqueuedPoint> enqueuedPoints = [];
-  bool _initialized = false;
   int _flushCount = 0;
   bool _forceFlushCalled = false;
 
@@ -26,7 +25,7 @@ class SpyUplinkService implements UplinkService {
 
   @override
   Future<void> initialize() async {
-    _initialized = true;
+    // No-op for spy - ready immediately
   }
 
   @override

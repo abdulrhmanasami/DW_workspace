@@ -384,15 +384,15 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: MaterialApp(
-              localizationsDelegates: const [
+            child: const MaterialApp(
+              localizationsDelegates: [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
-              home: const ParcelQuoteScreen(),
+              supportedLocales: [Locale('en')],
+              home: ParcelQuoteScreen(),
             ),
           ),
         );
@@ -431,15 +431,15 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: MaterialApp(
-              localizationsDelegates: const [
+            child: const MaterialApp(
+              localizationsDelegates: [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
-              home: const ParcelQuoteScreen(),
+              supportedLocales: [Locale('en')],
+              home: ParcelQuoteScreen(),
             ),
           ),
         );
@@ -589,15 +589,15 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: MaterialApp(
-              localizationsDelegates: const [
+            child: const MaterialApp(
+              localizationsDelegates: [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
-              home: const ParcelQuoteScreen(),
+              supportedLocales: [Locale('en')],
+              home: ParcelQuoteScreen(),
             ),
           ),
         );
@@ -628,15 +628,15 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: MaterialApp(
-              localizationsDelegates: const [
+            child: const MaterialApp(
+              localizationsDelegates: [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
-              home: const ParcelQuoteScreen(),
+              supportedLocales: [Locale('en')],
+              home: ParcelQuoteScreen(),
             ),
           ),
         );
@@ -667,15 +667,15 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: MaterialApp(
-              localizationsDelegates: const [
+            child: const MaterialApp(
+              localizationsDelegates: [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
-              home: const ParcelQuoteScreen(),
+              supportedLocales: [Locale('en')],
+              home: ParcelQuoteScreen(),
             ),
           ),
         );
@@ -706,15 +706,15 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: MaterialApp(
-              localizationsDelegates: const [
+            child: const MaterialApp(
+              localizationsDelegates: [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
-              home: const ParcelQuoteScreen(),
+              supportedLocales: [Locale('en')],
+              home: ParcelQuoteScreen(),
             ),
           ),
         );
@@ -745,15 +745,15 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: MaterialApp(
-              localizationsDelegates: const [
+            child: const MaterialApp(
+              localizationsDelegates: [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
-              home: const ParcelQuoteScreen(),
+              supportedLocales: [Locale('en')],
+              home: ParcelQuoteScreen(),
             ),
           ),
         );
@@ -791,15 +791,15 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: MaterialApp(
-              localizationsDelegates: const [
+            child: const MaterialApp(
+              localizationsDelegates: [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
-              home: const ParcelQuoteScreen(),
+              supportedLocales: [Locale('en')],
+              home: ParcelQuoteScreen(),
             ),
           ),
         );
@@ -871,20 +871,20 @@ void main() {
       Widget createDeTestWidget({List<Override> overrides = const []}) {
         return ProviderScope(
           overrides: overrides,
-          child: MaterialApp(
-            locale: const Locale('de'),
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            locale: Locale('de'),
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [
+            supportedLocales: [
               Locale('en'),
               Locale('ar'),
               Locale('de'),
             ],
-            home: const ParcelQuoteScreen(),
+            home: ParcelQuoteScreen(),
           ),
         );
       }
@@ -1297,15 +1297,15 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: MaterialApp(
-              localizationsDelegates: const [
+            child: const MaterialApp(
+              localizationsDelegates: [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
-              home: const ParcelQuoteScreen(),
+              supportedLocales: [Locale('en')],
+              home: ParcelQuoteScreen(),
             ),
           ),
         );
@@ -1359,15 +1359,15 @@ void main() {
         await tester.pumpWidget(
           UncontrolledProviderScope(
             container: container,
-            child: MaterialApp(
-              localizationsDelegates: const [
+            child: const MaterialApp(
+              localizationsDelegates: [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: const [Locale('en')],
-              home: const ParcelQuoteScreen(),
+              supportedLocales: [Locale('en')],
+              home: ParcelQuoteScreen(),
             ),
           ),
         );

@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
 
 import 'config_manager.dart' as app_cfg;
 

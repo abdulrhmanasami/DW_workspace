@@ -115,7 +115,7 @@ class RemoteConfigServiceImpl implements RemoteConfigService {
   /// Initialize with defaults if no config loaded yet
   void ensureInitialized() {
     if (_currentSnapshot == null) {
-      final defaultSource = InMemoryDefaultsSource();
+      const defaultSource = InMemoryDefaultsSource();
       _currentSnapshot = defaultSource.fetch();
       debugPrint('RemoteConfig: Initialized with defaults');
     }

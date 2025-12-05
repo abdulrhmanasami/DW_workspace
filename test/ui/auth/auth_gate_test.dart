@@ -8,18 +8,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auth_shims/auth_shims.dart';
 import 'package:foundation_shims/foundation_shims.dart';
 
-import '../../../lib/widgets/auth/auth_gate.dart';
-import '../../../lib/app_shell/app_shell.dart';
-import '../../../lib/screens/auth/phone_login_screen.dart';
-import '../../../lib/screens/onboarding/onboarding_root_screen.dart';
+import 'package:delivery_ways_clean/widgets/auth/auth_gate.dart';
+import 'package:delivery_ways_clean/app_shell/app_shell.dart';
+import 'package:delivery_ways_clean/screens/auth/phone_login_screen.dart';
+import 'package:delivery_ways_clean/screens/onboarding/onboarding_root_screen.dart';
 import '../../support/dw_test_app.dart';
 
 /// Fake OnboardingPrefs for testing AuthGate scenarios
 class _FakeOnboardingPrefs implements OnboardingPrefs {
   final bool completed;
-  final bool marketingOptIn;
 
-  _FakeOnboardingPrefs({required this.completed, this.marketingOptIn = false});
+  _FakeOnboardingPrefs({required this.completed});
 
   @override
   Future<bool> hasCompletedOnboarding() => Future.value(completed);
@@ -28,7 +27,7 @@ class _FakeOnboardingPrefs implements OnboardingPrefs {
   Future<void> setCompletedOnboarding(bool value) => Future.value();
 
   @override
-  Future<bool> getMarketingOptIn() => Future.value(marketingOptIn);
+  Future<bool> getMarketingOptIn() => Future.value(false);
 
   @override
   Future<void> setMarketingOptIn(bool value) => Future.value();
@@ -173,10 +172,10 @@ void main() {
 
     testWidgets('shows AppShell when onboarding completed and authenticated', (tester) async {
       final fakeShim = FakeIdentityShimForAuthGate(
-        initialSession: IdentitySession(
+        initialSession: const IdentitySession(
           status: AuthStatus.authenticated,
-          user: const IdentityUser(userId: 'test-user'),
-          tokens: const AuthTokens(
+          user: IdentityUser(userId: 'test-user'),
+          tokens: AuthTokens(
             accessToken: 'access-token',
             refreshToken: 'refresh-token',
             accessTokenExpiresAt: null,

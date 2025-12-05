@@ -112,7 +112,7 @@ void main() {
           flowId: testFlowId,
           completedVersion: 2,
           completedAt: completedAt,
-          skippedStepIds: ['step_1', 'step_2'],
+          skippedStepIds: const ['step_1', 'step_2'],
         );
 
         await repository.saveCompletionState(stateToSave);

@@ -146,7 +146,7 @@ void main() {
 
     testWidgets('OrderCard displays service icons correctly', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(
@@ -174,10 +174,10 @@ void main() {
 
     testWidgets('DWEmptyState renders basic components', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(
+          home: Scaffold(
             body: DWEmptyState(
               title: 'No History Yet',
               icon: Icons.history,

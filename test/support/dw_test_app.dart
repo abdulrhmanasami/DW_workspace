@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auth_shims/auth_shims.dart';
 
-import '../../lib/l10n/generated/app_localizations.dart';
-import '../../lib/state/identity/identity_controller.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/state/identity/identity_controller.dart';
 
 /// Test app wrapper for Delivery Ways screens with identity testing support
 class DwTestApp extends StatelessWidget {

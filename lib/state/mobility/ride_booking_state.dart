@@ -6,6 +6,7 @@
 /// State object for RideBookingController.
 /// Contains current request and UI status states.
 
+import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 
 /// UI status for ride booking operations.
@@ -35,6 +36,9 @@ class RideBookingState {
     this.ride,
     this.uiStatus = RideBookingUiStatus.idle,
     this.errorMessage,
+    this.polylines,
+    this.quotes,
+    this.selectedQuote,
     this.rating,
     this.ratingComment,
   });
@@ -55,6 +59,18 @@ class RideBookingState {
   /// Last error message to display to the user.
   /// Null if no error has occurred.
   final String? errorMessage;
+
+  /// The route polylines to display on the map.
+  /// Null if no route has been calculated yet.
+  final List<MapPolyline>? polylines;
+
+  /// The available ride quotes for the current route.
+  /// Null if quotes have not been requested yet.
+  final RideQuote? quotes;
+
+  /// Currently selected ride quote option.
+  /// Null if no option has been selected yet.
+  final RideQuoteOption? selectedQuote;
 
   /// User rating for the completed ride (1–5 stars).
   final int? rating;
@@ -113,6 +129,12 @@ class RideBookingState {
   /// Whether the user has already submitted a rating for this ride.
   bool get hasSubmittedRating => rating != null;
 
+  /// Whether route polylines are available for display.
+  bool get hasPolylines => polylines != null && polylines!.isNotEmpty;
+
+  /// Whether ride quotes are available for selection.
+  bool get hasQuotes => quotes != null && quotes!.options.isNotEmpty;
+
   /// Creates a copy of this state with the given fields replaced.
   RideBookingState copyWith({
     String? rideId,
@@ -120,6 +142,10 @@ class RideBookingState {
     RideBookingUiStatus? uiStatus,
     String? errorMessage,
     bool clearError = false,
+    List<MapPolyline>? polylines,
+    RideQuote? quotes,
+    RideQuoteOption? selectedQuote,
+    bool clearQuotes = false,
     int? rating,
     String? ratingComment,
     bool clearRating = false,
@@ -129,6 +155,9 @@ class RideBookingState {
       ride: ride ?? this.ride,
       uiStatus: uiStatus ?? this.uiStatus,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      polylines: polylines ?? this.polylines,
+      quotes: clearQuotes ? null : (quotes ?? this.quotes),
+      selectedQuote: selectedQuote ?? this.selectedQuote,
       rating: clearRating ? null : (rating ?? this.rating),
       ratingComment: clearRating ? null : (ratingComment ?? this.ratingComment),
     );
@@ -142,6 +171,9 @@ class RideBookingState {
         other.ride == ride &&
         other.uiStatus == uiStatus &&
         other.errorMessage == errorMessage &&
+        other.polylines == polylines &&
+        other.quotes == quotes &&
+        other.selectedQuote == selectedQuote &&
         other.rating == rating &&
         other.ratingComment == ratingComment;
   }
@@ -152,6 +184,9 @@ class RideBookingState {
         ride,
         uiStatus,
         errorMessage,
+        polylines,
+        quotes,
+        selectedQuote,
         rating,
         ratingComment,
       );
@@ -165,6 +200,9 @@ class RideBookingState {
         'canRequestQuote: $canRequestQuote, '
         'canConfirmRide: $canConfirmRide, '
         'canCancel: $canCancel, '
+        'hasPolylines: ${polylines != null}, '
+        'hasQuotes: ${quotes != null}, '
+        'selectedQuote: $selectedQuote, '
         'error: $errorMessage, '
         'rating: $rating, '
         'hasSubmittedRating: $hasSubmittedRating'

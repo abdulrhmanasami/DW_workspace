@@ -7,26 +7,18 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:core/core.dart';
-import 'package:network_shims/network_shims.dart';
 
 /// REST implementation of RBACClient
 class RbacRestClient implements RBACClient {
   final String baseUrl;
   final String? certPinsJson;
-  late final SecureHttpClient _httpClient;
+  // TODO: Initialize SecureHttpClient with certificate pinning when available
+  // late final SecureHttpClient _httpClient;
 
   RbacRestClient({
     required this.baseUrl,
     this.certPinsJson,
-  }) {
-    _initializeHttpClient();
-  }
-
-  void _initializeHttpClient() {
-    // TODO: Initialize SecureHttpClient with certificate pinning
-    // For now, we'll use regular HTTP client
-    // _httpClient = SecureHttpClient();
-  }
+  });
 
   @override
   Future<RBACDecision> authorize({

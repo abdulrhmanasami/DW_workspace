@@ -289,7 +289,7 @@ ElevatedButtonThemeData _buildElevatedButtonTheme(
       disabledBackgroundColor: colorScheme.onSurface.withValues(alpha: 0.12),
       disabledForegroundColor: colorScheme.onSurface.withValues(alpha: 0.38),
       elevation: DWElevation.medium,
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: DWSpacing.lg,
         vertical: DWSpacing.sm,
       ),
@@ -311,7 +311,7 @@ OutlinedButtonThemeData _buildOutlinedButtonTheme(
       foregroundColor: colorScheme.primary,
       disabledForegroundColor: colorScheme.onSurface.withValues(alpha: 0.38),
       side: BorderSide(color: colorScheme.primary),
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: DWSpacing.lg,
         vertical: DWSpacing.sm,
       ),
@@ -332,7 +332,7 @@ TextButtonThemeData _buildTextButtonTheme(
     style: TextButton.styleFrom(
       foregroundColor: colorScheme.primary,
       disabledForegroundColor: colorScheme.onSurface.withValues(alpha: 0.38),
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: DWSpacing.md,
         vertical: DWSpacing.xs,
       ),
@@ -392,7 +392,7 @@ class DWTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(DWRadius.md),
         ),
-        margin: EdgeInsets.all(DWSpacing.xs),
+        margin: const EdgeInsets.all(DWSpacing.xs),
       ),
       // Button themes
       elevatedButtonTheme: _buildElevatedButtonTheme(colorScheme, textTheme),
@@ -402,7 +402,7 @@ class DWTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: colorScheme.surfaceContainerHighest,
-        contentPadding: EdgeInsets.symmetric(
+        contentPadding: const EdgeInsets.symmetric(
           horizontal: DWSpacing.md,
           vertical: DWSpacing.sm,
         ),
@@ -495,7 +495,7 @@ class DWTheme {
         selectedColor: colorScheme.primaryContainer,
         disabledColor: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         labelStyle: textTheme.labelMedium,
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: DWSpacing.sm,
           vertical: DWSpacing.xxs,
         ),

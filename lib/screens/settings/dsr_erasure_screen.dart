@@ -5,6 +5,7 @@ import 'package:design_system_foundation/design_system_foundation.dart';
 import 'package:dsr_ux_adapter/dsr_ux_adapter.dart' as dsr;
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../state/identity/identity_controller.dart';
 import '../../widgets/app_shell.dart';
 
 /// DSR Erasure Screen - Track D - Ticket #59
@@ -188,6 +189,7 @@ class _DsrErasureScreenState extends ConsumerState<DsrErasureScreen> {
     dsr.DsrRequestId id,
     dsr.DsrController controller,
     dsr.DsrErasureNotifier notifier,
+    WidgetRef ref,
   ) async {
     try {
       await controller.confirmErasure(
@@ -197,6 +199,10 @@ class _DsrErasureScreenState extends ConsumerState<DsrErasureScreen> {
           notifier.setShowConfirmation(false);
         },
       );
+
+      // Track D-3: After account erasure is confirmed, sign out the user
+      final identityController = ref.read(identityControllerProvider.notifier);
+      await identityController.signOut();
     } catch (e, st) {
       notifier.setRequest(AsyncValue.error(e, st));
     }
@@ -343,7 +349,7 @@ class _DsrErasureScreenState extends ConsumerState<DsrErasureScreen> {
               Expanded(
                 child: ds.AppButton.primary(
                   label: l10n.dsrErasureConfirmButton,
-                  onPressed: () => _confirmErasure(id, controller, notifier),
+                  onPressed: () => _confirmErasure(id, controller, notifier, ref),
                 ),
               ),
             ],

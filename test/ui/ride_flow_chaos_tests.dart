@@ -85,7 +85,7 @@ void main() {
               ],
               supportedLocales: const [Locale('en')],
               routes: {
-                '/ride/active': (context) => RideActiveTripScreen(),
+                '/ride/active': (context) => const RideActiveTripScreen(),
               },
               home: const RideConfirmationScreen(),
             ),
@@ -264,7 +264,7 @@ void main() {
                       body: Center(child: Text('Trip Summary')),
                     ),
               },
-              home: RideActiveTripScreen(),
+              home: const RideActiveTripScreen(),
             ),
           ),
         );
@@ -313,7 +313,7 @@ void main() {
               rideTripSessionProvider.overrideWith(
                   (ref) => RideTripSessionController(ref)),
             ],
-            child: MaterialApp(
+            child: const MaterialApp(
               locale: Locale('ar'),
               localizationsDelegates: [
                 AppLocalizations.delegate,
@@ -361,7 +361,7 @@ void main() {
               rideTripSessionProvider.overrideWith(
                   (ref) => RideTripSessionController(ref)),
             ],
-            child: MaterialApp(
+            child: const MaterialApp(
               locale: Locale('de'),
               localizationsDelegates: [
                 AppLocalizations.delegate,
@@ -439,7 +439,7 @@ void main() {
               ],
               supportedLocales: const [Locale('en')],
               routes: {
-                '/ride/active': (context) => RideActiveTripScreen(),
+                '/ride/active': (context) => const RideActiveTripScreen(),
               },
               home: const RideConfirmationScreen(),
             ),
@@ -493,17 +493,17 @@ void main() {
               rideTripSessionProvider.overrideWith((ref) => networkFailureController),
             ],
             child: MaterialApp(
-              locale: Locale('ar'),
-              localizationsDelegates: [
+              locale: const Locale('ar'),
+              localizationsDelegates: const [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,
                 GlobalWidgetsLocalizations.delegate,
                 GlobalCupertinoLocalizations.delegate,
               ],
-              supportedLocales: [Locale('en'), Locale('ar'), Locale('de')],
-              home: RideConfirmationScreen(),
+              supportedLocales: const [Locale('en'), Locale('ar'), Locale('de')],
+              home: const RideConfirmationScreen(),
               routes: {
-                '/ride/active': (context) => RideActiveTripScreen(),
+                '/ride/active': (context) => const RideActiveTripScreen(),
               },
             ),
           ),
@@ -553,7 +553,7 @@ void main() {
               supportedLocales: const [Locale('en')],
               home: const RideConfirmationScreen(),
               routes: {
-                '/ride/active': (context) => RideActiveTripScreen(),
+                '/ride/active': (context) => const RideActiveTripScreen(),
               },
             ),
           ),
@@ -610,7 +610,7 @@ void main() {
               supportedLocales: const [Locale('en')],
               home: const RideConfirmationScreen(),
               routes: {
-                '/ride/active': (context) => RideActiveTripScreen(),
+                '/ride/active': (context) => const RideActiveTripScreen(),
               },
             ),
           ),
@@ -676,7 +676,7 @@ void main() {
               supportedLocales: const [Locale('en')],
               home: const RideConfirmationScreen(),
               routes: {
-                '/ride/active': (context) => RideActiveTripScreen(),
+                '/ride/active': (context) => const RideActiveTripScreen(),
                 '/ride/trip_summary': (context) => const Scaffold(
                       body: Center(child: Text('Trip Summary')),
                     ),
@@ -1311,7 +1311,7 @@ class _NetworkFailureTripController extends RideTripSessionController {
 
     state = RideTripSessionUiState(
       activeTrip: tripState,
-      tripSummary: RideTripSummary(
+      tripSummary: const RideTripSummary(
         selectedServiceId: "economy",
         selectedServiceName: "Economy",
         fareDisplayText: "SAR 18.00",
@@ -1375,7 +1375,7 @@ class _TimeoutFailureTripController extends RideTripSessionController {
 
     state = RideTripSessionUiState(
       activeTrip: tripState,
-      tripSummary: RideTripSummary(
+      tripSummary: const RideTripSummary(
         selectedServiceId: "economy",
         selectedServiceName: "Economy",
         fareDisplayText: "SAR 18.00",

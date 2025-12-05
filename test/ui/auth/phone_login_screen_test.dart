@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:auth_shims/auth_shims.dart';
 
-import '../../../lib/screens/auth/phone_login_screen.dart';
+import 'package:delivery_ways_clean/screens/auth/phone_login_screen.dart';
 import '../../support/dw_test_app.dart';
 
 /// Fake IdentityShim for testing phone login scenarios
@@ -35,7 +35,7 @@ class FakeIdentityShimForPhoneLogin extends Fake implements IdentityShim {
     requestLoginCodeCalled = true;
     lastRequestedPhoneNumber = phoneNumber;
     if (shouldThrowOnRequestLoginCode) {
-      throw AuthException.invalidPhone();
+      throw const AuthException.invalidPhone();
     }
   }
 

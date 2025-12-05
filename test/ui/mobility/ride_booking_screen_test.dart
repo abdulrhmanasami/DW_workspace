@@ -9,16 +9,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:design_system_shims/design_system_shims.dart';
-import 'package:design_system_components/design_system_components.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:mobility_shims/src/in_memory_ride_repository.dart';
 
-import '../../../lib/l10n/generated/app_localizations.dart';
-import '../../../lib/l10n/generated/app_localizations_en.dart';
-import '../../../lib/screens/mobility/ride_booking_screen.dart';
-import '../../../lib/state/mobility/ride_booking_controller.dart';
-import '../../../lib/widgets/app_shell.dart';
-import '../../../lib/widgets/app_button_unified.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations_en.dart';
+import 'package:delivery_ways_clean/screens/mobility/ride_booking_screen.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_booking_controller.dart';
+import 'package:delivery_ways_clean/widgets/app_shell.dart';
+import 'package:delivery_ways_clean/widgets/app_button_unified.dart';
 import 'package:maps_shims/maps.dart';
 
 void main() {

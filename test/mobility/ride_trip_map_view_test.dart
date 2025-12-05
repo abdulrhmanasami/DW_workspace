@@ -84,10 +84,10 @@ void main() {
         center: GeoPoint(24.7136, 46.6753),
         zoom: MapZoom(15.0),
       ),
-      markers: [
+      markers: const [
         MapMarker(
-          id: const MapMarkerId('pickup'),
-          position: const GeoPoint(24.7136, 46.6753),
+          id: MapMarkerId('pickup'),
+          position: GeoPoint(24.7136, 46.6753),
           label: 'Pickup',
         ),
       ],
@@ -184,17 +184,17 @@ void main() {
         center: GeoPoint(24.7136, 46.6753),
         zoom: MapZoom(15.0),
       ),
-      markers: [
+      markers: const [
         // Pickup marker
         MapMarker(
-          id: const MapMarkerId('pickup'),
-          position: const GeoPoint(24.7136, 46.6753),
+          id: MapMarkerId('pickup'),
+          position: GeoPoint(24.7136, 46.6753),
           label: 'Pickup',
         ),
         // Driver marker (simulating what RideMapProjector would create)
         MapMarker(
-          id: const MapMarkerId('driver'),
-          position: const GeoPoint(24.7140, 46.6760), // Driver position
+          id: MapMarkerId('driver'),
+          position: GeoPoint(24.7140, 46.6760), // Driver position
           label: 'Driver',
         ),
       ],

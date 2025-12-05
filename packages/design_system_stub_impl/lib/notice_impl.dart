@@ -13,8 +13,8 @@ class MaterialNoticePresenter {
   static void showNotice(AppNotice notice) {
     final scaffoldMessenger = dsScaffoldMessengerKey.currentState;
     if (scaffoldMessenger == null) {
-      // Fallback: print to console if ScaffoldMessenger not available
-      print('NoticeHost not available, cannot show notice: ${notice.message}');
+      // Fallback: debugPrint to console if ScaffoldMessenger not available
+      debugPrint('NoticeHost not available, cannot show notice: ${notice.message}');
       return;
     }
 

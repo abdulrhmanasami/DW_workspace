@@ -148,45 +148,45 @@ class InAppHintBanner extends ConsumerWidget {
   Color _getBackgroundColor(DwColors colors) {
     switch (hint.category) {
       case InAppHintCategory.warning:
-        return colors.warning.withOpacity(0.08);
+        return colors.warning.withValues(alpha: 0.08);
       case InAppHintCategory.error:
-        return colors.error.withOpacity(0.08);
+        return colors.error.withValues(alpha: 0.08);
       case InAppHintCategory.success:
-        return colors.success.withOpacity(0.08);
+        return colors.success.withValues(alpha: 0.08);
       case InAppHintCategory.security:
-        return colors.info.withOpacity(0.08);
+        return colors.info.withValues(alpha: 0.08);
       default:
-        return colors.primary.withOpacity(0.05);
+        return colors.primary.withValues(alpha: 0.05);
     }
   }
 
   Color _getBorderColor(DwColors colors) {
     switch (hint.category) {
       case InAppHintCategory.warning:
-        return colors.warning.withOpacity(0.3);
+        return colors.warning.withValues(alpha: 0.3);
       case InAppHintCategory.error:
-        return colors.error.withOpacity(0.3);
+        return colors.error.withValues(alpha: 0.3);
       case InAppHintCategory.success:
-        return colors.success.withOpacity(0.3);
+        return colors.success.withValues(alpha: 0.3);
       case InAppHintCategory.security:
-        return colors.info.withOpacity(0.3);
+        return colors.info.withValues(alpha: 0.3);
       default:
-        return colors.primary.withOpacity(0.2);
+        return colors.primary.withValues(alpha: 0.2);
     }
   }
 
   Color _getIconBackgroundColor(DwColors colors) {
     switch (hint.category) {
       case InAppHintCategory.warning:
-        return colors.warning.withOpacity(0.15);
+        return colors.warning.withValues(alpha: 0.15);
       case InAppHintCategory.error:
-        return colors.error.withOpacity(0.15);
+        return colors.error.withValues(alpha: 0.15);
       case InAppHintCategory.success:
-        return colors.success.withOpacity(0.15);
+        return colors.success.withValues(alpha: 0.15);
       case InAppHintCategory.security:
-        return colors.info.withOpacity(0.15);
+        return colors.info.withValues(alpha: 0.15);
       default:
-        return colors.primary.withOpacity(0.1);
+        return colors.primary.withValues(alpha: 0.1);
     }
   }
 

@@ -4,6 +4,7 @@
 /// Last updated: 2025-11-12
 
 import 'dart:async';
+import 'dart:ui';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as g;
 import 'package:maps_shims/maps.dart';
 
@@ -18,14 +19,21 @@ g.CameraPosition _toGoogleCameraPosition(MapCamera camera) {
 // Convert from our MapMarker to Google's Marker
 g.Marker _toGoogleMarker(MapMarker marker) {
   return g.Marker(
-    markerId: g.MarkerId(marker.id),
-    position: g.LatLng(marker.point.latitude, marker.point.longitude),
-    infoWindow: marker.title != null || marker.snippet != null
-        ? g.InfoWindow(
-            title: marker.title,
-            snippet: marker.snippet,
-          )
+    markerId: g.MarkerId(marker.id.toString()),
+    position: g.LatLng(marker.position.latitude, marker.position.longitude),
+    infoWindow: marker.label != null
+        ? g.InfoWindow(title: marker.label)
         : g.InfoWindow.noText,
+  );
+}
+
+// Convert from our MapPolyline to Google's Polyline
+g.Polyline _toGooglePolyline(MapPolyline polyline) {
+  return g.Polyline(
+    polylineId: g.PolylineId(polyline.id.toString()),
+    points: polyline.points.map((point) => g.LatLng(point.latitude, point.longitude)).toList(),
+    color: const Color(0xFF4285F4),
+    width: 5,
   );
 }
 
@@ -33,6 +41,7 @@ g.Marker _toGoogleMarker(MapMarker marker) {
 class GoogleMapControllerImpl implements MapController {
   final Completer<g.GoogleMapController> _controllerCompleter;
   final Set<g.Marker> _markers = {};
+  final Set<g.Polyline> _polylines = {};
 
   GoogleMapControllerImpl(this._controllerCompleter);
 
@@ -52,6 +61,15 @@ class GoogleMapControllerImpl implements MapController {
     _markers.addAll(markers.map(_toGoogleMarker));
 
     // Note: In a real implementation, you'd update the map widget's markers
+    // This is a simplified version - the actual update would happen in the builder
+  }
+
+  @override
+  Future<void> setPolylines(List<MapPolyline> polylines) async {
+    _polylines.clear();
+    _polylines.addAll(polylines.map(_toGooglePolyline));
+
+    // Note: In a real implementation, you'd update the map widget's polylines
     // This is a simplified version - the actual update would happen in the builder
   }
 

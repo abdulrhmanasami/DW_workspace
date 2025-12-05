@@ -266,8 +266,8 @@ void main() {
   });
 }
 
-// Test implementation of MapController
-class TestMapController implements MapController {
+// Test implementation of MapViewController
+class TestMapController implements MapViewController {
   const TestMapController();
 
   @override
@@ -275,6 +275,9 @@ class TestMapController implements MapController {
 
   @override
   Future<void> setMarkers(List<MapMarker> markers) async {}
+
+  @override
+  Future<void> setPolylines(List<MapPolyline> polylines) async {}
 
   @override
   void dispose() {}

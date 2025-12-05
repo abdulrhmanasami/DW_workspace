@@ -11,7 +11,7 @@ void main() {
   group('RideTrip FSM', () {
     test('draft → quoting → requesting → findingDriver → driverAccepted → '
         'driverArrived → inProgress → payment → completed', () {
-      var state = RideTripState(
+      var state = const RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.draft,
       );
@@ -42,7 +42,7 @@ void main() {
     });
 
     test('cancel from draft leads to cancelled', () {
-      final initial = RideTripState(
+      const initial = RideTripState(
         tripId: 'trip-2',
         phase: RideTripPhase.draft,
       );
@@ -54,7 +54,7 @@ void main() {
     });
 
     test('fail from quoting leads to failed', () {
-      final initial = RideTripState(
+      const initial = RideTripState(
         tripId: 'trip-3',
         phase: RideTripPhase.quoting,
       );
@@ -65,7 +65,7 @@ void main() {
     });
 
     test('terminal states do not accept further events', () {
-      final completed = RideTripState(
+      const completed = RideTripState(
         tripId: 'trip-4',
         phase: RideTripPhase.completed,
       );
@@ -77,7 +77,7 @@ void main() {
     });
 
     test('invalid transition throws InvalidRideTransitionException', () {
-      final state = RideTripState(
+      const state = RideTripState(
         tripId: 'trip-5',
         phase: RideTripPhase.draft,
       );
@@ -90,41 +90,41 @@ void main() {
 
     group('cancel transitions', () {
       test('cancel from quoting', () {
-        final state = RideTripState(tripId: 't', phase: RideTripPhase.quoting);
+        const state = RideTripState(tripId: 't', phase: RideTripPhase.quoting);
         final result = applyRideTripEvent(state, RideTripEvent.cancel);
         expect(result.phase, RideTripPhase.cancelled);
       });
 
       test('cancel from requesting', () {
-        final state =
+        const state =
             RideTripState(tripId: 't', phase: RideTripPhase.requesting);
         final result = applyRideTripEvent(state, RideTripEvent.cancel);
         expect(result.phase, RideTripPhase.cancelled);
       });
 
       test('cancel from findingDriver', () {
-        final state =
+        const state =
             RideTripState(tripId: 't', phase: RideTripPhase.findingDriver);
         final result = applyRideTripEvent(state, RideTripEvent.cancel);
         expect(result.phase, RideTripPhase.cancelled);
       });
 
       test('cancel from driverAccepted', () {
-        final state =
+        const state =
             RideTripState(tripId: 't', phase: RideTripPhase.driverAccepted);
         final result = applyRideTripEvent(state, RideTripEvent.cancel);
         expect(result.phase, RideTripPhase.cancelled);
       });
 
       test('cancel from driverArrived', () {
-        final state =
+        const state =
             RideTripState(tripId: 't', phase: RideTripPhase.driverArrived);
         final result = applyRideTripEvent(state, RideTripEvent.cancel);
         expect(result.phase, RideTripPhase.cancelled);
       });
 
       test('cannot cancel from inProgress', () {
-        final state =
+        const state =
             RideTripState(tripId: 't', phase: RideTripPhase.inProgress);
         expect(
           () => applyRideTripEvent(state, RideTripEvent.cancel),
@@ -193,14 +193,14 @@ void main() {
         expect(exception.toString(), contains('InvalidRideTransitionException'));
       });
 
-      test('exposes from and event fields', () {
+      test('exposes from and to fields', () {
         final exception = InvalidRideTransitionException(
           RideTripPhase.quoting,
           RideTripEvent.startTrip,
         );
 
         expect(exception.from, RideTripPhase.quoting);
-        expect(exception.event, RideTripEvent.startTrip);
+        expect(exception.to, RideTripEvent.startTrip);
       });
     });
 

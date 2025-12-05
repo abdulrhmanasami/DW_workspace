@@ -101,7 +101,7 @@ void main() {
     // =========================================================================
 
     testWidgets('shows_single_completed_ride_in_list', (tester) async {
-      final completedTrip = RideTripState(
+      const completedTrip = RideTripState(
         tripId: 'test-ride-1',
         phase: RideTripPhase.completed,
       );
@@ -128,11 +128,11 @@ void main() {
     });
 
     testWidgets('shows_cancelled_and_failed_status_labels', (tester) async {
-      final cancelledTrip = RideTripState(
+      const cancelledTrip = RideTripState(
         tripId: 'test-ride-cancelled',
         phase: RideTripPhase.cancelled,
       );
-      final failedTrip = RideTripState(
+      const failedTrip = RideTripState(
         tripId: 'test-ride-failed',
         phase: RideTripPhase.failed,
       );
@@ -168,7 +168,7 @@ void main() {
 
     testWidgets('shows_service_name_in_title_when_available', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-108',
           phase: RideTripPhase.completed,
         ),
@@ -195,7 +195,7 @@ void main() {
 
     testWidgets('shows_origin_in_subtitle_when_available', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-origin',
           phase: RideTripPhase.completed,
         ),
@@ -218,7 +218,7 @@ void main() {
 
     testWidgets('shows_payment_method_when_available', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-payment',
           phase: RideTripPhase.completed,
         ),
@@ -242,7 +242,7 @@ void main() {
 
     testWidgets('falls_back_to_ride_to_destination_when_no_service_name', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-no-service',
           phase: RideTripPhase.completed,
         ),
@@ -264,7 +264,7 @@ void main() {
 
     testWidgets('shows_full_ride_card_with_all_extended_data', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-full',
           phase: RideTripPhase.completed,
         ),
@@ -297,7 +297,7 @@ void main() {
 
     testWidgets('shows_driver_rating_when_available', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-rating',
           phase: RideTripPhase.completed,
         ),
@@ -322,7 +322,7 @@ void main() {
 
     testWidgets('hides_driver_rating_when_not_available', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-no-rating',
           phase: RideTripPhase.completed,
         ),
@@ -349,7 +349,7 @@ void main() {
 
     testWidgets('shows_integer_rating_with_decimal_format', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-int-rating',
           phase: RideTripPhase.completed,
         ),
@@ -371,7 +371,7 @@ void main() {
 
     testWidgets('shows_rating_with_all_other_card_data', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-full-with-rating',
           phase: RideTripPhase.completed,
         ),
@@ -406,7 +406,7 @@ void main() {
 
     testWidgets('filters_rides_when_rides_tab_selected', (tester) async {
       final rideEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-1',
           phase: RideTripPhase.completed,
         ),
@@ -468,7 +468,7 @@ void main() {
 
     testWidgets('tapping_rides_filter_hides_parcels_and_food', (tester) async {
       final rideEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'filter-ride-1',
           phase: RideTripPhase.completed,
         ),
@@ -506,7 +506,7 @@ void main() {
 
     testWidgets('tapping_parcels_filter_hides_rides_and_food', (tester) async {
       final rideEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'filter-ride-2',
           phase: RideTripPhase.completed,
         ),
@@ -540,7 +540,7 @@ void main() {
 
     testWidgets('switching_filters_updates_list_dynamically', (tester) async {
       final rideEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'dynamic-ride',
           phase: RideTripPhase.completed,
         ),
@@ -648,7 +648,7 @@ void main() {
 
     testWidgets('l10n_ar_renders_arabic_labels', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ar-ride',
           phase: RideTripPhase.completed,
         ),
@@ -673,7 +673,7 @@ void main() {
 
     testWidgets('l10n_ar_cancelled_status', (tester) async {
       final cancelledEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ar-cancelled',
           phase: RideTripPhase.cancelled,
         ),
@@ -699,7 +699,7 @@ void main() {
 
     testWidgets('l10n_de_renders_german_labels', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-de-ride',
           phase: RideTripPhase.completed,
         ),
@@ -725,7 +725,7 @@ void main() {
 
     testWidgets('l10n_de_failed_status', (tester) async {
       final failedEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-de-failed',
           phase: RideTripPhase.failed,
         ),
@@ -751,7 +751,7 @@ void main() {
 
     testWidgets('shows_multiple_rides_in_chronological_order', (tester) async {
       final ride1 = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-1',
           phase: RideTripPhase.completed,
         ),
@@ -759,7 +759,7 @@ void main() {
         completedAt: DateTime(2025, 5, 24, 10, 0),
       );
       final ride2 = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'test-ride-2',
           phase: RideTripPhase.cancelled,
         ),
@@ -784,7 +784,7 @@ void main() {
     // =========================================================================
 
     testWidgets('ride_card_renders_order_status_chip', (tester) async {
-      final completedTrip = RideTripState(
+      const completedTrip = RideTripState(
         tripId: 'chip-test-ride',
         phase: RideTripPhase.completed,
       );
@@ -870,7 +870,7 @@ void main() {
 
     testWidgets('multiple_orders_show_multiple_status_chips', (tester) async {
       final ride = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'multi-chip-ride',
           phase: RideTripPhase.completed,
         ),
@@ -1004,7 +1004,7 @@ void main() {
 
     testWidgets('tapping_completed_ride_navigates_to_summary_screen', (tester) async {
       final completedEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'nav-test-1',
           phase: RideTripPhase.completed,
         ),
@@ -1035,7 +1035,7 @@ void main() {
 
     testWidgets('summary_screen_shows_data_from_history_entry', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'summary-test-trip',
           phase: RideTripPhase.completed,
         ),
@@ -1084,7 +1084,7 @@ void main() {
 
     testWidgets('done_cta_from_history_is_visible_and_tappable', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'done-test-trip',
           phase: RideTripPhase.completed,
         ),
@@ -1120,7 +1120,7 @@ void main() {
 
     testWidgets('summary_from_history_shows_back_button', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'back-button-test',
           phase: RideTripPhase.completed,
         ),
@@ -1152,7 +1152,7 @@ void main() {
 
     testWidgets('ar_orders_to_summary_flow_shows_arabic_labels', (tester) async {
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'ar-flow-test',
           phase: RideTripPhase.completed,
         ),
@@ -1182,7 +1182,7 @@ void main() {
 
     testWidgets('cancelled_trip_can_be_viewed_from_history', (tester) async {
       final cancelledEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'cancelled-view-test',
           phase: RideTripPhase.cancelled,
         ),
@@ -1208,7 +1208,7 @@ void main() {
 
     testWidgets('failed_trip_can_be_viewed_from_history', (tester) async {
       final failedEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'failed-view-test',
           phase: RideTripPhase.failed,
         ),
@@ -1549,7 +1549,7 @@ void _ticket127Tests() {
     testWidgets('skeleton_loader_hides_after_data_loads', (tester) async {
       // Arrange: State with data (not loading)
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'skeleton-test-ride',
           phase: RideTripPhase.completed,
         ),
@@ -1575,7 +1575,7 @@ void _ticket127Tests() {
     testWidgets('order_status_chip_has_semantics_wrapper', (tester) async {
       // Arrange
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'semantics-test-ride',
           phase: RideTripPhase.completed,
         ),
@@ -1600,7 +1600,7 @@ void _ticket127Tests() {
     testWidgets('ride_card_contains_semantics_widget', (tester) async {
       // Arrange
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'ride-icon-semantics',
           phase: RideTripPhase.completed,
         ),
@@ -1710,7 +1710,7 @@ void _ticket127Tests() {
     testWidgets('skeleton_disappears_after_loading_completes', (tester) async {
       // Arrange: State with data (not loading)
       final historyEntry = RideHistoryEntry(
-        trip: RideTripState(
+        trip: const RideTripState(
           tripId: 'pulse-test-ride',
           phase: RideTripPhase.completed,
         ),

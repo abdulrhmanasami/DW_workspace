@@ -39,7 +39,7 @@ void main() {
 
   group('Ride Trip Complete Screen Tests (Ticket #107)', () {
     /// Helper to get AppLocalizations from the test widget
-    AppLocalizations _l10n(WidgetTester tester) =>
+    AppLocalizations l10n0(WidgetTester tester) =>
         AppLocalizations.of(tester.element(find.byType(RideTripSummaryScreen)))!;
 
     /// Helper to build the test widget with provider overrides
@@ -142,7 +142,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Verify the screen shows Trip summary title
-        final l10n = _l10n(tester);
+        final l10n = l10n0(tester);
         expect(find.text(l10n.rideTripSummaryTitle), findsOneWidget);
 
         // Verify service name is shown (Economy ride)
@@ -180,7 +180,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Should still render the summary screen
-        final l10n2 = _l10n(tester);
+        final l10n2 = l10n0(tester);
         expect(find.text(l10n2.rideTripSummaryTitle), findsOneWidget);
 
         // Should show default payment method (Cash as fallback)
@@ -220,7 +220,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Verify Arabic title is shown
-        final l10nAr = _l10n(tester);
+        final l10nAr = l10n0(tester);
         expect(find.text(l10nAr.rideTripSummaryTitle), findsOneWidget);
 
         // Verify Arabic Done CTA
@@ -354,7 +354,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Verify driver section title (L10n: rideReceiptDriverSectionTitle)
-        final l10nDriver = _l10n(tester);
+        final l10nDriver = l10n0(tester);
         expect(find.text(l10nDriver.rideReceiptDriverSectionTitle), findsOneWidget);
 
         // Verify star icons for rating
@@ -474,7 +474,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Find Done CTA
-        final l10nDone = _l10n(tester);
+        final l10nDone = l10n0(tester);
         final doneCta = find.text(l10nDone.rideTripSummaryDoneCta);
         expect(doneCta, findsOneWidget);
 

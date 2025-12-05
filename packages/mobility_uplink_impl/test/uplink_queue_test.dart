@@ -3,7 +3,7 @@
 // Purpose: Test offline queue functionality with persistence and cleanup
 // Last updated: 2025-11-14
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:mobility_shims/mobility.dart';
 import 'package:mobility_uplink_impl/src/uplink_queue.dart';
 

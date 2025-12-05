@@ -1,11 +1,15 @@
 /// Trip Tracking Screen - Track B Ticket B-4
 /// Purpose: Trip tracking UI connected to RideBookingState/FSM
 /// Created by: Track B - Ticket B-4
-/// Last updated: 2025-12-04
+/// Updated by: Track B - Ticket B-3 (Driver matching simulation)
+/// Last updated: 2025-12-05
 ///
 /// Screen for tracking active rides after confirmation.
 /// Shows real-time status (findingDriver, inProgress, completed, cancelled)
 /// and provides actions like cancel or done.
+///
+/// Track B - Ticket B-3: This screen now automatically starts driver
+/// matching simulation when opened in findingDriver state.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +17,7 @@ import 'package:design_system_shims/design_system_shims.dart';
 import 'package:maps_shims/maps.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 
+import '../../router/app_router.dart';
 import '../../state/mobility/ride_booking_controller.dart';
 import '../../state/mobility/ride_booking_state.dart';
 import '../../widgets/app_shell.dart';
@@ -22,15 +27,55 @@ import '../../widgets/app_card_unified.dart';
 /// Key for trip tracking map widget (for testing)
 const tripTrackingMapKey = ValueKey('trip_tracking_map');
 
-class TripTrackingScreen extends ConsumerWidget {
+/// TripTrackingScreen - Real-time ride tracking after confirmation
+///
+/// Track B - Ticket B-3: Updated to use ConsumerStatefulWidget for
+/// automatic driver matching simulation on screen mount.
+class TripTrackingScreen extends ConsumerStatefulWidget {
   const TripTrackingScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TripTrackingScreen> createState() => _TripTrackingScreenState();
+}
+
+class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
+  bool _simulationStarted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Track B - Ticket B-3: Start driver simulation after first build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startDriverSimulationIfNeeded();
+    });
+  }
+
+  /// Starts driver simulation if the ride is in findingDriver state.
+  void _startDriverSimulationIfNeeded() {
+    if (_simulationStarted) return;
+    
+    final state = ref.read(rideBookingControllerProvider);
+    if (state.status == RideStatus.findingDriver) {
+      _simulationStarted = true;
+      ref.read(rideBookingControllerProvider.notifier).simulateDriverMatch();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final bookingState = ref.watch(rideBookingControllerProvider);
     final bookingController =
         ref.read(rideBookingControllerProvider.notifier);
+
+    // Track B - Ticket B-3: Listen for completion and navigate to summary
+    ref.listen<RideBookingState>(rideBookingControllerProvider, (previous, next) {
+      if (previous?.status != RideStatus.completed && 
+          next.status == RideStatus.completed) {
+        // Navigate to trip summary when ride completes
+        Navigator.of(context).pushReplacementNamed(RoutePaths.rideTripSummary);
+      }
+    });
 
     return AppShell(
       showBottomNav: false,
@@ -40,7 +85,7 @@ class TripTrackingScreen extends ConsumerWidget {
       body: SafeArea(
         child: Column(
           children: [
-            _buildMapView(theme, bookingState, ref),
+            _buildMapView(theme, bookingState),
             Expanded(
               child: _TripTrackingPanel(
                 state: bookingState,
@@ -53,8 +98,9 @@ class TripTrackingScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMapView(ThemeData theme, RideBookingState state, WidgetRef ref) {
+  Widget _buildMapView(ThemeData theme, RideBookingState bookingState) {
     final buildMap = ref.watch(mapViewBuilderProvider);
+    final state = bookingState;
 
     // Determine camera position and markers based on ride state
     final MapCamera initialCameraPosition;
@@ -67,7 +113,7 @@ class TripTrackingScreen extends ConsumerWidget {
       // Add pickup marker
       if (pickup.location != null) {
         markers.add(MapMarker(
-          id: MapMarkerId('pickup'),
+          id: const MapMarkerId('pickup'),
           position: GeoPoint(pickup.location!.latitude, pickup.location!.longitude),
           label: pickup.label,
         ));
@@ -76,7 +122,7 @@ class TripTrackingScreen extends ConsumerWidget {
       // Add destination marker
       if (destination.location != null) {
         markers.add(MapMarker(
-          id: MapMarkerId('destination'),
+          id: const MapMarkerId('destination'),
           position: GeoPoint(destination.location!.latitude, destination.location!.longitude),
           label: destination.label,
         ));
@@ -126,7 +172,7 @@ class TripTrackingScreen extends ConsumerWidget {
     return Container(
       key: tripTrackingMapKey,
       height: 260,
-      margin: EdgeInsets.all(DWSpacing.md),
+      margin: const EdgeInsets.all(DWSpacing.md),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(DWRadius.lg),
         child: buildMap(
@@ -163,19 +209,19 @@ class _TripTrackingPanel extends StatelessWidget {
       top: false,
       child: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(DWSpacing.lg),
+          padding: const EdgeInsets.all(DWSpacing.lg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildStatusHeader(theme, status),
-              SizedBox(height: DWSpacing.md),
+              const SizedBox(height: DWSpacing.md),
               _buildTripSummary(theme),
               if (state.status == RideStatus.completed) ...[
-                SizedBox(height: DWSpacing.lg),
+                const SizedBox(height: DWSpacing.lg),
                 _buildRatingSection(theme),
               ],
-              SizedBox(height: DWSpacing.lg),
+              const SizedBox(height: DWSpacing.lg),
               if (state.errorMessage != null) ...[
                 Text(
                   state.errorMessage!,
@@ -183,9 +229,9 @@ class _TripTrackingPanel extends StatelessWidget {
                     color: theme.colorScheme.error,
                   ),
                 ),
-                SizedBox(height: DWSpacing.md),
+                const SizedBox(height: DWSpacing.md),
               ],
-              SizedBox(height: DWSpacing.xl),
+              const SizedBox(height: DWSpacing.xl),
               _buildPrimaryActions(context, theme),
             ],
           ),
@@ -206,7 +252,7 @@ class _TripTrackingPanel extends StatelessWidget {
           style: theme.textTheme.titleLarge,
         ),
         if (subtitle != null) ...[
-          SizedBox(height: DWSpacing.xs),
+          const SizedBox(height: DWSpacing.xs),
           Text(
             subtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
@@ -311,31 +357,39 @@ class _TripTrackingPanel extends StatelessWidget {
         state.status != RideStatus.cancelled;
 
     final isCompleted = state.status == RideStatus.completed;
-
-    final label = isCompleted ? 'Done' : 'Cancel ride';
-    final onPressed = isCompleted
-        ? () => Navigator.of(context).pop()
-        : (canCancel ? () => _cancelRide() : null);
-
-    // لو احتجنا تمييز style بين الحالتين:
-    final button = isCompleted
-        ? AppButtonUnified.primary(
-            label: label,
-            onPressed: onPressed,
-            fullWidth: true,
-          )
-        : AppButtonUnified.secondary(
-            label: label,
-            onPressed: onPressed,
-            fullWidth: true,
-          );
+    final isInProgress = state.status == RideStatus.inProgress;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        button,
+        // Track B - Ticket B-3: Show "Complete Trip" button during inProgress
+        if (isInProgress)
+          AppButtonUnified.primary(
+            label: 'Complete Trip',
+            onPressed: () => _completeTrip(),
+            fullWidth: true,
+          ),
+        if (isInProgress) const SizedBox(height: DWSpacing.sm),
+        
+        // Cancel or Done button
+        if (isCompleted)
+          AppButtonUnified.primary(
+            label: 'Done',
+            onPressed: () => Navigator.of(context).pop(),
+            fullWidth: true,
+          )
+        else
+          AppButtonUnified.secondary(
+            label: 'Cancel ride',
+            onPressed: canCancel ? () => _cancelRide() : null,
+            fullWidth: true,
+          ),
       ],
     );
+  }
+
+  void _completeTrip() async {
+    await controller.simulateTripCompletion();
   }
 
   void _cancelRide() async {
@@ -348,8 +402,14 @@ class _TripTrackingPanel extends StatelessWidget {
     switch (status) {
       case RideStatus.findingDriver:
         return 'Looking for a driver';
+      case RideStatus.driverAccepted:
+        return 'Driver is on the way';
+      case RideStatus.driverArrived:
+        return 'Driver has arrived';
       case RideStatus.inProgress:
-        return 'Your ride is on the way';
+        return 'Trip in progress';
+      case RideStatus.payment:
+        return 'Processing payment';
       case RideStatus.completed:
         return 'Trip completed';
       case RideStatus.cancelled:
@@ -363,8 +423,14 @@ class _TripTrackingPanel extends StatelessWidget {
     switch (status) {
       case RideStatus.findingDriver:
         return 'We\'re matching you with the best nearby driver.';
+      case RideStatus.driverAccepted:
+        return 'Your driver is heading to pick you up.';
+      case RideStatus.driverArrived:
+        return 'Your driver is waiting at the pickup location.';
       case RideStatus.inProgress:
-        return 'Sit tight, your driver is heading to your destination.';
+        return 'Sit tight, you\'re on your way to your destination.';
+      case RideStatus.payment:
+        return 'Finalizing your trip payment.';
       case RideStatus.completed:
         return 'Review your trip details and get ready for the next one.';
       case RideStatus.cancelled:

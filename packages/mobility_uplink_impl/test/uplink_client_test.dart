@@ -3,7 +3,7 @@
 // Purpose: Test HTTP client with retry logic and error handling
 // Last updated: 2025-11-14
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:mobility_uplink_impl/src/uplink_client.dart';

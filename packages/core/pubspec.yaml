@@ -8,3 +8,4 @@ dependencies:
     sdk: flutter
   foundation_shims:
     path: ../foundation_shims
+  flutter_riverpod: any

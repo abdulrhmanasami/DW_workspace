@@ -3529,6 +3529,28 @@ class _FakeRideTripSessionController
     state = state.copyWith(historyTrips: entries);
     return true;
   }
+
+  // Track B - Ticket #206: Driver location methods
+  @override
+  void updateDriverLocation(GeoPoint newLocation) {
+    // No-op for tests
+  }
+
+  @override
+  void clearDriverLocation() {
+    // No-op for tests
+  }
+
+  // Track B - Ticket #215: Quote preparation methods
+  @override
+  Future<bool> prepareConfirmation(RideDraftUiState draft) async {
+    return true;
+  }
+
+  @override
+  Future<bool> requestQuoteForCurrentDraft() async {
+    return true;
+  }
 }
 
 /// Fake RideDraftController for testing
@@ -3720,6 +3742,28 @@ class _CancelTrackingController extends StateNotifier<RideTripSessionUiState>
     if (!latest.trip.phase.isTerminal) return false;
     entries[0] = latest.copyWith(driverRating: rating);
     state = state.copyWith(historyTrips: entries);
+    return true;
+  }
+
+  // Track B - Ticket #206: Driver location methods
+  @override
+  void updateDriverLocation(GeoPoint newLocation) {
+    // No-op for tests
+  }
+
+  @override
+  void clearDriverLocation() {
+    // No-op for tests
+  }
+
+  // Track B - Ticket #215: Quote preparation methods
+  @override
+  Future<bool> prepareConfirmation(RideDraftUiState draft) async {
+    return true;
+  }
+
+  @override
+  Future<bool> requestQuoteForCurrentDraft() async {
     return true;
   }
 }

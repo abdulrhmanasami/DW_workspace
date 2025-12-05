@@ -147,7 +147,7 @@ void main() {
 
     group('createParcelFromDraft', () {
       test('creates parcel with correct properties from draft', () {
-        final draft = ParcelDraftUiState(
+        const draft = ParcelDraftUiState(
           pickupAddress: '123 Main Street',
           dropoffAddress: '456 Oak Avenue',
           size: ParcelSize.medium,
@@ -236,7 +236,7 @@ void main() {
       });
 
       test('handles weight with comma as decimal separator', () {
-        final draft = ParcelDraftUiState(
+        const draft = ParcelDraftUiState(
           pickupAddress: '123 Main Street',
           dropoffAddress: '456 Oak Avenue',
           size: ParcelSize.medium,
@@ -256,7 +256,7 @@ void main() {
       });
 
       test('defaults to 1.0 kg for invalid weight', () {
-        final draft = ParcelDraftUiState(
+        const draft = ParcelDraftUiState(
           pickupAddress: '123 Main Street',
           dropoffAddress: '456 Oak Avenue',
           size: ParcelSize.medium,
@@ -448,7 +448,7 @@ Parcel _createTestParcel(String id) {
 
 /// Helper to create a complete draft for testing.
 ParcelDraftUiState _createCompleteDraft() {
-  return ParcelDraftUiState(
+  return const ParcelDraftUiState(
     pickupAddress: '123 Main Street',
     dropoffAddress: '456 Oak Avenue',
     size: ParcelSize.medium,

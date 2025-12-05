@@ -8,7 +8,7 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 
-import '../../lib/state/mobility/ride_pricing_service_stub.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_pricing_service_stub.dart';
 
 void main() {
   group('StubRidePricingService', () {
@@ -210,7 +210,7 @@ void main() {
 
     test('throws exception for invalid location data', () async {
       // Arrange
-      final invalidPickup = MobilityPlace(
+      const invalidPickup = MobilityPlace(
         label: 'Invalid Pickup',
         location: null, // No location data
       );

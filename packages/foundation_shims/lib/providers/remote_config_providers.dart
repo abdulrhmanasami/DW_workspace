@@ -33,7 +33,7 @@ final remoteConfigProvider = Provider<RemoteConfigService>((ref) {
 
   // Create sources
   final backendSource = BackendRemoteConfigSource(client);
-  final defaultSource = InMemoryDefaultsSource();
+  const defaultSource = InMemoryDefaultsSource();
   final compositeSource = CompositeConfigSource(
     backend: backendSource,
     defaults: defaultSource,

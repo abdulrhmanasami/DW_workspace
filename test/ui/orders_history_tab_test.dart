@@ -14,6 +14,19 @@ import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 /// Test file for Orders History Tab
 /// Track C - Ticket #152
 
+/// Creates a test widget with necessary L10n and provider setup.
+Widget createTestApp({
+  required Widget home,
+  Locale locale = const Locale('en'),
+}) {
+  return MaterialApp(
+    localizationsDelegates: AppLocalizations.localizationsDelegates,
+    supportedLocales: AppLocalizations.supportedLocales,
+    locale: locale,
+    home: home,
+  );
+}
+
 void main() {
   group('Orders History Tab Tests', () {
     late List<ParcelShipment> mockShipments;
@@ -87,7 +100,7 @@ void main() {
       ];
 
       // Create mock ride history entry
-      final mockTripState = RideTripState(
+      const mockTripState = RideTripState(
         tripId: 'ride-123',
         phase: RideTripPhase.completed,
       );
@@ -111,11 +124,7 @@ void main() {
               const AsyncData<List<OrderHistoryItem>>([]),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShellWithNavigation(),
-          ),
+          child: createTestApp(home: const AppShell()),
         ),
       );
 
@@ -142,11 +151,7 @@ void main() {
               AsyncData<List<OrderHistoryItem>>(orderItems),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShellWithNavigation(),
-          ),
+          child: createTestApp(home: const AppShell()),
         ),
       );
 
@@ -174,11 +179,7 @@ void main() {
               AsyncData<List<OrderHistoryItem>>(orderItems),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShellWithNavigation(),
-          ),
+          child: createTestApp(home: const AppShell()),
         ),
       );
 
@@ -206,11 +207,7 @@ void main() {
               AsyncData<List<OrderHistoryItem>>(orderItems),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShellWithNavigation(),
-          ),
+          child: createTestApp(home: const AppShell()),
         ),
       );
 
@@ -245,11 +242,7 @@ void main() {
               AsyncData<List<OrderHistoryItem>>(orderItems),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShellWithNavigation(),
-          ),
+          child: createTestApp(home: const AppShell()),
         ),
       );
 
@@ -278,11 +271,7 @@ void main() {
               (ref) => Stream.value(const AuthState.unauthenticated()),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShellWithNavigation(),
-          ),
+          child: createTestApp(home: const AppShell()),
         ),
       );
 
@@ -308,11 +297,7 @@ void main() {
               ),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShellWithNavigation(),
-          ),
+          child: createTestApp(home: const AppShell()),
         ),
       );
 
@@ -341,11 +326,7 @@ void main() {
               AsyncData<List<OrderHistoryItem>>(mixedItems),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShellWithNavigation(),
-          ),
+          child: createTestApp(home: const AppShell()),
         ),
       );
 
@@ -373,11 +354,7 @@ void main() {
               AsyncData<List<OrderHistoryItem>>(orderItems),
             ),
           ],
-          child: MaterialApp(
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const AppShellWithNavigation(),
-          ),
+          child: createTestApp(home: const AppShell()),
         ),
       );
 

@@ -12,7 +12,7 @@ class AppCardAdapter {
     EdgeInsets? padding,
     EdgeInsets? margin,
   }) {
-    return AppCard(child: child, padding: padding, margin: margin);
+    return AppCard(padding: padding, margin: margin, child: child);
   }
 }
 
@@ -31,15 +31,15 @@ class AppCard extends StatelessWidget {
     EdgeInsets? padding,
     EdgeInsets? margin,
   }) {
-    return AppCard(child: child, padding: padding, margin: margin);
+    return AppCard(padding: padding, margin: margin, child: child);
   }
 
   @override
   Widget build(BuildContext context) {
     return ds.AppCard.standard(
-      child: child,
       padding: padding,
       margin: margin,
+      child: child,
     );
   }
 }

@@ -3,7 +3,7 @@
 // Purpose: Unit tests for PaymentGateway contracts and stub implementations
 // Last updated: 2025-11-25
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:payments/payments.dart';
 import 'package:payments_stub_impl/payments_stub_impl.dart';
 
@@ -24,8 +24,8 @@ void main() {
     // --------------------------------------------------------------------------
     group('createIntent', () {
       test('returns valid PaymentIntent', () async {
-        final amount = const Amount(1000, 'EUR');
-        final currency = const Currency('EUR');
+        const amount = Amount(1000, 'EUR');
+        const currency = Currency('EUR');
 
         final intent = await gateway.createIntent(amount, currency);
 
@@ -36,8 +36,8 @@ void main() {
       });
 
       test('generates unique IDs for each call', () async {
-        final amount = const Amount(500, 'USD');
-        final currency = const Currency('USD');
+        const amount = Amount(500, 'USD');
+        const currency = Currency('USD');
 
         final intent1 = await gateway.createIntent(amount, currency);
         await Future.delayed(const Duration(milliseconds: 5));
@@ -73,7 +73,7 @@ void main() {
     // --------------------------------------------------------------------------
     group('setupPaymentMethod', () {
       test('returns succeeded setup result', () async {
-        final request = const SetupRequest(
+        const request = SetupRequest(
           customerId: 'cus_test',
           useGooglePayIfAvailable: false,
         );
@@ -86,7 +86,7 @@ void main() {
       });
 
       test('handles Google Pay flag', () async {
-        final request = const SetupRequest(
+        const request = SetupRequest(
           customerId: 'cus_test',
           useGooglePayIfAvailable: true,
         );

@@ -28,7 +28,6 @@ import 'package:delivery_ways_clean/state/payments/payment_methods_ui_state.dart
 import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
-import 'package:design_system_components/design_system_components.dart';
 import 'package:pricing_shims/pricing_shims.dart' as pricing;
 import '../support/design_system_harness.dart';
 
@@ -712,7 +711,7 @@ void main() {
     testWidgets('RideTripMapView shows placeholder when no mapSnapshot',
         (WidgetTester tester) async {
       // Create a session state with no mapSnapshot (empty state)
-      final sessionState = const RideTripSessionUiState();
+      const sessionState = RideTripSessionUiState();
 
       await tester.pumpWidget(createTestWidget(
         sessionState: sessionState,
@@ -731,31 +730,31 @@ void main() {
         (WidgetTester tester) async {
       // Create mock map snapshot with markers and polylines
       final mockSnapshot = RideMapSnapshot(
-        markers: [
+        markers: const [
           MapMarker(
             id: MapMarkerId('pickup'),
-            position: const GeoPoint(24.7136, 46.6753),
+            position: GeoPoint(24.7136, 46.6753),
             label: 'Home',
           ),
           MapMarker(
             id: MapMarkerId('destination'),
-            position: const GeoPoint(24.7500, 46.7000),
+            position: GeoPoint(24.7500, 46.7000),
             label: 'Office',
           ),
         ],
-        polylines: [
+        polylines: const [
           MapPolyline(
             id: MapPolylineId('route'),
             points: [
-              const GeoPoint(24.7136, 46.6753),
-              const GeoPoint(24.7500, 46.7000),
+              GeoPoint(24.7136, 46.6753),
+              GeoPoint(24.7500, 46.7000),
             ],
             isPrimaryRoute: true,
           ),
         ],
-        cameraTarget: MapCameraTarget(
-          center: const GeoPoint(24.7320, 46.6877),
-          zoom: const MapZoom(12.0),
+        cameraTarget: const MapCameraTarget(
+          center: GeoPoint(24.7320, 46.6877),
+          zoom: MapZoom(12.0),
         ),
       );
 
@@ -829,11 +828,6 @@ class _TestRideTripSessionController extends RideTripSessionController {
     state = initialState;
   }
 
-  // Prevent tracking subscription in tests (not a real override)
-  void _setupTrackingSubscription() {
-    // Do nothing in tests - we don't need tracking functionality
-  }
-
   // Override methods that might access providers
   @override
   Future<bool> prepareConfirmation(RideDraftUiState draft) async {
@@ -872,23 +866,6 @@ class _MockProviderSubscription<T> implements ProviderSubscription<T> {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
-/// Test controller with retry counter for verifying Retry button behavior
-class _TestRideQuoteControllerWithRetryCount extends RideQuoteController {
-  _TestRideQuoteControllerWithRetryCount(this._initialState)
-      : super.legacy(const MockRideQuoteService());
-
-  final RideQuoteUiState _initialState;
-  int refreshFromDraftCallCount = 0;
-
-  @override
-  RideQuoteUiState get state => _initialState;
-
-  @override
-  Future<void> refreshFromDraft(RideDraftUiState draft) async {
-    refreshFromDraftCallCount++;
-  }
 }
 
 /// Test session controller with retry counter for verifying Retry button behavior
@@ -2453,11 +2430,11 @@ void runPricingUiTests() {
 
       return RideQuote(
         quoteId: 'pricing_quote_123',
-        request: RideQuoteRequest(
+        request: const RideQuoteRequest(
           pickup: pickup,
           dropoff: dropoff,
         ),
-        options: [
+        options: const [
           RideQuoteOption(
             id: 'economy',
             category: RideVehicleCategory.economy,

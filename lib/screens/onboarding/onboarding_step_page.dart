@@ -90,19 +90,19 @@ class OnboardingStepPage extends StatelessWidget {
     switch (step.type) {
       case OnboardingStepType.privacySecurity:
         iconColor = colors.success;
-        bgColor = colors.success.withOpacity(0.1);
+        bgColor = colors.success.withValues(alpha: 0.1);
         break;
       case OnboardingStepType.permission:
         iconColor = colors.warning;
-        bgColor = colors.warning.withOpacity(0.1);
+        bgColor = colors.warning.withValues(alpha: 0.1);
         break;
       case OnboardingStepType.action:
         iconColor = colors.primary;
-        bgColor = colors.primary.withOpacity(0.1);
+        bgColor = colors.primary.withValues(alpha: 0.1);
         break;
       default:
         iconColor = colors.primary;
-        bgColor = colors.primary.withOpacity(0.1);
+        bgColor = colors.primary.withValues(alpha: 0.1);
     }
 
     return Container(

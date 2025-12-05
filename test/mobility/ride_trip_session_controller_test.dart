@@ -27,7 +27,6 @@ import 'package:mobility_shims/src/ride_trip_fsm.dart';
 import 'package:mobility_shims/src/place_models.dart';
 import 'package:mobility_shims/location/models.dart';
 import 'package:maps_shims/maps_shims.dart';
-import 'package:foundation_shims/foundation_shims.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -69,8 +68,8 @@ mobility.RideQuote createMobilityTestQuote() {
       pickup: mobility.LocationPoint(latitude: 24.7136, longitude: 46.6753),
       dropoff: mobility.LocationPoint(latitude: 24.7236, longitude: 46.6853),
     ),
-    options: [
-      const mobility.RideQuoteOption(
+    options: const [
+      mobility.RideQuoteOption(
         id: 'economy',
         category: mobility.RideVehicleCategory.economy,
         displayName: 'Economy',
@@ -79,7 +78,7 @@ mobility.RideQuote createMobilityTestQuote() {
         currencyCode: 'SAR',
         isRecommended: true,
       ),
-      const mobility.RideQuoteOption(
+      mobility.RideQuoteOption(
         id: 'xl',
         category: mobility.RideVehicleCategory.xl,
         displayName: 'XL',
@@ -816,36 +815,36 @@ void main() {
 
   group('RideTripSessionUiState', () {
     test('equality is based on tripId and phase', () {
-      final trip = RideTripState(
+      const trip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.findingDriver,
       );
 
-      final state1 = RideTripSessionUiState(activeTrip: trip);
-      final state2 = RideTripSessionUiState(activeTrip: trip);
+      const state1 = RideTripSessionUiState(activeTrip: trip);
+      const state2 = RideTripSessionUiState(activeTrip: trip);
 
       expect(state1, equals(state2));
     });
 
     test('copyWith clearActiveTrip sets activeTrip to null', () {
-      final trip = RideTripState(
+      const trip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.findingDriver,
       );
 
-      final original = RideTripSessionUiState(activeTrip: trip);
+      const original = RideTripSessionUiState(activeTrip: trip);
       final cleared = original.copyWith(clearActiveTrip: true);
 
       expect(cleared.activeTrip, isNull);
     });
 
     test('copyWith clearDriverRating sets driverRating to null', () {
-      final trip = RideTripState(
+      const trip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.findingDriver,
       );
 
-      final original = RideTripSessionUiState(
+      const original = RideTripSessionUiState(
         activeTrip: trip,
         driverRating: 5,
       );
@@ -856,26 +855,26 @@ void main() {
     });
 
     test('equality includes driverRating', () {
-      final trip = RideTripState(
+      const trip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.findingDriver,
       );
 
-      final state1 = RideTripSessionUiState(activeTrip: trip, driverRating: 5);
-      final state2 = RideTripSessionUiState(activeTrip: trip, driverRating: 5);
-      final state3 = RideTripSessionUiState(activeTrip: trip, driverRating: 3);
+      const state1 = RideTripSessionUiState(activeTrip: trip, driverRating: 5);
+      const state2 = RideTripSessionUiState(activeTrip: trip, driverRating: 5);
+      const state3 = RideTripSessionUiState(activeTrip: trip, driverRating: 3);
 
       expect(state1, equals(state2));
       expect(state1, isNot(equals(state3)));
     });
 
     test('toString includes driverRating', () {
-      final trip = RideTripState(
+      const trip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.completed,
       );
 
-      final state = RideTripSessionUiState(
+      const state = RideTripSessionUiState(
         activeTrip: trip,
         driverRating: 4,
       );
@@ -902,7 +901,7 @@ void main() {
         ),
       );
 
-      final destinationPlace = MobilityPlace(
+      const destinationPlace = MobilityPlace(
         id: 'destination_office',
         label: 'Office',
         type: MobilityPlaceType.searchResult,
@@ -920,10 +919,7 @@ void main() {
         selectedOptionId: 'economy',
       );
 
-      // 2. Create MockRidePricingService with zero latency for fast tests
-      final pricingService = MockRidePricingService(
-        baseLatency: Duration.zero,
-      );
+      // 2. MockRidePricingService setup skipped - we'll set quote directly for this test.
 
       // 3. For this end-to-end test, we'll simulate the quote being set directly
       // (in a real scenario, this would come from the pricing service)
@@ -1009,7 +1005,7 @@ void main() {
 
     test('full flow with failure event', () {
       // Setup draft
-      final draft = RideDraftUiState(
+      const draft = RideDraftUiState(
         pickupLabel: 'Start',
         destinationQuery: 'End',
       );
@@ -2140,7 +2136,7 @@ void main() {
     group('FSM → RideMapStage mapping', () {
       test('draft phase → RideMapStage.idle', () {
         final controller = _createRideTripSessionControllerForTest();
-        final draft = RideDraftUiState(destinationQuery: 'Test');
+        const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
 
@@ -2152,7 +2148,7 @@ void main() {
 
       test('applying driverAccepted event → RideMapStage.driverEnRouteToPickup', () {
         final controller = _createRideTripSessionControllerForTest();
-        final draft = RideDraftUiState(destinationQuery: 'Test');
+        const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
         controller.applyEvent(RideTripEvent.driverAccepted);
@@ -2164,7 +2160,7 @@ void main() {
 
       test('applying driverArrived event → RideMapStage.driverArrived', () {
         final controller = _createRideTripSessionControllerForTest();
-        final draft = RideDraftUiState(destinationQuery: 'Test');
+        const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
         controller.applyEvent(RideTripEvent.driverAccepted);
@@ -2177,7 +2173,7 @@ void main() {
 
       test('applying startTrip event → RideMapStage.inProgressToDestination', () {
         final controller = _createRideTripSessionControllerForTest();
-        final draft = RideDraftUiState(destinationQuery: 'Test');
+        const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
         controller.applyEvent(RideTripEvent.driverAccepted);
@@ -2191,7 +2187,7 @@ void main() {
 
       test('completing trip → RideMapStage.completed', () {
         final controller = _createRideTripSessionControllerForTest();
-        final draft = RideDraftUiState(destinationQuery: 'Test');
+        const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
         controller.applyEvent(RideTripEvent.driverAccepted);
@@ -2207,7 +2203,7 @@ void main() {
 
       test('failing trip → RideMapStage.error', () {
         final controller = _createRideTripSessionControllerForTest();
-        final draft = RideDraftUiState(destinationQuery: 'Test');
+        const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
         controller.applyEvent(RideTripEvent.fail);
@@ -2219,7 +2215,7 @@ void main() {
 
       test('cancelling trip → RideMapStage.error', () {
         final controller = _createRideTripSessionControllerForTest();
-        final draft = RideDraftUiState(destinationQuery: 'Test');
+        const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
         controller.applyEvent(RideTripEvent.cancel);
@@ -2234,7 +2230,7 @@ void main() {
       test('records commands when FSM transitions occur', () {
         final port = _RecordingMapPort();
         final controller = _createRideTripSessionControllerWithMapPort(port);
-        final draft = RideDraftUiState(destinationQuery: 'Test');
+        const draft = RideDraftUiState(destinationQuery: 'Test');
 
         // Start trip - should record initial commands
         controller.startFromDraft(draft);
@@ -2291,7 +2287,7 @@ void main() {
       test('includes SetCameraCommand in all transitions', () {
         final port = _RecordingMapPort();
         final controller = _createRideTripSessionControllerWithMapPort(port);
-        final draft = RideDraftUiState(destinationQuery: 'Test');
+        const draft = RideDraftUiState(destinationQuery: 'Test');
 
         controller.startFromDraft(draft);
 
@@ -2549,7 +2545,7 @@ void main() {
       mockPricingService = MockRidePricingService();
     });
 
-    RideTripSessionController _createControllerWithMockPricing() {
+    RideTripSessionController createControllerWithMockPricing() {
       final container = ProviderContainer(
         overrides: [
           ridePricingServiceProvider.overrideWithValue(mockPricingService),
@@ -2561,7 +2557,7 @@ void main() {
     }
 
     test('successful quote request sets activeQuote and clears isQuoting', () async {
-      final controller = _createControllerWithMockPricing();
+      final controller = createControllerWithMockPricing();
 
       // Create a draft with valid pickup/dropoff
       final draft = RideDraftUiState(
@@ -2618,7 +2614,7 @@ void main() {
     });
 
     test('network error failure sets lastQuoteFailure and clears activeQuote', () async {
-      final controller = _createControllerWithMockPricing();
+      final controller = createControllerWithMockPricing();
 
       // Create a draft with valid pickup/dropoff
       final draft = RideDraftUiState(
@@ -2665,7 +2661,7 @@ void main() {
     });
 
     test('invalid request (pickup == dropoff) fails immediately', () async {
-      final controller = _createControllerWithMockPricing();
+      final controller = createControllerWithMockPricing();
 
       // Create a draft with same pickup and dropoff
       final sameLocation = LocationPoint(
@@ -2708,7 +2704,7 @@ void main() {
     });
 
     test('stale response is ignored when draft changes', () async {
-      final controller = _createControllerWithMockPricing();
+      final controller = createControllerWithMockPricing();
 
       // Create initial draft
       final draft1 = RideDraftUiState(
@@ -2742,16 +2738,16 @@ void main() {
       controller.state = controller.state.copyWith(draftSnapshot: draft1);
 
       // Setup mock to return success after delay
-      final pricingQuote = pricing.RideQuote(
+      const pricingQuote = pricing.RideQuote(
         id: 'stale-quote',
         price: Amount(2500, 'SAR'),
-        estimatedDuration: const Duration(minutes: 15),
+        estimatedDuration: Duration(minutes: 15),
         distanceMeters: 5000,
         surgeMultiplier: 1.0,
       );
 
       // Create a service that completes after we change the draft
-      mockPricingService.result = pricing.RideQuoteResult.success(pricingQuote);
+      mockPricingService.result = const pricing.RideQuoteResult.success(pricingQuote);
       mockPricingService.delay = const Duration(milliseconds: 10);
 
       // Start quote request
@@ -2800,7 +2796,7 @@ void main() {
     });
 
     test('pricing state is cleared when trip completes', () {
-      final controller = _createControllerWithMockPricing();
+      final controller = createControllerWithMockPricing();
 
       // Start a trip and progress it to inProgress phase
       const draft = RideDraftUiState(destinationQuery: 'Test');
@@ -2830,7 +2826,7 @@ void main() {
     });
 
     test('pricing state is cleared when trip is cancelled', () {
-      final controller = _createControllerWithMockPricing();
+      final controller = createControllerWithMockPricing();
 
       // Start a trip
       const draft = RideDraftUiState(destinationQuery: 'Test');
@@ -2856,7 +2852,7 @@ void main() {
     });
 
     test('pricing state is cleared when trip fails', () {
-      final controller = _createControllerWithMockPricing();
+      final controller = createControllerWithMockPricing();
 
       // Start a trip
       const draft = RideDraftUiState(destinationQuery: 'Test');
@@ -2882,7 +2878,7 @@ void main() {
     });
 
     test('pricing state is cleared when session is cleared', () {
-      final controller = _createControllerWithMockPricing();
+      final controller = createControllerWithMockPricing();
 
       // Set some pricing state without a trip
       final mockQuote = createMobilityTestQuote();

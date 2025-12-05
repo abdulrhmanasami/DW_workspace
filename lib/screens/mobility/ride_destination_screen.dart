@@ -34,14 +34,35 @@ import 'widgets/ride_recent_destination_item.dart';
 /// RideDestinationScreen - Location picker for ride booking from Home Hub
 /// Shows map background with bottom sheet for pickup/destination input.
 /// Ticket #93: Full Location Picker with editable Pickup/Dropoff + Design System
-class RideDestinationScreen extends ConsumerWidget {
+class RideDestinationScreen extends ConsumerStatefulWidget {
   const RideDestinationScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context)!;
+  ConsumerState<RideDestinationScreen> createState() => _RideDestinationScreenState();
+}
+
+class _RideDestinationScreenState extends ConsumerState<RideDestinationScreen> {
+  late bool _returnResult;
+
+  @override
+  void initState() {
+    super.initState();
+    // Read route arguments to determine behavior
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      setState(() {
+        _returnResult = args is bool ? args : false;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer(
+      builder: (context, ref, child) {
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+        final l10n = AppLocalizations.of(context)!;
 
     // Track B - Ticket #143: Use DWAppShell for consistency
     return DWAppShell(
@@ -99,10 +120,12 @@ class RideDestinationScreen extends ConsumerWidget {
           // Bottom Sheet for location input - Ticket #93
           Align(
             alignment: Alignment.bottomCenter,
-            child: _LocationPickerBottomSheet(l10n: l10n),
+            child: _LocationPickerBottomSheet(l10n: l10n, returnResult: _returnResult),
           ),
         ],
       ),
+    );
+      },
     );
   }
 }
@@ -192,9 +215,13 @@ class _LocationPickerMap extends ConsumerWidget {
 /// Bottom sheet with pickup, destination input, and recent locations
 /// Ticket #93: Full Location Picker with editable Pickup/Dropoff
 class _LocationPickerBottomSheet extends ConsumerStatefulWidget {
-  const _LocationPickerBottomSheet({required this.l10n});
+  const _LocationPickerBottomSheet({
+    required this.l10n,
+    required this.returnResult,
+  });
 
   final AppLocalizations l10n;
+  final bool returnResult;
 
   @override
   ConsumerState<_LocationPickerBottomSheet> createState() =>
@@ -265,11 +292,30 @@ class _LocationPickerBottomSheetState
   }
 
   /// Navigate to Trip Confirmation screen (Track B - Ticket #21, #93)
+  /// or return the selected location if returnResult is true
   void _navigateToTripConfirmation({
     required BuildContext context,
     required WidgetRef ref,
     required RideDraftController rideDraftController,
+    required bool returnResult,
   }) {
+    if (returnResult) {
+      // Return the selected destination location
+      final currentDraft = ref.read(rideDraftProvider);
+      final destinationPlace = currentDraft.destinationPlace;
+      if (destinationPlace != null) {
+        Navigator.of(context).pop(destinationPlace);
+      } else if (currentDraft.destinationQuery.trim().isNotEmpty) {
+        // Create a place from the query if no place was selected
+        final place = MobilityPlace(
+          label: currentDraft.destinationQuery.trim(),
+          type: MobilityPlaceType.searchResult,
+        );
+        Navigator.of(context).pop(place);
+      }
+      return;
+    }
+
     final l10n = AppLocalizations.of(context)!;
     final currentDraft = ref.read(rideDraftProvider);
 
@@ -283,7 +329,7 @@ class _LocationPickerBottomSheetState
     }
 
     // Ensure destination place is set
-    if (currentDraft.destinationPlace == null && 
+    if (currentDraft.destinationPlace == null &&
         currentDraft.destinationQuery.trim().isNotEmpty) {
       rideDraftController.updateDestinationPlace(
         MobilityPlace(
@@ -413,6 +459,7 @@ class _LocationPickerBottomSheetState
                     context: context,
                     ref: ref,
                     rideDraftController: rideDraftController,
+                    returnResult: widget.returnResult,
                   );
                 },
               ),
@@ -429,6 +476,7 @@ class _LocationPickerBottomSheetState
                             context: context,
                             ref: ref,
                             rideDraftController: rideDraftController,
+                            returnResult: widget.returnResult,
                           )
                       : null,
                 ),

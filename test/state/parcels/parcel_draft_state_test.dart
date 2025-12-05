@@ -103,7 +103,7 @@ void main() {
     });
 
     test('copyWith with clearSize sets size to null', () {
-      final state = ParcelDraftUiState(size: ParcelSize.large);
+      const state = ParcelDraftUiState(size: ParcelSize.large);
 
       final updated = state.copyWith(clearSize: true);
 
@@ -143,7 +143,7 @@ void main() {
     });
 
     test('copyWith with clearSelectedQuoteOptionId sets to null', () {
-      final state = ParcelDraftUiState(selectedQuoteOptionId: 'express');
+      const state = ParcelDraftUiState(selectedQuoteOptionId: 'express');
 
       final updated = state.copyWith(clearSelectedQuoteOptionId: true);
 
@@ -151,7 +151,7 @@ void main() {
     });
 
     test('copyWith preserves all fields when updating one', () {
-      final state = ParcelDraftUiState(
+      const state = ParcelDraftUiState(
         pickupAddress: 'Pickup',
         dropoffAddress: 'Dropoff',
         size: ParcelSize.small,
@@ -213,7 +213,7 @@ void main() {
       });
 
       test('two states with same new fields are equal', () {
-        final state1 = ParcelDraftUiState(
+        const state1 = ParcelDraftUiState(
           pickupAddress: 'A',
           dropoffAddress: 'B',
           size: ParcelSize.medium,
@@ -222,7 +222,7 @@ void main() {
           isFragile: false,
           selectedQuoteOptionId: 'standard',
         );
-        final state2 = ParcelDraftUiState(
+        const state2 = ParcelDraftUiState(
           pickupAddress: 'A',
           dropoffAddress: 'B',
           size: ParcelSize.medium,
@@ -237,12 +237,12 @@ void main() {
       });
 
       test('two states with different selectedQuoteOptionId are not equal', () {
-        final state1 = ParcelDraftUiState(
+        const state1 = ParcelDraftUiState(
           pickupAddress: 'A',
           dropoffAddress: 'B',
           selectedQuoteOptionId: 'standard',
         );
-        final state2 = ParcelDraftUiState(
+        const state2 = ParcelDraftUiState(
           pickupAddress: 'A',
           dropoffAddress: 'B',
           selectedQuoteOptionId: 'express',
@@ -252,12 +252,12 @@ void main() {
       });
 
       test('two states with different new fields are not equal', () {
-        final state1 = ParcelDraftUiState(
+        const state1 = ParcelDraftUiState(
           pickupAddress: 'A',
           dropoffAddress: 'B',
           size: ParcelSize.small,
         );
-        final state2 = ParcelDraftUiState(
+        const state2 = ParcelDraftUiState(
           pickupAddress: 'A',
           dropoffAddress: 'B',
           size: ParcelSize.large,
@@ -280,7 +280,7 @@ void main() {
     });
 
     test('toString contains new field values', () {
-      final state = ParcelDraftUiState(
+      const state = ParcelDraftUiState(
         pickupAddress: 'Pickup',
         dropoffAddress: 'Dropoff',
         size: ParcelSize.medium,

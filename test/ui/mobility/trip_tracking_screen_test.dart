@@ -9,9 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 
-import '../../../lib/state/mobility/ride_booking_controller.dart';
-import '../../../lib/state/mobility/ride_booking_state.dart';
-import '../../../lib/screens/mobility/trip_tracking_screen.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_booking_controller.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_booking_state.dart';
+import 'package:delivery_ways_clean/screens/mobility/trip_tracking_screen.dart';
 import 'package:maps_shims/maps.dart';
 
 class _TestRideBookingController extends StateNotifier<RideBookingState>
@@ -56,60 +56,28 @@ class _TestRideBookingController extends StateNotifier<RideBookingState>
   }
 
   @override
-  Future<void> submitRating({required int rating, String? comment}) async {
-    throw UnimplementedError('Not needed for basic UI tests');
-  }
-}
-
-class _SpyRideBookingController extends StateNotifier<RideBookingState>
-    implements RideBookingController {
-  _SpyRideBookingController(RideBookingState initial) : super(initial);
-
-  int? lastSubmittedRating;
-  String? lastSubmittedComment;
-
-  @override
-  Future<void> startNewRide({MobilityPlace? initialPickup}) async {
+  Future<void> initialize() async {
     throw UnimplementedError('Not needed for UI tests');
   }
 
   @override
-  Future<void> updatePickup(MobilityPlace pickup) async {
+  void selectQuote(RideQuoteOption quoteOption) {
     throw UnimplementedError('Not needed for UI tests');
-  }
-
-  @override
-  Future<void> updateDestination(MobilityPlace destination) async {
-    throw UnimplementedError('Not needed for UI tests');
-  }
-
-  @override
-  Future<void> requestQuoteIfPossible() async {
-    throw UnimplementedError('Not needed for UI tests');
-  }
-
-  @override
-  Future<void> confirmRide() async {
-    throw UnimplementedError('Not needed for UI tests');
-  }
-
-  @override
-  Future<void> cancelRide() async {
-    state = state.copyWith(
-      ride: state.ride?.copyWith(status: RideStatus.cancelled),
-      uiStatus: RideBookingUiStatus.idle,
-    );
   }
 
   @override
   Future<void> submitRating({required int rating, String? comment}) async {
-    lastSubmittedRating = rating;
-    lastSubmittedComment = comment;
-    state = state.copyWith(
-      rating: rating,
-      ratingComment: comment,
-      uiStatus: RideBookingUiStatus.success,
-    );
+    throw UnimplementedError('Not needed for basic UI tests');
+  }
+
+  @override
+  Future<void> simulateDriverMatch() async {
+    // No-op for UI tests - we control state directly
+  }
+
+  @override
+  Future<void> simulateTripCompletion() async {
+    // No-op for UI tests - we control state directly
   }
 }
 

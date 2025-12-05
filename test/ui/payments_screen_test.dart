@@ -251,16 +251,16 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            locale: const Locale('en'),
-            home: const PaymentsTabScreen(),
+            supportedLocales: [Locale('en')],
+            locale: Locale('en'),
+            home: PaymentsTabScreen(),
           ),
         ),
       );

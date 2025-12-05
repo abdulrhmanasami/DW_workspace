@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import '../../lib/l10n/generated/app_localizations.dart';
-import '../../lib/l10n/generated/app_localizations_ar.dart';
-import '../../lib/l10n/generated/app_localizations_en.dart';
-import '../../lib/screens/mobility/ride_booking_screen.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations_ar.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations_en.dart';
+import 'package:delivery_ways_clean/screens/mobility/ride_booking_screen.dart';
 import '../support/design_system_harness.dart';
 
 void main() {

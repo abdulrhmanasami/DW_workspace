@@ -9,8 +9,10 @@ import 'package:auth_shims/auth_shims.dart';
 
 import 'auth_backend_client.dart';
 
-typedef _Clock = DateTime Function();
-typedef _OtpGenerator = String Function();
+/// Function that returns the current time for testability
+typedef Clock = DateTime Function();
+/// Function that generates OTP codes for testability
+typedef OtpGenerator = String Function();
 
 /// Configuration for the passwordless auth stub backend.
 class StubAuthBackendConfig {
@@ -21,8 +23,8 @@ class StubAuthBackendConfig {
     int maxRequestsPerWindow = 5,
     int maxVerifyAttempts = 5,
     Duration? sessionTtl,
-    _Clock? now,
-    _OtpGenerator? otpGenerator,
+    Clock? now,
+    OtpGenerator? otpGenerator,
   })  : otpTtl = otpTtl ?? const Duration(minutes: 2),
         resendCooldown = resendCooldown ?? const Duration(seconds: 45),
         throttleWindow = throttleWindow ?? const Duration(minutes: 5),
@@ -38,8 +40,8 @@ class StubAuthBackendConfig {
   final int maxRequestsPerWindow;
   final int maxVerifyAttempts;
   final Duration sessionTtl;
-  final _Clock now;
-  final _OtpGenerator otpGenerator;
+  final Clock now;
+  final OtpGenerator otpGenerator;
 
   static DateTime _defaultClock() => DateTime.now().toUtc();
 
@@ -205,8 +207,8 @@ class StubAuthBackendClient implements AuthBackendClient {
       challengeId: challengeId,
       method: method,
       expiresAt: challenge.expiresAt,
-      retryLimit: challenge.maxAttempts,
-      attemptsRemaining: challenge.maxAttempts - challenge.failedAttempts,
+      retryLimit: _MfaChallengeRecord.maxAttempts,
+      attemptsRemaining: _MfaChallengeRecord.maxAttempts - challenge.failedAttempts,
       maskedDestination: method == MfaMethodType.sms ? '+49***890' : '***@test.com',
     );
   }
@@ -251,7 +253,7 @@ class StubAuthBackendClient implements AuthBackendClient {
       return MfaVerificationResult.failed(
         errorCode: 'invalid_code',
         message: 'Invalid verification code',
-        attemptsRemaining: challenge.maxAttempts - challenge.failedAttempts,
+        attemptsRemaining: _MfaChallengeRecord.maxAttempts - challenge.failedAttempts,
       );
     }
 
@@ -346,14 +348,13 @@ class _MfaChallengeRecord {
     required this.code,
     required this.method,
     required this.expiresAt,
-    this.maxAttempts = 3,
   });
 
   final String challengeId;
   final String code;
   final MfaMethodType method;
   final DateTime expiresAt;
-  final int maxAttempts;
+  static const int maxAttempts = 3;
   int failedAttempts = 0;
 
   bool get isLocked => failedAttempts >= maxAttempts;

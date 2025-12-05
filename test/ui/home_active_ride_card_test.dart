@@ -86,7 +86,7 @@ void main() {
                       body: Center(child: Text('Ride Active Trip Screen')),
                     ),
               },
-          home: const AppShellWithNavigation(),
+          home: const AppShell(),
         ),
       );
     }
@@ -357,7 +357,7 @@ void main() {
               Locale('en'),
               Locale('ar'),
             ],
-            home: AppShellWithNavigation(),
+            home: AppShell(),
           ),
         ),
       );
@@ -403,7 +403,7 @@ void main() {
               Locale('en'),
               Locale('de'),
             ],
-            home: AppShellWithNavigation(),
+            home: AppShell(),
           ),
         ),
       );
@@ -489,7 +489,7 @@ void main() {
             ],
             supportedLocales: [Locale('en')],
             locale: Locale('en'),
-            home: AppShellWithNavigation(),
+            home: AppShell(),
           ),
         ),
       );
@@ -551,7 +551,7 @@ void main() {
             ],
             supportedLocales: [Locale('en')],
             locale: Locale('en'),
-            home: AppShellWithNavigation(),
+            home: AppShell(),
           ),
         ),
       );
@@ -617,7 +617,7 @@ void main() {
             ],
             supportedLocales: [Locale('en')],
             locale: Locale('en'),
-            home: AppShellWithNavigation(),
+            home: AppShell(),
           ),
         ),
       );
@@ -680,7 +680,7 @@ void main() {
             ],
             supportedLocales: [Locale('en')],
             locale: Locale('en'),
-            home: AppShellWithNavigation(),
+            home: AppShell(),
           ),
         ),
       );
@@ -758,7 +758,7 @@ void main() {
             ],
             supportedLocales: [Locale('en')],
             locale: Locale('en'),
-            home: AppShellWithNavigation(),
+            home: AppShell(),
           ),
         ),
       );
@@ -802,7 +802,7 @@ void main() {
             ],
             supportedLocales: [Locale('en')],
             locale: Locale('en'),
-            home: AppShellWithNavigation(),
+            home: AppShell(),
           ),
         ),
       );

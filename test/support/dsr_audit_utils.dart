@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:uuid/uuid.dart';
 
-final _uuid = Uuid();
+const _uuid = Uuid();
 
 String hashUserId(String rawId, {String salt = 'handover_salt_v1'}) {
   final bytes = utf8.encode('$salt::$rawId');

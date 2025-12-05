@@ -7,8 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 
-import '../../../lib/state/mobility/ride_booking_controller.dart';
-import '../../../lib/state/mobility/ride_booking_state.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_booking_controller.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_booking_state.dart';
 
 void main() {
   group('RideBookingController', () {
@@ -21,6 +21,7 @@ void main() {
       container = ProviderContainer(
         overrides: [
           rideRepositoryProvider.overrideWithValue(repository),
+          locationProvider.overrideWithValue(const StubLocationProvider()),
         ],
       );
       controller = container.read(rideBookingControllerProvider.notifier);
@@ -281,7 +282,9 @@ void main() {
     group('submitRating', () {
       test('stores rating when ride is completed', () async {
         final repository = InMemoryRideRepository();
-        final controller = RideBookingController(repository);
+        const locationProvider = StubLocationProvider();
+        const pricingService = MockRidePricingService();
+        final controller = RideBookingController(repository, locationProvider, pricingService);
 
         // Create a completed ride
         final completedRide = RideRequest(
@@ -311,7 +314,9 @@ void main() {
 
       test('sets error when rating is called in non-completed state', () async {
         final repository = InMemoryRideRepository();
-        final controller = RideBookingController(repository);
+        const locationProvider = StubLocationProvider();
+        const pricingService = MockRidePricingService();
+        final controller = RideBookingController(repository, locationProvider, pricingService);
 
         // Create a draft ride
         final draftRide = RideRequest(
@@ -340,7 +345,9 @@ void main() {
 
       test('sets error for invalid rating values', () async {
         final repository = InMemoryRideRepository();
-        final controller = RideBookingController(repository);
+        const locationProvider = StubLocationProvider();
+        const pricingService = MockRidePricingService();
+        final controller = RideBookingController(repository, locationProvider, pricingService);
 
         // Create a completed ride
         final completedRide = RideRequest(

@@ -389,7 +389,7 @@ void main() {
 
     test('all phases are covered in terminal check', () {
       // Ensure no phase is left uncategorized
-      final allPhases = RideTripPhase.values;
+      const allPhases = RideTripPhase.values;
       final terminalPhases = [
         RideTripPhase.completed,
         RideTripPhase.cancelled,

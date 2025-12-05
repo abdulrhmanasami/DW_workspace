@@ -89,7 +89,7 @@ class DsrErasureNotifier extends StateNotifier<DsrErasureState> {
   }
 }
 
-class _InMemoryDsrStore {
+class InMemoryDsrStore {
   final Map<String, DsrRequestSummary> _requests = {};
   final Map<String, StreamController<DsrRequestSummary>> _streams = {};
 
@@ -146,7 +146,7 @@ class _InMemoryDsrStore {
 }
 
 class DsrRequestController {
-  final _InMemoryDsrStore _store;
+  final InMemoryDsrStore _store;
   final DsrExportNotifier _exportNotifier;
   bool _disposed = false;
 
@@ -203,7 +203,7 @@ class DsrRequestController {
 }
 
 class DsrController {
-  final _InMemoryDsrStore _store;
+  final InMemoryDsrStore _store;
   bool _disposed = false;
 
   DsrController(this._store);
@@ -286,8 +286,8 @@ class DsrController {
   }
 }
 
-final _dsrStoreProvider = Provider<_InMemoryDsrStore>((ref) {
-  final store = _InMemoryDsrStore();
+final _dsrStoreProvider = Provider<InMemoryDsrStore>((ref) {
+  final store = InMemoryDsrStore();
   ref.onDispose(store.dispose);
   return store;
 });

@@ -92,15 +92,15 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelDestinationScreen(),
+            supportedLocales: [Locale('en')],
+            home: ParcelDestinationScreen(),
           ),
         ),
       );
@@ -185,15 +185,15 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelDestinationScreen(),
+            supportedLocales: [Locale('en')],
+            home: ParcelDestinationScreen(),
           ),
         ),
       );
@@ -220,15 +220,15 @@ void main() {
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: MaterialApp(
-            localizationsDelegates: const [
+          child: const MaterialApp(
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelDestinationScreen(),
+            supportedLocales: [Locale('en')],
+            home: ParcelDestinationScreen(),
           ),
         ),
       );

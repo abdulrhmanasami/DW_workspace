@@ -57,16 +57,16 @@ void main() {
     testWidgets('ParcelsEntryScreen displays all expected UI elements',
         (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            localizationsDelegates: const [
+            localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,
             ],
-            supportedLocales: const [Locale('en')],
-            home: const ParcelsEntryScreen(),
+            supportedLocales: [Locale('en')],
+            home: ParcelsEntryScreen(),
           ),
         ),
       );

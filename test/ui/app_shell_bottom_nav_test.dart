@@ -114,10 +114,10 @@ void main() {
 
     // Track A - Ticket #229: Simplified navigation bar test
     testWidgets('NavigationBar renders correctly with correct icons and labels', (tester) async {
-      final widget = MaterialApp(
+      const widget = MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
-        home: const _SimpleNavBarTestWidget(),
+        home: _SimpleNavBarTestWidget(),
       );
 
       await tester.pumpWidget(widget);

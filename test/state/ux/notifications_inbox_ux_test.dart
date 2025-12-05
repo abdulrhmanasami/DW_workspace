@@ -28,7 +28,7 @@ void main() {
         ),
       ];
 
-      final prefs = NotificationPreferencesViewModel(
+      const prefs = NotificationPreferencesViewModel(
         orderStatusUpdatesEnabled: true,
         promotionsEnabled: false,
         systemAlertsEnabled: true,

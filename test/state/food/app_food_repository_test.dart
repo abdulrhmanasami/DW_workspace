@@ -78,7 +78,7 @@ void main() {
     });
 
     test('filters restaurants by category', () async {
-      final burgersCategory = const FoodCategory(id: 'burgers', label: 'Burgers');
+      const burgersCategory = FoodCategory(id: 'burgers', label: 'Burgers');
       final result = await repository.listRestaurants(category: burgersCategory);
 
       expect(result, hasLength(2));
@@ -92,7 +92,7 @@ void main() {
     });
 
     test('category burger returns only burger restaurants', () async {
-      final burgersCategory = const FoodCategory(id: 'burgers', label: 'Burgers');
+      const burgersCategory = FoodCategory(id: 'burgers', label: 'Burgers');
       final result = await repository.listRestaurants(category: burgersCategory);
 
       expect(result, hasLength(2));
@@ -108,7 +108,7 @@ void main() {
     });
 
     test('combines query and category filters', () async {
-      final burgersCategory = const FoodCategory(id: 'burgers', label: 'Burgers');
+      const burgersCategory = FoodCategory(id: 'burgers', label: 'Burgers');
       final result = await repository.listRestaurants(
         query: 'Patty',
         category: burgersCategory,

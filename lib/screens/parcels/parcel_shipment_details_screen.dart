@@ -56,7 +56,7 @@ class ParcelShipmentDetailsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: DWSpacing.lg),
               // Track C - Ticket #74: Map Stub Section for future live tracking
-              _ParcelMapStubSection(),
+              const _ParcelMapStubSection(),
               const SizedBox(height: DWSpacing.lg),
               _ParcelRouteSection(parcel: parcel),
               const SizedBox(height: DWSpacing.lg),

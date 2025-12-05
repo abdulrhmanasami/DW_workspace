@@ -191,24 +191,22 @@ class MfaVerificationResult {
   const MfaVerificationResult.failed({
     String? errorCode,
     String? message,
-    int? attemptsRemaining,
+    this.attemptsRemaining,
   })  : success = false,
         locked = false,
         errorCode = errorCode ?? 'invalid_code',
         message = message ?? 'Invalid verification code',
-        attemptsRemaining = attemptsRemaining,
         lockoutEndTime = null;
 
   /// Factory for lockout state (too many attempts).
   const MfaVerificationResult.locked({
     String? message,
-    DateTime? lockoutEndTime,
+    this.lockoutEndTime,
   })  : success = false,
         locked = true,
         errorCode = 'mfa_locked',
         message = message ?? 'Too many failed attempts. Account temporarily locked.',
-        attemptsRemaining = 0,
-        lockoutEndTime = lockoutEndTime;
+        attemptsRemaining = 0;
 
   /// Whether the verification was successful.
   final bool success;

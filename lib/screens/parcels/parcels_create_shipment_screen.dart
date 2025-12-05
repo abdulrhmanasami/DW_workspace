@@ -426,6 +426,10 @@ class _ParcelsCreateShipmentScreenState
 
     setState(() => _isSubmitting = true);
 
+    // Capture context-dependent objects before async gap
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
     try {
       final now = DateTime.now();
 
@@ -478,7 +482,7 @@ class _ParcelsCreateShipmentScreenState
       if (!mounted) return;
 
       // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text(
             l10n?.parcelsCreateShipmentSuccessMessage ?? 
@@ -488,12 +492,12 @@ class _ParcelsCreateShipmentScreenState
       );
 
       // Return to list
-      Navigator.of(context).pop(true);
+      navigator.pop(true);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Something went wrong'),
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(
+          content: Text('Something went wrong'),
         ),
       );
     } finally {
@@ -540,7 +544,7 @@ class _ServiceTypeChip extends StatelessWidget {
           border: Border.all(
             color: isSelected 
                 ? colorScheme.primary 
-                : colorScheme.outline.withOpacity(0.3),
+                : colorScheme.outline.withValues(alpha: 0.3),
             width: isSelected ? 2 : 1,
           ),
         ),

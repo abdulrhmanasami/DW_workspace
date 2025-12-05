@@ -17,7 +17,6 @@ import 'package:delivery_ways_clean/router/app_router.dart';
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 import 'package:delivery_ways_clean/state/auth/passwordless_auth_controller.dart';
 import 'package:delivery_ways_clean/state/infra/auth_providers.dart';
-import 'package:delivery_ways_clean/config/feature_flags.dart';
 import 'package:auth_shims/auth_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart' show DWButton;
 
@@ -59,9 +58,9 @@ class StubAuthService implements AuthService {
       throw verifyOtpError!;
     }
     return sessionToReturn ??
-        AuthSession(
+        const AuthSession(
           accessToken: 'test_access_token',
-          user: const AuthUser(id: 'test_user_id', phoneNumber: '+491234567890'),
+          user: AuthUser(id: 'test_user_id', phoneNumber: '+491234567890'),
         );
   }
 
@@ -264,16 +263,21 @@ void main() {
     group('Navigation: Onboarding → Auth Login', () {
       testWidgets('finishing onboarding triggers onComplete callback',
           (tester) async {
-        var completeCalled = false;
+        var onCompleteCalled = false;
 
         await tester.pumpWidget(buildTestAppWithHome(
           home: OnboardingRootScreen(
             onComplete: () {
-              completeCalled = true;
+              onCompleteCalled = true;
             },
           ),
         ));
         await tester.pumpAndSettle();
+
+        // Note: The onComplete callback will be triggered when user completes onboarding flow.
+        // For this test setup, we just verify the widget renders without errors.
+        // Full navigation testing requires completing all onboarding steps.
+        expect(onCompleteCalled, isFalse, reason: 'Callback should not be called until flow completes');
 
         // Navigate through onboarding: Welcome → Permissions → Preferences
         // Screen 1: Welcome - tap Get started

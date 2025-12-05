@@ -73,7 +73,7 @@ class RideMapProjector {
     if (pickupLocation != null) {
       markers.add(
         MapMarker(
-          id: MapMarkerId('pickup'),
+          id: const MapMarkerId('pickup'),
           position: pickupLocation,
           label: 'Pickup',
         ),
@@ -84,7 +84,7 @@ class RideMapProjector {
         stage.index >= RideMapStage.confirmingQuote.index) {
       markers.add(
         MapMarker(
-          id: MapMarkerId('dropoff'),
+          id: const MapMarkerId('dropoff'),
           position: dropoffLocation,
           label: 'Dropoff',
         ),
@@ -98,7 +98,7 @@ class RideMapProjector {
         stage != RideMapStage.error) {
       markers.add(
         MapMarker(
-          id: MapMarkerId('driver'),
+          id: const MapMarkerId('driver'),
           position: driverLocation,
           label: 'Driver',
         ),

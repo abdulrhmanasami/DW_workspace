@@ -6,15 +6,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:maps_shims/maps_shims.dart';
-import 'package:mobility_shims/mobility.dart' as mob;
 import 'package:mobility_shims/mobility_shims.dart';
 
 // App imports
-import '../../lib/state/mobility/ride_trip_session.dart';
-import '../../lib/state/mobility/tracking_controller.dart';
-import '../../lib/state/mobility/ride_map_port_providers.dart';
-import '../../lib/state/mobility/ride_map_projection.dart';
-import '../../lib/state/mobility/ride_draft_state.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
+import 'package:delivery_ways_clean/state/mobility/tracking_controller.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_map_port_providers.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_map_projection.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
 import '../support/mobility_stubs.dart';
 import '../support/path_provider_stub.dart';
 import '../support/uplink_spy.dart';
@@ -74,19 +73,19 @@ void main() {
           consentBackgroundLocationProvider.overrideWithValue(true),
 
           // Override location and background tracker with test implementations
-          locationProvider.overrideWithProvider(
-            Provider<LocationProvider>((ref) => const TestLocationProvider()),
+          locationProvider.overrideWith(
+            (ref) => const TestLocationProvider(),
           ),
-          backgroundTrackerProvider.overrideWithProvider(
-            Provider<BackgroundTracker>((ref) => const TestBackgroundTracker()),
+          backgroundTrackerProvider.overrideWith(
+            (ref) => const TestBackgroundTracker(),
           ),
 
           // Override uplink service with spy
           uplinkServiceProvider.overrideWithValue(uplinkSpy),
 
           // Override map port with recording port for testing
-          rideMapPortProvider.overrideWithProvider(
-            Provider<MapPort>((ref) => RecordingMapPort()),
+          rideMapPortProvider.overrideWith(
+            (ref) => RecordingMapPort(),
           ),
         ],
       );
@@ -133,7 +132,7 @@ void main() {
       // Assert: No map commands for driver marker
       final recordingPort = container.read(rideMapPortProvider) as RecordingMapPort;
       final driverMarkers = recordingPort.recordedCommands
-          .where((cmd) => cmd is SetMarkersCommand)
+          .whereType<SetMarkersCommand>()
           .cast<SetMarkersCommand>()
           .expand((cmd) => cmd.markers)
           .where((marker) => marker.id.value.contains('driver') || marker.title == 'Driver')
@@ -145,19 +144,19 @@ void main() {
 
     test('active trip shows driver marker from tracking updates', () async {
       // Arrange: Start active trip
-      final draft = RideDraftUiState(
+      const draft = RideDraftUiState(
         pickupPlace: MobilityPlace(
           id: 'pickup1',
           label: 'Pickup Location',
           address: '123 Pickup St',
-          location: const LocationPoint(latitude: 51.5072, longitude: -0.1276),
+          location: LocationPoint(latitude: 51.5072, longitude: -0.1276),
           type: MobilityPlaceType.searchResult,
         ),
         destinationPlace: MobilityPlace(
           id: 'dest1',
           label: 'Destination Location',
           address: '456 Dest St',
-          location: const LocationPoint(latitude: 51.5078, longitude: -0.1282),
+          location: LocationPoint(latitude: 51.5078, longitude: -0.1282),
           type: MobilityPlaceType.searchResult,
         ),
         paymentMethodId: 'card1',
@@ -199,7 +198,7 @@ void main() {
       // Assert: Map commands include driver marker
       final recordingPort = container.read(rideMapPortProvider) as RecordingMapPort;
       final driverMarkers = recordingPort.recordedCommands
-          .where((cmd) => cmd is SetMarkersCommand)
+          .whereType<SetMarkersCommand>()
           .cast<SetMarkersCommand>()
           .expand((cmd) => cmd.markers)
           .where((marker) => marker.id.value.contains('driver') || marker.title == 'Driver')
@@ -213,19 +212,19 @@ void main() {
 
     test('trip completion clears driver location and stops updates', () async {
       // Arrange: Start active trip and tracking
-      final draft = RideDraftUiState(
+      const draft = RideDraftUiState(
         pickupPlace: MobilityPlace(
           id: 'pickup1',
           label: 'Pickup Location',
           address: '123 Pickup St',
-          location: const LocationPoint(latitude: 51.5072, longitude: -0.1276),
+          location: LocationPoint(latitude: 51.5072, longitude: -0.1276),
           type: MobilityPlaceType.searchResult,
         ),
         destinationPlace: MobilityPlace(
           id: 'dest1',
           label: 'Destination Location',
           address: '456 Dest St',
-          location: const LocationPoint(latitude: 51.5078, longitude: -0.1282),
+          location: LocationPoint(latitude: 51.5078, longitude: -0.1282),
           type: MobilityPlaceType.searchResult,
         ),
         paymentMethodId: 'card1',
@@ -289,19 +288,19 @@ void main() {
 
     test('trip cancellation clears driver location and stops updates', () async {
       // Arrange: Start active trip and tracking
-      final draft = RideDraftUiState(
+      const draft = RideDraftUiState(
         pickupPlace: MobilityPlace(
           id: 'pickup1',
           label: 'Pickup Location',
           address: '123 Pickup St',
-          location: const LocationPoint(latitude: 51.5072, longitude: -0.1276),
+          location: LocationPoint(latitude: 51.5072, longitude: -0.1276),
           type: MobilityPlaceType.searchResult,
         ),
         destinationPlace: MobilityPlace(
           id: 'dest1',
           label: 'Destination Location',
           address: '456 Dest St',
-          location: const LocationPoint(latitude: 51.5078, longitude: -0.1282),
+          location: LocationPoint(latitude: 51.5078, longitude: -0.1282),
           type: MobilityPlaceType.searchResult,
         ),
         paymentMethodId: 'card1',
@@ -397,7 +396,7 @@ void main() {
       // Assert: No driver marker commands sent to MapPort
       final recordingPort = container.read(rideMapPortProvider) as RecordingMapPort;
       final driverMarkers = recordingPort.recordedCommands
-          .where((cmd) => cmd is SetMarkersCommand)
+          .whereType<SetMarkersCommand>()
           .cast<SetMarkersCommand>()
           .expand((cmd) => cmd.markers)
           .where((marker) => marker.id.value.contains('driver') || marker.title == 'Driver')
@@ -409,19 +408,19 @@ void main() {
 
     test('chaos: late tracking updates after trip completion are ignored', () async {
       // Arrange: Start active trip and get to completion
-      final draft = RideDraftUiState(
+      const draft = RideDraftUiState(
         pickupPlace: MobilityPlace(
           id: 'pickup1',
           label: 'Pickup Location',
           address: '123 Pickup St',
-          location: const LocationPoint(latitude: 51.5072, longitude: -0.1276),
+          location: LocationPoint(latitude: 51.5072, longitude: -0.1276),
           type: MobilityPlaceType.searchResult,
         ),
         destinationPlace: MobilityPlace(
           id: 'dest1',
           label: 'Destination Location',
           address: '456 Dest St',
-          location: const LocationPoint(latitude: 51.5078, longitude: -0.1282),
+          location: LocationPoint(latitude: 51.5078, longitude: -0.1282),
           type: MobilityPlaceType.searchResult,
         ),
         paymentMethodId: 'card1',
@@ -501,19 +500,19 @@ void main() {
 
     test('chaos: late tracking updates after trip cancellation are ignored', () async {
       // Arrange: Start active trip and cancel it
-      final draft = RideDraftUiState(
+      const draft = RideDraftUiState(
         pickupPlace: MobilityPlace(
           id: 'pickup1',
           label: 'Pickup Location',
           address: '123 Pickup St',
-          location: const LocationPoint(latitude: 51.5072, longitude: -0.1276),
+          location: LocationPoint(latitude: 51.5072, longitude: -0.1276),
           type: MobilityPlaceType.searchResult,
         ),
         destinationPlace: MobilityPlace(
           id: 'dest1',
           label: 'Destination Location',
           address: '456 Dest St',
-          location: const LocationPoint(latitude: 51.5078, longitude: -0.1282),
+          location: LocationPoint(latitude: 51.5078, longitude: -0.1282),
           type: MobilityPlaceType.searchResult,
         ),
         paymentMethodId: 'card1',
@@ -572,19 +571,19 @@ void main() {
       await trackingController.start();
 
       // Trip A
-      final draftA = RideDraftUiState(
+      const draftA = RideDraftUiState(
         pickupPlace: MobilityPlace(
           id: 'pickupA',
           label: 'Pickup A',
           address: '123 Pickup St',
-          location: const LocationPoint(latitude: 51.5072, longitude: -0.1276),
+          location: LocationPoint(latitude: 51.5072, longitude: -0.1276),
           type: MobilityPlaceType.searchResult,
         ),
         destinationPlace: MobilityPlace(
           id: 'destA',
           label: 'Destination A',
           address: '456 Dest St',
-          location: const LocationPoint(latitude: 51.5078, longitude: -0.1282),
+          location: LocationPoint(latitude: 51.5078, longitude: -0.1282),
           type: MobilityPlaceType.searchResult,
         ),
         paymentMethodId: 'card1',
@@ -629,19 +628,19 @@ void main() {
       expect(sessionController.state.activeTrip, isNull);
 
       // Start Trip B (same container, continuous tracking stream)
-      final draftB = RideDraftUiState(
+      const draftB = RideDraftUiState(
         pickupPlace: MobilityPlace(
           id: 'pickupB',
           label: 'Pickup B',
           address: '789 Pickup St',
-          location: const LocationPoint(latitude: 51.5080, longitude: -0.1285),
+          location: LocationPoint(latitude: 51.5080, longitude: -0.1285),
           type: MobilityPlaceType.searchResult,
         ),
         destinationPlace: MobilityPlace(
           id: 'destB',
           label: 'Destination B',
           address: '101 Dest St',
-          location: const LocationPoint(latitude: 51.5085, longitude: -0.1290),
+          location: LocationPoint(latitude: 51.5085, longitude: -0.1290),
           type: MobilityPlaceType.searchResult,
         ),
         paymentMethodId: 'card1',
@@ -683,7 +682,7 @@ void main() {
       // Assert: Map shows driver marker for Trip B
       final recordingPort = container.read(rideMapPortProvider) as RecordingMapPort;
       final latestDriverMarkers = recordingPort.recordedCommands
-          .where((cmd) => cmd is SetMarkersCommand)
+          .whereType<SetMarkersCommand>()
           .cast<SetMarkersCommand>()
           .expand((cmd) => cmd.markers)
           .where((marker) => marker.id.value.contains('driver') || marker.title == 'Driver')

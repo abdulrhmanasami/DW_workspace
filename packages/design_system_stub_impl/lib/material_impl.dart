@@ -109,7 +109,6 @@ class _AppCardStandard extends ds.AppCard {
 
 class _AppNoticeImpl extends StatelessWidget {
   const _AppNoticeImpl({
-    super.key,
     required this.notice,
   });
 
@@ -252,13 +251,13 @@ ds.AppCard _buildCard({
 }) =>
     _AppCardStandard(
       key: key,
-      child: child,
       padding: padding,
       margin: margin,
       backgroundColor: backgroundColor,
       borderRadius: borderRadius,
       border: border,
       onTap: onTap,
+      child: child,
     );
 
 Widget _buildNotice(ds.AppNotice notice) => _AppNoticeImpl(notice: notice);

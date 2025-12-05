@@ -4,7 +4,6 @@
 /// Last updated: 2025-11-11
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:foundation_shims/payments_config.dart';
 import 'package:payments/payments.dart';
 import 'stripe_gateway.dart';
 

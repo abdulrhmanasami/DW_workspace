@@ -124,8 +124,8 @@ class OrderTrackingScreen extends ConsumerWidget {
             Consumer(
               builder: (context, ref, child) {
                 // Show the tracking unavailable hint
-                final hint = TrackingHints.unavailable;
-                return InAppHintBanner(hint: hint);
+                const hint = TrackingHints.unavailable;
+                return const InAppHintBanner(hint: hint);
               },
             ),
             const SizedBox(height: 24),

@@ -51,12 +51,15 @@ void main() {
         theme: ThemeData(
           colorScheme: const ColorScheme.light(),
         ),
-        home: Scaffold(
+        home: Builder(
+          builder: (context) => Scaffold(
           body: RideQuoteOptionsSheet(
             quote: quote,
             selectedOption: selectedOption,
             onOptionSelected: onOptionSelected ?? (_) {},
             onClose: onClose,
+              l10n: AppLocalizations.of(context)!,
+            ),
           ),
         ),
       );

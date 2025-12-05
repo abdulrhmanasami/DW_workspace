@@ -41,14 +41,14 @@ void main() {
 
   group('FoodCartItem', () {
     test('creates with correct properties', () {
-      final item = FoodCartItem(menuItem: testItem1, quantity: 2);
+      const item = FoodCartItem(menuItem: testItem1, quantity: 2);
 
       expect(item.menuItem, equals(testItem1));
       expect(item.quantity, equals(2));
     });
 
     test('copyWith updates quantity', () {
-      final item = FoodCartItem(menuItem: testItem1, quantity: 1);
+      const item = FoodCartItem(menuItem: testItem1, quantity: 1);
       final updated = item.copyWith(quantity: 3);
 
       expect(updated.quantity, equals(3));
@@ -56,17 +56,17 @@ void main() {
     });
 
     test('copyWith preserves quantity when not specified', () {
-      final item = FoodCartItem(menuItem: testItem1, quantity: 5);
+      const item = FoodCartItem(menuItem: testItem1, quantity: 5);
       final updated = item.copyWith();
 
       expect(updated.quantity, equals(5));
     });
 
     test('equality works correctly', () {
-      final item1 = FoodCartItem(menuItem: testItem1, quantity: 2);
-      final item2 = FoodCartItem(menuItem: testItem1, quantity: 2);
-      final item3 = FoodCartItem(menuItem: testItem1, quantity: 3);
-      final item4 = FoodCartItem(menuItem: testItem2, quantity: 2);
+      const item1 = FoodCartItem(menuItem: testItem1, quantity: 2);
+      const item2 = FoodCartItem(menuItem: testItem1, quantity: 2);
+      const item3 = FoodCartItem(menuItem: testItem1, quantity: 3);
+      const item4 = FoodCartItem(menuItem: testItem2, quantity: 2);
 
       expect(item1, equals(item2));
       expect(item1, isNot(equals(item3)));
@@ -84,7 +84,7 @@ void main() {
     });
 
     test('totalItems sums quantities', () {
-      final state = FoodCartState(items: [
+      const state = FoodCartState(items: [
         FoodCartItem(menuItem: testItem1, quantity: 2),
         FoodCartItem(menuItem: testItem2, quantity: 3),
       ]);
@@ -93,7 +93,7 @@ void main() {
     });
 
     test('totalPrice calculates correctly', () {
-      final state = FoodCartState(items: [
+      const state = FoodCartState(items: [
         FoodCartItem(menuItem: testItem1, quantity: 2), // 2 * 25.00 = 50.00
         FoodCartItem(menuItem: testItem2, quantity: 1), // 1 * 10.00 = 10.00
       ]);
@@ -102,7 +102,7 @@ void main() {
     });
 
     test('quantityOf returns correct quantity', () {
-      final state = FoodCartState(items: [
+      const state = FoodCartState(items: [
         FoodCartItem(menuItem: testItem1, quantity: 3),
         FoodCartItem(menuItem: testItem2, quantity: 1),
       ]);
@@ -115,20 +115,20 @@ void main() {
     test('copyWith updates items', () {
       const state = FoodCartState();
       final updated = state.copyWith(items: [
-        FoodCartItem(menuItem: testItem1, quantity: 1),
+        const FoodCartItem(menuItem: testItem1, quantity: 1),
       ]);
 
       expect(updated.items, hasLength(1));
     });
 
     test('equality works correctly', () {
-      final state1 = FoodCartState(items: [
+      const state1 = FoodCartState(items: [
         FoodCartItem(menuItem: testItem1, quantity: 2),
       ]);
-      final state2 = FoodCartState(items: [
+      const state2 = FoodCartState(items: [
         FoodCartItem(menuItem: testItem1, quantity: 2),
       ]);
-      final state3 = FoodCartState(items: [
+      const state3 = FoodCartState(items: [
         FoodCartItem(menuItem: testItem1, quantity: 3),
       ]);
 

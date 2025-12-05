@@ -47,7 +47,7 @@ class ParcelsListScreen extends ConsumerWidget {
     return AppShell(
       title: l10n.parcelsListTitle,
       body: Padding(
-        padding: EdgeInsets.all(DWSpacing.md),
+        padding: const EdgeInsets.all(DWSpacing.md),
         child: hasParcels
             ? _ParcelsListView(parcels: parcels)
             : const _ParcelsEmptyState(),
@@ -82,7 +82,7 @@ class _ParcelsListView extends StatelessWidget {
 
     return ListView.separated(
       itemCount: parcels.length,
-      separatorBuilder: (_, __) => SizedBox(height: DWSpacing.sm),
+      separatorBuilder: (_, __) => const SizedBox(height: DWSpacing.sm),
       itemBuilder: (context, index) {
         final parcel = parcels[index];
         final statusLabel = localizedParcelStatusLong(l10n, parcel.status);
@@ -103,7 +103,7 @@ class _ParcelsListView extends StatelessWidget {
               );
             },
             child: Padding(
-              padding: EdgeInsets.all(DWSpacing.md),
+              padding: const EdgeInsets.all(DWSpacing.md),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -121,7 +121,7 @@ class _ParcelsListView extends StatelessWidget {
                       size: 24,
                     ),
                   ),
-                  SizedBox(width: DWSpacing.md),
+                  const SizedBox(width: DWSpacing.md),
                   // Text content
                   Expanded(
                     child: Column(
@@ -138,7 +138,7 @@ class _ParcelsListView extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: DWSpacing.xxs),
+                        const SizedBox(height: DWSpacing.xxs),
                         // Subtitle: Date/time
                         Text(
                           _formatParcelCreatedAt(l10n, createdAt),
@@ -147,7 +147,7 @@ class _ParcelsListView extends StatelessWidget {
                           ),
                         ),
                         if (shipmentId.isNotEmpty) ...[
-                          SizedBox(height: DWSpacing.xxs),
+                          const SizedBox(height: DWSpacing.xxs),
                           // Shipment ID
                           Text(
                             l10n.parcelsActiveShipmentIdLabel(shipmentId),
@@ -159,10 +159,10 @@ class _ParcelsListView extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: DWSpacing.sm),
+                  const SizedBox(width: DWSpacing.sm),
                   // Status chip
                   _ParcelStatusChip(label: statusLabel),
-                  SizedBox(width: DWSpacing.xs),
+                  const SizedBox(width: DWSpacing.xs),
                   // Chevron indicator
                   Icon(
                     Icons.chevron_right,
@@ -191,7 +191,7 @@ class _ParcelStatusChip extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Container(
-      padding: EdgeInsets.symmetric(
+      padding: const EdgeInsets.symmetric(
         horizontal: DWSpacing.sm,
         vertical: DWSpacing.xxs,
       ),
@@ -233,7 +233,7 @@ class _ParcelsEmptyState extends StatelessWidget {
 
     return Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: DWSpacing.lg),
+        padding: const EdgeInsets.symmetric(horizontal: DWSpacing.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -242,13 +242,13 @@ class _ParcelsEmptyState extends StatelessWidget {
               size: 64,
               color: colorScheme.onSurfaceVariant,
             ),
-            SizedBox(height: DWSpacing.md),
+            const SizedBox(height: DWSpacing.md),
             Text(
               l10n.parcelsListEmptyTitle,
               style: textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: DWSpacing.xs),
+            const SizedBox(height: DWSpacing.xs),
             Text(
               l10n.parcelsListEmptySubtitle,
               style: textTheme.bodyMedium?.copyWith(
@@ -256,7 +256,7 @@ class _ParcelsEmptyState extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: DWSpacing.lg),
+            const SizedBox(height: DWSpacing.lg),
             // Track C - Ticket #73: CTA to create first shipment
             AppButtonUnified.primary(
               label: l10n.parcelsListEmptyCta,

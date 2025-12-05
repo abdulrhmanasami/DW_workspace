@@ -298,7 +298,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                             Switch(
                               value: _marketingOptIn,
                               onChanged: (value) => setState(() => _marketingOptIn = value),
-                              activeColor: colors.primary,
+                              activeThumbColor: colors.primary,
                             ),
                           ],
                         ),

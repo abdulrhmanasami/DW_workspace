@@ -13,7 +13,7 @@ void main() {
       repository.dispose();
     });
 
-    ParcelShipment _createTestShipment({
+    ParcelShipment createTestShipment({
       String? id,
       ParcelShipmentStatus? status,
       DateTime? createdAt,
@@ -59,7 +59,7 @@ void main() {
 
     test('should create and watch shipment', () async {
       // Create a shipment
-      final testShipment = _createTestShipment(id: 'shipment-1');
+      final testShipment = createTestShipment(id: 'shipment-1');
       final created = await repository.createShipment(testShipment);
       
       // Verify the created shipment
@@ -75,15 +75,15 @@ void main() {
     test('should order shipments by createdAt desc', () async {
       // Create shipments with different timestamps
       final now = DateTime.now();
-      final older = _createTestShipment(
+      final older = createTestShipment(
         id: 'older',
         createdAt: now.subtract(const Duration(days: 2)),
       );
-      final newer = _createTestShipment(
+      final newer = createTestShipment(
         id: 'newer',
         createdAt: now.subtract(const Duration(days: 1)),
       );
-      final newest = _createTestShipment(
+      final newest = createTestShipment(
         id: 'newest',
         createdAt: now,
       );
@@ -102,7 +102,7 @@ void main() {
     });
 
     test('should get shipment by id', () async {
-      final testShipment = _createTestShipment(id: 'test-123');
+      final testShipment = createTestShipment(id: 'test-123');
       await repository.createShipment(testShipment);
       
       final retrieved = await repository.getShipmentById('test-123');
@@ -116,7 +116,7 @@ void main() {
     });
 
     test('should update shipment status', () async {
-      final testShipment = _createTestShipment(
+      final testShipment = createTestShipment(
         id: 'status-test',
         status: ParcelShipmentStatus.created,
       );
@@ -152,9 +152,9 @@ void main() {
 
     test('should clear all shipments', () async {
       // Create multiple shipments
-      await repository.createShipment(_createTestShipment(id: 'ship-1'));
-      await repository.createShipment(_createTestShipment(id: 'ship-2'));
-      await repository.createShipment(_createTestShipment(id: 'ship-3'));
+      await repository.createShipment(createTestShipment(id: 'ship-1'));
+      await repository.createShipment(createTestShipment(id: 'ship-2'));
+      await repository.createShipment(createTestShipment(id: 'ship-3'));
       
       // Verify they exist
       var shipments = await repository.watchShipments().first;
@@ -169,13 +169,13 @@ void main() {
     });
 
     test('should emit unmodifiable list', () async {
-      await repository.createShipment(_createTestShipment(id: 'test-1'));
+      await repository.createShipment(createTestShipment(id: 'test-1'));
       
       final shipments = await repository.watchShipments().first;
       
       // Should throw when trying to modify the list
       expect(
-        () => shipments.add(_createTestShipment(id: 'test-2')),
+        () => shipments.add(createTestShipment(id: 'test-2')),
         throwsUnsupportedError,
       );
     });
@@ -185,7 +185,7 @@ void main() {
       final futures = List.generate(
         5,
         (i) => repository.createShipment(
-          _createTestShipment(id: 'concurrent-$i'),
+          createTestShipment(id: 'concurrent-$i'),
         ),
       );
       
@@ -203,7 +203,7 @@ void main() {
     });
 
     test('should maintain shipment immutability', () async {
-      final original = _createTestShipment(
+      final original = createTestShipment(
         id: 'immutable-test',
         status: ParcelShipmentStatus.created,
       );
