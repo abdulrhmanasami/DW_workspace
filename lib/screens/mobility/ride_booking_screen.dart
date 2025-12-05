@@ -384,7 +384,7 @@ class _RideBookingSheetContentState
           onPressed: _primaryCtaEnabled(bookingState)
               ? () => _onPrimaryCtaPressed(bookingState, bookingController)
               : null,
-          isLoading: bookingState.isRequestingQuote,
+          isLoading: bookingState.isLoading,
           fullWidth: true,
         ),
       ],

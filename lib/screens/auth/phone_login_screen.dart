@@ -7,12 +7,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:auth_shims/auth_shims.dart';
 
 import '../../config/feature_flags.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
-import '../../state/identity/identity_controller.dart';
+import '../../state/auth/passwordless_auth_controller.dart';
 import '../../state/infra/auth_providers.dart';
 import '../../widgets/app_shell.dart';
 import 'package:b_ui/ui_components.dart';
@@ -54,22 +53,23 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
       );
     }
 
-    // Listen to IdentityController state for navigation and errors
-    ref.listen(identityControllerProvider, (prev, next) {
+    // Listen to PasswordlessAuthController state for navigation and errors
+    ref.listen(passwordlessAuthControllerProvider, (prev, next) {
       if (!FeatureFlags.enablePasswordlessAuth || !mounted) return;
 
-      // Navigate to OTP screen when login code request succeeds
-      if (prev?.isRequestingLoginCode == true && next.isRequestingLoginCode == false && next.lastAuthErrorMessage == null) {
-        Navigator.of(context).pushNamed(RoutePaths.otpVerification, arguments: _phoneController.text);
+      // Navigate to OTP screen when code is sent successfully
+      if (prev?.step != PasswordlessStep.codeSent && next.step == PasswordlessStep.codeSent) {
+        Navigator.of(context).pushNamed(RoutePaths.otpVerification, arguments: next.phoneE164);
       }
 
       // Show error message if request fails
-      if (next.lastAuthErrorMessage != null && (prev?.lastAuthErrorMessage != next.lastAuthErrorMessage)) {
-        _showError(next.lastAuthErrorMessage!);
+      if (next.step == PasswordlessStep.error && next.errorMessage != null &&
+          (prev?.errorMessage != next.errorMessage)) {
+        _showError(next.errorMessage!);
       }
     });
 
-    final identityState = ref.watch(identityControllerProvider);
+    final authState = ref.watch(passwordlessAuthControllerProvider);
     final biometricSupportAsync = ref.watch(biometricSupportProvider);
 
     final canUseBiometric = FeatureFlags.enableBiometricAuth &&
@@ -78,7 +78,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
           orElse: () => false,
         );
 
-    final isLoading = identityState.isRequestingLoginCode;
+    final isLoading = authState.step == PasswordlessStep.verifying;
     final shouldDisableRequest = isLoading;
 
     return AppShell(
@@ -118,7 +118,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                 labelText: l10n?.authPhoneFieldLabel ?? 'Phone Number',
                 hintText: l10n?.authPhoneFieldHint ?? '+9665xxxxxxxx',
                 prefixIcon: Icon(Icons.phone, color: colorScheme.onSurfaceVariant),
-                errorText: _localError ?? identityState.lastAuthErrorMessage,
+                errorText: _localError ?? authState.errorMessage,
               ),
             ),
             const SizedBox(height: 8),
@@ -195,8 +195,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
                     : () async {
                         final normalized = _validateAndNormalize(l10n);
                         if (normalized == null) return;
-                        final phoneNumber = PhoneNumber(normalized);
-                        await ref.read(identityControllerProvider.notifier).requestLoginCode(phoneNumber);
+                        await ref.read(passwordlessAuthControllerProvider.notifier).requestOtp(normalized);
                       },
                 child: UiLoadingButtonContent(
                   label: l10n?.authPhoneContinueButton ?? 'Continue',

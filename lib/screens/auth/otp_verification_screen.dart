@@ -11,11 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart'
     show DWButton, DWTextField, DWSpacing;
-import 'package:auth_shims/auth_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
-import '../../state/identity/identity_controller.dart';
+import '../../state/auth/passwordless_auth_controller.dart';
 import '../../widgets/app_shell.dart';
 
 /// Screen for entering OTP verification code.
@@ -47,24 +46,24 @@ class _OtpVerificationScreenState
     final colors = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    // Get phone number from route arguments
-    final phoneNumberString = ModalRoute.of(context)?.settings.arguments as String?;
+    final authState = ref.watch(passwordlessAuthControllerProvider);
+
+    // Get phone number from auth state
+    final phoneNumberString = authState.phoneE164;
     if (phoneNumberString == null) {
-      // If no phone number provided, go back
+      // If no phone number in state, go back
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) Navigator.of(context).pop();
       });
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final phoneNumber = PhoneNumber(phoneNumberString);
-
-    // Listen to IdentityController state for success/error handling
-    ref.listen(identityControllerProvider, (prev, next) {
+    // Listen to PasswordlessAuthController state for success/error handling
+    ref.listen(passwordlessAuthControllerProvider, (prev, next) {
       if (!mounted) return;
 
-      // Navigate to home when verification succeeds
-      if (prev?.isVerifyingLoginCode == true && next.isVerifyingLoginCode == false && next.isAuthenticated) {
+      // Navigate to home when authentication succeeds
+      if (prev?.step != PasswordlessStep.authenticated && next.step == PasswordlessStep.authenticated) {
         Navigator.of(context).pushNamedAndRemoveUntil(
           RoutePaths.home,
           (route) => false,
@@ -72,28 +71,24 @@ class _OtpVerificationScreenState
       }
 
       // Show error if verification fails
-      if (next.lastAuthErrorMessage != null && (prev?.lastAuthErrorMessage != next.lastAuthErrorMessage)) {
+      if (next.step == PasswordlessStep.error && next.errorMessage != null &&
+          (prev?.errorMessage != next.errorMessage)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(next.lastAuthErrorMessage!),
+            content: Text(next.errorMessage!),
             backgroundColor: colors.error,
           ),
         );
       }
     });
 
-    final identityState = ref.watch(identityControllerProvider);
-    final isLoading = identityState.isVerifyingLoginCode;
+    final isLoading = authState.step == PasswordlessStep.verifying;
 
     void onVerify() {
       final code = _codeController.text.trim();
       if (code.isEmpty || isLoading) return;
 
-      final otpCode = OtpCode(code);
-      ref.read(identityControllerProvider.notifier).verifyLoginCode(
-        phoneNumber: phoneNumber,
-        code: otpCode,
-      );
+      ref.read(passwordlessAuthControllerProvider.notifier).verifyOtp(code);
     }
 
     return AppShell(
@@ -121,11 +116,11 @@ class _OtpVerificationScreenState
               onSubmitted: (_) => onVerify(),
             ),
             // Show error message if present
-            if (identityState.lastAuthErrorMessage != null)
+            if (authState.errorMessage != null)
               Padding(
                 padding: const EdgeInsets.only(top: DWSpacing.sm),
                 child: Text(
-                  identityState.lastAuthErrorMessage!,
+                  authState.errorMessage!,
                   style: textTheme.bodySmall?.copyWith(
                     color: colors.error,
                   ),
