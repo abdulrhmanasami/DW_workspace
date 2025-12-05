@@ -1,18 +1,19 @@
 /// Parcel Destination Screen (Create Shipment - Screen 11)
 /// Created by: Track C - Ticket #41
 /// Purpose: First step in create-shipment flow matching Screen 11 mockups.
-/// Last updated: 2025-11-29 (Ticket #75 - Alignment + Form Validation MVP)
+/// Last updated: 2025-12-05 (Ticket C-1 - Draft initialization + contact info)
 
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../router/app_router.dart';
 import '../../state/parcels/parcel_draft_state.dart';
-import 'parcel_details_screen.dart';
 
 /// Parcel Destination Screen Widget.
 /// Track C - Ticket #75: Aligned with Screen 11 mockups.
+/// Track C - Ticket C-1: Added draft reset and contact info storage.
 class ParcelDestinationScreen extends ConsumerStatefulWidget {
   const ParcelDestinationScreen({super.key});
 
@@ -40,14 +41,32 @@ class _ParcelDestinationScreenState
   final FocusNode _receiverNameFocusNode = FocusNode();
   final FocusNode _dropoffFocusNode = FocusNode();
 
+  /// Track C - Ticket C-1: Whether draft has been initialized for this session.
+  bool _draftInitialized = false;
+
   @override
   void initState() {
     super.initState();
-    final draft = ref.read(parcelDraftProvider);
+    // Initialize controllers with empty values initially.
+    // Draft will be reset on first frame to ensure clean state.
     _senderNameController = TextEditingController();
-    _pickupController = TextEditingController(text: draft.pickupAddress);
+    _pickupController = TextEditingController();
     _receiverNameController = TextEditingController();
-    _dropoffController = TextEditingController(text: draft.dropoffAddress);
+    _dropoffController = TextEditingController();
+
+    // Reset draft on first frame to ensure clean state for new shipment.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeDraft();
+    });
+  }
+
+  /// Track C - Ticket C-1: Initialize draft for new shipment flow.
+  void _initializeDraft() {
+    if (_draftInitialized) return;
+    _draftInitialized = true;
+
+    // Reset draft to start fresh
+    ref.read(parcelDraftProvider.notifier).reset();
   }
 
   @override
@@ -96,6 +115,10 @@ class _ParcelDestinationScreenState
                   prefixIcon: const Icon(Icons.person_outline),
                   textInputAction: TextInputAction.next,
                   validator: (value) => _requiredValidator(value, l10n),
+                  // Track C - Ticket C-1: Save sender name to draft
+                  onChanged: (value) {
+                    ref.read(parcelDraftProvider.notifier).updateSenderName(value);
+                  },
                   onFieldSubmitted: (_) {
                     _pickupFocusNode.requestFocus();
                   },
@@ -130,6 +153,10 @@ class _ParcelDestinationScreenState
                   prefixIcon: const Icon(Icons.person_outline),
                   textInputAction: TextInputAction.next,
                   validator: (value) => _requiredValidator(value, l10n),
+                  // Track C - Ticket C-1: Save receiver name to draft
+                  onChanged: (value) {
+                    ref.read(parcelDraftProvider.notifier).updateReceiverName(value);
+                  },
                   onFieldSubmitted: (_) {
                     _dropoffFocusNode.requestFocus();
                   },
@@ -228,13 +255,8 @@ class _ParcelDestinationScreenState
   }
 
   /// Navigate to the next step (ParcelDetailsScreen).
+  /// Track C - Ticket C-1: Using named route for consistency.
   void _proceedToNextStep() {
-    // Track C - Ticket #42:
-    // Navigate to ParcelDetailsScreen (Step 2).
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => const ParcelDetailsScreen(),
-      ),
-    );
+    Navigator.of(context).pushNamed(RoutePaths.parcelsDetails);
   }
 }

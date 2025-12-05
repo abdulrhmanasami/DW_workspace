@@ -2,34 +2,37 @@
 /// Created by: Track B - Ticket #99
 /// Updated by: Track B - Ticket #100 (Added selection support for Ride flow)
 /// Updated by: Track A - Ticket #225 (Design System alignment + Payments shim integration)
+/// Updated by: Track E - Ticket E-1 (Use UI state provider for MVP)
 /// Purpose: Payment methods list screen for BottomNav Payments tab
-/// Last updated: 2025-12-04
+/// Last updated: 2025-12-05
 ///
 /// This screen shows the payment methods list as per Screen 16 in Hi-Fi Mockups:
-/// - List of payment methods from payments shim
+/// - List of payment methods from UI state (stub for MVP)
 /// - Default badge for default payment method
+/// - Selection indicator for currently selected method
 /// - Empty state using DWEmptyState
 /// - Add new payment method CTA using DWButton.secondary
 /// - Proper RTL/LTR support and accessibility
 ///
 /// Track A - Ticket #225: Design System Integration
 /// - Uses DWSpacing, DWRadius, DWButton.secondary
-/// - Integrates with payments shim (SavedPaymentMethod)
-/// - Uses DWEmptyState for empty state
 /// - Card/Generic spec via PaymentMethodCard
+///
+/// Track E - Ticket E-1: MVP Payment Methods
+/// - Uses paymentMethodsUiProvider (stub) instead of paymentMethodsControllerProvider
+/// - Supports selection and default setting via UI state controller
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:payments/payments.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
-import '../../state/payments/payment_methods_controller.dart';
+import '../../state/payments/payment_methods_ui_state.dart';
 import '../../ui/common/empty_state.dart';
 import '../../ui/payments/payment_method_card.dart';
 
-/// Payments Screen - Shows list of saved payment methods from payments shim
-/// Track A - Ticket #225: Design System aligned implementation
+/// Payments Screen - Shows list of saved payment methods
+/// Track E - Ticket E-1: Uses UI state provider for MVP
 class PaymentsTabScreen extends ConsumerWidget {
   const PaymentsTabScreen({super.key});
 
@@ -37,7 +40,7 @@ class PaymentsTabScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final paymentMethodsState = ref.watch(paymentMethodsControllerProvider);
+    final paymentMethodsState = ref.watch(paymentMethodsUiProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -51,19 +54,13 @@ class PaymentsTabScreen extends ConsumerWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(DWSpacing.md),
-          child: paymentMethodsState.methods.when(
-            loading: () => const _PaymentsLoadingState(),
-            error: (error, stackTrace) => _PaymentsErrorState(
-              error: error.toString(),
-              onRetry: () => ref.read(paymentMethodsControllerProvider.notifier).refresh(),
-            ),
-            data: (methods) => methods.isEmpty
-                ? _PaymentsEmptyState(l10n: l10n)
-                : _PaymentsMethodsList(
-                    methods: methods,
-                    l10n: l10n,
-                  ),
-          ),
+          child: paymentMethodsState.methods.isEmpty
+              ? _PaymentsEmptyState(l10n: l10n)
+              : _PaymentsMethodsList(
+                  methods: paymentMethodsState.methods,
+                  selectedMethodId: paymentMethodsState.selectedMethodId,
+                  l10n: l10n,
+                ),
         ),
       ),
     );
@@ -80,7 +77,7 @@ class _PaymentsEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DWEmptyState(
-      icon: Icons.account_balance_wallet,
+      icon: Icons.credit_card_off_outlined,
       title: l10n.paymentsEmptyTitle,
       description: l10n.paymentsEmptyBody,
       primaryActionLabel: l10n.paymentsAddMethodCta,
@@ -90,18 +87,20 @@ class _PaymentsEmptyState extends StatelessWidget {
 }
 
 /// List of payment methods with Add CTA at bottom
-/// Track A - Ticket #225: Uses PaymentMethodCard + proper design tokens
-class _PaymentsMethodsList extends StatelessWidget {
+/// Track E - Ticket E-1: Updated to use PaymentMethodUiModel
+class _PaymentsMethodsList extends ConsumerWidget {
   const _PaymentsMethodsList({
     required this.methods,
+    required this.selectedMethodId,
     required this.l10n,
   });
 
-  final List<SavedPaymentMethod> methods;
+  final List<PaymentMethodUiModel> methods;
+  final String? selectedMethodId;
   final AppLocalizations l10n;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
         // List of methods
@@ -111,14 +110,19 @@ class _PaymentsMethodsList extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(height: DWSpacing.sm),
             itemBuilder: (context, index) {
               final method = methods[index];
-              final mapping = _mapPaymentMethodToUi(method, l10n);
+              final isSelected = method.id == selectedMethodId;
               return PaymentMethodCard(
-                icon: mapping.icon,
-                title: mapping.title,
-                subtitle: mapping.subtitle,
-                isDefault: mapping.isDefault,
+                icon: _getMethodIcon(method.type),
+                title: method.displayName,
+                subtitle: _getMethodSubtitle(method, l10n),
+                isDefault: method.isDefault,
+                isSelected: isSelected,
+                defaultLabel: l10n.paymentsDefaultBadge,
                 onTap: () {
-                  // TODO: Future ticket - Navigate to payment method details
+                  // Track E - Ticket E-1: Update selection via controller
+                  // Bug Fix: Use controller directly instead of mutating StateProvider
+                  ref.read(paymentMethodsUiControllerProvider.notifier)
+                      .selectMethod(method.id);
                 },
               );
             },
@@ -139,154 +143,33 @@ class _PaymentsMethodsList extends StatelessWidget {
   }
 }
 
-/// UI mapping for PaymentMethodCard props
-/// Track A - Ticket #225: Maps SavedPaymentMethod to PaymentMethodCard props
-class _PaymentMethodUiMapping {
-  const _PaymentMethodUiMapping({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.isDefault,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final bool isDefault;
-}
-
-/// Maps SavedPaymentMethod from payments shim to UI props for PaymentMethodCard
-/// Track A - Ticket #225: Integration with payments shim without duplicating models
-_PaymentMethodUiMapping _mapPaymentMethodToUi(SavedPaymentMethod method, AppLocalizations l10n) {
-  return _PaymentMethodUiMapping(
-    icon: _getMethodIcon(method.type),
-    title: method.displayName,
-    subtitle: _getMethodSubtitle(method, l10n),
-    isDefault: method.isDefault,
-  );
-}
-
-/// Gets appropriate icon for payment method type
-IconData _getMethodIcon(PaymentMethodType type) {
+/// Gets appropriate icon for payment method UI type
+/// Track E - Ticket E-1: Maps PaymentMethodUiType to icon
+IconData _getMethodIcon(PaymentMethodUiType type) {
   switch (type) {
-    case PaymentMethodType.card:
+    case PaymentMethodUiType.card:
       return Icons.credit_card;
-    case PaymentMethodType.cash:
+    case PaymentMethodUiType.cash:
       return Icons.payments_outlined;
-    case PaymentMethodType.applePay:
+    case PaymentMethodUiType.applePay:
       return Icons.apple;
-    case PaymentMethodType.googlePay:
+    case PaymentMethodUiType.googlePay:
       return Icons.account_balance_wallet;
-    case PaymentMethodType.digitalWallet:
-    case PaymentMethodType.bankTransfer:
-    case PaymentMethodType.cashOnDelivery:
-      return Icons.account_balance;
   }
 }
 
 /// Gets subtitle for payment method based on type
-String _getMethodSubtitle(SavedPaymentMethod method, AppLocalizations l10n) {
+/// Track E - Ticket E-1: Maps PaymentMethodUiModel to subtitle
+String _getMethodSubtitle(PaymentMethodUiModel method, AppLocalizations l10n) {
   switch (method.type) {
-    case PaymentMethodType.card:
-      if (method.expMonth != null && method.expYear != null) {
-        return l10n.paymentsCardExpiry(method.expMonth!, method.expYear!);
-      }
+    case PaymentMethodUiType.card:
       return l10n.paymentsMethodTypeCard;
-    case PaymentMethodType.cash:
+    case PaymentMethodUiType.cash:
       return l10n.paymentsMethodTypeCash;
-    case PaymentMethodType.applePay:
+    case PaymentMethodUiType.applePay:
       return l10n.paymentsMethodTypeApplePay;
-    case PaymentMethodType.googlePay:
+    case PaymentMethodUiType.googlePay:
       return l10n.paymentsMethodTypeGooglePay;
-    case PaymentMethodType.digitalWallet:
-      return l10n.paymentsMethodTypeDigitalWallet;
-    case PaymentMethodType.bankTransfer:
-      return l10n.paymentsMethodTypeBankTransfer;
-    case PaymentMethodType.cashOnDelivery:
-      return l10n.paymentsMethodTypeCashOnDelivery;
-  }
-}
-
-/// Loading state for payment methods
-/// Track A - Ticket #225: Proper loading state
-class _PaymentsLoadingState extends StatelessWidget {
-  const _PaymentsLoadingState();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Center(
-      child: CircularProgressIndicator(
-        color: colorScheme.primary,
-      ),
-    );
-  }
-}
-
-/// Error state for payment methods
-/// Track A - Ticket #225: Error state with retry capability
-class _PaymentsErrorState extends StatelessWidget {
-  const _PaymentsErrorState({
-    required this.error,
-    this.onRetry,
-  });
-
-  final String error;
-  final VoidCallback? onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(DWSpacing.lg),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 48,
-              color: colorScheme.error,
-            ),
-            const SizedBox(height: DWSpacing.md),
-            Text(
-              'Unable to load payment methods',
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: colorScheme.error,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: DWSpacing.xs),
-            Text(
-              error,
-              style: textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            if (onRetry != null) ...[
-              const SizedBox(height: DWSpacing.lg),
-              TextButton(
-                onPressed: onRetry,
-                child: Text(
-                  'Retry',
-                  style: textTheme.labelLarge?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
   }
 }
 

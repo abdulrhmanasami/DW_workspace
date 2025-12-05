@@ -2,12 +2,16 @@
 /// Purpose: UI-only Booking Sheet for Ride vertical
 /// Created by: Track B - Ticket #6
 /// Updated by: Track B - Ticket #9 (RideDraftUiState integration)
-/// Last updated: 2025-11-28
+/// Updated by: Track B - Ticket B-3 (Auto-navigation via ref.listen)
+/// Last updated: 2025-12-05
 ///
 /// This screen provides the initial Ride booking interface with:
 /// - Map stub (placeholder for future maps_shims integration)
 /// - Bottom Sheet with pickup/destination inputs
 /// - Recent locations list
+///
+/// Track B - Ticket B-3: Added ref.listen for automatic navigation
+/// when ride status transitions to findingDriver/driverAccepted.
 ///
 /// NOTE: This is UI only - no FSM, Fare Engine, or Backend integration.
 
@@ -263,17 +267,15 @@ class _RideBookingSheetContentState
     if (state.isLoading) return;
 
     if (state.canConfirmRide) {
+      // Track B - Ticket B-3: Just call confirmRide, navigation is handled by ref.listen
       await controller.confirmRide();
-      if (!mounted) return;
-      Navigator.of(context).pushNamed(RoutePaths.rideConfirmation);
       return;
     }
 
     if (state.hasQuotes && state.selectedQuote != null) {
-      // User has selected a quote, confirm the ride
+      // Track B - Ticket B-3: User has selected a quote, confirm the ride
+      // Navigation to tracking screen is handled by ref.listen when status becomes findingDriver
       await controller.confirmRide();
-      if (!mounted) return;
-      Navigator.of(context).pushNamed(RoutePaths.rideConfirmation);
       return;
     }
 
@@ -285,13 +287,19 @@ class _RideBookingSheetContentState
     // In other states, do nothing (button should be disabled)
   }
 
+  /// Track B - Bug Fix: Flag to prevent duplicate listener registration.
+  bool _hasSetupListener = false;
+
   @override
   void initState() {
     super.initState();
-    // Initialize ride booking with current location when the screen opens
-    final controller = ref.read(rideBookingControllerProvider.notifier);
-    controller.initialize();
     _destinationController = TextEditingController();
+    // FIX-4: Wrap initialize() in Future.microtask to avoid modifying provider during build
+    // Initialize ride booking with current location when the screen opens
+    Future.microtask(() {
+      final controller = ref.read(rideBookingControllerProvider.notifier);
+      controller.initialize();
+    });
   }
 
   @override
@@ -309,6 +317,22 @@ class _RideBookingSheetContentState
 
     final bookingState = ref.watch(rideBookingControllerProvider);
     final bookingController = ref.read(rideBookingControllerProvider.notifier);
+
+    // Track B - Bug Fix: Setup listener only once to prevent duplicate callbacks.
+    // ref.listen in build() can cause multiple registrations on rebuilds.
+    if (!_hasSetupListener) {
+      _hasSetupListener = true;
+      ref.listen<RideBookingState>(rideBookingControllerProvider, (previous, next) {
+        // Navigate to tracking screen when ride enters findingDriver state
+        // (only if we weren't already in that state to prevent double navigation)
+        if (previous?.status != mobility.RideStatus.findingDriver &&
+            next.status == mobility.RideStatus.findingDriver) {
+          // Bug Fix: Check mounted before navigation to avoid errors on disposed widget
+          if (!mounted) return;
+          Navigator.of(context).pushNamed(RoutePaths.rideConfirmation);
+        }
+      });
+    }
 
     return SingleChildScrollView(
       child: Column(
@@ -473,17 +497,21 @@ class _RideBookingSheetContentState
           icon: Icons.home_outlined,
           title: l10n.rideBookingRecentHome,
           subtitle: l10n.rideBookingRecentHomeSubtitle,
-          onTap: () => bookingController.updateDestination(
-            mobility.MobilityPlace.saved(id: 'home', label: l10n.rideBookingRecentHome),
-          ),
+          onTap: () async {
+            await bookingController.updateDestination(
+              mobility.MobilityPlace.saved(id: 'home', label: l10n.rideBookingRecentHome),
+            );
+          },
         ),
         _RecentLocationTile(
           icon: Icons.work_outline,
           title: l10n.rideBookingRecentWork,
           subtitle: l10n.rideBookingRecentWorkSubtitle,
-          onTap: () => bookingController.updateDestination(
-            mobility.MobilityPlace.saved(id: 'work', label: l10n.rideBookingRecentWork),
-          ),
+          onTap: () async {
+            await bookingController.updateDestination(
+              mobility.MobilityPlace.saved(id: 'work', label: l10n.rideBookingRecentWork),
+            );
+          },
         ),
         _RecentLocationTile(
           icon: Icons.add_location_alt_outlined,

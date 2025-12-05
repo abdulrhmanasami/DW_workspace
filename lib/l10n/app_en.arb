@@ -546,6 +546,54 @@
   "paymentMethodsAddButton": "Add payment method",
   "paymentMethodsLoadError": "Unable to load payment methods",
   "paymentMethodsSaving": "Saving...",
+  "paymentMethodsDefault": "Default",
+  "@paymentMethodsDefault": {
+    "description": "Label for default payment method (Track E - Ticket E-1)"
+  },
+  "paymentMethodsSetDefault": "Set as default",
+  "@paymentMethodsSetDefault": {
+    "description": "Menu option to set payment method as default (Track E - Ticket E-1)"
+  },
+  "paymentMethodsRemoveTitle": "Remove Card",
+  "@paymentMethodsRemoveTitle": {
+    "description": "Dialog title for removing a card (Track E - Ticket E-1)"
+  },
+  "paymentMethodsRemoveMessage": "Are you sure you want to remove this card?",
+  "@paymentMethodsRemoveMessage": {
+    "description": "Dialog message for removing a card (Track E - Ticket E-1)"
+  },
+  "paymentMethodsRemoveButton": "Remove",
+  "@paymentMethodsRemoveButton": {
+    "description": "Button to confirm card removal (Track E - Ticket E-1)"
+  },
+  "paymentMethodsAddCard": "Add Card",
+  "@paymentMethodsAddCard": {
+    "description": "Title for add card dialog (Track E - Ticket E-1)"
+  },
+  "paymentMethodsCardNumber": "Card Number",
+  "@paymentMethodsCardNumber": {
+    "description": "Label for card number field (Track E - Ticket E-1)"
+  },
+  "paymentMethodsExpiry": "Expiry Date",
+  "@paymentMethodsExpiry": {
+    "description": "Label for expiry date field (Track E - Ticket E-1)"
+  },
+  "paymentMethodsInvalidCard": "Please enter a valid card number",
+  "@paymentMethodsInvalidCard": {
+    "description": "Validation error for invalid card number (Track E - Ticket E-1)"
+  },
+  "paymentMethodsInvalidExpiry": "Please enter a valid expiry date",
+  "@paymentMethodsInvalidExpiry": {
+    "description": "Validation error for invalid expiry date (Track E - Ticket E-1)"
+  },
+  "paymentMethodsStubNote": "This is a demo. No real payment will be processed.",
+  "@paymentMethodsStubNote": {
+    "description": "Note about stub payment processing (Track E - Ticket E-1)"
+  },
+  "paymentMethodsAddSuccess": "Card added successfully",
+  "@paymentMethodsAddSuccess": {
+    "description": "Success message after adding a card (Track E - Ticket E-1)"
+  },
 
   "authVerifying": "Verifying...",
   "authSendingCode": "Sending code...",
@@ -1560,6 +1608,10 @@
   "parcelsQuoteBreakdownStubNote": "This is an estimated price. Final price may change after integration with the live pricing service.",
   "@parcelsQuoteBreakdownStubNote": {
     "description": "Stub note about estimated pricing (Track C - Ticket #77)"
+  },
+  "parcelsQuoteSuccessMessage": "Shipment created successfully!",
+  "@parcelsQuoteSuccessMessage": {
+    "description": "Success message shown after shipment creation (Track C - Ticket C-1)"
   },
 
   "parcelsListTitle": "Your shipments",

@@ -1474,6 +1474,78 @@ abstract class AppLocalizations {
   /// **'Saving...'**
   String get paymentMethodsSaving;
 
+  /// Label for default payment method (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get paymentMethodsDefault;
+
+  /// Menu option to set payment method as default (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Set as default'**
+  String get paymentMethodsSetDefault;
+
+  /// Dialog title for removing a card (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Card'**
+  String get paymentMethodsRemoveTitle;
+
+  /// Dialog message for removing a card (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove this card?'**
+  String get paymentMethodsRemoveMessage;
+
+  /// Button to confirm card removal (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get paymentMethodsRemoveButton;
+
+  /// Title for add card dialog (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Add Card'**
+  String get paymentMethodsAddCard;
+
+  /// Label for card number field (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Card Number'**
+  String get paymentMethodsCardNumber;
+
+  /// Label for expiry date field (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry Date'**
+  String get paymentMethodsExpiry;
+
+  /// Validation error for invalid card number (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid card number'**
+  String get paymentMethodsInvalidCard;
+
+  /// Validation error for invalid expiry date (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid expiry date'**
+  String get paymentMethodsInvalidExpiry;
+
+  /// Note about stub payment processing (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'This is a demo. No real payment will be processed.'**
+  String get paymentMethodsStubNote;
+
+  /// Success message after adding a card (Track E - Ticket E-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Card added successfully'**
+  String get paymentMethodsAddSuccess;
+
   /// No description provided for @authVerifying.
   ///
   /// In en, this message translates to:
@@ -3483,6 +3555,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This is an estimated price. Final price may change after integration with the live pricing service.'**
   String get parcelsQuoteBreakdownStubNote;
+
+  /// Success message shown after shipment creation (Track C - Ticket C-1)
+  ///
+  /// In en, this message translates to:
+  /// **'Shipment created successfully!'**
+  String get parcelsQuoteSuccessMessage;
 
   /// AppBar title for parcels list screen (Track C - Ticket #72)
   ///

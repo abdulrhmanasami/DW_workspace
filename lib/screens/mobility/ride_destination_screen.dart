@@ -42,18 +42,24 @@ class RideDestinationScreen extends ConsumerStatefulWidget {
 }
 
 class _RideDestinationScreenState extends ConsumerState<RideDestinationScreen> {
-  late bool _returnResult;
+  bool _returnResult = false;
+  bool _didReadArguments = false;
 
   @override
-  void initState() {
-    super.initState();
-    // Read route arguments to determine behavior
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Read route arguments to determine behavior (only once to avoid unnecessary rebuilds)
+    if (!_didReadArguments) {
+      _didReadArguments = true;
       final args = ModalRoute.of(context)?.settings.arguments;
-      setState(() {
-        _returnResult = args is bool ? args : false;
-      });
-    });
+      final newValue = args is bool ? args : false;
+      if (newValue != _returnResult) {
+        // Use setState to ensure widget rebuilds if value changed
+        setState(() {
+          _returnResult = newValue;
+        });
+      }
+    }
   }
 
   @override

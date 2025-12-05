@@ -3,6 +3,7 @@ import 'package:design_system_shims/design_system_shims.dart';
 
 /// Card widget for displaying payment methods following Card/Generic design system spec.
 /// Created by: Track A - Ticket #225
+/// Updated by: Track E - Ticket E-1 (Added isSelected for selection indicator)
 /// Purpose: Unified card for payment methods in Payments screen (Screen 16)
 ///
 /// Design System Alignment:
@@ -11,6 +12,7 @@ import 'package:design_system_shims/design_system_shims.dart';
 /// - DWSpacing tokens for padding and margins
 /// - Proper touch target (≥44px)
 /// - Semantics for accessibility
+/// - Track E - Ticket E-1: Selection indicator (check icon)
 class PaymentMethodCard extends StatelessWidget {
   const PaymentMethodCard({
     super.key,
@@ -18,6 +20,8 @@ class PaymentMethodCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     this.isDefault = false,
+    this.isSelected = false,
+    this.defaultLabel = 'Default',
     this.onTap,
   });
 
@@ -25,6 +29,10 @@ class PaymentMethodCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool isDefault;
+  /// Track E - Ticket E-1: Whether this card is currently selected
+  final bool isSelected;
+  /// Localized label for the default badge
+  final String defaultLabel;
   final VoidCallback? onTap;
 
   @override
@@ -35,16 +43,22 @@ class PaymentMethodCard extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: '$title, $subtitle${isDefault ? ", Default" : ""}',
+      selected: isSelected,
+      label: '$title, $subtitle${isDefault ? ", $defaultLabel" : ""}${isSelected ? ", Selected" : ""}',
       child: InkWell(
         onTap: onTap,
         child: Container(
           margin: const EdgeInsets.only(bottom: DWSpacing.sm),
           padding: const EdgeInsets.all(DWSpacing.md),
           decoration: BoxDecoration(
-            color: colorScheme.surface,
+            color: isSelected 
+                ? colorScheme.primaryContainer.withValues(alpha: 0.3)
+                : colorScheme.surface,
             borderRadius: BorderRadius.circular(DWRadius.sm),
-            boxShadow: kElevationToShadow[1],
+            boxShadow: kElevationToShadow[isSelected ? 2 : 1],
+            border: isSelected
+                ? Border.all(color: colorScheme.primary, width: 2)
+                : null,
           ),
           child: Row(
             children: [
@@ -56,7 +70,9 @@ class PaymentMethodCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: textTheme.titleMedium,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -71,8 +87,21 @@ class PaymentMethodCard extends StatelessWidget {
                 ),
               ),
               if (isDefault) ...[
-                const SizedBox(width: DWSpacing.md),
-                _DefaultChip(textTheme: textTheme, colorScheme: colorScheme),
+                const SizedBox(width: DWSpacing.sm),
+                _DefaultChip(
+                  textTheme: textTheme,
+                  colorScheme: colorScheme,
+                  label: defaultLabel,
+                ),
+              ],
+              // Track E - Ticket E-1: Selection indicator
+              if (isSelected) ...[
+                const SizedBox(width: DWSpacing.sm),
+                Icon(
+                  Icons.check_circle,
+                  color: colorScheme.primary,
+                  size: 24,
+                ),
               ],
             ],
           ),
@@ -87,10 +116,12 @@ class _DefaultChip extends StatelessWidget {
   const _DefaultChip({
     required this.textTheme,
     required this.colorScheme,
+    required this.label,
   });
 
   final TextTheme textTheme;
   final ColorScheme colorScheme;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +135,7 @@ class _DefaultChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(DWRadius.xs),
       ),
       child: Text(
-        'Default',
+        label,
         style: textTheme.labelSmall?.copyWith(
           color: colorScheme.primary,
         ),

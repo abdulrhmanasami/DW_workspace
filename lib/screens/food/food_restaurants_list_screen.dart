@@ -1,8 +1,9 @@
 /// Food Restaurants List Screen (Screen 13)
 ///
 /// Created by: Track C - Ticket #52
+/// Updated by: Track C - Ticket C-2 (Named route navigation)
 /// Purpose: Display list of nearby restaurants with search and category filters.
-/// Last updated: 2025-11-29
+/// Last updated: 2025-12-05
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,8 +12,8 @@ import 'package:design_system_shims/design_system_shims.dart'
 import 'package:food_shims/food_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../router/app_router.dart';
 import '../../state/food/food_restaurants_state.dart';
-import 'food_restaurant_details_screen.dart';
 
 /// Screen displaying the list of food restaurants.
 ///
@@ -200,13 +201,11 @@ class _FoodRestaurantCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: DWSpacing.sm),
       child: InkWell(
+        // Track C - Ticket C-2: Use named route for consistency
         onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => FoodRestaurantDetailsScreen(
-                restaurant: restaurant,
-              ),
-            ),
+          Navigator.of(context).pushNamed(
+            RoutePaths.foodRestaurantDetails,
+            arguments: restaurant,
           );
         },
         borderRadius: BorderRadius.circular(DWRadius.md),

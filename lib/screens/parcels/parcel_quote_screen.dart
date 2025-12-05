@@ -1,7 +1,7 @@
 /// Parcel Quote Screen
 /// Created by: Track C - Ticket #43
 /// Purpose: Display pricing options for parcel shipments
-/// Last updated: 2025-11-29 (Ticket #77 - Added Summary card + Stub note)
+/// Last updated: 2025-12-05 (Ticket C-1 - Navigate to list after confirmation)
 
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../router/app_router.dart';
 import '../../state/parcels/parcel_draft_state.dart';
 import '../../state/parcels/parcel_orders_state.dart';
 import '../../state/parcels/parcel_quote_state.dart';
-import 'parcel_shipment_details_screen.dart';
 
 /// Screen for displaying parcel pricing options (Step 3 of parcel shipment flow).
 class ParcelQuoteScreen extends ConsumerStatefulWidget {
@@ -229,27 +229,20 @@ class _ParcelQuoteScreenState extends ConsumerState<ParcelQuoteScreen> {
     ref.read(parcelDraftProvider.notifier).reset();
     ref.read(parcelQuoteControllerProvider.notifier).reset();
 
-    // 3) Read the created parcel from orders provider
-    final ordersState = ref.read(parcelOrdersProvider);
-    final createdParcel = ordersState.activeParcel ??
-        (ordersState.parcels.isNotEmpty ? ordersState.parcels.first : null);
-
-    if (createdParcel == null) {
-      // Guard: No parcel created (unexpected state)
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n?.parcelsQuoteErrorSubtitle ?? 'Something went wrong'),
+    // 3) Show success feedback
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          l10n?.parcelsQuoteSuccessMessage ?? 'Shipment created successfully!',
         ),
-      );
-      return;
-    }
-
-    // 4) Navigate to ParcelShipmentDetailsScreen with clean back stack
-    // Removes all Wizard screens, keeps only root (Home/Tabs)
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(
-        builder: (_) => ParcelShipmentDetailsScreen(parcel: createdParcel),
+        behavior: SnackBarBehavior.floating,
       ),
+    );
+
+    // 4) Track C - Ticket C-1: Navigate to list to show new shipment
+    // Removes all wizard screens (destination, details, quote), keeps root
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      RoutePaths.parcelsList,
       (route) => route.isFirst,
     );
   }
@@ -380,6 +373,18 @@ class _QuoteSummaryCard extends ConsumerWidget {
       }
     }
 
+    // Track C - Ticket C-1: Format sender/receiver display
+    String formatAddressWithName(String name, String address) {
+      if (name.isNotEmpty && address.isNotEmpty) {
+        return '$name\n$address';
+      } else if (address.isNotEmpty) {
+        return address;
+      } else if (name.isNotEmpty) {
+        return name;
+      }
+      return '-';
+    }
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(DWSpacing.md),
@@ -396,9 +401,7 @@ class _QuoteSummaryCard extends ConsumerWidget {
             _SummaryRow(
               icon: Icons.location_on_outlined,
               label: l10n?.parcelsQuoteFromLabel ?? 'From',
-              value: draft.pickupAddress.isNotEmpty
-                  ? draft.pickupAddress
-                  : '-',
+              value: formatAddressWithName(draft.senderName, draft.pickupAddress),
               colors: colors,
               textTheme: textTheme,
             ),
@@ -406,9 +409,7 @@ class _QuoteSummaryCard extends ConsumerWidget {
             _SummaryRow(
               icon: Icons.flag_outlined,
               label: l10n?.parcelsQuoteToLabel ?? 'To',
-              value: draft.dropoffAddress.isNotEmpty
-                  ? draft.dropoffAddress
-                  : '-',
+              value: formatAddressWithName(draft.receiverName, draft.dropoffAddress),
               colors: colors,
               textTheme: textTheme,
             ),

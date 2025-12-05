@@ -1,10 +1,19 @@
 /// Ride Booking Controller - Track B Ticket #242
 /// Purpose: State management for ride booking UI
 /// Created by: Track B - Ticket #242
-/// Last updated: 2025-12-04
+/// Updated by: Track B - Ticket B-3 (Driver simulation & location tracking)
+/// Updated by: Track B - Ticket B-4 (ETA calculation & driver enhancements)
+/// Last updated: 2025-12-05
 ///
 /// Controller that manages ride booking state and coordinates
 /// with RideRepository for business operations.
+///
+/// Track B - Ticket B-3: Added driver location simulation for real-time
+/// tracking visualization during the ride lifecycle.
+/// Track B - Ticket B-4: Added dynamic ETA calculation and driver rating.
+
+import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:maps_shims/maps_shims.dart';
@@ -18,6 +27,9 @@ import 'ride_pricing_service_stub.dart';
 /// This controller manages the UI state for ride booking and coordinates
 /// with the RideRepository for all business operations. It handles
 /// loading states, error handling, and state transitions.
+///
+/// Track B - Ticket B-3: Added driver location simulation for real-time
+/// tracking during the ride lifecycle.
 class RideBookingController extends StateNotifier<RideBookingState> {
   /// Creates a ride booking controller with the given repository.
   RideBookingController(this._rideRepository, this._locationProvider, this._pricingService)
@@ -26,6 +38,21 @@ class RideBookingController extends StateNotifier<RideBookingState> {
   final mobility.RideRepository _rideRepository;
   final mobility.LocationProvider _locationProvider;
   final mobility.RidePricingService _pricingService;
+
+  /// Track B - Ticket B-3: Timer for driver location updates.
+  Timer? _driverLocationTimer;
+
+  /// Track B - Ticket B-4: Custom mounted flag for lifecycle tracking.
+  /// StateNotifier doesn't have a built-in mounted property like Flutter's State.
+  bool _isMounted = true;
+
+  /// Track B - Ticket B-3: Clean up resources when controller is disposed.
+  @override
+  void dispose() {
+    _isMounted = false;
+    _driverLocationTimer?.cancel();
+    super.dispose();
+  }
 
   /// Starts a new ride booking request.
   ///
@@ -331,11 +358,11 @@ class RideBookingController extends StateNotifier<RideBookingState> {
   /// This is a stub implementation that simulates:
   /// 1. Finding a driver (3-5 seconds)
   /// 2. Driver accepting the trip
-  /// 3. Driver arriving at pickup
+  /// 3. Driver arriving at pickup (with location updates)
   /// 4. Trip starting (in progress)
   ///
   /// In production, these transitions would come from backend events.
-  /// Track B - Ticket B-3: Driver Matching Simulation
+  /// Track B - Ticket B-3: Driver Matching Simulation with location updates.
   Future<void> simulateDriverMatch() async {
     if (state.status != mobility.RideStatus.findingDriver) {
       // Only simulate when in findingDriver state
@@ -350,15 +377,27 @@ class RideBookingController extends StateNotifier<RideBookingState> {
       return;
     }
 
-    // Transition to driverAccepted
+    // Transition to driverAccepted with driver info
     final driverAccepted = _rideRepository.applyStatusUpdate(
       current: state.ride!,
       newStatus: mobility.RideStatus.driverAccepted,
     );
-    state = state.copyWith(ride: driverAccepted);
+    
+    // Track B - Ticket B-3 & B-4: Set driver info when driver accepts
+    state = state.copyWith(
+      ride: driverAccepted,
+      driverName: 'سامي المحمد', // Mock driver name
+      driverCarInfo: 'Toyota Camry • أ ب ت ١٢٣٤', // Mock car info
+      driverRating: 4.8, // Track B-4: Mock driver rating
+      driverAvatarUrl: null, // Track B-4: No avatar for now, will use placeholder
+      estimatedMinutesAway: 5, // Track B-4: Initial ETA
+    );
 
-    // Simulate driver en route (2 seconds)
-    await Future.delayed(const Duration(seconds: 2));
+    // Track B - Ticket B-3: Start driver location simulation
+    _startDriverLocationSimulation();
+
+    // Simulate driver en route (5 seconds for more realistic experience)
+    await Future.delayed(const Duration(seconds: 5));
     
     if (state.status != mobility.RideStatus.driverAccepted || state.ride == null) {
       return;
@@ -371,8 +410,11 @@ class RideBookingController extends StateNotifier<RideBookingState> {
     );
     state = state.copyWith(ride: driverArrived);
 
-    // Simulate pickup (1 second)
-    await Future.delayed(const Duration(seconds: 1));
+    // Stop location simulation when arrived
+    _driverLocationTimer?.cancel();
+
+    // Simulate pickup (2 seconds)
+    await Future.delayed(const Duration(seconds: 2));
     
     if (state.status != mobility.RideStatus.driverArrived || state.ride == null) {
       return;
@@ -384,16 +426,151 @@ class RideBookingController extends StateNotifier<RideBookingState> {
       newStatus: mobility.RideStatus.inProgress,
     );
     state = state.copyWith(ride: inProgress);
+
+    // Track B - Ticket B-3: Start location simulation for trip progress
+    _startTripProgressSimulation();
+  }
+
+  /// Track B - Ticket B-3: Simulates driver moving towards pickup location.
+  ///
+  /// Creates a timer that updates driver location every second,
+  /// moving the driver closer to the pickup point.
+  void _startDriverLocationSimulation() {
+    _driverLocationTimer?.cancel();
+
+    final pickupLocation = state.ride?.pickup?.location;
+    if (pickupLocation == null) return;
+
+    // Start driver 0.01 degrees away (approximately 1km) from pickup
+    double driverLat = pickupLocation.latitude + 0.008;
+    double driverLng = pickupLocation.longitude + 0.006;
+
+    // Update every 1 second, moving driver closer
+    _driverLocationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!_isMounted || 
+          state.status == mobility.RideStatus.cancelled ||
+          state.status == mobility.RideStatus.driverArrived ||
+          state.status == mobility.RideStatus.inProgress) {
+        timer.cancel();
+        return;
+      }
+
+      // Move driver 20% closer to pickup each tick
+      driverLat = driverLat + (pickupLocation.latitude - driverLat) * 0.2;
+      driverLng = driverLng + (pickupLocation.longitude - driverLng) * 0.2;
+
+      // Track B - Ticket B-4: Calculate ETA based on distance
+      final eta = _calculateEtaMinutes(
+        driverLat: driverLat,
+        driverLng: driverLng,
+        targetLat: pickupLocation.latitude,
+        targetLng: pickupLocation.longitude,
+      );
+
+      state = state.copyWith(
+        driverLocation: mobility.LocationPoint(
+          latitude: driverLat,
+          longitude: driverLng,
+        ),
+        estimatedMinutesAway: eta,
+      );
+    });
+  }
+
+  /// Track B - Ticket B-3: Simulates driver moving towards destination during trip.
+  ///
+  /// Updates driver location to simulate movement from pickup to destination.
+  void _startTripProgressSimulation() {
+    _driverLocationTimer?.cancel();
+
+    final pickupLocation = state.ride?.pickup?.location;
+    final destinationLocation = state.ride?.destination?.location;
+    if (pickupLocation == null || destinationLocation == null) return;
+
+    // Start at pickup location
+    double driverLat = pickupLocation.latitude;
+    double driverLng = pickupLocation.longitude;
+
+    // Update every 2 seconds, moving driver towards destination
+    _driverLocationTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
+      if (!_isMounted || 
+          state.status == mobility.RideStatus.cancelled ||
+          state.status == mobility.RideStatus.completed ||
+          state.status == mobility.RideStatus.payment) {
+        timer.cancel();
+        return;
+      }
+
+      // Move driver 15% closer to destination each tick
+      driverLat = driverLat + (destinationLocation.latitude - driverLat) * 0.15;
+      driverLng = driverLng + (destinationLocation.longitude - driverLng) * 0.15;
+
+      // Track B - Ticket B-4: Calculate ETA to destination during trip
+      final eta = _calculateEtaMinutes(
+        driverLat: driverLat,
+        driverLng: driverLng,
+        targetLat: destinationLocation.latitude,
+        targetLng: destinationLocation.longitude,
+      );
+
+      state = state.copyWith(
+        driverLocation: mobility.LocationPoint(
+          latitude: driverLat,
+          longitude: driverLng,
+        ),
+        estimatedMinutesAway: eta,
+      );
+    });
+  }
+
+  /// Track B - Ticket B-4: Calculates estimated time of arrival in minutes.
+  ///
+  /// Uses Haversine formula to calculate distance, then estimates time
+  /// based on average urban driving speed (~30 km/h).
+  int _calculateEtaMinutes({
+    required double driverLat,
+    required double driverLng,
+    required double targetLat,
+    required double targetLng,
+  }) {
+    // Calculate distance using Haversine formula
+    const earthRadiusKm = 6371.0;
+    final dLat = _degreesToRadians(targetLat - driverLat);
+    final dLng = _degreesToRadians(targetLng - driverLng);
+    
+    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_degreesToRadians(driverLat)) *
+            math.cos(_degreesToRadians(targetLat)) *
+            math.sin(dLng / 2) *
+            math.sin(dLng / 2);
+    final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    final distanceKm = earthRadiusKm * c;
+
+    // Estimate time based on average urban speed (30 km/h)
+    const averageSpeedKmPerHour = 30.0;
+    final timeHours = distanceKm / averageSpeedKmPerHour;
+    final timeMinutes = (timeHours * 60).ceil();
+
+    // Minimum 1 minute, maximum reasonable ETA
+    return timeMinutes.clamp(1, 60);
+  }
+
+  /// Converts degrees to radians for Haversine calculation.
+  double _degreesToRadians(double degrees) {
+    return degrees * math.pi / 180;
   }
 
   /// Simulates trip completion.
   ///
   /// This transitions the ride from inProgress through payment to completed.
-  /// Track B - Ticket B-3: Trip Completion Simulation
+  /// Track B - Ticket B-3: Trip Completion Simulation with cleanup.
   Future<void> simulateTripCompletion() async {
     if (state.status != mobility.RideStatus.inProgress || state.ride == null) {
       return;
     }
+
+    // Track B - Ticket B-3: Stop location simulation
+    _driverLocationTimer?.cancel();
 
     // Transition to payment
     final payment = _rideRepository.applyStatusUpdate(

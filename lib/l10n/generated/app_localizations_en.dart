@@ -802,6 +802,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentMethodsSaving => 'Saving...';
 
   @override
+  String get paymentMethodsDefault => 'Default';
+
+  @override
+  String get paymentMethodsSetDefault => 'Set as default';
+
+  @override
+  String get paymentMethodsRemoveTitle => 'Remove Card';
+
+  @override
+  String get paymentMethodsRemoveMessage =>
+      'Are you sure you want to remove this card?';
+
+  @override
+  String get paymentMethodsRemoveButton => 'Remove';
+
+  @override
+  String get paymentMethodsAddCard => 'Add Card';
+
+  @override
+  String get paymentMethodsCardNumber => 'Card Number';
+
+  @override
+  String get paymentMethodsExpiry => 'Expiry Date';
+
+  @override
+  String get paymentMethodsInvalidCard => 'Please enter a valid card number';
+
+  @override
+  String get paymentMethodsInvalidExpiry => 'Please enter a valid expiry date';
+
+  @override
+  String get paymentMethodsStubNote =>
+      'This is a demo. No real payment will be processed.';
+
+  @override
+  String get paymentMethodsAddSuccess => 'Card added successfully';
+
+  @override
   String get authVerifying => 'Verifying...';
 
   @override
@@ -1917,6 +1955,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get parcelsQuoteBreakdownStubNote =>
       'This is an estimated price. Final price may change after integration with the live pricing service.';
+
+  @override
+  String get parcelsQuoteSuccessMessage => 'Shipment created successfully!';
 
   @override
   String get parcelsListTitle => 'Your shipments';

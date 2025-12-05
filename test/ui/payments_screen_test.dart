@@ -234,19 +234,8 @@ void main() {
 
     testWidgets('tapping_card_updates_selected_method_state', (tester) async {
       // Start with Cash selected (default)
-      final container = ProviderContainer(
-        overrides: [
-          paymentMethodsUiProvider.overrideWith(
-            (ref) => PaymentMethodsUiState(
-              methods: [
-                PaymentMethodUiModel.cash,
-                PaymentMethodUiModel.stubCard(brand: 'Visa', last4: '4242'),
-              ],
-              selectedMethodId: 'cash',
-            ),
-          ),
-        ],
-      );
+      // Track E - Ticket E-1 Bug Fix: Use controller provider for state that can be modified
+      final container = ProviderContainer();
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -266,15 +255,15 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Verify initial selection is Cash
-      expect(container.read(paymentMethodsUiProvider).selectedMethodId, 'cash');
+      // Verify initial selection is Cash (default from controller)
+      expect(container.read(paymentMethodsUiControllerProvider).selectedMethodId, 'cash');
 
       // Tap on Visa card
       await tester.tap(find.text('Visa ···· 4242'));
       await tester.pumpAndSettle();
 
       // Verify selection changed to Visa
-      expect(container.read(paymentMethodsUiProvider).selectedMethodId, 'visa_4242');
+      expect(container.read(paymentMethodsUiControllerProvider).selectedMethodId, 'visa_4242');
     });
 
     testWidgets('selected_card_has_visual_selection_indicator', (tester) async {

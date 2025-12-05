@@ -1,6 +1,7 @@
 /// Food Restaurant Details Screen (Screen 14)
 ///
 /// Created by: Track C - Ticket #53
+/// Updated by: Track C - Ticket C-2 (Order navigation + success feedback)
 /// Purpose: Display restaurant details with menu and local cart functionality.
 
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:design_system_shims/design_system_shims.dart'
 import 'package:food_shims/food_shims.dart';
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../router/app_router.dart';
 import '../../state/food/food_menu_providers.dart';
 import '../../state/food/food_cart_state.dart';
 import '../../state/food/food_orders_state.dart';
@@ -99,6 +101,7 @@ class FoodRestaurantDetailsScreen extends ConsumerWidget {
                 cartController.clear();
 
                 if (context.mounted) {
+                  // Track C - Ticket C-2: Show success snackbar
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(
@@ -106,8 +109,13 @@ class FoodRestaurantDetailsScreen extends ConsumerWidget {
                           order.restaurantName,
                         ),
                       ),
+                      behavior: SnackBarBehavior.floating,
                     ),
                   );
+
+                  // Track C - Ticket C-2: Navigate to orders history
+                  // Pop back to restaurants list, then push orders
+                  Navigator.of(context).popAndPushNamed(RoutePaths.ordersHistory);
                 }
               },
             ),

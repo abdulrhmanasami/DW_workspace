@@ -787,6 +787,44 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paymentMethodsSaving => 'جارٍ الحفظ...';
 
   @override
+  String get paymentMethodsDefault => 'الافتراضية';
+
+  @override
+  String get paymentMethodsSetDefault => 'تعيين كافتراضية';
+
+  @override
+  String get paymentMethodsRemoveTitle => 'إزالة البطاقة';
+
+  @override
+  String get paymentMethodsRemoveMessage =>
+      'هل أنت متأكد من إزالة هذه البطاقة؟';
+
+  @override
+  String get paymentMethodsRemoveButton => 'إزالة';
+
+  @override
+  String get paymentMethodsAddCard => 'إضافة بطاقة';
+
+  @override
+  String get paymentMethodsCardNumber => 'رقم البطاقة';
+
+  @override
+  String get paymentMethodsExpiry => 'تاريخ الانتهاء';
+
+  @override
+  String get paymentMethodsInvalidCard => 'يرجى إدخال رقم بطاقة صحيح';
+
+  @override
+  String get paymentMethodsInvalidExpiry => 'يرجى إدخال تاريخ انتهاء صحيح';
+
+  @override
+  String get paymentMethodsStubNote =>
+      'هذا عرض تجريبي. لن تتم معالجة أي دفعة حقيقية.';
+
+  @override
+  String get paymentMethodsAddSuccess => 'تمت إضافة البطاقة بنجاح';
+
+  @override
   String get authVerifying => 'جارٍ التحقق...';
 
   @override
@@ -1891,6 +1929,9 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get parcelsQuoteBreakdownStubNote =>
       'هذا سعر تقديري. قد يتغيّر السعر النهائي بعد الربط مع خدمة التسعير الفعلية.';
+
+  @override
+  String get parcelsQuoteSuccessMessage => 'تم إنشاء الشحنة بنجاح!';
 
   @override
   String get parcelsListTitle => 'شحناتك';

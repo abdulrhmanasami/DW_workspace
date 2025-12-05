@@ -339,6 +339,18 @@
   "paymentMethodsAddButton": "إضافة وسيلة دفع",
   "paymentMethodsLoadError": "تعذّر تحميل وسائل الدفع",
   "paymentMethodsSaving": "جارٍ الحفظ...",
+  "paymentMethodsDefault": "الافتراضية",
+  "paymentMethodsSetDefault": "تعيين كافتراضية",
+  "paymentMethodsRemoveTitle": "إزالة البطاقة",
+  "paymentMethodsRemoveMessage": "هل أنت متأكد من إزالة هذه البطاقة؟",
+  "paymentMethodsRemoveButton": "إزالة",
+  "paymentMethodsAddCard": "إضافة بطاقة",
+  "paymentMethodsCardNumber": "رقم البطاقة",
+  "paymentMethodsExpiry": "تاريخ الانتهاء",
+  "paymentMethodsInvalidCard": "يرجى إدخال رقم بطاقة صحيح",
+  "paymentMethodsInvalidExpiry": "يرجى إدخال تاريخ انتهاء صحيح",
+  "paymentMethodsStubNote": "هذا عرض تجريبي. لن تتم معالجة أي دفعة حقيقية.",
+  "paymentMethodsAddSuccess": "تمت إضافة البطاقة بنجاح",
 
   "authVerifying": "جارٍ التحقق...",
   "authSendingCode": "جارٍ إرسال الرمز...",
@@ -1329,6 +1341,10 @@
   "parcelsQuoteBreakdownStubNote": "هذا سعر تقديري. قد يتغيّر السعر النهائي بعد الربط مع خدمة التسعير الفعلية.",
   "@parcelsQuoteBreakdownStubNote": {
     "description": "ملاحظة حول السعر التقديري (Track C - Ticket #77)"
+  },
+  "parcelsQuoteSuccessMessage": "تم إنشاء الشحنة بنجاح!",
+  "@parcelsQuoteSuccessMessage": {
+    "description": "رسالة النجاح بعد إنشاء الشحنة (Track C - Ticket C-1)"
   },
 
   "parcelsListTitle": "شحناتك",

@@ -7,6 +7,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart';
+import 'package:food_shims/food_shims.dart' show FoodRestaurant; // Track C - Ticket C-2
 import 'package:foundation_shims/foundation_shims.dart' as fnd;
 import 'package:payments/payments.dart' as payments;
 import 'package:core/rbac/rbac_models.dart';
@@ -37,6 +38,8 @@ import '../screens/parcels/parcels_list_screen.dart'; // Track C - Ticket #72
 import '../screens/parcels/parcels_shipments_list_screen.dart'; // Track C - Ticket #149
 import '../screens/parcels/parcels_create_shipment_screen.dart'; // Track C - Ticket #150
 import '../screens/parcels/parcels_shipment_details_screen.dart';
+import '../screens/food/food_restaurants_list_screen.dart'; // Track C - Ticket C-2
+import '../screens/food/food_restaurant_details_screen.dart'; // Track C - Ticket C-2
 import '../screens/order_tracking_screen.dart';
 import '../screens/orders_history_screen.dart';
 import '../screens/orders_screen.dart';
@@ -94,6 +97,11 @@ class RoutePaths {
   static const String parcelsDetails = '/parcels/details'; // Ticket #42
   static const String parcelsQuote = '/parcels/quote'; // Ticket #43
   static const String parcelsActiveShipment = '/parcels/active'; // Ticket #70
+
+  // Track C - Food routes (Ticket C-2)
+  static const String foodRestaurants = '/food/restaurants';
+  static const String foodRestaurantDetails = '/food/restaurant';
+  static const String foodOrders = '/food/orders';
 }
 
 Map<String, WidgetBuilder> buildNotificationRoutesWithRbac() {
@@ -263,6 +271,18 @@ class AppRouter {
       RoutePaths.parcelsQuote: (c) => const ParcelQuoteScreen(),
       RoutePaths.parcelsActiveShipment: (c) =>
           const ParcelsActiveShipmentScreen(),
+
+      // Track C - Food routes (Ticket C-2)
+      RoutePaths.foodRestaurants: (c) => const FoodRestaurantsListScreen(),
+      RoutePaths.foodRestaurantDetails: (c) {
+        final args = ModalRoute.of(c)?.settings.arguments;
+        if (args is FoodRestaurant) {
+          return FoodRestaurantDetailsScreen(restaurant: args);
+        }
+        // Fallback: Go back to restaurants list if no args
+        return const FoodRestaurantsListScreen();
+      },
+      RoutePaths.foodOrders: (c) => const OrdersHistoryScreen(),
 
       // UI layer routes (feature-gated)
       ...uiRoutes,

@@ -2,14 +2,23 @@
 /// Purpose: Trip tracking UI connected to RideBookingState/FSM
 /// Created by: Track B - Ticket B-4
 /// Updated by: Track B - Ticket B-3 (Driver matching simulation)
+/// Updated by: Track B - Ticket B-3 (Live driver location on map)
+/// Updated by: Track B - Ticket B-4 (ETA, Driver Card enhancements, Navigation Guard)
 /// Last updated: 2025-12-05
 ///
 /// Screen for tracking active rides after confirmation.
 /// Shows real-time status (findingDriver, inProgress, completed, cancelled)
 /// and provides actions like cancel or done.
 ///
-/// Track B - Ticket B-3: This screen now automatically starts driver
-/// matching simulation when opened in findingDriver state.
+/// Track B - Ticket B-3: This screen now:
+/// - Automatically starts driver matching simulation when opened
+/// - Shows driver marker on map with live location updates
+/// - Displays driver info (name, car) when driver is assigned
+///
+/// Track B - Ticket B-4: This screen now:
+/// - Shows dynamic ETA that updates with driver movement
+/// - Enhanced driver card with avatar, rating, and call button
+/// - Navigation guard to prevent accidental back navigation during active trip
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,6 +49,12 @@ class TripTrackingScreen extends ConsumerStatefulWidget {
 
 class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
   bool _simulationStarted = false;
+  
+  /// Track B - Bug Fix: Flag to prevent duplicate listener registration.
+  bool _hasSetupListener = false;
+  
+  /// Track B - Ticket B-4: Map controller reference for camera animation
+  MapController? _mapController;
 
   @override
   void initState() {
@@ -61,6 +76,47 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
     }
   }
 
+  /// Track B - Ticket B-4: Moves camera to follow driver position smoothly.
+  /// Shows both driver and relevant point (pickup or destination) in view.
+  void _animateCameraToDriver(RideBookingState state) {
+    if (_mapController == null || !state.hasDriverLocation) return;
+    
+    final driverLoc = state.driverLocation!;
+    
+    // Determine target based on ride status
+    final targetLat = state.status == RideStatus.inProgress
+        ? state.ride?.destination?.location?.latitude
+        : state.ride?.pickup?.location?.latitude;
+    final targetLng = state.status == RideStatus.inProgress
+        ? state.ride?.destination?.location?.longitude
+        : state.ride?.pickup?.location?.longitude;
+
+    if (targetLat != null && targetLng != null) {
+      // Calculate center point between driver and target
+      final centerLat = (driverLoc.latitude + targetLat) / 2;
+      final centerLng = (driverLoc.longitude + targetLng) / 2;
+      
+      // Move camera to show both points
+      _mapController!.moveCamera(
+        MapCamera(
+          target: MapPoint(latitude: centerLat, longitude: centerLng),
+          zoom: 14.0, // Zoom level that typically fits both points
+        ),
+      );
+    } else {
+      // Just follow the driver
+      _mapController!.moveCamera(
+        MapCamera(
+          target: MapPoint(
+            latitude: driverLoc.latitude,
+            longitude: driverLoc.longitude,
+          ),
+          zoom: 15.0,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -68,34 +124,99 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
     final bookingController =
         ref.read(rideBookingControllerProvider.notifier);
 
-    // Track B - Ticket B-3: Listen for completion and navigate to summary
-    ref.listen<RideBookingState>(rideBookingControllerProvider, (previous, next) {
-      if (previous?.status != RideStatus.completed && 
-          next.status == RideStatus.completed) {
-        // Navigate to trip summary when ride completes
-        Navigator.of(context).pushReplacementNamed(RoutePaths.rideTripSummary);
-      }
-    });
+    // Track B - Bug Fix: Setup listener only once to prevent duplicate callbacks.
+    // ref.listen in build() can cause multiple registrations on rebuilds.
+    if (!_hasSetupListener) {
+      _hasSetupListener = true;
+      ref.listen<RideBookingState>(rideBookingControllerProvider, (previous, next) {
+        // Bug Fix: Check mounted before any context-dependent operations
+        if (!mounted) return;
+        
+        if (previous?.status != RideStatus.completed && 
+            next.status == RideStatus.completed) {
+          // Navigate to trip summary when ride completes
+          Navigator.of(context).pushReplacementNamed(RoutePaths.rideTripSummary);
+        }
+        
+        // Track B - Ticket B-4: Animate camera to follow driver when location updates
+        if (previous?.driverLocation != next.driverLocation && 
+            next.hasDriverLocation &&
+            _mapController != null) {
+          _animateCameraToDriver(next);
+        }
+      });
+    }
 
-    return AppShell(
-      showBottomNav: false,
-      showAppBar: true,
-      title: 'Track your ride',
-      safeArea: false,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildMapView(theme, bookingState),
-            Expanded(
-              child: _TripTrackingPanel(
-                state: bookingState,
-                controller: bookingController,
+    // Track B - Ticket B-4: Determine if navigation should be blocked
+    final isActiveTripInProgress = bookingState.status == RideStatus.findingDriver ||
+        bookingState.status == RideStatus.driverAccepted ||
+        bookingState.status == RideStatus.driverArrived ||
+        bookingState.status == RideStatus.inProgress;
+
+    // Track B - Ticket B-4: Wrap with PopScope for navigation guard
+    return PopScope(
+      canPop: !isActiveTripInProgress,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        // Show confirmation dialog when user tries to go back during active trip
+        await _showCancelConfirmationDialog(context, bookingController);
+      },
+      child: AppShell(
+        showBottomNav: false,
+        showAppBar: true,
+        title: 'Track your ride',
+        safeArea: false,
+        body: SafeArea(
+          child: Column(
+            children: [
+              _buildMapView(theme, bookingState),
+              Expanded(
+                child: _TripTrackingPanel(
+                  state: bookingState,
+                  controller: bookingController,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  /// Track B - Ticket B-4: Shows confirmation dialog when user tries to go back
+  Future<void> _showCancelConfirmationDialog(
+    BuildContext context,
+    RideBookingController controller,
+  ) async {
+    final shouldCancel = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Trip in progress'),
+        content: const Text(
+          'Your trip is currently in progress. Do you want to cancel it?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Continue Trip'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Cancel Trip'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldCancel == true && context.mounted) {
+      await controller.cancelRide();
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+    }
   }
 
   Widget _buildMapView(ThemeData theme, RideBookingState bookingState) {
@@ -105,6 +226,7 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
     // Determine camera position and markers based on ride state
     final MapCamera initialCameraPosition;
     final List<MapMarker> markers = [];
+    final List<MapPolyline> polylines = [];
 
     if (state.hasValidLocations) {
       final pickup = state.ride!.pickup!;
@@ -128,15 +250,44 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
         ));
       }
 
-      // Set camera to show both pickup and destination
+      // Track B - Ticket B-3: Add driver marker when driver location is available
+      if (state.hasDriverLocation) {
+        final driverLoc = state.driverLocation!;
+        markers.add(MapMarker(
+          id: const MapMarkerId('driver'),
+          position: GeoPoint(driverLoc.latitude, driverLoc.longitude),
+          label: state.driverName ?? 'Driver',
+        ));
+      }
+
+      // Track B - Ticket B-3: Create route polyline from pickup to destination
       if (pickup.location != null && destination.location != null) {
-        // For simplicity, focus on pickup for now
+        polylines.add(MapPolyline(
+          id: const MapPolylineId('route'),
+          points: [
+            GeoPoint(pickup.location!.latitude, pickup.location!.longitude),
+            GeoPoint(destination.location!.latitude, destination.location!.longitude),
+          ],
+        ));
+      }
+
+      // Set camera - focus on driver if available, otherwise pickup
+      if (state.hasDriverLocation) {
+        // Track B - Ticket B-3: Follow driver during active tracking
         initialCameraPosition = MapCamera(
           target: MapPoint(
-            latitude: pickup.location!.latitude,
-            longitude: pickup.location!.longitude,
+            latitude: state.driverLocation!.latitude,
+            longitude: state.driverLocation!.longitude,
           ),
-          zoom: 13.0, // Zoom out to show both points
+          zoom: 15.0,
+        );
+      } else if (pickup.location != null && destination.location != null) {
+        // Calculate center between pickup and destination
+        final centerLat = (pickup.location!.latitude + destination.location!.latitude) / 2;
+        final centerLng = (pickup.location!.longitude + destination.location!.longitude) / 2;
+        initialCameraPosition = MapCamera(
+          target: MapPoint(latitude: centerLat, longitude: centerLng),
+          zoom: 13.0,
         );
       } else if (pickup.location != null) {
         initialCameraPosition = MapCamera(
@@ -179,9 +330,16 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
           MapViewParams(
             initialCameraPosition: initialCameraPosition,
             onMapReady: (controller) {
+              // Track B - Ticket B-4: Store controller reference for camera animation
+              _mapController = controller;
+              
               // Set markers when map is ready
               if (markers.isNotEmpty) {
                 controller.setMarkers(markers);
+              }
+              // Track B - Ticket B-3: Set route polylines
+              if (polylines.isNotEmpty) {
+                controller.setPolylines(polylines);
               }
             },
           ),
@@ -216,6 +374,9 @@ class _TripTrackingPanel extends StatelessWidget {
             children: [
               _buildStatusHeader(theme, status),
               const SizedBox(height: DWSpacing.md),
+              // Track B - Ticket B-3: Show driver info when available
+              _buildDriverInfoCard(theme),
+              if (state.hasDriverInfo) const SizedBox(height: DWSpacing.md),
               _buildTripSummary(theme),
               if (state.status == RideStatus.completed) ...[
                 const SizedBox(height: DWSpacing.lg),
@@ -261,6 +422,162 @@ class _TripTrackingPanel extends StatelessWidget {
           ),
         ],
       ],
+    );
+  }
+
+  /// Track B - Ticket B-3 & B-4: Shows enhanced driver info card when driver is assigned.
+  /// Track B-4: Added avatar, rating stars, and functional call button with console log.
+  Widget _buildDriverInfoCard(ThemeData theme) {
+    final textTheme = theme.textTheme;
+    final colorScheme = theme.colorScheme;
+
+    if (!state.hasDriverInfo) return const SizedBox.shrink();
+
+    return AppCardUnified(
+      variant: AppCardVariant.elevated,
+      padding: const EdgeInsets.all(DWSpacing.md),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Track B-4: ETA Banner at top of card
+          if (state.hasEta) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(
+                vertical: DWSpacing.sm,
+                horizontal: DWSpacing.md,
+              ),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer.withValues(alpha: 0.5),
+                borderRadius: BorderRadius.circular(DWRadius.md),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.access_time,
+                    size: 18,
+                    color: colorScheme.primary,
+                  ),
+                  const SizedBox(width: DWSpacing.xs),
+                  Text(
+                    state.formattedEta!,
+                    style: textTheme.titleSmall?.copyWith(
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: DWSpacing.md),
+          ],
+          // Driver info row
+          Row(
+            children: [
+              // Track B-4: Enhanced driver avatar with placeholder or image
+              _buildDriverAvatar(colorScheme),
+              const SizedBox(width: DWSpacing.md),
+              // Driver info with rating
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (state.driverName != null)
+                      Text(
+                        state.driverName!,
+                        style: textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    // Track B-4: Driver rating stars
+                    if (state.hasDriverRating) ...[
+                      const SizedBox(height: DWSpacing.xxs),
+                      _buildDriverRating(colorScheme, textTheme),
+                    ],
+                    if (state.driverCarInfo != null) ...[
+                      const SizedBox(height: DWSpacing.xxs),
+                      Text(
+                        state.driverCarInfo!,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              // Track B-4: Call button with console log
+              _buildCallButton(colorScheme),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Track B - Ticket B-4: Builds driver avatar with placeholder.
+  Widget _buildDriverAvatar(ColorScheme colorScheme) {
+    // For now, use a placeholder avatar. In production, this would load
+    // from state.driverAvatarUrl using a NetworkImage.
+    return CircleAvatar(
+      radius: 28,
+      backgroundColor: colorScheme.primaryContainer,
+      child: Icon(
+        Icons.person,
+        color: colorScheme.onPrimaryContainer,
+        size: 32,
+      ),
+    );
+  }
+
+  /// Track B - Ticket B-4: Builds driver rating display with stars.
+  Widget _buildDriverRating(ColorScheme colorScheme, TextTheme textTheme) {
+    final rating = state.driverRating ?? 0.0;
+    final fullStars = rating.floor();
+    final hasHalfStar = (rating - fullStars) >= 0.5;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Rating number
+        Text(
+          state.formattedDriverRating!,
+          style: textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(width: DWSpacing.xxs),
+        // Star icons
+        ...List.generate(5, (index) {
+          if (index < fullStars) {
+            return const Icon(Icons.star, size: 16, color: Colors.amber);
+          } else if (index == fullStars && hasHalfStar) {
+            return const Icon(Icons.star_half, size: 16, color: Colors.amber);
+          } else {
+            return Icon(Icons.star_border, size: 16, color: Colors.amber.shade200);
+          }
+        }),
+      ],
+    );
+  }
+
+  /// Track B - Ticket B-4: Builds call button with console output.
+  Widget _buildCallButton(ColorScheme colorScheme) {
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(DWRadius.circle),
+      ),
+      child: IconButton(
+        icon: Icon(Icons.phone, color: colorScheme.primary),
+        onPressed: () {
+          // Track B-4: Print to console as per ticket requirements
+          debugPrint('[Track B-4] Call button pressed - Calling driver: ${state.driverName}');
+        },
+        tooltip: 'Call driver',
+      ),
     );
   }
 
