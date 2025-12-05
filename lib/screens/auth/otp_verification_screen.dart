@@ -22,7 +22,10 @@ import '../../widgets/app_shell.dart';
 /// Part of the simple Phone + OTP authentication flow (Ticket #36).
 /// Updated in Ticket #58 to navigate to Home/AppShell after verification.
 class OtpVerificationScreen extends ConsumerStatefulWidget {
-  const OtpVerificationScreen({super.key});
+  const OtpVerificationScreen({super.key, this.forceEnablePasswordless = false});
+
+  /// Force enable passwordless auth for testing purposes
+  final bool forceEnablePasswordless;
 
   @override
   ConsumerState<OtpVerificationScreen> createState() =>

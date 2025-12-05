@@ -18,7 +18,10 @@ import 'package:b_ui/ui_components.dart';
 import 'legacy_auth_placeholder.dart';
 
 class PhoneLoginScreen extends ConsumerStatefulWidget {
-  const PhoneLoginScreen({super.key});
+  const PhoneLoginScreen({super.key, this.forceEnablePasswordless = false});
+
+  /// Force enable passwordless auth for testing purposes
+  final bool forceEnablePasswordless;
 
   @override
   ConsumerState<PhoneLoginScreen> createState() => _PhoneLoginScreenState();
@@ -44,7 +47,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
     final textTheme = theme.textTheme;
     final colorScheme = theme.colorScheme;
 
-    final enablePasswordless = FeatureFlags.enablePasswordlessAuth;
+    final enablePasswordless = FeatureFlags.enablePasswordlessAuth || widget.forceEnablePasswordless;
     final l10n = AppLocalizations.of(context);
 
     if (!enablePasswordless) {
