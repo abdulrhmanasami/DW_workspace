@@ -5,6 +5,7 @@ import 'package:design_system_foundation/design_system_foundation.dart';
 import 'package:dsr_ux_adapter/dsr_ux_adapter.dart' as dsr;
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/app_shell.dart';
 
 /// DSR Erasure Screen - Track D - Ticket #59
 /// Allows users to request deletion of their account and personal data.
@@ -27,8 +28,10 @@ class _DsrErasureScreenState extends ConsumerState<DsrErasureScreen> {
     final erasureNotifier = ref.read(dsr.dsrErasureStateProvider.notifier);
     final theme = ref.watch(ds.appThemeProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.dsrErasureTitle)),
+    return AppShell(
+      title: l10n.dsrErasureTitle,
+      showAppBar: true,
+      showBottomNav: false,
       body: Padding(
         padding: EdgeInsets.all(_spacing.md),
         child: Column(

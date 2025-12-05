@@ -3,6 +3,8 @@ import '../../l10n/generated/app_localizations.dart';
 import '../../router/app_router.dart';
 import '../../ui/profile/profile_header_card.dart';
 import '../../ui/profile/profile_menu_item.dart';
+import '../../widgets/app_button_unified.dart';
+import '../../widgets/app_shell.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
 /// Profile Tab Screen
@@ -19,11 +21,10 @@ class ProfileTabScreen extends StatelessWidget {
     final displayName = l10n.profileGuestName;
     final phoneNumber = l10n.profileGuestPhonePlaceholder;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.profileTitle),
-        centerTitle: false,
-      ),
+    return AppShell(
+      title: l10n.profileTitle,
+      showAppBar: true,
+      showBottomNav: false,
       body: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -79,12 +80,15 @@ class ProfileTabScreen extends StatelessWidget {
 
           const SizedBox(height: DWSpacing.md),
 
-          // Logout
-          ProfileMenuItem(
-            icon: Icons.logout,
-            title: l10n.profileLogoutTitle,
-            subtitle: l10n.profileLogoutSubtitle,
-            onTap: () => _handleLogout(context),
+          // Logout button using AppButtonUnified
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: DWSpacing.md),
+            child: AppButtonUnified(
+              label: l10n.profileLogoutTitle,
+              onPressed: () => _handleLogout(context),
+              style: AppButtonStyle.secondary,
+              leadingIcon: const Icon(Icons.logout),
+            ),
           ),
           const SizedBox(height: DWSpacing.lg),
         ],

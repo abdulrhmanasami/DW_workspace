@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:design_system_shims/design_system_shims.dart' as ds;
+import '../../widgets/app_shell.dart';
 
 import '../../state/ux/notification_preferences_ux.dart';
 import '../../state/guidance/guidance_providers.dart';
@@ -27,42 +28,35 @@ class NotificationsSettingsScreen extends ConsumerWidget {
     final theme = ref.watch(ds.appThemeProvider);
     final spacing = theme.spacing;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('إعدادات الإشعارات', style: theme.typography.headline6),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
-          tooltip: 'رجوع',
-        ),
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            // Notifications Importance Hint
-            _NotificationsHintBanner(),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsetsDirectional.all(spacing.md),
-                child: state.when(
-                  loading: () => const _NotificationsSettingsLoading(),
-                  error: (e, _) => _NotificationsSettingsError(
-                    theme: theme,
-                    message: 'حدث خطأ في تحميل إعدادات الإشعارات',
-                    onRetry: controller.refresh,
-                  ),
-                  data: (prefs) => _NotificationsSettingsContent(
-                    theme: theme,
-                    prefs: prefs,
-                    onOrderStatusChanged: controller.updateOrderStatus,
-                    onPromotionsChanged: controller.updatePromotions,
-                    onSystemChanged: controller.updateSystemAlerts,
-                  ),
+    return AppShell(
+      title: 'إعدادات الإشعارات',
+      showAppBar: true,
+      showBottomNav: false,
+      body: Column(
+        children: [
+          // Notifications Importance Hint
+          _NotificationsHintBanner(),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsetsDirectional.all(spacing.md),
+              child: state.when(
+                loading: () => const _NotificationsSettingsLoading(),
+                error: (e, _) => _NotificationsSettingsError(
+                  theme: theme,
+                  message: 'حدث خطأ في تحميل إعدادات الإشعارات',
+                  onRetry: controller.refresh,
+                ),
+                data: (prefs) => _NotificationsSettingsContent(
+                  theme: theme,
+                  prefs: prefs,
+                  onOrderStatusChanged: controller.updateOrderStatus,
+                  onPromotionsChanged: controller.updatePromotions,
+                  onSystemChanged: controller.updateSystemAlerts,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

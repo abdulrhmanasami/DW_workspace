@@ -5,6 +5,7 @@ import 'package:design_system_shims/design_system_shims.dart' as ds;
 import 'package:dsr_ux_adapter/dsr_ux_adapter.dart' as dsr;
 
 import '../../l10n/generated/app_localizations.dart';
+import '../../widgets/app_shell.dart';
 
 /// DSR Export Screen - Track D - Ticket #59
 /// Allows users to request a copy of their personal data.
@@ -26,8 +27,10 @@ class _DsrExportScreenState extends ConsumerState<DsrExportScreen> {
     final appSwitch = ref.watch(ds.appSwitchBuilderProvider);
     final theme = ref.watch(ds.appThemeProvider);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.dsrExportTitle)),
+    return AppShell(
+      title: l10n.dsrExportTitle,
+      showAppBar: true,
+      showBottomNav: false,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
