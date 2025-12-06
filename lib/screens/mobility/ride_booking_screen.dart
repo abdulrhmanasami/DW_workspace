@@ -28,6 +28,7 @@ import 'package:delivery_ways_clean/state/mobility/ride_booking_controller.dart'
 import 'package:delivery_ways_clean/state/mobility/ride_booking_state.dart';
 import 'package:delivery_ways_clean/widgets/app_shell.dart';
 import 'package:delivery_ways_clean/widgets/app_button_unified.dart';
+import 'package:delivery_ways_clean/screens/mobility/ride_destination_search_screen.dart';
 import 'ride_quote_options_sheet.dart';
 
 /// Key for ride booking map widget (for testing)
@@ -101,6 +102,38 @@ class _RideBookingScreenState extends ConsumerState<RideBookingScreen> {
           longitude: _userLocation!.longitude,
         ),
         zoom: 15.0,
+      ),
+    );
+  }
+
+  Future<void> _openDestinationSearch() async {
+    final result = await Navigator.of(context).push<RideDestinationSearchResult>(
+      MaterialPageRoute(
+        builder: (_) => const RideDestinationSearchScreen(),
+      ),
+    );
+    if (!mounted) return;
+    if (result != null) {
+      await ref
+          .read(rideBookingControllerProvider.notifier)
+          .updateDestination(result.place);
+      _moveCameraToRoute();
+    }
+  }
+
+  void _moveCameraToRoute() {
+    final polylines = ref.read(rideBookingControllerProvider).polylines;
+    if (!_mapReady || _mapController == null || polylines == null || polylines.isEmpty) return;
+    final points = polylines.first.points;
+    if (points.isEmpty) return;
+    final avgLat =
+        points.map((p) => p.latitude).reduce((a, b) => a + b) / points.length;
+    final avgLng =
+        points.map((p) => p.longitude).reduce((a, b) => a + b) / points.length;
+    _mapController!.moveCamera(
+      maps.MapCamera(
+        target: maps.MapPoint(latitude: avgLat, longitude: avgLng),
+        zoom: 13.5,
       ),
     );
   }
@@ -198,6 +231,13 @@ class _RideBookingScreenState extends ConsumerState<RideBookingScreen> {
       );
     }
 
+    // Update live polylines/markers when state changes after map is ready
+    if (_mapReady && _mapController != null) {
+      _mapController!.setMarkers(markers);
+      _mapController!.setPolylines(polylines);
+      _moveCameraToRoute();
+    }
+
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 200),
       opacity: _mapReady ? 1 : 0.4,
@@ -218,6 +258,7 @@ class _RideBookingScreenState extends ConsumerState<RideBookingScreen> {
                 controller.setPolylines(polylines);
               }
               _moveCameraToUser();
+              _moveCameraToRoute();
             },
           ),
         ),
@@ -336,6 +377,23 @@ class _RideBookingScreenState extends ConsumerState<RideBookingScreen> {
               ),
             ),
 
+            // Destination search entry
+            Positioned(
+              top: 16,
+              left: 72,
+              right: 16,
+              child: GestureDetector(
+                onTap: _openDestinationSearch,
+                child: AbsorbPointer(
+                  child: DwInput(
+                    label: l10n.rideBookingDestinationLabel,
+                    hint: 'Where to?',
+                    prefixIcon: const Icon(Icons.search),
+                  ),
+                ),
+              ),
+            ),
+
             // Booking Sheet (Bottom)
             Align(
               alignment: Alignment.bottomCenter,
@@ -418,11 +476,6 @@ class _RideBookingSheetContentState
   void initState() {
     super.initState();
     _destinationController = TextEditingController();
-    // FIX-4: Use addPostFrameCallback to avoid modifying provider during build
-    // Initialize ride booking with current location when the screen opens
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(rideBookingControllerProvider.notifier).initialize();
-    });
   }
 
   @override
@@ -527,27 +580,24 @@ class _RideBookingSheetContentState
           style: textTheme.labelMedium,
         ),
         const SizedBox(height: DWSpacing.xxs),
-        TextFormField(
-          controller: _destinationController,
-          readOnly: true, // Make it read-only to prevent direct editing
+        GestureDetector(
           onTap: () async {
-            // Navigate to destination selection screen
-            final result = await Navigator.of(context).pushNamed(
-              RoutePaths.rideDestination,
-              arguments: true, // returnResult = true
+            final result = await Navigator.of(context).push<RideDestinationSearchResult>(
+              MaterialPageRoute(
+                builder: (_) => const RideDestinationSearchScreen(),
+              ),
             );
-            if (result is mobility.MobilityPlace && mounted) {
-              // Update destination in controller
-              final controller = ref.read(rideBookingControllerProvider.notifier);
-              await controller.updateDestination(result);
+            if (result != null && mounted) {
+              _destinationController.text = result.place.label;
+              await ref.read(rideBookingControllerProvider.notifier).updateDestination(result.place);
             }
           },
-          decoration: InputDecoration(
-            prefixIcon: const Icon(Icons.search),
-            hintText: bookingState.ride?.destination?.label ?? 'Where to?',
-            helperText: 'Tap to search for a destination',
-            helperStyle: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+          child: AbsorbPointer(
+            child: DwInput(
+              controller: _destinationController,
+              label: l10n.rideBookingDestinationLabel,
+              hint: 'Where to?',
+              prefixIcon: const Icon(Icons.search),
             ),
           ),
         ),
