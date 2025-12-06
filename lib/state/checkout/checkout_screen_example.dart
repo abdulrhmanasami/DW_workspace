@@ -1,5 +1,5 @@
-import '../checkout/checkout_controller.dart';
-import '../checkout/checkout_state.dart';
+import 'package:delivery_ways_clean/state/checkout/checkout_controller.dart';
+import 'package:delivery_ways_clean/state/checkout/checkout_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

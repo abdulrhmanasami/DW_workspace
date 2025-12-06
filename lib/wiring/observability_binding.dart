@@ -6,8 +6,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foundation_shims/foundation_shims.dart' as fnd;
 
-import '../services/telemetry_service.dart';
-import '../state/consent/consent_controller.dart';
+import 'package:delivery_ways_clean/services/telemetry_service.dart';
+import 'package:delivery_ways_clean/state/consent/consent_controller.dart';
 
 /// Observability provider overrides for Riverpod
 /// Add these to ProviderScope in main.dart after consent is determined

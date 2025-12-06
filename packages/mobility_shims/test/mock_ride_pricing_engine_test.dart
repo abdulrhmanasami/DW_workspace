@@ -129,7 +129,7 @@ void main() {
     });
 
     test('service respects failure rate configuration', () async {
-      final failingService = const MockRidePricingService(
+      const failingService = MockRidePricingService(
         baseLatency: Duration.zero,
         failureRate: 1.0, // Always fail
       );
@@ -145,7 +145,7 @@ void main() {
     });
 
     test('service returns empty options error when configured', () async {
-      final emptyService = const MockRidePricingService(
+      const emptyService = MockRidePricingService(
         baseLatency: Duration.zero,
         returnEmptyOptions: true,
       );
@@ -205,13 +205,13 @@ void main() {
     });
 
     test('handles missing location coordinates gracefully', () async {
-      final pickupNoCoords = const MobilityPlace(
+      const pickupNoCoords = MobilityPlace(
         label: 'Pickup',
         type: MobilityPlaceType.currentLocation,
         // No location specified
       );
 
-      final destinationNoCoords = const MobilityPlace(
+      const destinationNoCoords = MobilityPlace(
         label: 'Destination',
         type: MobilityPlaceType.searchResult,
         // No location specified

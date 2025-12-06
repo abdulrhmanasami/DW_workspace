@@ -40,7 +40,7 @@ class MockRidePricingService implements RidePricingService {
   @override
   Future<RideQuoteResult> requestQuote(RideQuoteRequest request) async {
     // Simulate network delay (50-200ms)
-    await Future.delayed(Duration(milliseconds: 50 + math.Random().nextInt(150)));
+    await Future<void>.delayed(Duration(milliseconds: 50 + math.Random().nextInt(150)));
 
     // Check for forced network error
     if (request.forceNetworkError) {

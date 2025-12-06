@@ -8,9 +8,9 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'dart:ui';
-import '../config/in_app_review_config.dart';
-import '../config/remote_config_service.dart';
-import '../services/telemetry_service.dart';
+import 'package:delivery_ways_clean/config/in_app_review_config.dart';
+import 'package:delivery_ways_clean/config/remote_config_service.dart';
+import 'package:delivery_ways_clean/services/telemetry_service.dart';
 // Removed session_state import - using parameter-based busy flow detection
 import 'ab_selector.dart';
 import 'prompt_scheduler.dart';

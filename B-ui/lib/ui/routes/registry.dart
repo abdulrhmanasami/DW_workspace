@@ -3,14 +3,14 @@
 import 'package:flutter/widgets.dart';
 
 // شاشات القانونيات
-import '../../screens/legal/about_legal_screen.dart';
-import '../../screens/legal/licenses_browser_screen.dart';
-import '../../screens/legal/privacy_markdown_screen.dart';
-import '../../screens/legal/terms_markdown_screen.dart';
+import 'package:b_ui/screens/legal/about_legal_screen.dart';
+import 'package:b_ui/screens/legal/licenses_browser_screen.dart';
+import 'package:b_ui/screens/legal/privacy_markdown_screen.dart';
+import 'package:b_ui/screens/legal/terms_markdown_screen.dart';
 
 // شاشات DSR
-import '../../screens/settings/dsr_export_screen.dart';
-import '../../screens/settings/dsr_erasure_screen.dart';
+import 'package:b_ui/screens/settings/dsr_export_screen.dart';
+import 'package:b_ui/screens/settings/dsr_erasure_screen.dart';
 
 /// مواصفة خفيفة لمسار واجهة المستخدم (ميتا فقط).
 class UiRoute {

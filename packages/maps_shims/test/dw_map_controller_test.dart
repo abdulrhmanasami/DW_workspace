@@ -1,8 +1,3 @@
-/// DW Map Controller Tests
-/// Track B - Ticket #109: Pure Dart Map Shim v1
-/// Purpose: Unit tests for InMemoryMapController and core types
-
-import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maps_shims/maps_shims.dart';
@@ -197,7 +192,7 @@ void main() {
           points: [DWLatLng(24.7136, 46.6753), DWLatLng(24.7200, 46.6800)],
         );
 
-        controller.commands.add(DWSetContentCommand(
+        controller.commands.add(const DWSetContentCommand(
           markers: [marker1, marker2],
           polylines: [polyline],
         ));
@@ -215,7 +210,7 @@ void main() {
           zoom: 15.0,
         );
 
-        controller.commands.add(DWSetContentCommand(
+        controller.commands.add(const DWSetContentCommand(
           markers: [],
           polylines: [],
           camera: camera,
@@ -257,7 +252,7 @@ void main() {
           northEast: DWLatLng(10.0, 10.0),
         );
 
-        controller.commands.add(DWAnimateToBoundsCommand(bounds));
+        controller.commands.add(const DWAnimateToBoundsCommand(bounds));
 
         expect(controller.camera, isNotNull);
         expect(controller.camera!.target.latitude, 5.0);
@@ -273,7 +268,7 @@ void main() {
           bearing: 45.0,
         );
 
-        controller.commands.add(DWAnimateToPositionCommand(position));
+        controller.commands.add(const DWAnimateToPositionCommand(position));
 
         expect(controller.camera, equals(position));
       });
@@ -286,7 +281,7 @@ void main() {
         final events = <DWMapEvent>[];
         final subscription = controller.events.listen(events.add);
 
-        controller.commands.add(DWAnimateToPositionCommand(position));
+        controller.commands.add(const DWAnimateToPositionCommand(position));
 
         // Allow stream to process
         await Future<void>.delayed(Duration.zero);

@@ -1,6 +1,6 @@
 import 'package:delivery_ways_clean/state/checkout/checkout_state.dart';
 import 'package:delivery_ways_clean/state/checkout/providers.dart';
-import '../config/config_manager.dart';
+import 'package:delivery_ways_clean/config/config_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart';

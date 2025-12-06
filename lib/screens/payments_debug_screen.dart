@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:payments/payments.dart';
 
-import '../state/infra/feature_flags.dart' show paymentsEnabledProvider;
-import '../state/infra/payments_providers.dart';
-import '../wiring/payments_wiring.dart' as wiring;
+import 'package:delivery_ways_clean/state/infra/feature_flags.dart' show paymentsEnabledProvider;
+import 'package:delivery_ways_clean/state/infra/payments_providers.dart';
+import 'package:delivery_ways_clean/wiring/payments_wiring.dart' as wiring;
 
 class PaymentsDebugScreen extends ConsumerWidget {
   const PaymentsDebugScreen({super.key});

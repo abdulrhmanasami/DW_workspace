@@ -32,7 +32,7 @@ class StripeEphemeralKeyService {
 
       final ephemeralKey = response['ephemeral_key'] as String?;
       if (ephemeralKey == null) {
-        throw legacy.PaymentFailure(
+        throw const legacy.PaymentFailure(
           code: 'MISSING_EPHEMERAL_KEY',
           message: 'Backend did not return ephemeral key',
         );

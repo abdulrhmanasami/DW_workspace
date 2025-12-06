@@ -10,8 +10,11 @@ class ConfigManagerStub implements ConfigManager {
   final Map<String, dynamic> _config = <String, dynamic>{};
 
   @override
-  T get<T>(final String key, final T defaultValue) =>
-      _config[key] ?? defaultValue;
+  T get<T>(final String key, final T defaultValue) {
+    final value = _config[key];
+    if (value is T) return value;
+    return defaultValue;
+  }
 
   @override
   Future<void> set<T>(final String key, final T value) async {

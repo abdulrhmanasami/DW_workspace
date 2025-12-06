@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart' show showLicensePage;
-import '../../ui/ui.dart';
+import 'package:b_ui/ui/ui.dart';
 
 class LicensesBrowserScreen extends ConsumerWidget {
   const LicensesBrowserScreen({super.key});

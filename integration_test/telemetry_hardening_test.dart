@@ -224,7 +224,7 @@ void main() {
         });
 
         // Small delay to prevent overwhelming
-        await Future.delayed(const Duration(milliseconds: 10));
+        await Future<void>.delayed(const Duration(milliseconds: 10));
       }
     });
 

@@ -492,7 +492,7 @@ class _EmptyOptionsPricingService extends StubRidePricingService {
     required MobilityPlace destination,
     required RideServiceType serviceType,
   }) async {
-    await Future.delayed(simulatedDelay);
+    await Future<void>.delayed(simulatedDelay);
 
     final request = RideQuoteRequest(
       pickup: pickup.location!,
@@ -521,7 +521,7 @@ class _RecoveringPricingService extends StubRidePricingService {
     required MobilityPlace destination,
     required RideServiceType serviceType,
   }) async {
-    await Future.delayed(simulatedDelay);
+    await Future<void>.delayed(simulatedDelay);
     _callCount++;
 
     if (_callCount == 1) {

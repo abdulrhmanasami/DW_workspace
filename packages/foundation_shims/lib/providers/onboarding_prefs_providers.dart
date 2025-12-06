@@ -5,8 +5,8 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../src/onboarding_prefs.dart';
-import '../src/onboarding_prefs_impl.dart';
+import 'package:foundation_shims/src/onboarding_prefs.dart';
+import 'package:foundation_shims/src/onboarding_prefs_impl.dart';
 
 /// Status of the onboarding flow
 enum OnboardingStatus {

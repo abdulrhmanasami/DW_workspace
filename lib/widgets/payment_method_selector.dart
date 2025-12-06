@@ -620,7 +620,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
     });
 
     try {
-      await Future.delayed(const Duration(seconds: 2)); // Simulate processing
+      await Future<void>.delayed(const Duration(seconds: 2)); // Simulate processing
       widget.onPaymentMethodSelected('apple_pay');
     } catch (e) {
       widget.onError('Apple Pay processing failed: $e');
@@ -638,7 +638,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
     });
 
     try {
-      await Future.delayed(const Duration(seconds: 2)); // Simulate processing
+      await Future<void>.delayed(const Duration(seconds: 2)); // Simulate processing
       widget.onPaymentMethodSelected('google_pay');
     } catch (e) {
       widget.onError('Google Pay processing failed: $e');
@@ -655,7 +655,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
     });
 
     try {
-      await Future.delayed(const Duration(seconds: 2)); // Simulate processing
+      await Future<void>.delayed(const Duration(seconds: 2)); // Simulate processing
       widget.onPaymentMethodSelected('digital_wallet');
     } catch (e) {
       widget.onError('Digital wallet payment failed: $e');
@@ -710,7 +710,7 @@ class _PaymentMethodSelectorState extends State<PaymentMethodSelector> {
     });
 
     try {
-      await Future.delayed(const Duration(seconds: 1)); // Simulate processing
+      await Future<void>.delayed(const Duration(seconds: 1)); // Simulate processing
       widget.onPaymentMethodSelected('cash');
     } catch (e) {
       widget.onError('Cash payment selection failed: $e');

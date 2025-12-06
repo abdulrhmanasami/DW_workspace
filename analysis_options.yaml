@@ -1,51 +1,27 @@
 include: package:flutter_lints/flutter.yaml
 
 analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
   exclude:
-    - packages/core/lib/src/forecasting/**
-    - packages/core/lib/src/marketplace/**
-    - packages/core/**/.dart_tool/**
-    - packages/**/build/**
-    - packages/**/**.g.dart
-    - packages/**/**.freezed.dart
-    - .dart_tool/**
-    - build/**
-    # Temporarily exclude shim packages for clean delivery
-    - packages/maps_shims/**
-    - packages/mobility_shims/**
-    - packages/realtime_shims/**
-    - packages/network_shims/**
-    - packages/observability_shims/**
-    # Temporarily exclude stub implementations until interface stabilization
-    - packages/mobility_stub_impl/**
-    - packages/maps_stub_impl/**
-    - packages/mobility_adapter_background/**
-    - packages/mobility_adapter_geolocator/**
-    # Temporarily exclude packages with type conflicts (needs consolidation)
-    - packages/accounts_shims/**
-    - packages/notifications_shims/**
-    - packages/privacy/**
-    - packages/payments_stripe_impl/**
-    - lib/_examples/**
-    # Documentation example code (not production)
-    - docs/**
-    # Legacy/Separate modules - excluded from main analysis
-    # B-ui: Legacy UI components module
-    - B-ui/**
-    # B-ux: UX patterns module (separate codebase)
-    - B-ux/**
-    # Integration tests that depend on excluded packages
-    - integration_test/**
+    - "**/.dart_tool/**"
+    - "build/**"
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
   errors:
-    # Post-GA Hypercare: Treat warnings as errors (DW-GA-HYPERCARE-B-029)
     unused_import: error
     unused_local_variable: error
     dead_code: error
     override_on_non_overriding_member: error
     unnecessary_null_comparison: error
     invalid_null_aware_operator: error
-    # Exception for legacy compatibility
     deprecated_member_use_from_same_package: warning
+
 linter:
   rules:
     public_member_api_docs: false

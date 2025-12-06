@@ -10,7 +10,7 @@
 import 'package:flutter/material.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
-import '../../l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 
 /// Main widget for displaying ride quote options.
 ///

@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/mobility/ride_trip_session.dart';
-import '../../state/mobility/ride_draft_state.dart';
-import '../../state/mobility/ride_recent_locations_providers.dart';
-import '../../config/feature_flags.dart';
-import '../mobility/widgets/ride_recent_destination_item.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_recent_locations_providers.dart';
+import 'package:delivery_ways_clean/config/feature_flags.dart';
+import 'package:delivery_ways_clean/screens/mobility/widgets/ride_recent_destination_item.dart';
 
 /// Home Hub V1 Screen
 /// Ticket #180: Unified entry point for the app with Ride/Parcels/Food services

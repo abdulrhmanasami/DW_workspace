@@ -6,7 +6,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../uplink_config.dart';
+import 'package:mobility_uplink_impl/uplink_config.dart';
 
 /// HTTP client exceptions
 class UplinkHttpException implements Exception {
@@ -109,7 +109,7 @@ class UplinkClient {
     final minMs = config.retryBackoffMin.inMilliseconds;
     final maxMs = config.retryBackoffMax.inMilliseconds;
     final delayMs = (minMs * (1 << attempt)).clamp(minMs, maxMs);
-    await Future.delayed(Duration(milliseconds: delayMs));
+    await Future<void>.delayed(Duration(milliseconds: delayMs));
   }
 
   /// Close the HTTP client

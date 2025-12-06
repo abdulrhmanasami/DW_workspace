@@ -16,3 +16,5 @@ dependencies:
   foundation_shims: ^0.1.0
   flutter_riverpod: ^2.4.9
   design_system_components: ^1.0.0
+dev_dependencies:
+  flutter_test: any

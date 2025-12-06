@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:maps_shims/maps_shims.dart';
 
 // App imports
-import '../state/mobility/ride_map_commands_builder.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_map_commands_builder.dart';
 
 /// Widget that renders [RideMapCommands] using the legacy [MapWidget].
 ///

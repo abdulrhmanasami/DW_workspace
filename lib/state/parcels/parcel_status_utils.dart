@@ -6,7 +6,7 @@
 
 import 'package:parcels_shims/parcels_shims.dart' show ParcelStatus;
 
-import '../../l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 
 /// True if the status is considered terminal (no longer active).
 ///

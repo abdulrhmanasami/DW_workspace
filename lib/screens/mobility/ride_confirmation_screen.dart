@@ -42,18 +42,18 @@ import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:pricing_shims/pricing_shims.dart' as pricing;
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/mobility/ride_draft_state.dart';
-import '../../state/mobility/ride_trip_session.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
 // Track B - Ticket #100: Payment method integration
-import '../../state/payments/payment_methods_ui_state.dart';
+import 'package:delivery_ways_clean/state/payments/payment_methods_ui_state.dart';
 // Track B - Ticket #207: Use RideTripMapView for unified map integration
-import '../../widgets/mobility/ride_trip_map_view.dart';
+import 'package:delivery_ways_clean/widgets/mobility/ride_trip_map_view.dart';
 // Track B - Ticket #141: Use RideQuoteOptionsSheet
 import 'ride_quote_options_sheet.dart';
 // Track B - Ticket #218: Import RideQuoteError and provider for tests compatibility
-import '../../state/mobility/ride_quote_controller.dart'
+import 'package:delivery_ways_clean/state/mobility/ride_quote_controller.dart'
     show RideQuoteError, rideQuoteControllerProvider;
 
 /// RideConfirmationScreen - Trip confirmation with vehicle options

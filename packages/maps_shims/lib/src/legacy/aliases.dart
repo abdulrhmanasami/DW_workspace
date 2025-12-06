@@ -3,8 +3,8 @@
 /// Purpose: Backward compatibility for common map type names
 /// Last updated: 2025-11-11
 
-import '../map_models.dart';
-import '../maps_contracts.dart';
+import 'package:maps_shims/src/map_models.dart';
+import 'package:maps_shims/src/maps_contracts.dart';
 
 // Compatibility aliases for common map type names
 typedef GoogleLatLng = LatLng;

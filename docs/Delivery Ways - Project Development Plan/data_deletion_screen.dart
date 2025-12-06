@@ -361,7 +361,7 @@ class _DataDeletionScreenState extends ConsumerState<DataDeletionScreen> {
             color: Colors.red.withValues(alpha: 0.2),
             shape: BoxShape.circle,
           ),
-          child: Center(
+          child: const Center(
             child: Icon(
               Icons.check_circle,
               size: 60,

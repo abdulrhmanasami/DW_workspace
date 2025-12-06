@@ -75,10 +75,18 @@ export 'src/testing/in_memory_map_controller.dart' show InMemoryMapController;
 
 export 'src/map_models.dart'
     show
-        LatLng,
-        MapConfig,
+        GeoPoint,
+        MapBounds,
+        MapZoom,
+        MapCameraTarget,
+        MapMarker,
+        MapMarkerId,
+        MapPolyline,
+        MapPolylineId,
         MapCamera,
+        MapConfig,
         CameraPosition,
+        LatLng,
         LatLngBounds;
 export 'src/models.dart' show MapStyle, MapWidget;
 export 'src/geo_types.dart' show MapPoint, MapMobilityConverters;
@@ -87,12 +95,12 @@ export 'src/map_providers.dart' show mapControllerProvider;
 export 'src/maps_contracts.dart' show MapViewController;
 export 'src/map_controller.dart' show NoOpMapController;
 export 'src/legacy/aliases.dart'
-    hide MapMarker, MapPolyline, GeoPoint, MapBounds, MapCameraTarget, MapZoom
     show GoogleLatLng, MapLatLng, LatLngCompat, MapController;
-export 'src/marker_manager.dart' show MarkerManager, MarkerOptions;
-export 'src/polyline_manager.dart' show PolylineManager, PolylineOptions;
-export 'src/route_calculator.dart' show RouteCalculator, RouteSegment;
+export 'src/marker_manager.dart' show MarkerManager;
+export 'src/polyline_manager.dart' show PolylineManager;
+export 'src/route_calculator.dart'
+    show RouteCalculator, RouteData, RouteStep, RouteMode;
 export 'src/map_style_manager.dart' show MapStyleManager;
-export 'src/map_view_widget.dart' show MapView, OnMapTap;
+export 'src/map_view_widget.dart' show MapViewWidget;
 export 'src/view.dart'
     show MapViewParams, MapViewBuilder, OnMapReady, mapViewBuilderProvider;

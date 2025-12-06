@@ -6,10 +6,9 @@
 import 'dart:async';
 import 'package:foundation_shims/foundation_shims.dart';
 
-import '../accounts_endpoints.dart';
+import 'package:accounts_shims/src/accounts_endpoints.dart';
 import 'dsr_client.dart';
 import 'dsr_contracts.dart';
-import 'dsr_models.dart';
 import 'dsr_audit.dart';
 
 /// Implementation of DataSubjectRightsService
@@ -57,7 +56,7 @@ class DsrServiceImpl implements DataSubjectRightsService {
   }) async {
     // Check if export is enabled via RemoteConfig
     if (!await _isFeatureEnabled(DsrRequestType.export)) {
-      throw FeatureDisabledException(
+      throw const FeatureDisabledException(
         'Data export feature is currently disabled',
       );
     }
@@ -88,7 +87,7 @@ class DsrServiceImpl implements DataSubjectRightsService {
   Future<DsrRequestSummary> requestErasure() async {
     // Check if erasure is enabled via RemoteConfig
     if (!await _isFeatureEnabled(DsrRequestType.erasure)) {
-      throw FeatureDisabledException(
+      throw const FeatureDisabledException(
         'Account erasure feature is currently disabled',
       );
     }
@@ -228,8 +227,8 @@ class DsrServiceImpl implements DataSubjectRightsService {
             _cleanupStream(id);
           }
         })
-        .catchError((error) {
-          controller.addError(error);
+        .catchError((Object error, StackTrace stack) {
+          controller.addError(error, stack);
           _cleanupStream(id);
         });
 
@@ -305,11 +304,4 @@ class DsrServiceFactoryImpl implements DsrServiceFactory {
     return DsrServiceImpl(client: client, auditSink: auditSink, userId: userId);
   }
 
-  @override
-  Future<bool> isDsrEnabled(DsrRequestType type) async {
-    // TODO: Check RemoteConfig flags
-    // dsr_export_enabled for export
-    // dsr_erasure_enabled for erasure
-    return true; // Placeholder
-  }
 }

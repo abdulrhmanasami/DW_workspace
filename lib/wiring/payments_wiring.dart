@@ -6,7 +6,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:payments/payments.dart' as pay;
 
-import '../state/infra/payments_providers.dart';
+import 'package:delivery_ways_clean/state/infra/payments_providers.dart';
 
 /// Provides the real PaymentsGateway wired through the payments package.
 final paymentsGatewayProvider =

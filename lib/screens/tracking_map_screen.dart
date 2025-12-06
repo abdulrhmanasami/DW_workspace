@@ -6,7 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:maps_shims/maps.dart';
-import '../state/tracking_map/providers.dart';
+import 'package:delivery_ways_clean/state/tracking_map/providers.dart';
 
 class TrackingMapScreen extends ConsumerStatefulWidget {
   const TrackingMapScreen({super.key});

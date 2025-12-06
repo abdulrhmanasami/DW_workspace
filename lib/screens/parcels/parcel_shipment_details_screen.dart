@@ -12,11 +12,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 // Track C - Ticket #78: Unified parcel status helpers
 // Track C - Ticket #81: isParcelStatusUserCancellable for cancel button visibility
-import '../../state/parcels/parcel_status_utils.dart';
-import '../../state/parcels/parcel_orders_state.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_status_utils.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_orders_state.dart';
 
 /// Screen to display detailed information about a parcel shipment.
 /// Accessed by tapping a shipment card in My Shipments list.

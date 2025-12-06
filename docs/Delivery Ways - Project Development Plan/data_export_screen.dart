@@ -193,7 +193,7 @@ class _DataExportScreenState extends ConsumerState<DataExportScreen> {
     return AppCardUnified(
       child: Row(
         children: [
-          Icon(
+          const Icon(
             Icons.check_circle,
             color: Colors.green,
             size: 20,
@@ -233,7 +233,7 @@ class _DataExportScreenState extends ConsumerState<DataExportScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
+          const Icon(
             Icons.info_outlined,
             color: Colors.blue,
             size: 24,

@@ -1,8 +1,3 @@
-/// In-Memory Map Port Tests - Unit tests for InMemoryMapPort
-/// Track B - Ticket #198: MapInterface تفاعلي (Streams/Sinks) + Stub Implementation
-/// Purpose: Test InMemoryMapPort behavior with commands and events
-
-import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maps_shims/maps_shims.dart';
@@ -32,7 +27,7 @@ void main() {
           zoom: MapZoom(16.0),
         );
 
-        port.commands.add(SetCameraCommand(target));
+        port.commands.add(const SetCameraCommand(target));
 
         expect(port.camera, isNotNull);
         expect(port.camera!.center.latitude, 24.7136);
@@ -47,7 +42,7 @@ void main() {
         final events = <MapEvent>[];
         final subscription = port.events.listen(events.add);
 
-        port.commands.add(SetCameraCommand(target));
+        port.commands.add(const SetCameraCommand(target));
 
         // Allow stream to process
         await Future<void>.delayed(Duration.zero);
@@ -67,7 +62,7 @@ void main() {
           northEast: GeoPoint(10.0, 10.0),
         );
 
-        port.commands.add(FitBoundsCommand(bounds));
+        port.commands.add(const FitBoundsCommand(bounds));
 
         expect(port.camera, isNotNull);
         expect(port.camera!.center.latitude, 5.0);
@@ -87,22 +82,22 @@ void main() {
           position: GeoPoint(24.7200, 46.6800),
         );
 
-        port.commands.add(SetMarkersCommand([marker1, marker2]));
+        port.commands.add(const SetMarkersCommand([marker1, marker2]));
 
         expect(port.markers.length, 2);
-        expect(port.markerById(MapMarkerId('pickup')), isNotNull);
-        expect(port.markerById(MapMarkerId('destination')), isNotNull);
-        expect(port.markerById(MapMarkerId('nonexistent')), isNull);
+        expect(port.markerById(const MapMarkerId('pickup')), isNotNull);
+        expect(port.markerById(const MapMarkerId('destination')), isNotNull);
+        expect(port.markerById(const MapMarkerId('nonexistent')), isNull);
       });
 
       test('replaces previous markers', () {
         // Set initial markers
-        port.commands.add(SetMarkersCommand([
-          const MapMarker(
+        port.commands.add(const SetMarkersCommand([
+          MapMarker(
             id: MapMarkerId('m1'),
             position: GeoPoint(0, 0),
           ),
-          const MapMarker(
+          MapMarker(
             id: MapMarkerId('m2'),
             position: GeoPoint(1, 1),
           ),
@@ -111,16 +106,16 @@ void main() {
         expect(port.markers.length, 2);
 
         // Replace with different markers
-        port.commands.add(SetMarkersCommand([
-          const MapMarker(
+        port.commands.add(const SetMarkersCommand([
+          MapMarker(
             id: MapMarkerId('m3'),
             position: GeoPoint(2, 2),
           ),
         ]));
 
         expect(port.markers.length, 1);
-        expect(port.markerById(MapMarkerId('m1')), isNull);
-        expect(port.markerById(MapMarkerId('m3')), isNotNull);
+        expect(port.markerById(const MapMarkerId('m1')), isNull);
+        expect(port.markerById(const MapMarkerId('m3')), isNotNull);
       });
     });
 
@@ -137,18 +132,18 @@ void main() {
           isPrimaryRoute: false,
         );
 
-        port.commands.add(SetPolylinesCommand([polyline1, polyline2]));
+        port.commands.add(const SetPolylinesCommand([polyline1, polyline2]));
 
         expect(port.polylines.length, 2);
-        expect(port.polylineById(MapPolylineId('route1')), isNotNull);
-        expect(port.polylineById(MapPolylineId('route2')), isNotNull);
-        expect(port.polylineById(MapPolylineId('nonexistent')), isNull);
+        expect(port.polylineById(const MapPolylineId('route1')), isNotNull);
+        expect(port.polylineById(const MapPolylineId('route2')), isNotNull);
+        expect(port.polylineById(const MapPolylineId('nonexistent')), isNull);
       });
 
       test('replaces previous polylines', () {
         // Set initial polylines
-        port.commands.add(SetPolylinesCommand([
-          const MapPolyline(
+        port.commands.add(const SetPolylinesCommand([
+          MapPolyline(
             id: MapPolylineId('p1'),
             points: [GeoPoint(0, 0), GeoPoint(1, 1)],
           ),
@@ -157,16 +152,16 @@ void main() {
         expect(port.polylines.length, 1);
 
         // Replace with different polylines
-        port.commands.add(SetPolylinesCommand([
-          const MapPolyline(
+        port.commands.add(const SetPolylinesCommand([
+          MapPolyline(
             id: MapPolylineId('p2'),
             points: [GeoPoint(2, 2), GeoPoint(3, 3)],
           ),
         ]));
 
         expect(port.polylines.length, 1);
-        expect(port.polylineById(MapPolylineId('p1')), isNull);
-        expect(port.polylineById(MapPolylineId('p2')), isNotNull);
+        expect(port.polylineById(const MapPolylineId('p1')), isNull);
+        expect(port.polylineById(const MapPolylineId('p2')), isNotNull);
       });
     });
 
@@ -175,7 +170,7 @@ void main() {
         final events = <MapEvent>[];
         final subscription = port.events.listen(events.add);
 
-        port.simulateMarkerTap(MapMarkerId('driver_1'));
+        port.simulateMarkerTap(const MapMarkerId('driver_1'));
 
         await Future<void>.delayed(Duration.zero);
 
@@ -237,12 +232,12 @@ void main() {
 
     group('Command History', () {
       test('records all commands', () {
-        port.commands.add(SetMarkersCommand([]));
-        port.commands.add(FitBoundsCommand(MapBounds(
+        port.commands.add(const SetMarkersCommand([]));
+        port.commands.add(const FitBoundsCommand(MapBounds(
           southWest: GeoPoint(0, 0),
           northEast: GeoPoint(1, 1),
         )));
-        port.commands.add(SetCameraCommand(MapCameraTarget(
+        port.commands.add(const SetCameraCommand(MapCameraTarget(
           center: GeoPoint(0, 0),
         )));
 

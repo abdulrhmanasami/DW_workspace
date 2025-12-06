@@ -104,7 +104,7 @@ class InMemoryRideRepository implements RideRepository {
     _storage[quotingRequest.id!] = quotingRequest;
 
     // Simulate network delay
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future<void>.delayed(const Duration(milliseconds: 300));
 
     // Transition to quote ready (assume pricing was already calculated in updateLocations)
     final quoteReadyRequest = RideFsm.transition(quotingRequest, RideStatus.quoteReady);
@@ -124,7 +124,7 @@ class InMemoryRideRepository implements RideRepository {
     _storage[requestingRequest.id!] = requestingRequest;
 
     // Simulate brief processing delay
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
 
     // Transition to finding driver (this is a stub - no real driver matching)
     // In real implementation, this would wait for backend/driver matching
@@ -158,7 +158,7 @@ class InMemoryRideRepository implements RideRepository {
   @override
   Future<RideRequest?> getRideStatus(String requestId) async {
     // Simulate brief network delay
-    await Future.delayed(const Duration(milliseconds: 50));
+    await Future<void>.delayed(const Duration(milliseconds: 50));
     return _storage[requestId];
   }
 

@@ -34,15 +34,15 @@ class UplinkQueueItem {
 
   factory UplinkQueueItem.fromJson(Map<String, dynamic> json) {
     return UplinkQueueItem(
-      sessionId: json['sessionId'],
+      sessionId: json['sessionId'] as String,
       point: LocationPoint(
-        latitude: json['latitude'],
-        longitude: json['longitude'],
-        accuracy: json['accuracy'],
-        speed: json['speed'],
-        timestamp: DateTime.parse(json['timestamp']),
+        latitude: (json['latitude'] as num).toDouble(),
+        longitude: (json['longitude'] as num).toDouble(),
+        accuracy: (json['accuracy'] as num?)?.toDouble(),
+        speed: (json['speed'] as num?)?.toDouble(),
+        timestamp: DateTime.parse(json['timestamp'] as String),
       ),
-      queuedAt: DateTime.parse(json['queuedAt']),
+      queuedAt: DateTime.parse(json['queuedAt'] as String),
     );
   }
 }
@@ -101,7 +101,7 @@ class UplinkQueue {
 
     for (final line in lines.take(batchSize)) {
       try {
-        final json = jsonDecode(line);
+        final json = jsonDecode(line) as Map<String, dynamic>;
         items.add(UplinkQueueItem.fromJson(json));
       } catch (e) {
         // Skip corrupted lines
@@ -184,7 +184,7 @@ class UplinkQueue {
 
     for (final line in lines) {
       try {
-        final json = jsonDecode(line);
+        final json = jsonDecode(line) as Map<String, dynamic>;
         final item = UplinkQueueItem.fromJson(json);
         if (item.queuedAt.isAfter(cutoff)) {
           validLines.add(line);

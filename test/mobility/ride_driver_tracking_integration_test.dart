@@ -119,11 +119,11 @@ void main() {
 
       // Update tracking controller state to simulate receiving points
       trackingController.state = trackingController.state.copyWith(lastPoint: point1);
-      await Future.delayed(const Duration(milliseconds: 10));
+      await Future<void>.delayed(const Duration(milliseconds: 10));
       trackingController.state = trackingController.state.copyWith(lastPoint: point2);
 
       // Allow subscription to process
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Assert: No driver location set
       expect(sessionController.state.driverLocation, isNull);
@@ -183,11 +183,11 @@ void main() {
 
       // Update tracking controller state to simulate receiving points
       trackingController.state = trackingController.state.copyWith(lastPoint: point1);
-      await Future.delayed(const Duration(milliseconds: 10));
+      await Future<void>.delayed(const Duration(milliseconds: 10));
       trackingController.state = trackingController.state.copyWith(lastPoint: point2);
 
       // Allow subscription to process
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Assert: Driver location is set to latest point
       expect(sessionController.state.driverLocation, isNotNull);
@@ -244,7 +244,7 @@ void main() {
       );
       // Update tracking controller state to simulate receiving points
       trackingController.state = trackingController.state.copyWith(lastPoint: point1);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Verify driver location is set
       expect(sessionController.state.driverLocation, isNotNull);
@@ -263,7 +263,7 @@ void main() {
       expect(completed, isTrue);
 
       // Wait for completion to take effect
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
 
       // Send additional tracking points after completion
       final point2 = LocationPoint(
@@ -273,7 +273,7 @@ void main() {
       );
       // Update tracking controller state to simulate receiving points
       trackingController.state = trackingController.state.copyWith(lastPoint: point2);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Assert: Driver location is cleared after completion
       expect(sessionController.state.driverLocation, isNull);
@@ -320,7 +320,7 @@ void main() {
       );
       // Update tracking controller state to simulate receiving points
       trackingController.state = trackingController.state.copyWith(lastPoint: point1);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Verify driver location is set
       expect(sessionController.state.driverLocation, isNotNull);
@@ -339,7 +339,7 @@ void main() {
       );
       // Update tracking controller state to simulate receiving points
       trackingController.state = trackingController.state.copyWith(lastPoint: point2);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Assert: Driver location is cleared after cancellation
       expect(sessionController.state.driverLocation, isNull);
@@ -378,13 +378,13 @@ void main() {
 
       // Update tracking controller state to simulate receiving points
       trackingController.state = trackingController.state.copyWith(lastPoint: point1);
-      await Future.delayed(const Duration(milliseconds: 10));
+      await Future<void>.delayed(const Duration(milliseconds: 10));
       trackingController.state = trackingController.state.copyWith(lastPoint: point2);
-      await Future.delayed(const Duration(milliseconds: 10));
+      await Future<void>.delayed(const Duration(milliseconds: 10));
       trackingController.state = trackingController.state.copyWith(lastPoint: point3);
 
       // Allow subscription to process
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Assert: Driver location remains null
       expect(sessionController.state.driverLocation, isNull);
@@ -439,7 +439,7 @@ void main() {
         timestamp: DateTime.now(),
       );
       trackingController.state = trackingController.state.copyWith(lastPoint: point1);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Verify driver location is set
       expect(sessionController.state.driverLocation, isNotNull);
@@ -476,9 +476,9 @@ void main() {
       );
 
       trackingController.state = trackingController.state.copyWith(lastPoint: latePoint1);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
       trackingController.state = trackingController.state.copyWith(lastPoint: latePoint2);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Assert: Driver location remains null after completion
       expect(sessionController.state.driverLocation, isNull);
@@ -531,7 +531,7 @@ void main() {
         timestamp: DateTime.now(),
       );
       trackingController.state = trackingController.state.copyWith(lastPoint: point1);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Verify driver location is set
       expect(sessionController.state.driverLocation, isNotNull);
@@ -553,7 +553,7 @@ void main() {
       );
 
       trackingController.state = trackingController.state.copyWith(lastPoint: latePoint);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Assert: Driver location remains null after cancellation
       expect(sessionController.state.driverLocation, isNull);
@@ -605,9 +605,9 @@ void main() {
       );
 
       trackingController.state = trackingController.state.copyWith(lastPoint: pointA1);
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
       trackingController.state = trackingController.state.copyWith(lastPoint: pointA2);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Assert: Driver location is set for Trip A
       expect(sessionController.state.driverLocation, isNotNull);
@@ -666,9 +666,9 @@ void main() {
       );
 
       trackingController.state = trackingController.state.copyWith(lastPoint: pointB1);
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
       trackingController.state = trackingController.state.copyWith(lastPoint: pointB2);
-      await Future.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Assert: Driver location updated for Trip B (not carrying over from Trip A)
       expect(sessionController.state.driverLocation, isNotNull);

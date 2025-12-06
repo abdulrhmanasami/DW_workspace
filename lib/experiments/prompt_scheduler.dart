@@ -53,7 +53,7 @@ class PromptScheduler {
   ) async {
     try {
       // Apply 2-second delay for UI stability
-      await Future.delayed(const Duration(seconds: 2));
+      await Future<void>.delayed(const Duration(seconds: 2));
 
       // Final runtime checks before execution
       if (await _shouldSkipPrompt(false, userId)) {
@@ -63,7 +63,7 @@ class PromptScheduler {
       // Execute with 2-second timeout
       await Future.any([
         promptAction(),
-        Future.delayed(const Duration(seconds: 2)),
+        Future<void>.delayed(const Duration(seconds: 2)),
       ]).timeout(const Duration(seconds: 2));
     } catch (e) {
       // Silent failure - don't crash the app

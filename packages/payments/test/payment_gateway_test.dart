@@ -40,7 +40,7 @@ void main() {
         const currency = Currency('USD');
 
         final intent1 = await gateway.createIntent(amount, currency);
-        await Future.delayed(const Duration(milliseconds: 5));
+        await Future<void>.delayed(const Duration(milliseconds: 5));
         final intent2 = await gateway.createIntent(amount, currency);
 
         expect(intent1.id, isNot(equals(intent2.id)));

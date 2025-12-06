@@ -8,11 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/parcels/parcel_draft_state.dart';
-import '../../state/parcels/parcel_orders_state.dart';
-import '../../state/parcels/parcel_quote_state.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_draft_state.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_orders_state.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_quote_state.dart';
 
 /// Screen for displaying parcel pricing options (Step 3 of parcel shipment flow).
 class ParcelQuoteScreen extends ConsumerStatefulWidget {

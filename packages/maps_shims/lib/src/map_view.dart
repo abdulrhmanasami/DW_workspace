@@ -4,6 +4,7 @@
 /// Last updated: 2025-11-11
 
 import 'package:flutter/material.dart';
+import 'legacy/aliases.dart' show MapController;
 
 /// Props for map view rendering
 class MapViewProps {

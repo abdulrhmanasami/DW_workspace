@@ -10,11 +10,11 @@ import 'package:design_system_shims/design_system_shims.dart'
     show DWSpacing, DWRadius;
 import 'package:food_shims/food_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/food/food_menu_providers.dart';
-import '../../state/food/food_cart_state.dart';
-import '../../state/food/food_orders_state.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/food/food_menu_providers.dart';
+import 'package:delivery_ways_clean/state/food/food_cart_state.dart';
+import 'package:delivery_ways_clean/state/food/food_orders_state.dart';
 
 /// Screen displaying restaurant details, menu, and cart summary.
 ///

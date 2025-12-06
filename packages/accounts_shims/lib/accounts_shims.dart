@@ -6,7 +6,6 @@ export 'accounts_providers.dart'
         dsrServiceProvider,
         dsrServiceFactoryProvider;
 
-// DSR exports - LEGACY: Use accounts.dart barrel instead
-export 'src/dsr/dsr_models.dart';
+// DSR exports - canonical contracts only (avoid ambiguous legacy exports)
 export 'src/dsr/dsr_contracts.dart';
 export 'src/dsr/dsr_service.dart';

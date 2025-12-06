@@ -14,6 +14,7 @@ dependencies:
   payments: ^1.0.0
   foundation_shims: ^0.1.0
 
+  payments_shims: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

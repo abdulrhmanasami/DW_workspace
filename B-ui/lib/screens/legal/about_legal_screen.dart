@@ -1,4 +1,4 @@
-import '../../ui/ui.dart';
+import 'package:b_ui/ui/ui.dart';
 
 class AboutLegalScreen extends ConsumerWidget {
   const AboutLegalScreen({super.key});

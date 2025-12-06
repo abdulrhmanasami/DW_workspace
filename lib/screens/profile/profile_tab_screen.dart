@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/auth/passwordless_auth_controller.dart';
-import '../../state/identity/identity_controller.dart';
-import '../../ui/profile/profile_header_card.dart';
-import '../../ui/profile/profile_menu_item.dart';
-import '../../widgets/app_button_unified.dart';
-import '../../widgets/app_shell.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/auth/passwordless_auth_controller.dart';
+import 'package:delivery_ways_clean/state/identity/identity_controller.dart';
+import 'package:delivery_ways_clean/ui/profile/profile_header_card.dart';
+import 'package:delivery_ways_clean/ui/profile/profile_menu_item.dart';
+import 'package:delivery_ways_clean/widgets/app_button_unified.dart';
+import 'package:delivery_ways_clean/widgets/app_shell.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
 /// Profile Tab Screen

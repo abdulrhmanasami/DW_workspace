@@ -6,7 +6,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:mobility_shims/mobility.dart';
-import '../uplink_config.dart';
+import 'package:mobility_uplink_impl/uplink_config.dart';
 import 'uplink_client.dart';
 import 'uplink_endpoints.dart';
 import 'uplink_queue.dart';

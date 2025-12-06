@@ -12,12 +12,12 @@ class GeoAdapters {
   /// Uses dynamic typing to avoid compile-time dependency on mobility_shims
   static MapPoint mapPointFromLocation(dynamic locationPoint) {
     return MapPoint(
-      latitude: locationPoint.latitude,
-      longitude: locationPoint.longitude,
-      accuracy: locationPoint.accuracy,
-      altitude: locationPoint.altitude,
-      speed: locationPoint.speed,
-      timestamp: locationPoint.timestamp,
+      latitude: (locationPoint.latitude as num).toDouble(),
+      longitude: (locationPoint.longitude as num).toDouble(),
+      accuracy: (locationPoint.accuracy as num?)?.toDouble(),
+      altitude: (locationPoint.altitude as num?)?.toDouble(),
+      speed: (locationPoint.speed as num?)?.toDouble(),
+      timestamp: locationPoint.timestamp as DateTime,
     );
   }
 

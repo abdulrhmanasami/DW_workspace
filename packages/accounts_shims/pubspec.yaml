@@ -16,6 +16,7 @@ dependencies:
   dsr_ux_adapter: ^1.0.0
   json_annotation: ^4.9.0
 
+  crypto: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

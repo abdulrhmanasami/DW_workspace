@@ -1,6 +1,7 @@
 library maps_stub_impl;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:maps_shims/maps.dart';
 
 /// Stub MapViewBuilder that shows a placeholder when maps are disabled
@@ -41,6 +42,9 @@ class StubMapController implements MapController {
 
   @override
   Future<void> setMarkers(List<MapMarker> markers) async {}
+
+  @override
+  Future<void> setPolylines(List<MapPolyline> polylines) async {}
 
   @override
   void dispose() {}

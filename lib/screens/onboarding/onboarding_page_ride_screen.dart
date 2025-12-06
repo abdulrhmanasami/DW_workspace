@@ -6,7 +6,7 @@
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
 
-import '../../l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 
 /// Ride onboarding page - First screen in the product onboarding flow.
 /// Shows the ride service value proposition.

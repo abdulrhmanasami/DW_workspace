@@ -4,7 +4,7 @@
 // Last updated: 2025-11-25 (CENT-MOB-TRACKING-001)
 
 import 'package:mobility_shims/mobility.dart';
-import '../infra/mobility_availability.dart';
+import 'package:delivery_ways_clean/state/infra/mobility_availability.dart';
 
 /// State for trip tracking with Sale-Only availability awareness
 class TrackingState {

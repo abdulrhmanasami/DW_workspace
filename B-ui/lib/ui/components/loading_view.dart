@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'dart:math' as math;
-import '../ui.dart';
+import 'package:b_ui/ui/ui.dart';
 
 class LoadingView extends StatelessWidget {
   final String? message;

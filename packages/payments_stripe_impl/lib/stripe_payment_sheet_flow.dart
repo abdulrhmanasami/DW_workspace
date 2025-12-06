@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 /// Component: Stripe Payment Sheet Flow
 /// Created by: Cursor (auto-generated)
 /// Purpose: Handles PaymentSheet presentation and 3DS flow

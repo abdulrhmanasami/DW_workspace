@@ -119,7 +119,7 @@ void main() {
 
       // Wait for the async quote request to complete
       // The InMemoryRideRepository has a 300ms delay, so we need to wait a bit more
-      await Future.delayed(const Duration(milliseconds: 350));
+      await Future<void>.delayed(const Duration(milliseconds: 350));
       await tester.pumpAndSettle();
 
       // Verify CTA now shows "Confirm Ride"

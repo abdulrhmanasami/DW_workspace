@@ -54,7 +54,7 @@ class MockRidePricingService implements pricing.RidePricingService {
   Future<pricing.RideQuoteResult> requestQuote(pricing.RideQuoteRequest request) async {
     callCount++;
     if (delay > Duration.zero) {
-      await Future.delayed(delay);
+      await Future<void>.delayed(delay);
     }
     return result ?? const pricing.RideQuoteResult.failure(pricing.RideQuoteFailureReason.networkError);
   }

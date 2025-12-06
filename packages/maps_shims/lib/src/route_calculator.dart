@@ -1,9 +1,3 @@
-/// Component: Route Calculator
-/// Created by: Cursor (auto-generated)
-/// Purpose: Interface for route calculation operations
-/// Last updated: 2025-11-01
-
-import 'package:flutter/foundation.dart';
 import 'models.dart';
 
 abstract class RouteCalculator {

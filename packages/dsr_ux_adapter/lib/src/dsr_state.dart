@@ -169,7 +169,7 @@ class DsrRequestController {
     _store.save(summary);
     _exportNotifier.setRequest(AsyncValue.data(summary));
 
-    await Future.delayed(const Duration(milliseconds: 450));
+    await Future<void>.delayed(const Duration(milliseconds: 450));
     if (_disposed) return;
 
     final readySummary = summary.copyWith(
@@ -186,7 +186,7 @@ class DsrRequestController {
     _store.save(readySummary);
     _exportNotifier.setRequest(AsyncValue.data(readySummary));
 
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future<void>.delayed(const Duration(milliseconds: 300));
     if (_disposed) return;
 
     final completedSummary = readySummary.copyWith(
@@ -222,7 +222,7 @@ class DsrController {
     summary = _store.save(summary);
     onStatusUpdate(summary);
 
-    await Future.delayed(const Duration(milliseconds: 600));
+    await Future<void>.delayed(const Duration(milliseconds: 600));
     if (_disposed) return;
 
     final ready = _store.updateStatus(

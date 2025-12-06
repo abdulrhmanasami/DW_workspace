@@ -1,11 +1,5 @@
-/// Component: Location Service
-/// Created by: Cursor (auto-generated)
-/// Purpose: Interface for location services
-/// Last updated: 2025-11-01
 
-import 'package:flutter/foundation.dart';
-
-import '../location/models.dart';
+import 'package:mobility_shims/location/models.dart';
 
 abstract class LocationService {
   Future<LocationPoint> getCurrent();

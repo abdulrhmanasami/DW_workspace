@@ -8,9 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart' show ParcelSize;
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/parcels/parcel_draft_state.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_draft_state.dart';
 
 /// Step 2 of the parcel shipment flow: capture parcel details.
 /// Track C - Ticket #76: Aligned with DS + Validation MVP.

@@ -27,7 +27,7 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
 
   void _simulateTripProgress() {
     // Simulate driver assignment after 3 seconds
-    Future.delayed(const Duration(seconds: 3), () {
+    Future<void>.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         final trip = ref.read(tripProvider);
         if (trip != null && trip.status == TripStatus.searching) {
@@ -42,7 +42,7 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
     });
 
     // Simulate driver arriving after 8 seconds
-    Future.delayed(const Duration(seconds: 8), () {
+    Future<void>.delayed(const Duration(seconds: 8), () {
       if (mounted) {
         final trip = ref.read(tripProvider);
         if (trip != null && trip.status == TripStatus.driverAssigned) {
@@ -53,7 +53,7 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
     });
 
     // Simulate trip in progress after 13 seconds
-    Future.delayed(const Duration(seconds: 13), () {
+    Future<void>.delayed(const Duration(seconds: 13), () {
       if (mounted) {
         final trip = ref.read(tripProvider);
         if (trip != null && trip.status == TripStatus.driverArriving) {
@@ -64,7 +64,7 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
     });
 
     // Simulate trip completion after 25 seconds
-    Future.delayed(const Duration(seconds: 25), () {
+    Future<void>.delayed(const Duration(seconds: 25), () {
       if (mounted) {
         final trip = ref.read(tripProvider);
         if (trip != null && trip.status == TripStatus.tripInProgress) {
@@ -325,7 +325,7 @@ class _TripTrackingScreenState extends ConsumerState<TripTrackingScreen> {
                 if (trip.driverRating != null)
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.star,
                         size: 14,
                         color: Colors.amber,

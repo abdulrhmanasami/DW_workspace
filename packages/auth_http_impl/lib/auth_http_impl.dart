@@ -14,8 +14,6 @@ import 'src/auth_storage.dart';
 
 export 'src/auth_backend_client.dart'
     show AuthBackendClient, HttpAuthBackendClient;
-export 'src/auth_backend_stub.dart'
-    show StubAuthBackendClient, StubAuthBackendConfig;
 export 'src/auth_storage.dart' show AuthSecureStorage, createAuthSecureStorage;
 
 // Identity shim implementation (Track D - Ticket #233)

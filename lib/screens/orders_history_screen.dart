@@ -5,11 +5,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../config/config_manager.dart';
-import '../l10n/generated/app_localizations.dart';
-import '../state/orders_history/providers.dart';
-import '../state/orders_history/orders_history_state.dart';
-import '../widgets/in_app_hint_banner.dart';
+import 'package:delivery_ways_clean/config/config_manager.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/state/orders_history/providers.dart';
+import 'package:delivery_ways_clean/state/orders_history/orders_history_state.dart';
+import 'package:delivery_ways_clean/widgets/in_app_hint_banner.dart';
 import 'package:b_ui/ui_components.dart';
 import 'package:b_ux/guidance_ux.dart';
 

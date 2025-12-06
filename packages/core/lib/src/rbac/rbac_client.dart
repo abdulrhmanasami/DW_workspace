@@ -3,7 +3,7 @@
 /// Purpose: RBAC authorization client contract
 /// Last updated: 2025-11-02
 
-import '../../../rbac/rbac_models.dart';
+import 'package:core/rbac/rbac_models.dart';
 
 /// RBAC authorization client interface
 abstract class RBACClient {

@@ -6,7 +6,7 @@ import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
 import 'package:food_shims/food_shims.dart';
 
-import '../../../l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 
 /// Reusable food order card showing order summary.
 /// Displays: Restaurant name, Status, Price, and Created Date.

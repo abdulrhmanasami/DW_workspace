@@ -29,17 +29,17 @@
 /// - Fallback to placeholder map when no active trip
 
 import 'package:flutter/material.dart';
-import '../l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 import 'package:design_system_shims/design_system_shims.dart'
     show DWElevation;
 // Track C - Ticket #152: Orders tab now uses OrdersHistoryScreen
-import '../screens/orders/orders_history_screen.dart';
+import 'package:delivery_ways_clean/screens/orders/orders_history_screen.dart';
 // Track B - Ticket #99: Payments tab screen
-import '../screens/payments/payments_tab_screen.dart';
+import 'package:delivery_ways_clean/screens/payments/payments_tab_screen.dart';
 // Track A - Ticket #227: Profile tab screen
-import '../screens/profile/profile_tab_screen.dart';
+import 'package:delivery_ways_clean/screens/profile/profile_tab_screen.dart';
 // Track A - Ticket #228: Home tab screen (replaces complex _HomeTab)
-import '../screens/home/home_tab_screen.dart';
+import 'package:delivery_ways_clean/screens/home/home_tab_screen.dart';
 
 /// App Tab enum for navigation
 /// Track A - Ticket #217: AppShell v1 + Bottom Navigation

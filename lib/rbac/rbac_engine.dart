@@ -1,4 +1,4 @@
-import '../config/config_manager.dart';
+import 'package:delivery_ways_clean/config/config_manager.dart';
 
 class RbacEngine {
   final Map<String, dynamic> policy;

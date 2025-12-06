@@ -1,7 +1,7 @@
 // Legacy Bridge for mobility_shims - Backward compatibility layer
 // Allows existing code to work with minimal changes
 
-import '../location/models.dart';
+import 'package:mobility_shims/location/models.dart';
 
 extension PositionFixCompat on PositionFix {
   LocationPoint toLocationPoint() => LocationPoint(

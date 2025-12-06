@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 
-import '../screens/notifications/promotions_notifications_screen.dart';
-import '../screens/notifications/system_notification_detail_screen.dart';
-import '../screens/notifications/system_notifications_screen.dart';
+import 'package:b_ui/screens/notifications/promotions_notifications_screen.dart';
+import 'package:b_ui/screens/notifications/system_notification_detail_screen.dart';
+import 'package:b_ui/screens/notifications/system_notifications_screen.dart';
 
 /// Centralized route path definitions for UI screens contributed by B-ui.
 class RoutePaths {

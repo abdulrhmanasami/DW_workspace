@@ -4,9 +4,9 @@ import 'package:design_system_shims/design_system_shims.dart' as ds;
 import 'package:design_system_foundation/design_system_foundation.dart';
 import 'package:dsr_ux_adapter/dsr_ux_adapter.dart' as dsr;
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../state/identity/identity_controller.dart';
-import '../../widgets/app_shell.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/state/identity/identity_controller.dart';
+import 'package:delivery_ways_clean/widgets/app_shell.dart';
 
 /// DSR Erasure Screen - Track D - Ticket #59
 /// Allows users to request deletion of their account and personal data.

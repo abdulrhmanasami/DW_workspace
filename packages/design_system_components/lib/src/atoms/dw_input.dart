@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../internal/tokens_bridge.dart';
+import 'package:design_system_components/src/internal/tokens_bridge.dart';
 
 /// Input variants
 enum DwInputVariant { outlined, filled, underlined }

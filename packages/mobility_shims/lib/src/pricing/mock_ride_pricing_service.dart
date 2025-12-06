@@ -22,9 +22,9 @@ import 'dart:math';
 
 import 'package:meta/meta.dart';
 
-import '../../location/models.dart';
-import '../place_models.dart';
-import '../ride_quote_models.dart';
+import 'package:mobility_shims/location/models.dart';
+import 'package:mobility_shims/src/place_models.dart';
+import 'package:mobility_shims/src/ride_quote_models.dart';
 import 'ride_pricing_service.dart';
 
 /// Mock implementation of [RidePricingService].
@@ -109,7 +109,7 @@ class MockRidePricingService implements RidePricingService {
     required RideServiceType serviceType,
   }) async {
     // 1) Simulate network latency
-    await Future.delayed(baseLatency);
+    await Future<void>.delayed(baseLatency);
 
     // 2) Check for simulated failure
     if (_shouldFail()) {

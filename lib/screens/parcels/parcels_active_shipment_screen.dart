@@ -18,8 +18,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart'
     show DWSpacing, DWRadius;
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../state/parcels/parcel_orders_state.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_orders_state.dart';
 
 /// Screen that displays the active parcel shipment details.
 /// Track C - Ticket #70: Stub implementation - will be replaced with full tracking.

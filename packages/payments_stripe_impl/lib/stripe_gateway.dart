@@ -44,8 +44,8 @@ class StripeGateway implements PaymentsGateway {
   Future<PaymentIntent> createIntent(Amount amount, Currency currency) async {
     try {
       // Create payment method params from metadata or defaults
-      final paymentMethodType = PaymentMethodType.card; // Default to card
-      final params = PaymentMethodParams(paymentMethodType);
+      const paymentMethodType = PaymentMethodType.card; // Default to card
+      const params = PaymentMethodParams(paymentMethodType);
 
       // Create intent via backend
       final response = await _intentsService.createIntent(params);

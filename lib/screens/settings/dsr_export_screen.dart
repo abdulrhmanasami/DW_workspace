@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart' as ds;
 import 'package:dsr_ux_adapter/dsr_ux_adapter.dart' as dsr;
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../widgets/app_shell.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/widgets/app_shell.dart';
 
 /// DSR Export Screen - Track D - Ticket #59
 /// Allows users to request a copy of their personal data.

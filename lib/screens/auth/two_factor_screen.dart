@@ -7,13 +7,13 @@ import 'package:auth_shims/auth_shims.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../config/feature_flags.dart';
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/auth/passwordless_auth_controller.dart';
-import '../../state/infra/auth_providers.dart';
-import '../../state/guidance/guidance_providers.dart';
-import '../../widgets/in_app_hint_banner.dart';
+import 'package:delivery_ways_clean/config/feature_flags.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/auth/passwordless_auth_controller.dart';
+import 'package:delivery_ways_clean/state/infra/auth_providers.dart';
+import 'package:delivery_ways_clean/state/guidance/guidance_providers.dart';
+import 'package:delivery_ways_clean/widgets/in_app_hint_banner.dart';
 import 'package:b_ui/ui_components.dart';
 
 /// Two-Factor Authentication screen.

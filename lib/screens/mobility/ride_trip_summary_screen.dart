@@ -28,13 +28,13 @@ import 'package:intl/intl.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../widgets/dw_app_shell.dart';
-import '../../state/mobility/ride_draft_state.dart';
-import '../../state/mobility/ride_trip_session.dart';
-import '../../state/mobility/ride_quote_controller.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/widgets/dw_app_shell.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_quote_controller.dart';
 // Track B - Ticket #107: Payment method integration for completion summary
-import '../../state/payments/payment_methods_ui_state.dart';
+import 'package:delivery_ways_clean/state/payments/payment_methods_ui_state.dart';
 
 /// Arguments for navigating to RideTripSummaryScreen from history
 /// Track B - Ticket #98

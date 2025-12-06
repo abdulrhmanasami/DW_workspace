@@ -1,4 +1,4 @@
-import '../observability/observability.dart';
+import 'package:delivery_ways_clean/observability/observability.dart';
 import 'dart:convert';
 import 'package:core/rbac/rbac_models.dart';
 import 'package:flutter/foundation.dart';

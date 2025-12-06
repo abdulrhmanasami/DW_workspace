@@ -6,7 +6,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../infra/notifications_inbox_providers.dart';
+import 'package:delivery_ways_clean/state/infra/notifications_inbox_providers.dart';
 import 'notification_preferences_ux.dart';
 
 sealed class NotificationAction {

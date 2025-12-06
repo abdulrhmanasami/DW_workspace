@@ -100,7 +100,7 @@ void main() {
 
     test('timeout throws TimeoutException', () async {
       final slowClient = MockClient((request) async {
-        await Future.delayed(
+        await Future<void>.delayed(
             const Duration(seconds: 20)); // Longer than timeout
         return http.Response('OK', 200);
       });

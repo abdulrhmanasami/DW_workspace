@@ -7,7 +7,7 @@ import 'package:b_ux/onboarding_ux.dart';
 import 'package:design_system_foundation/design_system_foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../../l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 
 /// A single page/step in the onboarding flow.
 class OnboardingStepPage extends StatelessWidget {

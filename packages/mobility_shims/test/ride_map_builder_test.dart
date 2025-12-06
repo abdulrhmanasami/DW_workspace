@@ -195,7 +195,7 @@ void main() {
         accuracyMeters: 10,
         timestamp: DateTime.now(),
       );
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.driverAccepted,
       );
@@ -223,7 +223,7 @@ void main() {
         accuracyMeters: 10,
         timestamp: DateTime.now(),
       );
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.driverArrived,
       );
@@ -250,7 +250,7 @@ void main() {
         accuracyMeters: 10,
         timestamp: DateTime.now(),
       );
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.inProgress,
       );
@@ -271,7 +271,7 @@ void main() {
         lat: 24.7136,
         lng: 46.6753,
       );
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.driverAccepted,
       );
@@ -298,7 +298,7 @@ void main() {
         accuracyMeters: 10,
         timestamp: DateTime.now(),
       );
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.findingDriver,
       );
@@ -330,7 +330,7 @@ void main() {
         accuracyMeters: 10,
         timestamp: DateTime.now(),
       );
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.driverAccepted,
       );
@@ -358,7 +358,7 @@ void main() {
         lat: 24.7500,
         lng: 46.7000,
       );
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.findingDriver,
       );
@@ -386,7 +386,7 @@ void main() {
         lat: 24.7500,
         lng: 46.7000,
       );
-      final activeTrip = RideTripState(
+      const activeTrip = RideTripState(
         tripId: 'trip-1',
         phase: RideTripPhase.inProgress,
       );
@@ -458,11 +458,11 @@ void main() {
 
   group('RideMapConfig', () {
     test('copyWith creates a copy with updated fields', () {
-      final config = RideMapConfig(
-        cameraTarget: const LatLng(24.7136, 46.6753),
+      const config = RideMapConfig(
+        cameraTarget: LatLng(24.7136, 46.6753),
         cameraZoom: 14.0,
-        markers: const [],
-        polylines: const [],
+        markers: [],
+        polylines: [],
       );
 
       final updated = config.copyWith(
@@ -474,18 +474,18 @@ void main() {
     });
 
     test('equality is based on camera and counts', () {
-      final config1 = RideMapConfig(
-        cameraTarget: const LatLng(24.7136, 46.6753),
+      const config1 = RideMapConfig(
+        cameraTarget: LatLng(24.7136, 46.6753),
         cameraZoom: 14.0,
-        markers: const [],
-        polylines: const [],
+        markers: [],
+        polylines: [],
       );
 
-      final config2 = RideMapConfig(
-        cameraTarget: const LatLng(24.7136, 46.6753),
+      const config2 = RideMapConfig(
+        cameraTarget: LatLng(24.7136, 46.6753),
         cameraZoom: 14.0,
-        markers: const [],
-        polylines: const [],
+        markers: [],
+        polylines: [],
       );
 
       expect(config1, equals(config2));

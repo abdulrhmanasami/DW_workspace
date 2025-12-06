@@ -11,9 +11,9 @@ import 'package:device_security_shims/device_security_shims.dart';
 import 'package:core/core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../config/config_manager.dart';
-import '../../config/feature_flags.dart';
-import '../../config/service_locator.dart';
+import 'package:delivery_ways_clean/config/config_manager.dart';
+import 'package:delivery_ways_clean/config/feature_flags.dart';
+import 'package:delivery_ways_clean/config/service_locator.dart';
 
 const _useAuthStub = bool.fromEnvironment(
   'USE_AUTH_STUB',

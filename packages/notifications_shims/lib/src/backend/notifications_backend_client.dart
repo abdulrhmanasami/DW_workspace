@@ -1,4 +1,4 @@
-import '../notification_models.dart';
+import 'package:notifications_shims/src/notification_models.dart';
 
 /// Abstraction for backend communication related to notifications.
 abstract class NotificationsBackendClient {

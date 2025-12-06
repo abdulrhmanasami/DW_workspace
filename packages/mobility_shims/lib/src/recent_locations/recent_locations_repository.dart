@@ -8,7 +8,7 @@
 /// persistent (for long-term storage).
 
 import 'dart:async';
-import '../place_models.dart';
+import 'package:mobility_shims/src/place_models.dart';
 
 /// Repository interface for managing recent ride locations.
 /// Track B - Ticket #145

@@ -1,6 +1,6 @@
 // Core domain types for mobility shims — عقد فقط، بدون أي SDK
 
-import '../location/models.dart';
+import 'package:mobility_shims/location/models.dart';
 
 class TripPoint {
   final String tripId;

@@ -10,6 +10,8 @@ dependencies:
     sdk: flutter
   geolocator: ^11.0.0
   mobility_shims: ^0.1.0
+  workmanager: any
+  flutter_riverpod: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

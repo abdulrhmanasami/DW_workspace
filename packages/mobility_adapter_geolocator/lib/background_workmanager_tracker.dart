@@ -174,6 +174,7 @@ class WorkmanagerBackgroundTracker {
 
     await Workmanager().initialize(
       backgroundLocationCallback,
+      // ignore: deprecated_member_use
       isInDebugMode: kDebugMode,
     );
   }

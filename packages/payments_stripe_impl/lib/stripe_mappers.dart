@@ -116,7 +116,7 @@ legacy.PaymentFailure mapPaymentSheetError(dynamic error) {
     final errorType = error.error.type?.toString();
     switch (errorType) {
       case 'canceled':
-        return legacy.PaymentFailure(
+        return const legacy.PaymentFailure(
           code: 'USER_CANCELLED',
           message: 'Payment was cancelled by user',
         );
@@ -126,7 +126,7 @@ legacy.PaymentFailure mapPaymentSheetError(dynamic error) {
           message: error.error.message ?? 'Payment failed',
         );
       case 'timeout':
-        return legacy.PaymentFailure(
+        return const legacy.PaymentFailure(
           code: 'PAYMENT_TIMEOUT',
           message: 'Payment timed out',
         );

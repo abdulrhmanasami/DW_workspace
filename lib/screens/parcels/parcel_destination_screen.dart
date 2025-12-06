@@ -7,9 +7,9 @@ import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/parcels/parcel_draft_state.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_draft_state.dart';
 
 /// Parcel Destination Screen Widget.
 /// Track C - Ticket #75: Aligned with Screen 11 mockups.

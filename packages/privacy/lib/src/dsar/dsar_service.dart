@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:network_shims/network_shims.dart';
 
-import '../privacy_backend_config.dart';
+import 'package:privacy/src/privacy_backend_config.dart';
 import 'dsar_types.dart';
 
 /// Service responsible for making DSAR-related backend calls.

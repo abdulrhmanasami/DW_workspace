@@ -7,12 +7,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foundation_shims/foundation_shims.dart' as fnd;
 
-import '../../screens/legal/about_legal_screen.dart';
-import '../../screens/legal/licenses_browser_screen.dart';
-import '../../screens/legal/privacy_markdown_screen.dart';
-import '../../screens/legal/terms_markdown_screen.dart';
-import '../../screens/settings/dsr_export_screen.dart';
-import '../../screens/settings/dsr_erasure_screen.dart';
+import 'package:delivery_ways_clean/screens/legal/about_legal_screen.dart';
+import 'package:delivery_ways_clean/screens/legal/licenses_browser_screen.dart';
+import 'package:delivery_ways_clean/screens/legal/privacy_markdown_screen.dart';
+import 'package:delivery_ways_clean/screens/legal/terms_markdown_screen.dart';
+import 'package:delivery_ways_clean/screens/settings/dsr_export_screen.dart';
+import 'package:delivery_ways_clean/screens/settings/dsr_erasure_screen.dart';
 
 /// Provider for UI routes that respects feature flags
 final uiRoutesProvider = Provider<Map<String, WidgetBuilder>>((ref) {

@@ -80,7 +80,7 @@ class _PinnedSecureHttpClient implements SecureHttpClient {
 
     final response = await httpRequest.close();
     if (!_validator.validateResponse(request.url.host, response.certificate)) {
-      await response.drain();
+      await response.drain<void>();
       throw const TlsPinningException('TLS pinning validation failed');
     }
 

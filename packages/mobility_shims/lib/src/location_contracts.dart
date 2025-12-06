@@ -1,4 +1,4 @@
-import '../location/models.dart';
+import 'package:mobility_shims/location/models.dart';
 
 abstract class LocationPermissionService {
   Future<bool> isServiceEnabled();

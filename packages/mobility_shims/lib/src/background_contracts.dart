@@ -1,4 +1,4 @@
-import '../location/models.dart' show LocationPoint;
+import 'package:mobility_shims/location/models.dart' show LocationPoint;
 
 /// Permission status for location services
 enum PermissionStatus {

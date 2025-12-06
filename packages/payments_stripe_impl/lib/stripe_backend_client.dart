@@ -158,7 +158,7 @@ class StripeBackendClient {
           );
         }
         // Wait before retry
-        await Future.delayed(Duration(seconds: attempts));
+        await Future<void>.delayed(Duration(seconds: attempts));
       } on PaymentFailure {
         // Don't retry payment failures, rethrow immediately
         rethrow;
@@ -171,10 +171,10 @@ class StripeBackendClient {
           );
         }
         // Wait before retry
-        await Future.delayed(Duration(seconds: attempts));
+        await Future<void>.delayed(Duration(seconds: attempts));
       }
     }
-    throw PaymentFailure(
+    throw const PaymentFailure(
       code: 'MAX_RETRIES_EXCEEDED',
       message: 'Maximum retry attempts exceeded',
     );

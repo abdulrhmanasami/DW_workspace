@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:notifications_shims/notifications_shims.dart';
 
-import '../infra/notifications_providers.dart';
-import '../infra/telemetry_providers.dart';
+import 'package:b_ui/state/infra/notifications_providers.dart';
+import 'package:b_ui/state/infra/telemetry_providers.dart';
 
 typedef UserNotificationPreferences = NotificationPreferences;
 

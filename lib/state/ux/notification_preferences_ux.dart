@@ -5,8 +5,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../infra/notifications_providers.dart';
-import '../infra/telemetry_providers.dart';
+import 'package:delivery_ways_clean/state/infra/notifications_providers.dart';
+import 'package:delivery_ways_clean/state/infra/telemetry_providers.dart';
 
 @immutable
 class NotificationPreferencesViewModel {

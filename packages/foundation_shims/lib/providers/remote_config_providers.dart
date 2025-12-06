@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:network_shims/index.dart' show DefaultHttpClientFactory;
 import 'package:network_shims/network_shims.dart' show SecureHttpClient;
 
-import '../src/remote_config/remote_config_service.dart';
-import '../src/remote_config/rc_service_impl.dart';
-import '../src/remote_config/rc_client.dart';
-import '../src/remote_config/rc_sources.dart';
-import '../config_manager.dart';
+import 'package:foundation_shims/src/remote_config/remote_config_service.dart';
+import 'package:foundation_shims/src/remote_config/rc_service_impl.dart';
+import 'package:foundation_shims/src/remote_config/rc_client.dart';
+import 'package:foundation_shims/src/remote_config/rc_sources.dart';
+import 'package:foundation_shims/config_manager.dart';
 
 /// Provides the SecureHttpClient used by Remote Config.
 final remoteConfigHttpClientProvider = Provider<SecureHttpClient>((ref) {

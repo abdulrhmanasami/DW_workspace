@@ -22,9 +22,9 @@ import 'package:design_system_foundation/design_system_foundation.dart';
 import 'package:maps_shims/maps_shims.dart';
 
 // App state
-import '../../state/mobility/ride_trip_session.dart';
-import '../../state/mobility/ride_map_port_providers.dart';
-import '../../state/mobility/ride_map_projection.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_map_port_providers.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_map_projection.dart';
 
 /// Widget مخصصة لعرض خريطة الرحلة من حالة السيشن.
 ///

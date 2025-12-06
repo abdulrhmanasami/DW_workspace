@@ -11,8 +11,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart'
     show DWButton, DWTextField, DWSpacing;
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../state/auth/auth_state.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/state/auth/auth_state.dart';
 import 'otp_verification_screen.dart';
 
 /// Screen for entering phone number to sign in.

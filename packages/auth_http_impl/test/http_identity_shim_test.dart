@@ -232,7 +232,7 @@ void main() {
       await shim.loadInitialSession();
 
       // Wait for emission
-      await Future.delayed(const Duration(milliseconds: 10));
+      await Future<void>.delayed(const Duration(milliseconds: 10));
 
       expect(sessions.length, 1);
       expect(sessions.first.status, AuthStatus.unauthenticated);

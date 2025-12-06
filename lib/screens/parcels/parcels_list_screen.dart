@@ -21,13 +21,13 @@ import 'package:design_system_shims/design_system_shims.dart'
     show DWSpacing, DWRadius;
 import 'package:parcels_shims/parcels_shims.dart' show Parcel;
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/parcels/parcel_orders_state.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_orders_state.dart';
 // Track C - Ticket #78: Unified parcel status helpers
-import '../../state/parcels/parcel_status_utils.dart';
-import '../../widgets/app_button_unified.dart';
-import '../../widgets/app_shell.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_status_utils.dart';
+import 'package:delivery_ways_clean/widgets/app_button_unified.dart';
+import 'package:delivery_ways_clean/widgets/app_shell.dart';
 import 'parcel_shipment_details_screen.dart';
 
 /// Screen that displays list of all parcels.

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:maps_shims/maps.dart' show MapCamera, MapController, MapMarker, MapMarkerId, GeoPoint, MapPoint;
 import 'package:mobility_shims/mobility.dart';
-import '../infra/mobility_providers.dart' show mapControllerProvider, tripRecorderProvider;
+import 'package:delivery_ways_clean/state/infra/mobility_providers.dart' show mapControllerProvider, tripRecorderProvider;
 import 'tracking_map_state.dart';
 
 class TrackingMapController extends StateNotifier<TrackingMapState> {

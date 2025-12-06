@@ -86,7 +86,7 @@ class MockParcelPricingService implements ParcelPricingService {
     required ParcelServiceType serviceType,
   }) async {
     // 1) Simulate network latency
-    await Future.delayed(baseLatency);
+    await Future<void>.delayed(baseLatency);
 
     // 2) Possible failure
     if (_shouldFail()) {

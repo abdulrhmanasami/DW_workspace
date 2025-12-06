@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../colors.dart';
-import '../theme.dart' as theme_contract;
+import 'package:design_system_shims/src/colors.dart';
+import 'package:design_system_shims/src/theme.dart' as theme_contract;
 
 /// Exports for design system interfaces
 export '../colors.dart' show AppColors;

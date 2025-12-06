@@ -7,9 +7,9 @@ import 'package:b_ux/guidance_ux.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../config/feature_flags.dart';
-import '../infra/mobility_availability.dart';
-import '../onboarding/onboarding_repository.dart';
+import 'package:delivery_ways_clean/config/feature_flags.dart';
+import 'package:delivery_ways_clean/state/infra/mobility_availability.dart';
+import 'package:delivery_ways_clean/state/onboarding/onboarding_repository.dart';
 
 // ============================================================================
 // SharedPreferences Hint Repository

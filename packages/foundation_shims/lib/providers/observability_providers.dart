@@ -4,9 +4,9 @@
 /// Last updated: 2025-11-12
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../src/observability/observability_gate.dart';
-import '../src/observability/consent_guard.dart';
-import '../src/telemetry.dart';
+import 'package:foundation_shims/src/observability/observability_gate.dart';
+import 'package:foundation_shims/src/observability/consent_guard.dart';
+import 'package:foundation_shims/src/telemetry.dart';
 
 /// Provider for the observability gate - selects Real/NoOp based on consent
 final observabilityGateProvider = Provider<ObservabilityGate>((ref) {

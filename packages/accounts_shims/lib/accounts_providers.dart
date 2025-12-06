@@ -6,8 +6,8 @@ import 'src/accounts_client.dart';
 import 'src/accounts_endpoints.dart';
 import 'src/models.dart';
 import 'src/dsr/dsr_service.dart';
-import 'src/dsr/dsr_contracts.dart';
 import 'src/dsr/dsr_audit.dart';
+import 'src/dsr/dsr_contracts.dart';
 
 /// Provider for current user profile
 final userProfileProvider = FutureProvider<UserProfile>((ref) async {
@@ -38,7 +38,7 @@ final dsrServiceFactoryProvider = Provider<DsrServiceFactory>((ref) {
 
   // TODO: Get userId from authentication provider
   // For now, using a placeholder - in real implementation this would come from auth
-  final userId = 'current_user_id'; // Placeholder - replace with actual user ID
+  const userId = 'current_user_id'; // Placeholder - replace with actual user ID
 
   return DsrServiceFactoryImpl(
     endpoints: endpoints,

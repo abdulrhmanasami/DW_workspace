@@ -398,7 +398,7 @@ void main() {
                     ),
                   );
                   // Capture state after init
-                  Future.delayed(Duration.zero, () {
+                  Future<void>.delayed(Duration.zero, () {
                     capturedState = controller.state;
                   });
                   return controller;

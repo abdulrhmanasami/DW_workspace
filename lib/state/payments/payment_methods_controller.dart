@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:payments/payments.dart';
-import '../infra/payments_providers.dart';
+import 'package:delivery_ways_clean/state/infra/payments_providers.dart';
 
 class PaymentMethodsState {
   final AsyncValue<List<SavedPaymentMethod>> methods;

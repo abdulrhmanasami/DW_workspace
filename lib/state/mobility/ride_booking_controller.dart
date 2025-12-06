@@ -370,7 +370,7 @@ class RideBookingController extends StateNotifier<RideBookingState> {
     }
 
     // Simulate finding driver (3-5 seconds)
-    await Future.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 3));
     
     // Check if still in findingDriver (user might have cancelled)
     if (state.status != mobility.RideStatus.findingDriver || state.ride == null) {
@@ -397,7 +397,7 @@ class RideBookingController extends StateNotifier<RideBookingState> {
     _startDriverLocationSimulation();
 
     // Simulate driver en route (5 seconds for more realistic experience)
-    await Future.delayed(const Duration(seconds: 5));
+    await Future<void>.delayed(const Duration(seconds: 5));
     
     if (state.status != mobility.RideStatus.driverAccepted || state.ride == null) {
       return;
@@ -414,7 +414,7 @@ class RideBookingController extends StateNotifier<RideBookingState> {
     _driverLocationTimer?.cancel();
 
     // Simulate pickup (2 seconds)
-    await Future.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 2));
     
     if (state.status != mobility.RideStatus.driverArrived || state.ride == null) {
       return;
@@ -580,7 +580,7 @@ class RideBookingController extends StateNotifier<RideBookingState> {
     state = state.copyWith(ride: payment);
 
     // Simulate payment processing (1 second)
-    await Future.delayed(const Duration(seconds: 1));
+    await Future<void>.delayed(const Duration(seconds: 1));
     
     if (state.status != mobility.RideStatus.payment || state.ride == null) {
       return;

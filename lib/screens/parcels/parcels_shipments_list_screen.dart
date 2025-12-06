@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
-import '../../state/parcels/parcel_shipments_providers.dart';
-import '../../l10n/generated/app_localizations.dart';
-import '../../widgets/dw_app_shell.dart';
-import '../../router/app_router.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_shipments_providers.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/widgets/dw_app_shell.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
 
 /// Track C - Ticket #149: Parcels Shipments List Screen (Screen 12)
 /// Displays list of all shipments with real data from parcels_shims.

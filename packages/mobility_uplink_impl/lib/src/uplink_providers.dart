@@ -4,7 +4,7 @@
 // Last updated: 2025-11-14
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../uplink_config.dart';
+import 'package:mobility_uplink_impl/uplink_config.dart';
 import 'uplink_service.dart';
 
 /// Provider for uplink configuration

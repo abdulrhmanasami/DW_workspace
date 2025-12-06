@@ -20,8 +20,8 @@ class RemoteConfigEntry {
     return RemoteConfigEntry(
       key: json['key'] as String,
       value: json['value'],
-      lastModified: json['lastModified'] != null
-          ? DateTime.parse(json['lastModified'])
+      lastModified: json['lastModified'] is String
+          ? DateTime.parse(json['lastModified'] as String)
           : null,
       source: json['source'] as String?,
     );

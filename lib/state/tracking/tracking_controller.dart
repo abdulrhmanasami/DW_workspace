@@ -7,8 +7,8 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobility_shims/mobility.dart';
 
-import '../infra/mobility_availability.dart';
-import '../infra/mobility_providers.dart';
+import 'package:delivery_ways_clean/state/infra/mobility_availability.dart';
+import 'package:delivery_ways_clean/state/infra/mobility_providers.dart';
 import 'tracking_state.dart';
 
 /// Controller for managing trip tracking state

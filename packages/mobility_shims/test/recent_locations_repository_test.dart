@@ -28,7 +28,7 @@ void main() {
     });
 
     test('adds new location to the list', () async {
-      final location = const RecentLocation(
+      const location = RecentLocation(
         id: 'loc_1',
         title: 'Test Place',
         subtitle: 'Test Address',
@@ -46,14 +46,14 @@ void main() {
     });
 
     test('updates existing location with same id', () async {
-      final location1 = const RecentLocation(
+      const location1 = RecentLocation(
         id: 'loc_1',
         title: 'Old Title',
         subtitle: 'Old Address',
         type: MobilityPlaceType.recent,
       );
 
-      final location2 = const RecentLocation(
+      const location2 = RecentLocation(
         id: 'loc_1', // Same ID
         title: 'New Title',
         subtitle: 'New Address',
@@ -74,19 +74,19 @@ void main() {
     });
 
     test('maintains most recent first order', () async {
-      final location1 = const RecentLocation(
+      const location1 = RecentLocation(
         id: 'loc_1',
         title: 'First Place',
         type: MobilityPlaceType.recent,
       );
 
-      final location2 = const RecentLocation(
+      const location2 = RecentLocation(
         id: 'loc_2',
         title: 'Second Place',
         type: MobilityPlaceType.recent,
       );
 
-      final location3 = const RecentLocation(
+      const location3 = RecentLocation(
         id: 'loc_3',
         title: 'Third Place',
         type: MobilityPlaceType.recent,
@@ -162,19 +162,19 @@ void main() {
     });
 
     test('moves existing location to top when re-added', () async {
-      final location1 = const RecentLocation(
+      const location1 = RecentLocation(
         id: 'loc_1',
         title: 'Place 1',
         type: MobilityPlaceType.recent,
       );
 
-      final location2 = const RecentLocation(
+      const location2 = RecentLocation(
         id: 'loc_2',
         title: 'Place 2',
         type: MobilityPlaceType.recent,
       );
 
-      final location3 = const RecentLocation(
+      const location3 = RecentLocation(
         id: 'loc_3',
         title: 'Place 3',
         type: MobilityPlaceType.recent,

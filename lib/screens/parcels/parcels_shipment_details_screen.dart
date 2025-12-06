@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../widgets/dw_app_shell.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/widgets/dw_app_shell.dart';
 
 /// Track C - Ticket #151: Parcels Shipment Details Screen
 /// Shows full details of a ParcelShipment using domain model from parcels_shims.

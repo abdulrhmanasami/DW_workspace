@@ -1,10 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../location/location_source.dart';
-import '../location/location_permissions.dart';
-import '../src/background_contracts.dart';
-import '../src/background_tracking_controller.dart';
-import '../src/geofence_contracts.dart';
-import '../src/trips_contracts.dart';
+import 'package:mobility_shims/location/location_source.dart';
+import 'package:mobility_shims/location/location_permissions.dart';
+import 'package:mobility_shims/src/background_tracking_controller.dart';
+import 'package:mobility_shims/src/geofence_contracts.dart';
+import 'package:mobility_shims/src/trips_contracts.dart';
 
 // Location services
 final locationSourceProvider = Provider<LocationSource>(

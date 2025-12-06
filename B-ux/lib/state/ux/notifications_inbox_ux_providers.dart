@@ -8,8 +8,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../infra/notifications_inbox_providers.dart';
-import '../infra/notifications_providers.dart';
+import 'package:b_ux/state/infra/notifications_inbox_providers.dart';
+import 'package:b_ux/state/infra/notifications_providers.dart';
 import 'notification_preferences_ux.dart';
 
 // ============================================================================

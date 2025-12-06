@@ -3,9 +3,9 @@
 // Purpose: No-Op implementations for safe fallback when mobility features are disabled
 // Last updated: 2025-11-13
 
-import '../contracts.dart';
-import '../background_contracts.dart';
-import '../../location/models.dart' show LocationPoint;
+import 'package:mobility_shims/src/contracts.dart';
+import 'package:mobility_shims/src/background_contracts.dart';
+import 'package:mobility_shims/location/models.dart' show LocationPoint;
 
 /// Stub location provider that returns empty streams and throws safe exceptions
 class StubLocationProvider implements LocationProvider {

@@ -35,7 +35,7 @@ class MapWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Create No-Op controller and call callback
-    final controller = NoOpMapController();
+    const controller = NoOpMapController();
     onMapCreated?.call(controller);
 
     return Container(

@@ -13,7 +13,7 @@ import 'package:payments/providers.dart'
     as pay_internals
     show ensurePaymentGateway;
 
-import '../../wiring/payments_wiring.dart' as payments_wiring;
+import 'package:delivery_ways_clean/wiring/payments_wiring.dart' as payments_wiring;
 import 'feature_flags.dart'; // For locally defined providers
 import 'payments_providers.dart';
 

@@ -1,7 +1,7 @@
-import '../services/rbac_service.dart';
-import '../widgets/rbac_guard.dart';
-import '../config/config_manager.dart';
-import '../state/infra/navigation_service.dart';
+import 'package:delivery_ways_clean/services/rbac_service.dart';
+import 'package:delivery_ways_clean/widgets/rbac_guard.dart';
+import 'package:delivery_ways_clean/config/config_manager.dart';
+import 'package:delivery_ways_clean/state/infra/navigation_service.dart';
 import 'package:core/rbac/rbac_models.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/foundation.dart';

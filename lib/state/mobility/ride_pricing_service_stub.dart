@@ -76,7 +76,7 @@ class StubRidePricingService implements RidePricingService {
     required RideServiceType serviceType,
   }) async {
     // Simulate network delay
-    await Future.delayed(simulatedDelay);
+    await Future<void>.delayed(simulatedDelay);
 
     // Simulate random failures
     if (_shouldSimulateFailure()) {

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../src/components.dart';
+import 'package:design_system_shims/src/components.dart';
 
 /// Provider for AppButton primary resolver
 final appButtonPrimaryResolverProvider = Provider<AppButtonPrimaryResolver>((

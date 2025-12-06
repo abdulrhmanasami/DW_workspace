@@ -26,10 +26,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../state/payments/payment_methods_ui_state.dart';
-import '../../ui/common/empty_state.dart';
-import '../../ui/payments/payment_method_card.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/state/payments/payment_methods_ui_state.dart';
+import 'package:delivery_ways_clean/ui/common/empty_state.dart';
+import 'package:delivery_ways_clean/ui/payments/payment_method_card.dart';
 
 /// Payments Screen - Shows list of saved payment methods
 /// Track E - Ticket E-1: Uses UI state provider for MVP

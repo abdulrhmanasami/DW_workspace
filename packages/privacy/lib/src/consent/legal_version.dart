@@ -1,4 +1,4 @@
-import '../privacy_policy.dart';
+import 'package:privacy/src/privacy_policy.dart';
 
 /// Associates a policy version with a locale for display purposes.
 class LegalVersion {

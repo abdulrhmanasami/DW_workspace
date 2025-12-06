@@ -95,7 +95,7 @@ class _TripCompletionScreenState extends ConsumerState<TripCompletionScreen> {
               color: Colors.green.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: Center(
+            child: const Center(
               child: Icon(
                 Icons.check_circle,
                 size: 60,
@@ -166,7 +166,7 @@ class _TripCompletionScreenState extends ConsumerState<TripCompletionScreen> {
                 if (trip.driverRating != null)
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.star,
                         size: 14,
                         color: Colors.amber,
@@ -268,7 +268,7 @@ class _TripCompletionScreenState extends ConsumerState<TripCompletionScreen> {
   }
 
   Widget _buildFareBreakdown(AppThemeData theme, Trip trip) {
-    final baseFare = 2.50;
+    const baseFare = 2.50;
     final distanceFare = (trip.totalFare ?? 0) - baseFare - 1.00;
 
     return AppCardUnified(
@@ -489,7 +489,7 @@ class _TripCompletionScreenState extends ConsumerState<TripCompletionScreen> {
       ),
     );
 
-    Future.delayed(
+    Future<void>.delayed(
       const Duration(seconds: 2),
       () {
         if (mounted) {

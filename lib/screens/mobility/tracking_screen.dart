@@ -13,7 +13,7 @@ import 'package:maps_shims/maps.dart' as maps;
 import 'package:mobility_shims/mobility.dart' as mob;
 import 'package:design_system_shims/design_system_shims.dart';
 
-import '../../state/mobility/tracking_controller.dart';
+import 'package:delivery_ways_clean/state/mobility/tracking_controller.dart';
 
 class TrackingScreen extends ConsumerStatefulWidget {
   const TrackingScreen({super.key});

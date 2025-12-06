@@ -1,3 +1,4 @@
+// ignore_for_file: dangling_library_doc_comments
 /// Component: Background Controller Implementation
 /// Created by: Cursor (auto-generated)
 /// Purpose: Background location tracking using flutter_background_geolocation

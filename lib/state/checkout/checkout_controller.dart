@@ -7,7 +7,7 @@ class CheckoutController extends StateNotifier<CheckoutState> {
   Future<void> submit() async {
     state = state.copyWith(status: CheckoutStatus.processing);
     // TODO: استدعِ حِزم الدفع/الشبكة عبر الشيمات (payments/network_shims) — لا SDKs مباشرة.
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future<void>.delayed(const Duration(milliseconds: 300));
     state = state.copyWith(status: CheckoutStatus.success, orderId: 'order_#');
   }
 }

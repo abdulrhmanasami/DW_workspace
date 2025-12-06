@@ -1,8 +1,5 @@
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobility_shims/mobility.dart';
-import 'background_workmanager_tracker.dart';
 import 'geolocator_location_source.dart';
 
 final geolocatorLocationSourceProvider = Provider<LocationSource>(

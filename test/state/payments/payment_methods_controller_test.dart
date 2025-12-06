@@ -146,7 +146,7 @@ void main() {
         expect(initialState.error, isNull);
 
         // Wait for async init before dispose
-        await Future.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
         controller.dispose();
       });
     });
@@ -167,7 +167,7 @@ void main() {
         );
 
         // Wait for async init to complete
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
 
         expect(stubGateway.listMethodsCalled, isTrue);
         expect(stubGateway.lastCustomerId, equals('cus_test'));
@@ -183,7 +183,7 @@ void main() {
           Future.value(null),
         );
 
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
 
         expect(controller.state.methods.hasValue, isTrue);
         expect(controller.state.methods.value, isEmpty);
@@ -199,7 +199,7 @@ void main() {
           Future.value(''),
         );
 
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
 
         expect(controller.state.methods.hasValue, isTrue);
         expect(controller.state.methods.value, isEmpty);
@@ -216,7 +216,7 @@ void main() {
           Future.value('cus_test'),
         );
 
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
         expect(controller.state.methods.hasError, isTrue);
 
         // Clear error and refresh
@@ -243,7 +243,7 @@ void main() {
           Future.value('cus_test'),
         );
 
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
 
         expect(controller.state.methods.hasError, isTrue);
         expect(controller.state.error, contains('Network error'));
@@ -263,7 +263,7 @@ void main() {
           Future.value('cus_test'),
         );
 
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
 
         // Add a method
         final newMethod = createTestMethod(id: 'pm_new');
@@ -286,7 +286,7 @@ void main() {
           Future.value('cus_test'),
         );
 
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
         await controller.addMethod(useGPayIfAvailable: true);
 
         expect(stubGateway.lastSetupRequest?.useGooglePayIfAvailable, isTrue);
@@ -300,7 +300,7 @@ void main() {
           Future.value('cus_test'),
         );
 
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
 
         // We can't easily intercept async, so we'll verify final state
         await controller.addMethod(useGPayIfAvailable: false);
@@ -317,7 +317,7 @@ void main() {
           Future.value('cus_test'),
         );
 
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
 
         stubGateway.listMethodsCalled = false;
         await controller.addMethod(useGPayIfAvailable: false);
@@ -339,7 +339,7 @@ void main() {
           Future.value('cus_test'),
         );
 
-        await Future.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
 
         stubGateway.setupMethodError = Exception('Setup failed');
         await controller.addMethod(useGPayIfAvailable: false);
@@ -358,7 +358,7 @@ void main() {
           Future.value(null),
         );
 
-        await Future.delayed(const Duration(milliseconds: 100));
+        await Future<void>.delayed(const Duration(milliseconds: 100));
         await controller.addMethod(useGPayIfAvailable: false);
 
         // Error should be set when customer ID is missing
@@ -385,7 +385,7 @@ void main() {
           Future.value('cus_test'),
         );
 
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
         expect(controller.state.methods.value?.length, equals(2));
 
         await controller.removeMethod('pm_to_remove');
@@ -409,7 +409,7 @@ void main() {
           Future.value('cus_test'),
         );
 
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
 
         stubGateway.listMethodsCalled = false;
         await controller.removeMethod('pm_1');
@@ -433,7 +433,7 @@ void main() {
           Future.value('cus_test'),
         );
 
-        await Future.delayed(const Duration(milliseconds: 50));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
         await controller.removeMethod('pm_1');
 
         expect(controller.state.error, contains('Detach failed'));

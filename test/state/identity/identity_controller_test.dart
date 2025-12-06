@@ -151,7 +151,7 @@ void main() {
       expect(controller.state.lastError, null);
 
       // Wait for initialization to complete
-      await Future.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
 
       // Then: Should load initial session from shim
       expect(fakeShim.loadInitialSessionCalled, true);
@@ -163,7 +163,7 @@ void main() {
     test('reloadSession updates state with new session from shim', () async {
       // Given: Controller initialized with unauthenticated session
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // When: Reload session
       fakeShim.initialSession = const IdentitySession(
@@ -188,7 +188,7 @@ void main() {
     test('refreshTokens updates state with refreshed session', () async {
       // Given: Controller initialized
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // When: Refresh tokens
       await controller.refreshTokens();
@@ -204,7 +204,7 @@ void main() {
     test('signOut clears session and calls shim signOut', () async {
       // Given: Controller initialized
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // When: Sign out
       await controller.signOut();
@@ -226,7 +226,7 @@ void main() {
       final controller = container.read(identityControllerProvider.notifier);
 
       // Wait for initialization to complete
-      await Future.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
 
       // Then: Should handle error gracefully
       expect(controller.state.isLoading, false);
@@ -237,7 +237,7 @@ void main() {
     test('handles errors during refreshTokens', () async {
       // Given: Controller initialized
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // When: Refresh tokens with error
       fakeShim.shouldThrowOnRefresh = true;
@@ -254,7 +254,7 @@ void main() {
     test('handles errors during signOut', () async {
       // Given: Controller initialized
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // When: Sign out with error
       fakeShim.shouldThrowOnSignOut = true;
@@ -270,7 +270,7 @@ void main() {
     test('state provides correct computed properties', () async {
       // Given: Controller initialized
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // Initially unauthenticated
       expect(controller.state.isAuthenticated, false);
@@ -299,7 +299,7 @@ void main() {
     test('refreshTokensIfNeeded does nothing when session does not need refresh', () async {
       // Given: Controller initialized with valid (non-expired) tokens
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // Set up authenticated session with non-expired tokens
       final validTokens = AuthTokens(
@@ -328,7 +328,7 @@ void main() {
     test('refreshTokensIfNeeded refreshes when session needs refresh', () async {
       // Given: Controller initialized with expired tokens
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // Set up authenticated session with expired tokens
       final expiredTokens = AuthTokens(
@@ -357,7 +357,7 @@ void main() {
     test('refreshTokensIfNeeded handles refresh errors gracefully', () async {
       // Given: Controller initialized with expired tokens
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // Set up authenticated session with expired tokens
       final expiredTokens = AuthTokens(
@@ -393,7 +393,7 @@ void main() {
     test('requestLoginCode success updates state correctly', () async {
       // Given: Controller initialized
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // When: Request login code
       const phoneNumber = PhoneNumber('+966501234567');
@@ -410,7 +410,7 @@ void main() {
     test('requestLoginCode failure updates state with error message', () async {
       // Given: Controller initialized and shim configured to throw
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
       fakeShim.shouldThrowOnRequestLoginCode = true;
 
       // When: Request login code with invalid phone
@@ -427,7 +427,7 @@ void main() {
     test('requestLoginCode sets loading state during operation', () async {
       // Given: Controller initialized
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // When: Request login code
       const phoneNumber = PhoneNumber('+966501234567');
@@ -443,7 +443,7 @@ void main() {
     test('verifyLoginCode success authenticates user and updates session', () async {
       // Given: Controller initialized
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // When: Verify login code
       const phoneNumber = PhoneNumber('+966501234567');
@@ -464,7 +464,7 @@ void main() {
     test('verifyLoginCode failure keeps unauthenticated state with error', () async {
       // Given: Controller initialized and shim configured to throw
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
       fakeShim.shouldThrowOnVerifyLoginCode = true;
 
       // When: Verify login code with invalid OTP
@@ -484,7 +484,7 @@ void main() {
     test('verifyLoginCode sets loading state during operation', () async {
       // Given: Controller initialized
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // When: Verify login code
       const phoneNumber = PhoneNumber('+966501234567');
@@ -503,7 +503,7 @@ void main() {
     test('login operations handle AuthException messages correctly', () async {
       // Given: Controller initialized and shim configured to throw AuthException
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
       fakeShim.shouldThrowOnRequestLoginCode = true;
 
       // When: Request login code with invalid phone (triggers AuthException.invalidPhone)
@@ -519,7 +519,7 @@ void main() {
     test('state initializes with correct default values for login fields', () async {
       // Given: Controller initialized
       final controller = container.read(identityControllerProvider.notifier);
-      await Future.delayed(Duration.zero); // Wait for init
+      await Future<void>.delayed(Duration.zero); // Wait for init
 
       // Then: Login-related state fields should have correct defaults
       expect(controller.state.isRequestingLoginCode, false);

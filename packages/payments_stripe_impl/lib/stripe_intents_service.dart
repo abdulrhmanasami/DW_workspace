@@ -46,7 +46,7 @@ class StripeIntentsService {
       final intentId = response['intent_id'] as String?;
 
       if (clientSecret == null) {
-        throw PaymentFailure(
+        throw const PaymentFailure(
           code: 'MISSING_CLIENT_SECRET',
           message: 'Backend did not return client secret',
         );

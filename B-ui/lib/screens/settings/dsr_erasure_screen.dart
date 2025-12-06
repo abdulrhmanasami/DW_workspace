@@ -1,5 +1,5 @@
 // ignore_for_file: undefined_prefixed_name, non_type_as_type_argument, undefined_method
-import '../../ui/ui.dart';
+import 'package:b_ui/ui/ui.dart';
 import 'package:accounts_shims/accounts.dart' as acc;
 
 final dsrControllerProvider = Provider<acc.DsrController>((ref) {

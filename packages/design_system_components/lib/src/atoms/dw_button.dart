@@ -4,7 +4,7 @@
 /// Last updated: 2025-11-11
 
 import 'package:flutter/material.dart';
-import '../internal/tokens_bridge.dart';
+import 'package:design_system_components/src/internal/tokens_bridge.dart';
 
 /// Button variants
 enum DwButtonVariant { primary, secondary, outlined, text }

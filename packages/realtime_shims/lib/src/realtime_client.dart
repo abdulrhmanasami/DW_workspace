@@ -88,7 +88,7 @@ class NoOpRealtimeClient implements RealtimeClient {
   }
 
   @override
-  Stream<dynamic> get onEvent => Stream.empty();
+  Stream<dynamic> get onEvent => const Stream.empty();
 
   @override
   Stream<ConnectionState> get connectionStateStream async* {
@@ -119,5 +119,5 @@ class NoOpRealtimeChannel implements RealtimeChannel {
   }
 
   @override
-  Stream<RealtimeEvent> onEvent() => Stream.empty();
+  Stream<RealtimeEvent> onEvent() => const Stream.empty();
 }

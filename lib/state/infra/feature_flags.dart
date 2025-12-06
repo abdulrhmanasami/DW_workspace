@@ -4,8 +4,8 @@ import 'package:foundation_shims/providers/remote_config_providers.dart'
     show rcBool;
 
 import 'payments_providers.dart' show paymentsRuntimeConfigProvider;
-import '../../config/config_manager.dart' as app_cfg;
-import '../../config/feature_flags.dart' show FeatureFlags;
+import 'package:delivery_ways_clean/config/config_manager.dart' as app_cfg;
+import 'package:delivery_ways_clean/config/feature_flags.dart' show FeatureFlags;
 
 // Canonical re-export from foundation_shims - no conflicts
 export 'package:foundation_shims/foundation_shims.dart'

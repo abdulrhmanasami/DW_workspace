@@ -4,9 +4,7 @@
 // Last updated: 2025-11-13
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:foundation_shims/foundation_shims.dart';
 import 'contracts.dart';
-import 'impl/stub_impl.dart';
 
 /// Provider for mobility configuration from RemoteConfig
 final mobilityConfigProvider = Provider<bool>((ref) {

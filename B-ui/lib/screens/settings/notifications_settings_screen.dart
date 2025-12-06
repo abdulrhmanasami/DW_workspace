@@ -9,8 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_components/design_system_components.dart';
 import 'package:design_system_foundation/design_system_foundation.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../state/ux/notification_preferences_ux.dart';
+import 'package:b_ui/l10n/generated/app_localizations.dart';
+import 'package:b_ui/state/ux/notification_preferences_ux.dart';
 
 class NotificationsSettingsScreen extends ConsumerWidget {
   const NotificationsSettingsScreen({super.key});

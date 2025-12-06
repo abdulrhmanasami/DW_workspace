@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../internal/tokens_bridge.dart';
+import 'package:design_system_components/src/internal/tokens_bridge.dart';
 
 class DwIconButton extends StatelessWidget {
   const DwIconButton({

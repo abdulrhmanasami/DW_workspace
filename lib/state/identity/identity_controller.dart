@@ -6,7 +6,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auth_shims/auth_shims.dart';
 import 'package:auth_http_impl/auth_http_impl.dart';
-import '../infra/auth_providers.dart';
+import 'package:delivery_ways_clean/state/infra/auth_providers.dart';
 import 'identity_state.dart';
 
 /// Controller for managing identity and authentication state.

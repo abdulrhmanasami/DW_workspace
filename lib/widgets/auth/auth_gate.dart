@@ -6,10 +6,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foundation_shims/foundation_shims.dart';
-import '../../app_shell/app_shell.dart';
-import '../../screens/auth/phone_login_screen.dart';
-import '../../screens/onboarding/onboarding_root_screen.dart';
-import '../../state/identity/identity_controller.dart';
+import 'package:delivery_ways_clean/app_shell/app_shell.dart';
+import 'package:delivery_ways_clean/screens/auth/phone_login_screen.dart';
+import 'package:delivery_ways_clean/screens/onboarding/onboarding_root_screen.dart';
+import 'package:delivery_ways_clean/state/identity/identity_controller.dart';
 
 /// Auth Gate Widget
 ///

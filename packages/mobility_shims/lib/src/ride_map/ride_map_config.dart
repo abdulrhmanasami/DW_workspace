@@ -16,9 +16,9 @@
 import 'package:meta/meta.dart';
 import 'package:maps_shims/maps_shims.dart';
 
-import '../place_models.dart';
-import '../ride_trip_fsm.dart';
-import '../../location/models.dart';
+import 'package:mobility_shims/src/place_models.dart';
+import 'package:mobility_shims/src/ride_trip_fsm.dart';
+import 'package:mobility_shims/location/models.dart';
 
 /// Configuration model for ride maps.
 ///

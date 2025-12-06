@@ -30,6 +30,6 @@ class StripeEndpoints {
 
   /// Build intent status URL with payment ID
   Uri intentStatusUrl(String paymentId) {
-    return intentStatus.resolve('$paymentId');
+    return intentStatus.resolve(paymentId);
   }
 }

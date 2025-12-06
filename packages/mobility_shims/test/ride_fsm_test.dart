@@ -4,12 +4,11 @@
 /// Last updated: 2025-12-04
 
 import 'package:test/test.dart';
-import 'package:matcher/matcher.dart';
 
-import '../lib/src/place_models.dart';
-import '../lib/src/ride_fsm.dart';
-import '../lib/src/ride_models.dart';
-import '../lib/src/ride_status.dart';
+import 'package:mobility_shims/src/place_models.dart';
+import 'package:mobility_shims/src/ride_fsm.dart';
+import 'package:mobility_shims/src/ride_models.dart';
+import 'package:mobility_shims/src/ride_status.dart';
 
 void main() {
   group('RideFsm', () {

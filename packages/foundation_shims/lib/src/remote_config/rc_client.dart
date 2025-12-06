@@ -6,7 +6,7 @@ import 'dart:convert';
 
 import 'package:network_shims/network_shims.dart';
 
-import '../../config_manager.dart';
+import 'package:foundation_shims/config_manager.dart';
 import 'rc_models.dart';
 
 class RemoteConfigClient {
@@ -43,7 +43,7 @@ class RemoteConfigClient {
           return data;
         } else if (response.statusCode >= 500 && attempt < maxRetries) {
           // Retry on server errors
-          await Future.delayed(retryDelay * (attempt + 1));
+          await Future<void>.delayed(retryDelay * (attempt + 1));
           continue;
         } else {
           // Don't retry on client errors
@@ -51,13 +51,13 @@ class RemoteConfigClient {
         }
       } on TimeoutException {
         if (attempt < maxRetries) {
-          await Future.delayed(retryDelay * (attempt + 1));
+          await Future<void>.delayed(retryDelay * (attempt + 1));
           continue;
         }
         rethrow;
       } catch (e) {
         if (attempt < maxRetries) {
-          await Future.delayed(retryDelay * (attempt + 1));
+          await Future<void>.delayed(retryDelay * (attempt + 1));
           continue;
         }
         rethrow;

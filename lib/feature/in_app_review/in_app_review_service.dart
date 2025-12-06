@@ -9,8 +9,8 @@ import 'package:flutter/widgets.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:foundation_shims/foundation_shims.dart' as fnd;
-import '../../config/in_app_review_config.dart';
-import '../../experiments/ab_selector.dart';
+import 'package:delivery_ways_clean/config/in_app_review_config.dart';
+import 'package:delivery_ways_clean/experiments/ab_selector.dart';
 
 /// Service for managing in-app review prompts
 class InAppReviewService {

@@ -19,7 +19,7 @@
 
 import 'package:flutter/material.dart';
 
-import '../theme/dw_theme.dart';
+import 'package:design_system_shims/src/theme/dw_theme.dart';
 
 /// Text field variants following design system tokens
 enum DWTextFieldVariant {

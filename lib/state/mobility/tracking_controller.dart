@@ -11,7 +11,7 @@ export 'package:mobility_shims/mobility.dart' show TrackingSessionState;
 import 'package:mobility_shims/mobility.dart' as mob;
 import 'package:mobility_uplink_impl/mobility_uplink_impl.dart';
 
-import '../infra/triprecorder_provider.dart';
+import 'package:delivery_ways_clean/state/infra/triprecorder_provider.dart';
 
 // Provider for uplink service - defined here since it's not in mobility_shims
 final uplinkServiceProvider = Provider<UplinkService>((ref) {

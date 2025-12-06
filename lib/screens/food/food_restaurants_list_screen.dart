@@ -11,9 +11,9 @@ import 'package:design_system_shims/design_system_shims.dart'
     show DWSpacing, DWRadius;
 import 'package:food_shims/food_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/food/food_restaurants_state.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/food/food_restaurants_state.dart';
 
 /// Screen displaying the list of food restaurants.
 ///

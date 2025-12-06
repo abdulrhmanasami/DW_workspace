@@ -9,7 +9,7 @@ import 'package:foundation_shims/foundation_shims.dart' as fnd;
 import 'package:maps_adapter_google/maps_adapter_google.dart' as maps_google;
 import 'package:maps_shims/maps.dart';
 
-import '../state/infra/feature_flags.dart';
+import 'package:delivery_ways_clean/state/infra/feature_flags.dart';
 
 /// Dynamic maps provider overrides based on RemoteConfig
 final mapsOverrides = <Override>[

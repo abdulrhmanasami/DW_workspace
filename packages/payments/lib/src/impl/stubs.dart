@@ -3,9 +3,9 @@
 /// Purpose: Safe stub implementations for payment contracts - compile-ready without SDK logic
 /// Last updated: 2025-11-10
 
-import '../payment_method.dart';
-import '../payment_models.dart';
-import '../payment_service.dart';
+import 'package:payments/src/payment_method.dart';
+import 'package:payments/src/payment_models.dart';
+import 'package:payments/src/payment_service.dart';
 
 /// Stub implementation of PaymentMethodVault
 class StubPaymentMethodVault implements PaymentMethodVault {

@@ -4,9 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../state/parcels/parcel_shipments_providers.dart';
-import '../../widgets/dw_app_shell.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_shipments_providers.dart';
+import 'package:delivery_ways_clean/widgets/dw_app_shell.dart';
 
 /// Track C - Ticket #150: Parcels Create Shipment Screen (Screen 11)
 /// Creates new shipment using ParcelShipment domain model from parcels_shims.

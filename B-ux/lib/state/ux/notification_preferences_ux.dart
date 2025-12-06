@@ -8,8 +8,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../infra/notifications_providers.dart';
-import '../infra/telemetry_providers.dart';
+import 'package:b_ux/state/infra/notifications_providers.dart';
+import 'package:b_ux/state/infra/telemetry_providers.dart';
 
 /// View model for notification preferences UI.
 /// Includes Sale-Only availability status.

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'certificate_pinning.dart';
 import 'models.dart';
 
 /// Component: Secure HTTP Client

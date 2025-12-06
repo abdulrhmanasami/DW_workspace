@@ -200,12 +200,12 @@ class MapMobilityConverters {
     // This will be called with LocationPoint from mobility_shims
     // We use dynamic to avoid compile-time dependency
     return MapPoint(
-      latitude: locationPoint.latitude,
-      longitude: locationPoint.longitude,
-      accuracy: locationPoint.accuracy,
-      altitude: locationPoint.altitude,
-      speed: locationPoint.speed,
-      timestamp: locationPoint.timestamp,
+      latitude: (locationPoint.latitude as num).toDouble(),
+      longitude: (locationPoint.longitude as num).toDouble(),
+      accuracy: (locationPoint.accuracy as num?)?.toDouble(),
+      altitude: (locationPoint.altitude as num?)?.toDouble(),
+      speed: (locationPoint.speed as num?)?.toDouble(),
+      timestamp: locationPoint.timestamp as DateTime,
     );
   }
 
@@ -217,6 +217,9 @@ class MapMobilityConverters {
 
   /// Converts LatLng to MapPoint
   static MapPoint latLngToMapPoint(dynamic latLng) {
-    return MapPoint(latitude: latLng.lat, longitude: latLng.lng);
+    return MapPoint(
+      latitude: (latLng.lat as num).toDouble(),
+      longitude: (latLng.lng as num).toDouble(),
+    );
   }
 }

@@ -6,7 +6,7 @@
 import 'package:b_ux/onboarding_ux.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../config/feature_flags.dart';
+import 'package:delivery_ways_clean/config/feature_flags.dart';
 
 // ============================================================================
 // Feature Flags Bridge Provider

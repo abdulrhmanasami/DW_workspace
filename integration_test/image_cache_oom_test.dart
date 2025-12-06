@@ -1,11 +1,3 @@
-/// Integration test for ImageCache OOM prevention
-/// BL-102-004: ImageCache OOM mitigation test
-/// Component: ImageCache OOM Test
-/// Created by: Cursor (auto-generated)
-/// Purpose: Verify ImageCache limits prevent memory leaks
-/// Last updated: 2025-11-04
-
-import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -47,7 +39,7 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: Scaffold()));
 
       // Wait for periodic cleanup (this test may take some time)
-      await Future.delayed(const Duration(seconds: 1));
+      await Future<void>.delayed(const Duration(seconds: 1));
 
       // Get cache stats after potential cleanup
       final stats = ImageCacheManager.getCacheStats();

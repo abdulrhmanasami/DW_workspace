@@ -9,7 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'dart:ui';
 import 'package:foundation_shims/foundation_shims.dart' as fnd;
-import '../config/in_app_review_config.dart';
+import 'package:delivery_ways_clean/config/in_app_review_config.dart';
 import 'ab_selector.dart';
 import 'prompt_scheduler.dart';
 

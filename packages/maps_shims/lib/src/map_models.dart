@@ -3,7 +3,6 @@
 /// Purpose: Define canonical map data models for the app (no Flutter dependencies)
 
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 import 'geo_types.dart' show MapPoint;
 
 /// A latitude/longitude point on the Earth's surface.

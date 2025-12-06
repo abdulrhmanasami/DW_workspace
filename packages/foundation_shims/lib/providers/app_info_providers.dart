@@ -5,8 +5,8 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../src/app_info/app_info.dart';
-import '../src/app_info/app_info_impl.dart';
+import 'package:foundation_shims/src/app_info/app_info.dart';
+import 'package:foundation_shims/src/app_info/app_info_impl.dart';
 
 /// AppInfo service provider
 final appInfoServiceProvider = Provider<AppInfoService>((ref) {

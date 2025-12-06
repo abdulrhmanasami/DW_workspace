@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:parcels_shims/parcels_shims.dart';
-import '../parcels/parcel_shipments_providers.dart';
-import '../mobility/ride_trip_session.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_shipments_providers.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
 
 /// Service type for unified orders history.
 enum OrderHistoryServiceType {

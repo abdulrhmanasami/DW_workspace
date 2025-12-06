@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../src/theme/app_theme.dart';
+import 'package:design_system_shims/src/theme/app_theme.dart';
 
 /// Unified theme provider for the application
 /// Created by: CENT-SHIMS-CONSISTENCY-GATE-02

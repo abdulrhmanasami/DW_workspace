@@ -1,5 +1,5 @@
-import '../config/feature_flags.dart';
-import '../rbac/rbac_engine.dart' show RbacEngine;
+import 'package:delivery_ways_clean/config/feature_flags.dart';
+import 'package:delivery_ways_clean/rbac/rbac_engine.dart' show RbacEngine;
 import 'dart:async';
 import 'package:core/rbac/rbac_models.dart';
 import 'package:flutter/foundation.dart';

@@ -16,7 +16,7 @@
 
 import 'package:meta/meta.dart';
 
-import '../location/models.dart' show LocationPoint;
+import 'package:mobility_shims/location/models.dart' show LocationPoint;
 
 // ============================================================================
 // Price Breakdown Model - Track B Ticket #63

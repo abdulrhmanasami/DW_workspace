@@ -9,10 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../state/payments/payment_methods_ui_state.dart';
-import '../../state/guidance/guidance_providers.dart';
-import '../../widgets/in_app_hint_banner.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/state/payments/payment_methods_ui_state.dart';
+import 'package:delivery_ways_clean/state/guidance/guidance_providers.dart';
+import 'package:delivery_ways_clean/widgets/in_app_hint_banner.dart';
 import 'package:b_ui/ui_components.dart';
 
 /// Track E - Ticket E-1: Payment Methods Screen with full CRUD support

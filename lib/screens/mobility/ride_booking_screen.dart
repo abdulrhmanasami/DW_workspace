@@ -21,12 +21,12 @@ import 'package:design_system_shims/design_system_shims.dart';
 import 'package:maps_shims/maps.dart' as maps;
 import 'package:mobility_shims/mobility_shims.dart' as mobility;
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/mobility/ride_booking_controller.dart';
-import '../../state/mobility/ride_booking_state.dart';
-import '../../widgets/app_shell.dart';
-import '../../widgets/app_button_unified.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_booking_controller.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_booking_state.dart';
+import 'package:delivery_ways_clean/widgets/app_shell.dart';
+import 'package:delivery_ways_clean/widgets/app_button_unified.dart';
 import 'ride_quote_options_sheet.dart';
 
 /// Key for ride booking map widget (for testing)

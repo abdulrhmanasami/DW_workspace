@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobility_shims/mobility.dart' as mob;
 
-import '../state/infra/mobility_providers.dart';
+import 'package:delivery_ways_clean/state/infra/mobility_providers.dart';
 
 class MobilityBgScreen extends ConsumerStatefulWidget {
   const MobilityBgScreen({super.key});
@@ -49,7 +49,7 @@ class _MobilityBgScreenState extends ConsumerState<MobilityBgScreen> {
         }
       });
 
-      await Future.delayed(const Duration(seconds: 10));
+      await Future<void>.delayed(const Duration(seconds: 10));
 
       // Stop tracking
       await backgroundController.stop();
@@ -95,7 +95,7 @@ class _MobilityBgScreenState extends ConsumerState<MobilityBgScreen> {
         _addLog('Exit ${event.id} at $ts');
       });
 
-      await Future.delayed(const Duration(seconds: 15));
+      await Future<void>.delayed(const Duration(seconds: 15));
 
       await enterSub.cancel();
       await exitSub.cancel();
@@ -122,7 +122,7 @@ class _MobilityBgScreenState extends ConsumerState<MobilityBgScreen> {
         _addLog('Trip point recorded: ${point.latitude}, ${point.longitude}');
       });
 
-      await Future.delayed(const Duration(seconds: 10));
+      await Future<void>.delayed(const Duration(seconds: 10));
 
       // End trip
       await tripRecorder.endTrip();

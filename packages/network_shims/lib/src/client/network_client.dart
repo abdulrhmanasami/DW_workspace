@@ -3,9 +3,9 @@ abstract class NetworkClient {
   Future<NetworkResponse> get(final String url,
       {final Map<String, String>? headers});
   Future<NetworkResponse> post(final String url,
-      {final Map<String, String>? headers, final body});
+      {final Map<String, String>? headers, final Object? body});
   Future<NetworkResponse> put(final String url,
-      {final Map<String, String>? headers, final body});
+      {final Map<String, String>? headers, final Object? body});
   Future<NetworkResponse> delete(final String url,
       {final Map<String, String>? headers});
 }

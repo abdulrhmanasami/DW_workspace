@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 /// Component: Stripe Setup Service
 /// Created by: Cursor (auto-generated)
 /// Purpose: Handles SetupIntent creation and payment method management
@@ -93,13 +94,8 @@ class StripeSetupService {
       final setupIntent = await stripe_sdk.Stripe.instance
           .retrieveSetupIntent(setupIntentClientSecret);
 
-      if (setupIntent.paymentMethodId == null) {
-        throw Exception(
-            'Setup intent completed but no payment method ID returned');
-      }
-
       return SetupResult(
-        paymentMethodId: setupIntent.paymentMethodId!,
+        paymentMethodId: setupIntent.paymentMethodId,
         status: SetupIntentStatus.succeeded,
       );
     } on stripe_sdk.StripeException catch (e) {

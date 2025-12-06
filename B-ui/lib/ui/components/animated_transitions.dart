@@ -203,7 +203,7 @@ class _UiStaggeredListState extends State<UiStaggeredList>
       if (!mounted) return;
       final index = widget.reverse ? (_controllers.length - 1 - i) : i;
       _controllers[index].forward();
-      await Future.delayed(delay);
+      await Future<void>.delayed(delay);
     }
   }
 

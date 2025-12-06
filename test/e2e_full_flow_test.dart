@@ -460,10 +460,10 @@ void main() {
             child: Consumer(
               builder: (context, ref, _) {
                 capturedState = ref.watch(parcelDraftProvider);
-                return MaterialApp(
+                return const MaterialApp(
                   localizationsDelegates: AppLocalizations.localizationsDelegates,
                   supportedLocales: AppLocalizations.supportedLocales,
-                  home: const Scaffold(body: Text('Test')),
+                  home: Scaffold(body: Text('Test')),
                 );
               },
             ),
@@ -539,10 +539,10 @@ void main() {
             child: Consumer(
               builder: (context, ref, _) {
                 capturedState = ref.watch(foodCartControllerProvider);
-                return MaterialApp(
+                return const MaterialApp(
                   localizationsDelegates: AppLocalizations.localizationsDelegates,
                   supportedLocales: AppLocalizations.supportedLocales,
-                  home: const Scaffold(body: Text('Test')),
+                  home: Scaffold(body: Text('Test')),
                 );
               },
             ),
@@ -586,10 +586,10 @@ void main() {
             child: Consumer(
               builder: (context, ref, _) {
                 capturedState = ref.watch(paymentMethodsUiControllerProvider);
-                return MaterialApp(
+                return const MaterialApp(
                   localizationsDelegates: AppLocalizations.localizationsDelegates,
                   supportedLocales: AppLocalizations.supportedLocales,
-                  home: const Scaffold(body: Text('Test')),
+                  home: Scaffold(body: Text('Test')),
                 );
               },
             ),

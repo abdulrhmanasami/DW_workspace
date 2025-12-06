@@ -8,8 +8,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:foundation_shims/foundation_shims.dart';
 
-import '../accounts_endpoints.dart';
-import 'dsr_models.dart';
+import 'package:accounts_shims/src/accounts_endpoints.dart';
+import 'dsr_contracts.dart';
 
 /// HTTP client specifically for DSR operations
 class DsrClient {
@@ -38,7 +38,7 @@ class DsrClient {
     );
 
     final responseData = _decodeResponse(response);
-    return DsrRequestSummary.fromJson(responseData);
+    return dsrRequestSummaryFromJson(responseData);
   }
 
   /// Get status of a DSR request
@@ -51,7 +51,7 @@ class DsrClient {
     );
 
     final responseData = _decodeResponse(response);
-    return DsrRequestSummary.fromJson(responseData);
+    return dsrRequestSummaryFromJson(responseData);
   }
 
   /// Cancel a DSR request
@@ -133,17 +133,17 @@ class DsrClient {
       } on TimeoutException {
         attempts++;
         if (attempts > maxRetries) rethrow;
-        await Future.delayed(retryDelay * attempts);
+        await Future<void>.delayed(retryDelay * attempts);
       } catch (e) {
         attempts++;
         if (attempts > maxRetries) rethrow;
         // Only retry on network errors, not on HTTP errors
         if (e is! DsrException) rethrow;
-        await Future.delayed(retryDelay * attempts);
+        await Future<void>.delayed(retryDelay * attempts);
       }
     }
 
-    throw DsrException('Max retries exceeded');
+    throw const DsrException('Max retries exceeded');
   }
 
   /// Validate HTTP response and throw appropriate exceptions
@@ -167,11 +167,11 @@ class DsrClient {
           errorData?['message'] as String? ?? 'Invalid request data',
         );
       case 401:
-        throw DsrException('Authentication required');
+        throw const DsrException('Authentication required');
       case 403:
-        throw DsrException('Access denied');
+        throw const DsrException('Access denied');
       case 404:
-        throw DsrException('DSR request not found');
+        throw const DsrException('DSR request not found');
       case 409:
         // Conflict - might be existing request
         final existingId = errorData?['existing_request_id'] as String?;
@@ -184,10 +184,10 @@ class DsrClient {
           errorData?['message'] as String? ?? 'Request validation failed',
         );
       case 429:
-        throw DsrException('Too many requests - please try again later');
+        throw const DsrException('Too many requests - please try again later');
       default:
         if (response.statusCode >= 500) {
-          throw DsrException('Server error - please try again later');
+          throw const DsrException('Server error - please try again later');
         } else {
           throw DsrException(
             'Request failed with status ${response.statusCode}',

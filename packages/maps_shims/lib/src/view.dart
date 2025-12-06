@@ -6,7 +6,6 @@
 import 'package:flutter/widgets.dart';
 import 'models.dart';
 import 'legacy/aliases.dart' show MapController;
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Callback when map is ready with controller
 typedef OnMapReady = void Function(MapController controller);
@@ -26,6 +25,6 @@ class MapViewParams {
 typedef MapViewBuilder = Widget Function(MapViewParams params);
 
 /// Provider for map view builder - must be overridden with concrete implementation
-final mapViewBuilderProvider = Provider<MapViewBuilder>((ref) {
-  throw UnimplementedError('MapViewBuilder is not provided');
-});
+MapViewBuilder Function() mapViewBuilderProvider = () {
+  return (_) => throw UnimplementedError('MapViewBuilder is not provided');
+};

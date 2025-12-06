@@ -9,11 +9,11 @@ import 'package:design_system_shims/design_system_shims.dart';
 import 'package:flutter/material.dart';
 import 'package:parcels_shims/parcels_shims.dart';
 
-import '../../../l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 // Track C - Ticket #78: Unified parcel status helpers
-import '../../../state/parcels/parcel_status_utils.dart';
+import 'package:delivery_ways_clean/state/parcels/parcel_status_utils.dart';
 // Track B - Ticket #126: Unified OrderStatusChip
-import '../../orders/widgets/order_status_chip.dart';
+import 'package:delivery_ways_clean/screens/orders/widgets/order_status_chip.dart';
 
 /// Reusable parcel order card showing shipment summary.
 /// Displays: ID, Status, Route, Price, and Created Date.

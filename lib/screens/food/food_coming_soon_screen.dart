@@ -6,7 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:design_system_shims/design_system_shims.dart' show DWSpacing;
-import '../../l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 
 /// Screen displayed when the Food delivery feature is not yet enabled.
 /// Shows an informative message using the Utility/EmptyState pattern consistent

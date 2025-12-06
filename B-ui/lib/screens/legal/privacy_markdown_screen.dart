@@ -1,5 +1,5 @@
-import '../../ui/ui.dart';
-import '../../ui/providers/legal_content_providers.dart';
+import 'package:b_ui/ui/ui.dart';
+import 'package:b_ui/ui/providers/legal_content_providers.dart';
 
 class PrivacyMarkdownScreen extends ConsumerWidget {
   const PrivacyMarkdownScreen({super.key});

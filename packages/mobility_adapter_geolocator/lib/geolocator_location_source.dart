@@ -14,7 +14,7 @@ PositionFix _mapPos(g.Position p) => PositionFix(
       lat: p.latitude,
       lng: p.longitude,
       accuracy: p.accuracy,
-      timestamp: p.timestamp ?? DateTime.now(),
+      timestamp: p.timestamp,
     );
 
 class GeolocatorLocationSource implements LocationSource {

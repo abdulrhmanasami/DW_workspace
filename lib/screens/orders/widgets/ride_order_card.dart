@@ -12,8 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobility_shims/mobility_shims.dart' show RideTripPhase;
 
-import '../../../l10n/generated/app_localizations.dart';
-import '../../../state/mobility/ride_trip_session.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
 import 'order_status_chip.dart';
 
 /// Card widget for displaying a ride order in the history list.

@@ -7,11 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:design_system_shims/design_system_shims.dart' as ds;
-import '../../widgets/app_shell.dart';
+import 'package:delivery_ways_clean/widgets/app_shell.dart';
 
-import '../../state/ux/notification_preferences_ux.dart';
-import '../../state/guidance/guidance_providers.dart';
-import '../../widgets/in_app_hint_banner.dart';
+import 'package:delivery_ways_clean/state/ux/notification_preferences_ux.dart';
+import 'package:delivery_ways_clean/state/guidance/guidance_providers.dart';
+import 'package:delivery_ways_clean/widgets/in_app_hint_banner.dart';
 import 'package:b_ui/ui_components.dart';
 
 class NotificationsSettingsScreen extends ConsumerWidget {

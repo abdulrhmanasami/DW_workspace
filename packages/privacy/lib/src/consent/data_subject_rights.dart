@@ -1,4 +1,4 @@
-import '../dsar/dsar_types.dart';
+import 'package:privacy/src/dsar/dsar_types.dart';
 
 /// Represents a user-facing right (access, deletion, portability, etc.).
 class DataSubjectRight {

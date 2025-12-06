@@ -1,77 +1,14 @@
-/// DSR (Data Subject Rights) contracts - SINGLE SOURCE OF TRUTH
-/// Created by: Cursor B-central - CENT-DSR+FND-PROVIDERS-CLEANUP
-/// Purpose: All DSR types consolidated in one canonical location
-/// Last updated: 2025-11-17
+import 'package:dsr_ux_adapter/src/dsr_models.dart' as ux;
 
-/// DSR operation types
+/// Type aliases that point to the canonical DSR models in dsr_ux_adapter.
+typedef DsrRequestType = ux.DsrRequestType;
+typedef DsrStatus = ux.DsrStatus;
+typedef DsrRequestId = ux.DsrRequestId;
+typedef DsrExportLink = ux.DsrExportLink;
+typedef DsrRequestSummary = ux.DsrRequestSummary;
+
+/// DSR operation types (mapped to request types for compatibility)
 enum DsrOperation { export, erase }
-
-/// Type of DSR request
-enum DsrRequestType {
-  /// Data export request (access to personal data)
-  export,
-
-  /// Account erasure request (right to be forgotten)
-  erasure,
-}
-
-/// DSR status enumeration
-enum DsrStatus {
-  /// Request submitted and pending processing
-  pending,
-
-  /// Request is being processed
-  running,
-
-  /// Request completed successfully
-  completed,
-
-  /// Request failed due to error
-  failed,
-
-  /// Data is ready for export/download (legacy compatibility)
-  ready,
-
-  /// Request was canceled by user (legacy compatibility)
-  canceled,
-}
-
-/// Unique identifier for DSR requests
-class DsrRequestId {
-  final String value;
-
-  const DsrRequestId(this.value);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is DsrRequestId &&
-          runtimeType == other.runtimeType &&
-          value == other.value;
-
-  @override
-  int get hashCode => value.hashCode;
-
-  @override
-  String toString() => 'DsrRequestId($value)';
-}
-
-/// Export link with expiration for secure data access
-class DsrExportLink {
-  final Uri url;
-  final DateTime expiresAt;
-
-  const DsrExportLink({required this.url, required this.expiresAt});
-
-  /// Check if the link is still valid (not expired)
-  bool get isValid => DateTime.now().isBefore(expiresAt);
-
-  /// Get remaining time before expiration
-  Duration get timeUntilExpiration => expiresAt.difference(DateTime.now());
-
-  @override
-  String toString() => 'DsrExportLink(url: $url, expires: $expiresAt)';
-}
 
 /// Request to create a new DSR operation
 class DsrCreateRequest {
@@ -86,108 +23,71 @@ class DsrCreateRequest {
   });
 
   Map<String, dynamic> toJson() => {
-    'type': type.name,
-    'include_payments_history': includePaymentsHistory,
-  };
+        'type': type.name,
+        'include_payments_history': includePaymentsHistory,
+      };
 }
 
-/// Summary of a DSR request with current status
-class DsrRequestSummary {
-  final DsrRequestId id;
-  final DsrRequestType type;
-  final DsrStatus status;
-  final DateTime createdAt;
-  final DateTime? updatedAt;
-  final DsrExportLink? exportLink;
+/// DSR service interface (used by providers and implementations)
+abstract class DataSubjectRightsService {
+  Future<DsrRequestSummary> requestExport({bool includePaymentsHistory = false});
 
-  const DsrRequestSummary({
-    required this.id,
-    required this.type,
-    required this.status,
-    required this.createdAt,
-    this.updatedAt,
-    this.exportLink,
-  });
+  Future<DsrRequestSummary> requestErasure();
 
-  /// Check if the request is in a terminal state
-  bool get isTerminal =>
-      status == DsrStatus.completed ||
-      status == DsrStatus.failed ||
-      status == DsrStatus.canceled;
+  Future<DsrRequestSummary> getRequestStatus(DsrRequestId id);
 
-  /// Check if the export is ready for download
-  bool get isExportReady => status == DsrStatus.ready && exportLink != null;
+  Future<void> cancelRequest(DsrRequestId id);
 
-  factory DsrRequestSummary.fromJson(Map<String, dynamic> json) {
-    return DsrRequestSummary(
-      id: DsrRequestId(json['id'] as String),
-      type: DsrRequestType.values.firstWhere(
-        (e) => e.name == json['type'],
-        orElse: () => DsrRequestType.export,
-      ),
-      status: DsrStatus.values.firstWhere(
-        (e) => e.name == json['status'],
-        orElse: () => DsrStatus.pending,
-      ),
-      createdAt: DateTime.parse(json['created_at'] as String),
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'] as String)
-          : null,
-      exportLink: json['export_link'] != null
-          ? DsrExportLink(
-              url: Uri.parse(json['export_link']['url'] as String),
-              expiresAt: DateTime.parse(
-                json['export_link']['expires_at'] as String,
-              ),
-            )
-          : null,
-    );
-  }
+  Future<void> confirmErasure(DsrRequestId id);
 
-  Map<String, dynamic> toJson() => {
-    'id': id.value,
-    'type': type.name,
-    'status': status.name,
-    'created_at': createdAt.toIso8601String(),
-    'updated_at': updatedAt?.toIso8601String(),
-    'export_link': exportLink != null
-        ? {
-            'url': exportLink!.url.toString(),
-            'expires_at': exportLink!.expiresAt.toIso8601String(),
-          }
+  Stream<DsrRequestSummary> watchStatus(DsrRequestId id);
+}
+
+/// Helper to construct DSR summaries from backend JSON payloads.
+DsrRequestSummary dsrRequestSummaryFromJson(Map<String, dynamic> json) {
+  final typeStr = json['type'] as String? ?? 'export';
+  final statusStr = json['status'] as String? ?? 'pending';
+
+  final type = DsrRequestType.values.firstWhere(
+    (e) => e.name == typeStr,
+    orElse: () => DsrRequestType.export,
+  );
+
+  final status = DsrStatus.values.firstWhere(
+    (e) => e.name == statusStr,
+    orElse: () => DsrStatus.pending,
+  );
+
+  return DsrRequestSummary(
+    id: DsrRequestId(json['id'] as String),
+    type: type,
+    status: status,
+    createdAt: DateTime.parse(json['created_at'] as String),
+    updatedAt: json['updated_at'] != null
+        ? DateTime.parse(json['updated_at'] as String)
         : null,
-  };
-
-  @override
-  String toString() {
-    return 'DsrRequestSummary(id: ${id.value}, type: $type, status: $status, '
-        'created: $createdAt, updated: $updatedAt, hasExport: ${exportLink != null})';
-  }
+    exportLink: json['export_link'] != null
+        ? DsrExportLink(
+            url: Uri.parse(json['export_link']['url'] as String),
+            expiresAt: DateTime.parse(
+              json['export_link']['expires_at'] as String,
+            ),
+          )
+        : null,
+    payload: json['payload'] as Map<String, dynamic>?,
+  );
 }
 
-/// DSR request data model
-class DsrRequest {
-  const DsrRequest({
-    required this.id,
-    required this.op,
-    required this.createdAt,
-    required this.status,
-    this.errorMessage,
-  });
-
-  final String id;
-  final DsrOperation op;
-  final DateTime createdAt;
-  final DsrStatus status;
-  final String? errorMessage;
+/// Factory for constructing a DSR service with environment-dependent wiring.
+abstract class DsrServiceFactory {
+  DataSubjectRightsService createService();
 }
 
-/// Abstract factory for creating DSR controllers
+/// Legacy factory/controller abstractions kept for compatibility with older wiring.
 abstract class DsrFactory {
   DsrController create();
 }
 
-/// Abstract DSR controller interface
 abstract class DsrController {
   Stream<DsrStatus> get status;
   Future<void> start(DsrOperation op);

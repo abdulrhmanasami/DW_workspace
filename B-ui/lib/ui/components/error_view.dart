@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import '../ui.dart';
+import 'package:b_ui/ui/ui.dart';
 
 class ErrorView extends StatelessWidget {
   const ErrorView({super.key});

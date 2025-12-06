@@ -23,12 +23,12 @@ import 'package:maps_shims/maps_shims.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/mobility/ride_draft_state.dart';
-import '../../state/mobility/ride_quote_controller.dart';
-import '../../state/mobility/ride_recent_locations_providers.dart';
-import '../../widgets/dw_app_shell.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_quote_controller.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_recent_locations_providers.dart';
+import 'package:delivery_ways_clean/widgets/dw_app_shell.dart';
 import 'widgets/ride_recent_destination_item.dart';
 
 /// RideDestinationScreen - Location picker for ride booking from Home Hub

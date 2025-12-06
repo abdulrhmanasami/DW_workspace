@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'background_contracts.dart';
-import '../location/models.dart';
-import 'location_service.dart';
+import 'package:mobility_shims/location/models.dart';
 
 /// Component: Geolocation Port
 /// Created by: Cursor (auto-generated)

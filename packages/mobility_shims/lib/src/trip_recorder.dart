@@ -3,7 +3,7 @@
 /// Purpose: Interface for trip recording operations
 /// Last updated: 2025-11-11
 
-import '../location/models.dart' show LocationPoint;
+import 'package:mobility_shims/location/models.dart' show LocationPoint;
 
 /// Trip summary data
 class TripSummary {

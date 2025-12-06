@@ -39,17 +39,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobility_shims/mobility_shims.dart';
 import 'package:design_system_shims/design_system_shims.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/mobility/ride_draft_state.dart';
-import '../../state/mobility/ride_trip_session.dart';
-import '../../state/mobility/ride_quote_controller.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_draft_state.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_trip_session.dart';
+import 'package:delivery_ways_clean/state/mobility/ride_quote_controller.dart';
 // Track B - Ticket #105: Payment method integration for trip summary
-import '../../state/payments/payment_methods_ui_state.dart';
+import 'package:delivery_ways_clean/state/payments/payment_methods_ui_state.dart';
 // Track B - Ticket #204: Ride Trip MapView Integration
-import '../../widgets/mobility/ride_trip_map_view.dart';
+import 'package:delivery_ways_clean/widgets/mobility/ride_trip_map_view.dart';
 // Track A - Ticket #134: Unified App Shell
-import '../../widgets/dw_app_shell.dart';
+import 'package:delivery_ways_clean/widgets/dw_app_shell.dart';
 
 /// Active Trip Screen - Shows trip status, map, and driver card (Screen 10)
 class RideActiveTripScreen extends ConsumerWidget {

@@ -3,7 +3,7 @@
 // Purpose: Core abstract interfaces for mobility operations
 // Last updated: 2025-11-13
 
-import '../location/models.dart' show LocationPoint;
+import 'package:mobility_shims/location/models.dart' show LocationPoint;
 import 'background_contracts.dart' show TrackingStatus, PermissionStatus;
 
 /// Abstract location provider interface

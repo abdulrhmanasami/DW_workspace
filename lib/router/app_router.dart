@@ -13,46 +13,46 @@ import 'package:payments/payments.dart' as payments;
 import 'package:core/rbac/rbac_models.dart';
 import 'package:b_ui/router/app_router.dart' as bui show RoutePaths, buildNotificationRoutes;
 
-import '../screens/_placeholders.dart';
-import '../screens/onboarding/onboarding_root_screen.dart';
-import '../state/onboarding/onboarding_providers.dart';
-import '../screens/admin_panel_screen.dart';
-import '../screens/auth/otp_verification_screen.dart';
-import '../screens/auth/phone_login_screen.dart';
-import '../screens/auth/two_factor_screen.dart';
-import '../screens/cart_screen.dart';
-import '../screens/checkout_screen.dart';
-import '../screens/mobility/ride_active_trip_screen.dart';
-import '../screens/mobility/ride_booking_screen.dart';
-import '../screens/mobility/ride_confirmation_screen.dart';
-import '../screens/mobility/ride_destination_screen.dart';
-import '../screens/mobility/ride_trip_summary_screen.dart';
-import '../screens/mobility/tracking_screen.dart';
-import '../screens/mobility/trip_tracking_screen.dart';
-import '../screens/parcels/parcel_destination_screen.dart';
-import '../screens/parcels/parcel_details_screen.dart';
-import '../screens/parcels/parcel_quote_screen.dart';
-import '../screens/parcels/parcels_active_shipment_screen.dart';
-import '../screens/parcels/parcels_entry_screen.dart';
-import '../screens/parcels/parcels_list_screen.dart'; // Track C - Ticket #72
-import '../screens/parcels/parcels_shipments_list_screen.dart'; // Track C - Ticket #149
-import '../screens/parcels/parcels_create_shipment_screen.dart'; // Track C - Ticket #150
-import '../screens/parcels/parcels_shipment_details_screen.dart';
-import '../screens/food/food_restaurants_list_screen.dart'; // Track C - Ticket C-2
-import '../screens/food/food_restaurant_details_screen.dart'; // Track C - Ticket C-2
-import '../screens/order_tracking_screen.dart';
-import '../screens/orders_history_screen.dart';
-import '../screens/orders_screen.dart';
-import '../screens/payment_screen.dart';
-import '../screens/settings/dsr_erasure_screen.dart';
-import '../screens/settings/dsr_export_screen.dart';
-import '../screens/settings/notifications_settings_screen.dart';
-import '../screens/settings/privacy_consent_screen.dart';
-import '../screens/settings/privacy_data_screen.dart';
-import '../screens/tracking_map_screen.dart';
-import '../widgets/rbac_guard.dart';
-import '../widgets/auth/auth_gate.dart';
-import '../ui/ui.dart' as ui;
+import 'package:delivery_ways_clean/screens/_placeholders.dart';
+import 'package:delivery_ways_clean/screens/onboarding/onboarding_root_screen.dart';
+import 'package:delivery_ways_clean/state/onboarding/onboarding_providers.dart';
+import 'package:delivery_ways_clean/screens/admin_panel_screen.dart';
+import 'package:delivery_ways_clean/screens/auth/otp_verification_screen.dart';
+import 'package:delivery_ways_clean/screens/auth/phone_login_screen.dart';
+import 'package:delivery_ways_clean/screens/auth/two_factor_screen.dart';
+import 'package:delivery_ways_clean/screens/cart_screen.dart';
+import 'package:delivery_ways_clean/screens/checkout_screen.dart';
+import 'package:delivery_ways_clean/screens/mobility/ride_active_trip_screen.dart';
+import 'package:delivery_ways_clean/screens/mobility/ride_booking_screen.dart';
+import 'package:delivery_ways_clean/screens/mobility/ride_confirmation_screen.dart';
+import 'package:delivery_ways_clean/screens/mobility/ride_destination_screen.dart';
+import 'package:delivery_ways_clean/screens/mobility/ride_trip_summary_screen.dart';
+import 'package:delivery_ways_clean/screens/mobility/tracking_screen.dart';
+import 'package:delivery_ways_clean/screens/mobility/trip_tracking_screen.dart';
+import 'package:delivery_ways_clean/screens/parcels/parcel_destination_screen.dart';
+import 'package:delivery_ways_clean/screens/parcels/parcel_details_screen.dart';
+import 'package:delivery_ways_clean/screens/parcels/parcel_quote_screen.dart';
+import 'package:delivery_ways_clean/screens/parcels/parcels_active_shipment_screen.dart';
+import 'package:delivery_ways_clean/screens/parcels/parcels_entry_screen.dart';
+import 'package:delivery_ways_clean/screens/parcels/parcels_list_screen.dart'; // Track C - Ticket #72
+import 'package:delivery_ways_clean/screens/parcels/parcels_shipments_list_screen.dart'; // Track C - Ticket #149
+import 'package:delivery_ways_clean/screens/parcels/parcels_create_shipment_screen.dart'; // Track C - Ticket #150
+import 'package:delivery_ways_clean/screens/parcels/parcels_shipment_details_screen.dart';
+import 'package:delivery_ways_clean/screens/food/food_restaurants_list_screen.dart'; // Track C - Ticket C-2
+import 'package:delivery_ways_clean/screens/food/food_restaurant_details_screen.dart'; // Track C - Ticket C-2
+import 'package:delivery_ways_clean/screens/order_tracking_screen.dart';
+import 'package:delivery_ways_clean/screens/orders_history_screen.dart';
+import 'package:delivery_ways_clean/screens/orders_screen.dart';
+import 'package:delivery_ways_clean/screens/payment_screen.dart';
+import 'package:delivery_ways_clean/screens/settings/dsr_erasure_screen.dart';
+import 'package:delivery_ways_clean/screens/settings/dsr_export_screen.dart';
+import 'package:delivery_ways_clean/screens/settings/notifications_settings_screen.dart';
+import 'package:delivery_ways_clean/screens/settings/privacy_consent_screen.dart';
+import 'package:delivery_ways_clean/screens/settings/privacy_data_screen.dart';
+import 'package:delivery_ways_clean/screens/tracking_map_screen.dart';
+import 'package:delivery_ways_clean/widgets/rbac_guard.dart';
+import 'package:delivery_ways_clean/widgets/auth/auth_gate.dart';
+import 'package:delivery_ways_clean/ui/ui.dart' as ui;
 
 /// Route Path Definitions
 /// Centralized route path constants

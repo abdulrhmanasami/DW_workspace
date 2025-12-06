@@ -153,7 +153,7 @@ class Telemetry {
           );
           return;
         }
-        await Future.delayed(_retryDelay * attempts);
+        await Future<void>.delayed(_retryDelay * attempts);
       }
     }
   }

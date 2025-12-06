@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:core/core.dart' as core;
-import '../config/config_manager.dart';
+import 'package:delivery_ways_clean/config/config_manager.dart';
 
 /// Component: WebhookMonitor
 /// Created by: Cursor (auto-generated)

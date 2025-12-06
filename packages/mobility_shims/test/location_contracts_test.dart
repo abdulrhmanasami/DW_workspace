@@ -19,13 +19,13 @@ void main() {
 
   group('PositionSettings', () {
     test('can be created', () {
-      final settings = PositionSettings(
+      const settings = PositionSettings(
         distanceFilterMeters: 5.0,
         interval: Duration(seconds: 1),
       );
 
       expect(settings.distanceFilterMeters, 5.0);
-      expect(settings.interval, Duration(seconds: 1));
+      expect(settings.interval, const Duration(seconds: 1));
     });
   });
 }

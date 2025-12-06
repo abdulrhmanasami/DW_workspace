@@ -1,13 +1,13 @@
 /// In-Memory Map Port - Stub Implementation for Testing
 /// Track B - Ticket #198: MapInterface تفاعلي (Streams/Sinks) + Stub Implementation
 /// Purpose: Testing implementation that stores state in memory
+// ignore_for_file: unused_element
 
 import 'dart:async';
 
 import 'core/dw_lat_lng.dart';
 import 'core/dw_map_camera.dart';
 import 'core/dw_map_commands.dart';
-import 'core/dw_map_controller.dart';
 import 'core/dw_map_events.dart';
 import 'core/dw_map_marker.dart';
 import 'core/dw_map_polyline.dart';

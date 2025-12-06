@@ -1,8 +1,3 @@
-/// Map Models Tests - Unit tests for new API value objects
-/// Track B - Ticket #198: MapInterface تفاعلي (Streams/Sinks) + Stub Implementation
-/// Purpose: Test GeoPoint, MapMarker, MapPolyline, and other value objects
-
-import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:maps_shims/maps_shims.dart';
@@ -140,7 +135,7 @@ void main() {
         zoom: MapZoom(14.0),
       );
 
-      final updated = original.copyWith(zoom: MapZoom(16.0));
+      final updated = original.copyWith(zoom: const MapZoom(16.0));
 
       expect(updated.center, original.center);
       expect(updated.zoom!.value, 16.0);

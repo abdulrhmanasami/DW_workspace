@@ -12,7 +12,7 @@
 
 import 'package:mobility_shims/mobility_shims.dart' show RideTripPhase;
 
-import '../../l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 
 /// True if the phase is considered terminal (no more transitions allowed).
 ///

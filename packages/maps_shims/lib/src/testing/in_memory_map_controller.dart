@@ -4,13 +4,13 @@
 
 import 'dart:async';
 
-import '../core/dw_lat_lng.dart';
-import '../core/dw_map_camera.dart';
-import '../core/dw_map_commands.dart';
-import '../core/dw_map_controller.dart';
-import '../core/dw_map_events.dart';
-import '../core/dw_map_marker.dart';
-import '../core/dw_map_polyline.dart';
+import 'package:maps_shims/src/core/dw_lat_lng.dart';
+import 'package:maps_shims/src/core/dw_map_camera.dart';
+import 'package:maps_shims/src/core/dw_map_commands.dart';
+import 'package:maps_shims/src/core/dw_map_controller.dart';
+import 'package:maps_shims/src/core/dw_map_events.dart';
+import 'package:maps_shims/src/core/dw_map_marker.dart';
+import 'package:maps_shims/src/core/dw_map_polyline.dart';
 
 /// In-memory implementation of [DWMapController] for testing.
 ///

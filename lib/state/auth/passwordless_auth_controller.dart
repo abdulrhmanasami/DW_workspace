@@ -6,8 +6,8 @@
 import 'package:auth_shims/auth_shims.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../config/feature_flags.dart';
-import '../infra/auth_providers.dart';
+import 'package:delivery_ways_clean/config/feature_flags.dart';
+import 'package:delivery_ways_clean/state/infra/auth_providers.dart';
 
 typedef PasswordlessClock = DateTime Function();
 

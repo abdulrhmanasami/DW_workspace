@@ -5,8 +5,8 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:foundation_shims/foundation_shims.dart' as fnd;
-import '../../config/config_manager.dart';
-import '../../config/feature_flags.dart';
+import 'package:delivery_ways_clean/config/config_manager.dart';
+import 'package:delivery_ways_clean/config/feature_flags.dart';
 
 /// Status indicating whether realtime tracking is available
 enum TrackingAvailabilityStatus {

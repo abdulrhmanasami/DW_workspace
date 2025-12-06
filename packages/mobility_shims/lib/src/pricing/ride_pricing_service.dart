@@ -13,8 +13,8 @@
 /// - Implementations may simulate network latency and failures
 /// - This is part of the MockPricingService Stub for RideQuote
 
-import '../place_models.dart';
-import '../ride_quote_models.dart';
+import 'package:mobility_shims/src/place_models.dart';
+import 'package:mobility_shims/src/ride_quote_models.dart';
 
 /// Service type for ride pricing.
 ///

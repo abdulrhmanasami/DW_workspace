@@ -16,7 +16,7 @@ void main() {
     group('Happy Path - Full Journey', () {
       test('draft → quoting → requesting → findingDriver → driverAccepted → '
           'driverArrived → inProgress → payment → completed', () {
-        var state = RideTripState(
+        var state = const RideTripState(
           tripId: 'trip-1',
           phase: RideTripPhase.draft,
         );
@@ -48,7 +48,7 @@ void main() {
 
       test('tripId is preserved through all transitions', () {
         const testTripId = 'persistent-trip-id';
-        var state = RideTripState(
+        var state = const RideTripState(
           tripId: testTripId,
           phase: RideTripPhase.draft,
         );
@@ -79,7 +79,7 @@ void main() {
       });
 
       test('each phase transition creates new state instance', () {
-        final initial =
+        const initial =
             RideTripState(tripId: 'trip-immutable', phase: RideTripPhase.draft);
 
         final next =
@@ -93,7 +93,7 @@ void main() {
 
     group('Invalid Transitions - Explicit Tests', () {
       test('draft → driverArrived is invalid (skipping phases)', () {
-        final state =
+        const state =
             RideTripState(tripId: 'trip-invalid-1', phase: RideTripPhase.draft);
 
         expect(
@@ -103,7 +103,7 @@ void main() {
       });
 
       test('draft → startTrip is invalid', () {
-        final state =
+        const state =
             RideTripState(tripId: 'trip-invalid-2', phase: RideTripPhase.draft);
 
         expect(
@@ -113,7 +113,7 @@ void main() {
       });
 
       test('draft → complete is invalid', () {
-        final state =
+        const state =
             RideTripState(tripId: 'trip-invalid-3', phase: RideTripPhase.draft);
 
         expect(
@@ -123,7 +123,7 @@ void main() {
       });
 
       test('inProgress → draft is invalid (backwards transition)', () {
-        final state = RideTripState(
+        const state = RideTripState(
             tripId: 'trip-invalid-4', phase: RideTripPhase.inProgress);
 
         expect(
@@ -133,7 +133,7 @@ void main() {
       });
 
       test('payment → driverAccepted is invalid (backwards transition)', () {
-        final state =
+        const state =
             RideTripState(tripId: 'trip-invalid-5', phase: RideTripPhase.payment);
 
         expect(
@@ -143,7 +143,7 @@ void main() {
       });
 
       test('findingDriver → quoteReceived is invalid (wrong direction)', () {
-        final state = RideTripState(
+        const state = RideTripState(
             tripId: 'trip-invalid-6', phase: RideTripPhase.findingDriver);
 
         expect(
@@ -153,7 +153,7 @@ void main() {
       });
 
       test('quoting → driverAccepted is invalid (skipping phases)', () {
-        final state =
+        const state =
             RideTripState(tripId: 'trip-invalid-7', phase: RideTripPhase.quoting);
 
         expect(
@@ -164,7 +164,7 @@ void main() {
 
       test('driverArrived → complete is invalid (skipping inProgress and payment)',
           () {
-        final state = RideTripState(
+        const state = RideTripState(
             tripId: 'trip-invalid-8', phase: RideTripPhase.driverArrived);
 
         expect(
@@ -174,7 +174,7 @@ void main() {
       });
 
       test('requesting → inProgress is invalid (skipping driver phases)', () {
-        final state = RideTripState(
+        const state = RideTripState(
             tripId: 'trip-invalid-9', phase: RideTripPhase.requesting);
 
         expect(
@@ -185,7 +185,7 @@ void main() {
     });
 
     test('cancel from draft leads to cancelled', () {
-      final initial = RideTripState(
+      const initial = RideTripState(
         tripId: 'trip-2',
         phase: RideTripPhase.draft,
       );
@@ -197,7 +197,7 @@ void main() {
     });
 
     test('fail from quoting leads to failed', () {
-      final initial = RideTripState(
+      const initial = RideTripState(
         tripId: 'trip-3',
         phase: RideTripPhase.quoting,
       );
@@ -209,47 +209,47 @@ void main() {
 
     group('cancel transitions', () {
       test('cancel from draft', () {
-        final state = RideTripState(tripId: 't', phase: RideTripPhase.draft);
+        const state = RideTripState(tripId: 't', phase: RideTripPhase.draft);
         final result = applyRideTripEvent(state, RideTripEvent.cancel);
         expect(result.phase, RideTripPhase.cancelled);
       });
 
       test('cancel from quoting', () {
-        final state = RideTripState(tripId: 't', phase: RideTripPhase.quoting);
+        const state = RideTripState(tripId: 't', phase: RideTripPhase.quoting);
         final result = applyRideTripEvent(state, RideTripEvent.cancel);
         expect(result.phase, RideTripPhase.cancelled);
       });
 
       test('cancel from requesting', () {
-        final state =
+        const state =
             RideTripState(tripId: 't', phase: RideTripPhase.requesting);
         final result = applyRideTripEvent(state, RideTripEvent.cancel);
         expect(result.phase, RideTripPhase.cancelled);
       });
 
       test('cancel from findingDriver', () {
-        final state =
+        const state =
             RideTripState(tripId: 't', phase: RideTripPhase.findingDriver);
         final result = applyRideTripEvent(state, RideTripEvent.cancel);
         expect(result.phase, RideTripPhase.cancelled);
       });
 
       test('cancel from driverAccepted', () {
-        final state =
+        const state =
             RideTripState(tripId: 't', phase: RideTripPhase.driverAccepted);
         final result = applyRideTripEvent(state, RideTripEvent.cancel);
         expect(result.phase, RideTripPhase.cancelled);
       });
 
       test('cancel from driverArrived', () {
-        final state =
+        const state =
             RideTripState(tripId: 't', phase: RideTripPhase.driverArrived);
         final result = applyRideTripEvent(state, RideTripEvent.cancel);
         expect(result.phase, RideTripPhase.cancelled);
       });
 
       test('cannot cancel from inProgress', () {
-        final state =
+        const state =
             RideTripState(tripId: 't', phase: RideTripPhase.inProgress);
         expect(
           () => applyRideTripEvent(state, RideTripEvent.cancel),
@@ -258,7 +258,7 @@ void main() {
       });
 
       test('cannot cancel from payment', () {
-        final state = RideTripState(tripId: 't', phase: RideTripPhase.payment);
+        const state = RideTripState(tripId: 't', phase: RideTripPhase.payment);
         expect(
           () => applyRideTripEvent(state, RideTripEvent.cancel),
           throwsA(isA<InvalidRideTransitionException>()),
@@ -344,7 +344,7 @@ void main() {
         RideTripPhase.failed,
       ];
 
-      final allEvents = RideTripEvent.values;
+      const allEvents = RideTripEvent.values;
 
       for (final terminalPhase in terminalPhases) {
         group('from $terminalPhase', () {
@@ -765,7 +765,7 @@ void main() {
 
     group('tryApplyRideTripEvent (Ticket #89)', () {
       test('returns new state for valid transition', () {
-        final state = RideTripState(
+        const state = RideTripState(
           tripId: 'try-apply-1',
           phase: RideTripPhase.draft,
         );
@@ -778,7 +778,7 @@ void main() {
       });
 
       test('returns null for invalid transition (no exception)', () {
-        final state = RideTripState(
+        const state = RideTripState(
           tripId: 'try-apply-2',
           phase: RideTripPhase.draft,
         );
@@ -789,7 +789,7 @@ void main() {
       });
 
       test('returns null for double events (idempotency)', () {
-        var state = RideTripState(
+        var state = const RideTripState(
           tripId: 'try-apply-3',
           phase: RideTripPhase.draft,
         );
@@ -806,7 +806,7 @@ void main() {
       });
 
       test('handles terminal state gracefully', () {
-        final state = RideTripState(
+        const state = RideTripState(
           tripId: 'try-apply-4',
           phase: RideTripPhase.completed,
         );
@@ -817,7 +817,7 @@ void main() {
       });
 
       test('Happy Path with tryApply - no exceptions thrown', () {
-        var state = RideTripState(
+        var state = const RideTripState(
           tripId: 'try-apply-happy',
           phase: RideTripPhase.draft,
         );
@@ -930,7 +930,7 @@ void main() {
 
     group('Double Events Resilience (Ticket #89)', () {
       test('quoteReceived twice does not change state after first apply', () {
-        var state = RideTripState(
+        var state = const RideTripState(
           tripId: 'double-event-1',
           phase: RideTripPhase.draft,
         );
@@ -950,7 +950,7 @@ void main() {
       });
 
       test('driverAccepted twice is idempotent with tryApply', () {
-        var state = RideTripState(
+        var state = const RideTripState(
           tripId: 'double-event-2',
           phase: RideTripPhase.findingDriver,
         );
@@ -965,7 +965,7 @@ void main() {
       });
 
       test('complete twice is idempotent with tryApply', () {
-        var state = RideTripState(
+        var state = const RideTripState(
           tripId: 'double-event-3',
           phase: RideTripPhase.payment,
         );

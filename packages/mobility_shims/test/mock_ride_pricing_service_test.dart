@@ -489,7 +489,7 @@ void main() {
         );
 
         // Small delay to ensure different timestamp
-        await Future.delayed(const Duration(milliseconds: 1));
+        await Future<void>.delayed(const Duration(milliseconds: 1));
 
         final quote2 = await service.quoteRide(
           pickup: pickup,

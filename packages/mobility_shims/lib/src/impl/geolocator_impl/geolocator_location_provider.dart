@@ -5,9 +5,9 @@
 
 import 'package:geolocator/geolocator.dart' as geo;
 
-import '../../background_contracts.dart';
-import '../../contracts.dart';
-import '../../location/models.dart';
+import 'package:mobility_shims/src/background_contracts.dart';
+import 'package:mobility_shims/src/contracts.dart';
+import 'package:mobility_shims/location/models.dart';
 
 /// Converts Geolocator Position to LocationPoint
 LocationPoint _positionToLocationPoint(geo.Position position) {
@@ -35,8 +35,6 @@ PermissionStatus _geolocatorPermissionToPermissionStatus(
       return PermissionStatus.granted;
     case geo.LocationPermission.unableToDetermine:
       return PermissionStatus.notDetermined;
-    case geo.LocationPermission.restricted:
-      return PermissionStatus.restricted;
   }
 }
 

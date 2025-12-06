@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:notifications_shims/notifications_shims.dart';
 
-import '../infra/notifications_inbox_providers.dart';
+import 'package:b_ui/state/infra/notifications_inbox_providers.dart';
 import 'notification_preferences_ux.dart';
 
 sealed class NotificationAction {

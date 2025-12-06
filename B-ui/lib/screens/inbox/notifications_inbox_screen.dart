@@ -4,9 +4,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../state/ux/notifications_inbox_ux_providers.dart';
-import '../settings/notifications_settings_screen.dart';
+import 'package:b_ui/l10n/generated/app_localizations.dart';
+import 'package:b_ui/state/ux/notifications_inbox_ux_providers.dart';
+import 'package:b_ui/screens/settings/notifications_settings_screen.dart';
 
 class NotificationsInboxScreen extends ConsumerWidget {
   const NotificationsInboxScreen({super.key});

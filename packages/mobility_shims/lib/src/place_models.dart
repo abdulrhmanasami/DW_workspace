@@ -7,7 +7,7 @@
 /// They are domain models that can be used across the app via shims.
 
 import 'package:meta/meta.dart';
-import '../location/models.dart';
+import 'package:mobility_shims/location/models.dart';
 
 /// Represents a named location/place for ride booking.
 /// Used for pickup and destination points in the ride flow.

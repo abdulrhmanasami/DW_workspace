@@ -12,10 +12,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart'
     show DWButton, DWTextField, DWSpacing;
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/auth/passwordless_auth_controller.dart';
-import '../../widgets/app_shell.dart';
+import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
+import 'package:delivery_ways_clean/router/app_router.dart';
+import 'package:delivery_ways_clean/state/auth/passwordless_auth_controller.dart';
+import 'package:delivery_ways_clean/widgets/app_shell.dart';
 
 /// Screen for entering OTP verification code.
 ///

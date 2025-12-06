@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_components/design_system_components.dart';
 import 'package:design_system_foundation/design_system_foundation.dart';
 
-import '../../l10n/generated/app_localizations.dart';
-import '../../router/app_router.dart';
-import '../../state/ux/notifications_inbox_ux_providers.dart';
+import 'package:b_ui/l10n/generated/app_localizations.dart';
+import 'package:b_ui/router/app_router.dart';
+import 'package:b_ui/state/ux/notifications_inbox_ux_providers.dart';
 
 class SystemNotificationsScreen extends ConsumerWidget {
   const SystemNotificationsScreen({super.key});

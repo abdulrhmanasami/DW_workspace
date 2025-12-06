@@ -1,7 +1,7 @@
-import '../widgets/payment_method_selector.dart';
-import '../widgets/payment_summary.dart';
-import '../config/config_manager.dart';
-import '../state/infra/navigation_service.dart';
+import 'package:delivery_ways_clean/widgets/payment_method_selector.dart';
+import 'package:delivery_ways_clean/widgets/payment_summary.dart';
+import 'package:delivery_ways_clean/config/config_manager.dart';
+import 'package:delivery_ways_clean/state/infra/navigation_service.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
