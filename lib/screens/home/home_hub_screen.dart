@@ -202,8 +202,8 @@ class HomeHubScreen extends ConsumerWidget {
     if (hasActiveTrip) {
       _navigateToActiveTripScreen(context);
     } else {
-      // Navigate to ride destination screen using Navigator
-      Navigator.of(context).pushNamed(RoutePaths.rideDestination);
+      // Navigate to ride booking flow
+      Navigator.of(context).pushNamed(RoutePaths.rideBooking);
     }
   }
 
@@ -214,7 +214,7 @@ class HomeHubScreen extends ConsumerWidget {
     if (hasActiveTrip) {
       _navigateToActiveTripScreen(context);
     } else {
-      Navigator.of(context).pushNamed(RoutePaths.rideDestination);
+      Navigator.of(context).pushNamed(RoutePaths.rideBooking);
     }
   }
 

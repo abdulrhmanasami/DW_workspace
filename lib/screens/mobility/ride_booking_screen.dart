@@ -15,6 +15,7 @@
 ///
 /// NOTE: This is UI only - no FSM, Fare Engine, or Backend integration.
 
+import 'package:design_system_components/design_system_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:design_system_shims/design_system_shims.dart';
@@ -33,8 +34,76 @@ import 'ride_quote_options_sheet.dart';
 const rideBookingMapKey = ValueKey('ride_booking_map');
 
 /// RideBookingScreen - Main entry point for Ride booking flow
-class RideBookingScreen extends ConsumerWidget {
+class RideBookingScreen extends ConsumerStatefulWidget {
   const RideBookingScreen({super.key});
+
+  @override
+  ConsumerState<RideBookingScreen> createState() => _RideBookingScreenState();
+}
+
+class _RideBookingScreenState extends ConsumerState<RideBookingScreen> {
+  bool _mapReady = false;
+  bool _requestingPermission = false;
+  maps.MapController? _mapController;
+  mobility.LocationPoint? _userLocation;
+  String? _locationError;
+
+  @override
+  void initState() {
+    super.initState();
+    _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
+    setState(() {
+      _requestingPermission = true;
+      _locationError = null;
+    });
+
+    final location = ref.read(mobility.locationProvider);
+    final booking = ref.read(rideBookingControllerProvider.notifier);
+
+    try {
+      final permission = await location.requestPermission();
+      if (permission != mobility.PermissionStatus.granted) {
+        setState(() {
+          _locationError = 'location_permission_denied';
+        });
+        return;
+      }
+
+      final current = await location.getCurrent();
+      setState(() {
+        _userLocation = current;
+      });
+
+      await booking.initialize();
+      _moveCameraToUser();
+    } catch (_) {
+      setState(() {
+        _locationError = 'location_error';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _requestingPermission = false;
+        });
+      }
+    }
+  }
+
+  void _moveCameraToUser() {
+    if (!_mapReady || _mapController == null || _userLocation == null) return;
+    _mapController!.moveCamera(
+      maps.MapCamera(
+        target: maps.MapPoint(
+          latitude: _userLocation!.latitude,
+          longitude: _userLocation!.longitude,
+        ),
+        zoom: 15.0,
+      ),
+    );
+  }
 
   Widget _buildMapView(WidgetRef ref) {
     final buildMap = ref.watch(maps.mapViewBuilderProvider);
@@ -129,21 +198,28 @@ class RideBookingScreen extends ConsumerWidget {
       );
     }
 
-    return Container(
-      key: rideBookingMapKey,
-      child: buildMap(
-        maps.MapViewParams(
-          initialCameraPosition: initialCameraPosition,
-          onMapReady: (controller) {
-            // Set markers when map is ready
-            if (markers.isNotEmpty) {
-              controller.setMarkers(markers);
-            }
-            // Set polylines when map is ready
-            if (polylines.isNotEmpty) {
-              controller.setPolylines(polylines);
-            }
-          },
+    return AnimatedOpacity(
+      duration: const Duration(milliseconds: 200),
+      opacity: _mapReady ? 1 : 0.4,
+      child: Container(
+        key: rideBookingMapKey,
+        color: Colors.black12,
+        child: buildMap(
+          maps.MapViewParams(
+            initialCameraPosition: initialCameraPosition,
+            onMapReady: (controller) {
+              _mapController = controller;
+              setState(() => _mapReady = true);
+
+              if (markers.isNotEmpty) {
+                controller.setMarkers(markers);
+              }
+              if (polylines.isNotEmpty) {
+                controller.setPolylines(polylines);
+              }
+              _moveCameraToUser();
+            },
+          ),
         ),
       ),
     );
@@ -203,22 +279,70 @@ class RideBookingScreen extends ConsumerWidget {
       safeArea: false,
       body: SafeArea(
         child: Stack(
-        children: [
-          // Map view (background)
-          Positioned.fill(
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 200), // Space for the Sheet
-              child: _buildMapView(ref),
+          children: [
+            // Map view (background)
+            Positioned.fill(
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 200), // Space for the Sheet
+                child: _buildMapView(ref),
+              ),
             ),
-          ),
 
-          // Booking Sheet (Bottom)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: _buildBottomSheet(ref, l10n),
-          ),
-        ],
-      ),
+            // Loading / permission overlay
+            if (_requestingPermission || !_mapReady)
+              const Positioned.fill(
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.black12,
+                    ),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                ),
+              ),
+
+            // Location error banner
+            if (_locationError != null)
+              Positioned(
+                top: 16,
+                left: 16,
+                right: 16,
+                child: Material(
+                  color: Colors.red.shade600,
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Text(
+                      _locationError!,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+
+            // Floating back button
+            Positioned(
+              top: 16,
+              left: 16,
+              child: DwIconButton(
+                icon: Icons.arrow_back,
+                tooltip: l10n.commonBack,
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+
+            // Booking Sheet (Bottom)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: _buildBottomSheet(ref, l10n),
+            ),
+          ],
+        ),
       ),
     );
   }
