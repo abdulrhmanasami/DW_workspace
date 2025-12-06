@@ -12,24 +12,24 @@ class E2ETestConfig {
   // Supabase Configuration (override with --dart-define=SUPABASE_URL=...)
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: 'https://test-project.supabase.co',
+    defaultValue: '',
   );
 
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: 'test-anon-key-placeholder',
+    defaultValue: '',
   );
 
   // Stripe Configuration (override with --dart-define=STRIPE_PUBLISHABLE_KEY=...)
   static const String stripePublishableKey = String.fromEnvironment(
     'STRIPE_PUBLISHABLE_KEY',
-    defaultValue: 'pk_test_placeholder',
+    defaultValue: '',
   );
 
   // RBAC Configuration (override with --dart-define=RBAC_BASE_URL=...)
   static const String rbacBaseUrl = String.fromEnvironment(
     'RBAC_BASE_URL',
-    defaultValue: 'http://localhost:3000/api',
+    defaultValue: '',
   );
 
   // Telemetry Configuration

@@ -1,4 +1,0 @@
-# melos_managed_dependency_overrides: maps_shims
-dependency_overrides:
-  maps_shims:
-    path: ../maps_shims

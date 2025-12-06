@@ -1,10 +1,10 @@
 name: observability_shims
 publish_to: none
+version: 0.1.0
 environment:
   sdk: ">=3.3.0 <4.0.0"
 dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
-  core:
-    path: ../core
+  core: ^0.1.0

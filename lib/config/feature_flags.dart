@@ -401,7 +401,7 @@ class FeatureFlags {
   static bool get requiresBackend {
     const String envValue = String.fromEnvironment(
       'FEATURE_REQUIRES_BACKEND',
-      defaultValue: 'false',
+      defaultValue: 'true',
     );
     return envValue.toLowerCase() == 'true';
   }

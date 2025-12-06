@@ -15,100 +15,47 @@ dependencies:
   meta: 1.16.0
   flutter_riverpod: ^2.6.1
   in_app_review: ^2.0.9
-  core:
-    path: packages/core
-  design_system_components:
-    path: packages/design_system_components
-  design_system_foundation:
-    path: packages/design_system_foundation
-  payments:
-    path: packages/payments
-  foundation_shims:
-    path: packages/foundation_shims
-  network_shims:
-    path: packages/network_shims
-  maps_shims:
-    path: packages/maps_shims
-  mobility_shims:
-    path: packages/mobility_shims
-  mobility_adapter_geolocator:
-    path: packages/mobility_adapter_geolocator
-  mobility_stub_impl:
-    path: packages/mobility_stub_impl
-  pricing_shims:
-    path: packages/pricing_shims
-  pricing_stub_impl:
-    path: stubs/pricing_stub_impl
-  realtime_shims:
-    path: packages/realtime_shims
-  design_system_shims:
-    path: packages/design_system_shims
-  observability_shims:
-    path: packages/observability_shims
-  auth_supabase_impl:
-    path: packages/auth_supabase_impl
-  auth_shims:
-    path: packages/auth_shims
-  auth_http_impl:
-    path: packages/auth_http_impl
-  device_security_shims:
-    path: stubs/device_security_shims
-  payments_shims:
-    path: packages/payments_shims
-  accounts_shims:
-    path: packages/accounts_shims
-  b_ui:
-    path: B-ui
-  b_ux:
-    path: B-ux
-  dsr_ux_adapter:
-    path: packages/dsr_ux_adapter
-  accounts_stub_impl:
-    path: packages/accounts_stub_impl
-  design_system_stub_impl:
-    path: packages/design_system_stub_impl
-  maps_adapter_google:
-    path: packages/maps_adapter_google
-  maps_stub_impl:
-    path: packages/maps_stub_impl
-  mobility_uplink_impl:
-    path: packages/mobility_uplink_impl
-  rbac_rest_impl:
-    path: packages/rbac_rest_impl
-  payments_adapter_stripe:
-    path: packages/payments_adapter_stripe
-  notifications_shims:
-    path: packages/notifications_shims
-  privacy:
-    path: packages/privacy
-  parcels_shims:
-    path: packages/parcels_shims
-  food_shims:
-    path: packages/food_shims
+  core: ^0.1.0
+  design_system_components: ^1.0.0
+  design_system_foundation: ^1.0.0
+  payments: ^1.0.0
+  foundation_shims: ^0.1.0
+  network_shims: ^0.1.0
+  maps_shims: ^0.1.0
+  mobility_shims: ^0.1.0
+  mobility_adapter_geolocator: ^0.1.0
+  mobility_stub_impl: ^0.1.0
+  pricing_shims: ^0.1.0
+  pricing_stub_impl: ^0.1.0
+  realtime_shims: ^0.1.0
+  design_system_shims: ^1.0.0
+  observability_shims: ^0.1.0
+  auth_supabase_impl: ^0.1.0
+  auth_shims: ^1.0.0
+  auth_http_impl: ^1.0.0
+  device_security_shims: ^0.1.0
+  payments_shims: ^0.1.0
+  accounts_shims: ^0.1.0
+  b_ui: ^1.0.0
+  b_ux: ^1.0.0
+  dsr_ux_adapter: ^1.0.0
+  accounts_stub_impl: ^0.1.0
+  design_system_stub_impl: ^1.0.0
+  maps_adapter_google: ^0.1.0
+  maps_stub_impl: ^0.1.0
+  mobility_uplink_impl: ^0.1.0
+  rbac_rest_impl: ^0.1.0
+  payments_adapter_stripe: ^1.0.0
+  notifications_shims: ^1.0.0
+  privacy: ^0.1.0
+  parcels_shims: ^0.0.1
+  food_shims: ^0.0.1
   http: any
   shared_preferences: any
   geolocator: ^11.1.0
 dependency_overrides:
   riverpod: 2.6.1
   flutter_riverpod: 2.6.1
-  foundation_shims:
-    path: packages/foundation_shims
-  design_system_components:
-    path: packages/design_system_components
-  design_system_foundation:
-    path: packages/design_system_foundation
-  design_system_shims:
-    path: packages/design_system_shims
-  accounts_shims:
-    path: packages/accounts_shims
-  device_security_shims:
-    path: stubs/device_security_shims
-  notifications_shims:
-    path: packages/notifications_shims
-  auth_shims:
-    path: packages/auth_shims
-  auth_http_impl:
-    path: packages/auth_http_impl
 dev_dependencies:
   melos: ^5.3.0
   dart_code_metrics:

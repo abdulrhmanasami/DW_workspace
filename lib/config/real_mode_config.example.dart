@@ -12,24 +12,24 @@ class RealModeConfig {
   // Supabase Configuration (override with --dart-define=SUPABASE_URL=...)
   static const String supabaseUrl = String.fromEnvironment(
     'SUPABASE_URL',
-    defaultValue: 'https://real-project.supabase.co',
+    defaultValue: '',
   );
 
   static const String supabaseAnonKey = String.fromEnvironment(
     'SUPABASE_ANON_KEY',
-    defaultValue: 'real-anon-key-placeholder',
+    defaultValue: '',
   );
 
   // Stripe Configuration (override with --dart-define=STRIPE_PUBLISHABLE_KEY=...)
   static const String stripePublishableKey = String.fromEnvironment(
     'STRIPE_PUBLISHABLE_KEY',
-    defaultValue: 'pk_test_real_stripe_key_placeholder',
+    defaultValue: '',
   );
 
   // RBAC Configuration (override with --dart-define=RBAC_BASE_URL=...)
   static const String rbacBaseUrl = String.fromEnvironment(
     'RBAC_BASE_URL',
-    defaultValue: 'https://staging-api.yourdomain.com',
+    defaultValue: '',
   );
 
   // Telemetry Configuration (override with --dart-define=TELEMETRY_ENABLED=...)
@@ -84,9 +84,9 @@ class RealModeConfig {
 
   /// Validate that real mode configuration is properly set
   static bool get isProperlyConfigured {
-    return supabaseUrl != 'https://real-project.supabase.co' &&
-        supabaseAnonKey != 'real-anon-key-placeholder' &&
-        stripePublishableKey != 'pk_test_real_stripe_key_placeholder' &&
-        rbacBaseUrl != 'https://staging-api.yourdomain.com';
+    return supabaseUrl.isNotEmpty &&
+        supabaseAnonKey.isNotEmpty &&
+        stripePublishableKey.isNotEmpty &&
+        rbacBaseUrl.isNotEmpty;
   }
 }

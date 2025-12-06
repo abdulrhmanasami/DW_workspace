@@ -1,5 +1,6 @@
 name: network_shims
 publish_to: none
+version: 0.1.0
 
 environment:
   sdk: ">=3.3.0 <4.0.0"

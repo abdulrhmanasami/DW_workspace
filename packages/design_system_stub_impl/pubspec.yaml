@@ -8,5 +8,4 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_riverpod: ^2.5.1
-  design_system_shims:
-    path: ../design_system_shims
+  design_system_shims: ^1.0.0

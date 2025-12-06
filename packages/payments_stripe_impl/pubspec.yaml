@@ -11,10 +11,8 @@ dependencies:
     sdk: flutter
   flutter_stripe: ^10.2.0
   http: ^1.2.0
-  payments:
-    path: ../payments
-  foundation_shims:
-    path: ../foundation_shims
+  payments: ^1.0.0
+  foundation_shims: ^0.1.0
 
 dev_dependencies:
   flutter_test:

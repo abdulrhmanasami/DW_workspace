@@ -9,8 +9,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_background_geolocation: ^4.15.0
-  mobility_shims:
-    path: ../mobility_shims
+  mobility_shims: ^0.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

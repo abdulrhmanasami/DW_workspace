@@ -10,7 +10,5 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.16.0
-  payments:
-    path: ../payments
-  maps_shims:
-    path: ../maps_shims
+  payments: ^1.0.0
+  maps_shims: ^0.1.0

@@ -7,5 +7,4 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  design_system_foundation:
-    path: ../design_system_foundation
+  design_system_foundation: ^1.0.0

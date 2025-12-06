@@ -8,15 +8,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  payments:
-    path: ../payments
-  foundation_shims:
-    path: ../foundation_shims
-  payments_stripe_impl:
-    path: ../payments_stripe_impl
+  payments: ^1.0.0
+  foundation_shims: ^0.1.0
+  payments_stripe_impl: ^0.1.0
   flutter_riverpod: any
-  payments_shims:
-    path: ../payments_shims
+  payments_shims: ^0.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

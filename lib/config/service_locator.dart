@@ -21,11 +21,20 @@ class ServiceLocator {
 
   /// Get authentication service
   static AuthRepository get auth {
-    _auth ??= AuthRepositorySupabase(
+    _auth ??= _createSupabaseAuth();
+    return _auth!;
+  }
+
+  static AuthRepository _createSupabaseAuth() {
+    if (!IntegrationConfig.hasValidSupabaseConfig) {
+      throw StateError(
+        'Supabase not configured. Provide SUPABASE_URL and SUPABASE_ANON_KEY via --dart-define.',
+      );
+    }
+    return AuthRepositorySupabase(
       url: IntegrationConfig.supabaseUrl,
       anonKey: IntegrationConfig.supabaseAnonKey,
     );
-    return _auth!;
   }
 
   /// Get payment service
@@ -67,19 +76,24 @@ class ServiceLocator {
     return _telemetry!;
   }
 
+  /// Ensure Supabase auth is initialized and ready.
+  static Future<void> ensureAuthReady() async {
+    _auth ??= _createSupabaseAuth();
+  }
+
   /// Initialize all services (call this at app startup)
   static Future<void> initialize() async {
-    if (!IntegrationConfig.isFullyConfigured) {
-      throw StateError(
-        'Backend services not fully configured. '
-        'Missing: ${IntegrationConfig.configurationStatus.entries.where((e) => !e.value).map((e) => e.key).join(', ')}',
-      );
-    }
+    await ensureAuthReady();
 
     // Pre-initialize services to catch configuration issues early
-    auth;
-    await ensurePaymentsReady();
-    rbac;
+    if (IntegrationConfig.hasValidStripeConfig) {
+      await ensurePaymentsReady();
+    }
+
+    if (IntegrationConfig.hasValidRbacConfig) {
+      rbac;
+    }
+
     telemetry;
   }
 

@@ -7,7 +7,5 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  payments_shims:
-    path: ../payments_shims
-  payments:
-    path: ../payments
+  payments_shims: ^0.1.0
+  payments: ^1.0.0

@@ -10,8 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  accounts_shims:
-    path: ../accounts_shims
+  accounts_shims: ^0.1.0
 
 dev_dependencies:
   flutter_test:

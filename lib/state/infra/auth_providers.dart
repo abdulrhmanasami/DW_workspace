@@ -8,10 +8,17 @@ import 'dart:async';
 import 'package:auth_http_impl/auth_http_impl.dart';
 import 'package:auth_shims/auth_shims.dart';
 import 'package:device_security_shims/device_security_shims.dart';
+import 'package:core/core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../config/config_manager.dart';
 import '../../config/feature_flags.dart';
+import '../../config/service_locator.dart';
+
+const _useAuthStub = bool.fromEnvironment(
+  'USE_AUTH_STUB',
+  defaultValue: false,
+);
 
 enum PasswordlessBackendFlavor { stub, http }
 
@@ -40,7 +47,7 @@ final biometricSupportProvider =
 /// Select which backend implementation should be used for passwordless auth.
 final passwordlessBackendFlavorProvider =
     Provider<PasswordlessBackendFlavor>((ref) {
-  if (!FeatureFlags.requiresBackend) {
+  if (_useAuthStub) {
     return PasswordlessBackendFlavor.stub;
   }
   return PasswordlessBackendFlavor.http;
@@ -94,5 +101,10 @@ final authStateProvider = StreamProvider<AuthState>((ref) {
 /// Session storage shim for identity/session persistence.
 final sessionStorageShimProvider = Provider<SessionStorageShim>((ref) {
   return createSessionStorageShim();
+});
+
+/// Supabase-backed AuthRepository exposed via ServiceLocator.
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return ServiceLocator.auth;
 });
 

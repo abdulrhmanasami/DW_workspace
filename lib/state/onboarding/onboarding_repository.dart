@@ -6,6 +6,7 @@
 import 'package:b_ux/onboarding_ux.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:foundation_shims/foundation_shims.dart' show onboardingPrefsServiceProvider;
 
 // ============================================================================
 // SharedPreferences Keys
@@ -147,15 +148,12 @@ final customerOnboardingStateProvider =
 });
 
 /// Provider that determines if onboarding should be shown for customer.
+/// Updated to use onboardingPrefsServiceProvider for compatibility.
 final shouldShowCustomerOnboardingProvider = FutureProvider<bool>((ref) async {
-  final repository = ref.watch(onboardingRepositoryProvider);
-  final flow = OnboardingFlowRegistry.getFlow(OnboardingFlowIds.customerV1);
-
-  if (flow == null) return false;
-
-  final state = await repository.getCompletionState(OnboardingFlowIds.customerV1);
-
-  // Show onboarding if not completed or if there's a newer version
-  return !state.hasCompleted || state.needsUpdate(flow.version);
+  final onboardingPrefs = ref.watch(onboardingPrefsServiceProvider);
+  final hasCompleted = await onboardingPrefs.hasCompletedOnboarding();
+  
+  // Show onboarding if not completed
+  return !hasCompleted;
 });
 

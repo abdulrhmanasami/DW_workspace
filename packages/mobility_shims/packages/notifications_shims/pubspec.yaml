@@ -10,8 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  foundation_shims:
-    path: ../../foundation_shims
+  foundation_shims: ^0.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

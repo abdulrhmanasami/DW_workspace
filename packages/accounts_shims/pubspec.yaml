@@ -12,10 +12,8 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^2.6.1
   http: ^1.2.1
-  foundation_shims:
-    path: ../foundation_shims
-  dsr_ux_adapter:
-    path: ../dsr_ux_adapter
+  foundation_shims: ^0.1.0
+  dsr_ux_adapter: ^1.0.0
   json_annotation: ^4.9.0
 
 dev_dependencies:

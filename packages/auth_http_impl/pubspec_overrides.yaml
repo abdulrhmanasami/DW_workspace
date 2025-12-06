@@ -1,6 +1,0 @@
-# melos_managed_dependency_overrides: auth_shims,foundation_shims
-dependency_overrides:
-  auth_shims:
-    path: ../auth_shims
-  foundation_shims:
-    path: ../foundation_shims

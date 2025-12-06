@@ -9,9 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  pricing_shims:
-    path: ../../packages/pricing_shims
-  payments:
-    path: ../../packages/payments
-  maps_shims:
-    path: ../../packages/maps_shims
+  pricing_shims: ^0.1.0
+  payments: ^1.0.0
+  maps_shims: ^0.1.0

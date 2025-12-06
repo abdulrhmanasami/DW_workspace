@@ -11,12 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  design_system_foundation:
-    path: ../design_system_foundation
-  design_system_components:
-    path: ../design_system_components
-  design_system_shims:
-    path: ../design_system_shims
-  foundation_shims:
-    path: ../foundation_shims
+  design_system_foundation: ^1.0.0
+  design_system_components: ^1.0.0
+  design_system_shims: ^1.0.0
+  foundation_shims: ^0.1.0
   flutter_riverpod: ^2.4.9

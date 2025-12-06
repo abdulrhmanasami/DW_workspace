@@ -15,6 +15,7 @@ typedef Clock = DateTime Function();
 typedef OtpGenerator = String Function();
 
 /// Configuration for the passwordless auth stub backend.
+@Deprecated('Use HttpAuthBackendClient with the real backend instead.')
 class StubAuthBackendConfig {
   StubAuthBackendConfig({
     Duration? otpTtl,
@@ -53,6 +54,7 @@ class StubAuthBackendConfig {
 }
 
 /// In-memory OTP backend used while the real API is unavailable.
+@Deprecated('StubAuthBackendClient is deprecated. Use HttpAuthBackendClient.')
 class StubAuthBackendClient implements AuthBackendClient {
   StubAuthBackendClient({StubAuthBackendConfig? config})
       : _config = config ?? StubAuthBackendConfig(),

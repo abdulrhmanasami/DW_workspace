@@ -9,14 +9,10 @@ dependencies:
     sdk: flutter
   flutter_riverpod: ^2.6.1
   json_annotation: ^4.9.0
-  foundation_shims:
-    path: ../foundation_shims
-  payments_shims:
-    path: ../payments_shims
-  payments_adapter_stripe:
-    path: ../payments_adapter_stripe
-  payments_stub_impl:
-    path: ../payments_stub_impl
+  foundation_shims: ^0.1.0
+  payments_shims: ^0.1.0
+  payments_adapter_stripe: ^1.0.0
+  payments_stub_impl: ^0.1.0
 dev_dependencies:
   build_runner: ^2.4.7
   json_serializable: ^6.7.1

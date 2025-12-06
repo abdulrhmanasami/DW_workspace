@@ -111,6 +111,18 @@ class _PrivacyConsentWrapperState extends State<PrivacyConsentWrapper> {
     // Warm up payment wiring early to surface configuration issues
     await ServiceLocator.ensurePaymentsReady();
 
+    try {
+      await ServiceLocator.ensureAuthReady();
+    } catch (error, stackTrace) {
+      await fnd.Telemetry.instance.error(
+        'auth.supabase_init_failed',
+        context: {
+          'error': error.toString(),
+          'stackTrace': stackTrace.toString(),
+        },
+      );
+    }
+
     await _setupTlsPinning();
 
     // Note: RemoteConfig fetch will be handled by fetchRemoteConfigProvider in app bootstrap

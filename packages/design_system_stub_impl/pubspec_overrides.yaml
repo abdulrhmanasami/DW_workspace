@@ -1,4 +1,0 @@
-# melos_managed_dependency_overrides: design_system_shims
-dependency_overrides:
-  design_system_shims:
-    path: ../design_system_shims

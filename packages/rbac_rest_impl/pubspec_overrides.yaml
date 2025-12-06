@@ -1,8 +1,0 @@
-# melos_managed_dependency_overrides: core,foundation_shims,network_shims
-dependency_overrides:
-  core:
-    path: ../core
-  foundation_shims:
-    path: ../foundation_shims
-  network_shims:
-    path: ../network_shims
