@@ -10,6 +10,7 @@ import 'package:delivery_ways_clean/app_shell/app_shell.dart';
 import 'package:delivery_ways_clean/screens/auth/phone_login_screen.dart';
 import 'package:delivery_ways_clean/screens/onboarding/onboarding_root_screen.dart';
 import 'package:delivery_ways_clean/state/identity/identity_controller.dart';
+import 'package:delivery_ways_clean/widgets/dw_app_shell.dart';
 
 /// Auth Gate Widget
 ///
@@ -35,12 +36,13 @@ class AuthGate extends ConsumerWidget {
 
     // Handle onboarding status loading
     return onboardingStatusAsync.when(
-      loading: () => const _LoadingScreen(),
-      error: (error, stack) => const _LoadingScreen(), // Fallback to loading on error
+      loading: () => const _DesignSystemLoading(),
+      error: (error, stack) =>
+          const _DesignSystemLoading(), // Fallback to loading on error
       data: (onboardingStatus) {
         // Ticket #238: Check onboarding status first
         if (session.isUnknown || onboardingStatus == OnboardingStatus.unknown) {
-          return const _LoadingScreen();
+          return const _DesignSystemLoading();
         }
 
         if (onboardingStatus == OnboardingStatus.notCompleted) {
@@ -58,24 +60,26 @@ class AuthGate extends ConsumerWidget {
         }
 
         // Fallback: should not reach here, but show loading as safety
-        return const _LoadingScreen();
+        return const _DesignSystemLoading();
       },
     );
   }
 }
 
 /// Loading screen widget for unknown auth state
-class _LoadingScreen extends StatelessWidget {
-  const _LoadingScreen();
+class _DesignSystemLoading extends StatelessWidget {
+  const _DesignSystemLoading();
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return DWAppShell(
+      applyPadding: false,
+      useSafeArea: false,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
+          children: const [
+            CircularProgressIndicator.adaptive(),
             SizedBox(height: 16),
             Text('Loading...'),
           ],
