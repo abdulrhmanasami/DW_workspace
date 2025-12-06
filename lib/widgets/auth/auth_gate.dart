@@ -9,6 +9,7 @@ import 'package:foundation_shims/foundation_shims.dart';
 import 'package:delivery_ways_clean/app_shell/app_shell.dart';
 import 'package:delivery_ways_clean/screens/auth/phone_login_screen.dart';
 import 'package:delivery_ways_clean/screens/onboarding/onboarding_root_screen.dart';
+import 'package:delivery_ways_clean/screens/onboarding/welcome_screen.dart';
 import 'package:delivery_ways_clean/state/identity/identity_controller.dart';
 import 'package:delivery_ways_clean/widgets/dw_app_shell.dart';
 
@@ -52,7 +53,13 @@ class AuthGate extends ConsumerWidget {
 
         // Onboarding completed - proceed with auth logic
         if (session.isUnauthenticated) {
-          return const PhoneLoginScreen();
+          return WelcomeScreen(
+            onPrimaryAction: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const PhoneLoginScreen(),
+              ),
+            ),
+          );
         }
 
         if (session.isAuthenticated) {

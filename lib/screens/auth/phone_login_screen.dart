@@ -5,6 +5,7 @@
 
 import 'dart:async';
 
+import 'package:design_system_components/design_system_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,8 +15,6 @@ import 'package:delivery_ways_clean/router/app_router.dart';
 import 'package:delivery_ways_clean/state/auth/passwordless_auth_controller.dart';
 import 'package:delivery_ways_clean/state/infra/auth_providers.dart';
 import 'package:delivery_ways_clean/widgets/app_shell.dart';
-import 'package:b_ui/ui_components.dart';
-import 'legacy_auth_placeholder.dart';
 
 class PhoneLoginScreen extends ConsumerStatefulWidget {
   const PhoneLoginScreen({super.key, this.forceEnablePasswordless = false});
@@ -49,12 +48,6 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
 
     final enablePasswordless = FeatureFlags.enablePasswordlessAuth || widget.forceEnablePasswordless;
     final l10n = AppLocalizations.of(context);
-
-    if (!enablePasswordless) {
-      return LegacyAuthPlaceholder(
-        title: l10n?.authPhoneLoginTitle ?? 'Sign In',
-      );
-    }
 
     // Listen to PasswordlessAuthController state for navigation and errors
     ref.listen(passwordlessAuthControllerProvider, (prev, next) {
@@ -90,7 +83,7 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
       showBottomNav: false,
       safeArea: true,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -111,62 +104,38 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Phone number input field
-            TextFormField(
+            DwInput(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
-              textDirection: TextDirection.ltr,
-              textAlign: TextAlign.start,
-              decoration: InputDecoration(
-                labelText: l10n?.authPhoneFieldLabel ?? 'Phone Number',
-                hintText: l10n?.authPhoneFieldHint ?? '+9665xxxxxxxx',
-                prefixIcon: Icon(Icons.phone, color: colorScheme.onSurfaceVariant),
-                errorText: _localError ?? authState.errorMessage,
-              ),
+              label: l10n?.authPhoneFieldLabel ?? 'Phone Number',
+              hint: l10n?.authPhoneFieldHint ?? '+9665xxxxxxxx',
+              error: _localError ?? authState.errorMessage,
+              prefixIcon: const Icon(Icons.phone),
+              onChanged: (_) => setState(() {}),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
             // Biometric unlock option
             if (canUseBiometric) ...[
-              const SizedBox(height: 8),
-              AnimatedOpacity(
-                opacity: _unlocking ? 0.7 : 1.0,
-                duration: const Duration(milliseconds: 200),
-                child: OutlinedButton.icon(
-                  onPressed: _unlocking
-                      ? null
-                      : () => _attemptBiometricUnlock(l10n),
-                  icon: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: _unlocking
-                        ? SizedBox(
-                            key: const ValueKey('loading'),
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: colorScheme.primary,
-                            ),
-                          )
-                        : Icon(
-                            Icons.fingerprint,
-                            key: const ValueKey('icon'),
-                            color: colorScheme.primary,
-                          ),
-                  ),
-                  label: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 200),
-                    child: Text(
-                      _unlocking
-                          ? (l10n?.loading ?? 'Verifying...')
-                          : (l10n?.authBiometricButtonLabel ?? 'Use biometrics'),
-                      key: ValueKey(_unlocking ? 'loading' : 'label'),
-                      style: textTheme.labelLarge?.copyWith(
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                ),
+              const SizedBox(height: 12),
+              DwButton(
+                text: _unlocking
+                    ? (l10n?.loading ?? 'Verifying...')
+                    : (l10n?.authBiometricButtonLabel ?? 'Use biometrics'),
+                onPressed:
+                    _unlocking ? null : () => _attemptBiometricUnlock(l10n),
+                fullWidth: true,
+                variant: DwButtonVariant.outlined,
+                leadingIcon: _unlocking
+                    ? SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: colorScheme.primary,
+                        ),
+                      )
+                    : const Icon(Icons.fingerprint),
               ),
             ],
 
@@ -189,24 +158,30 @@ class _PhoneLoginScreenState extends ConsumerState<PhoneLoginScreen> {
             const SizedBox(height: 8),
 
             // Continue button (full width)
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: shouldDisableRequest
-                    ? null
-                    : () async {
-                        final normalized = _validateAndNormalize(l10n);
-                        if (normalized == null) return;
-                        await ref.read(passwordlessAuthControllerProvider.notifier).requestOtp(normalized);
-                      },
-                child: UiLoadingButtonContent(
-                  label: l10n?.authPhoneContinueButton ?? 'Continue',
-                  isLoading: isLoading,
-                  loadingLabel: l10n?.loading ?? 'Loading...',
-                  spinnerColor: colorScheme.onPrimary,
-                ),
-              ),
+            DwButton(
+              text: l10n?.authPhoneContinueButton ?? 'Continue',
+              onPressed: shouldDisableRequest
+                  ? null
+                  : () async {
+                      final normalized = _validateAndNormalize(l10n);
+                      if (normalized == null) return;
+                      await ref
+                          .read(passwordlessAuthControllerProvider.notifier)
+                          .requestOtp(normalized);
+                    },
+              fullWidth: true,
+              variant: DwButtonVariant.primary,
+              leadingIcon: isLoading
+                  ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: colorScheme.onPrimary,
+                      ),
+                    )
+                  : null,
+              enabled: !isLoading,
             ),
           ],
         ),

@@ -9,8 +9,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:design_system_shims/design_system_shims.dart'
-    show DWButton, DWTextField, DWSpacing;
+import 'package:design_system_components/design_system_components.dart';
 
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
 import 'package:delivery_ways_clean/router/app_router.dart';
@@ -100,7 +99,7 @@ class _OtpVerificationScreenState
       showBottomNav: false,
       safeArea: true,
       body: Padding(
-        padding: const EdgeInsets.all(DWSpacing.lg),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -110,31 +109,33 @@ class _OtpVerificationScreenState
                 color: colors.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: DWSpacing.lg),
-            DWTextField(
+            const SizedBox(height: 20),
+            DwInput(
               controller: _codeController,
               keyboardType: TextInputType.number,
-              hintText: l10n.authOtpFieldHint,
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => onVerify(),
+              label: l10n.authOtpFieldHint,
+              hint: '000000',
+              onChanged: (_) => setState(() {}),
+              prefixIcon: const Icon(Icons.lock),
+              error: authState.errorMessage,
             ),
-            // Show error message if present
-            if (authState.errorMessage != null)
-              Padding(
-                padding: const EdgeInsets.only(top: DWSpacing.sm),
-                child: Text(
-                  authState.errorMessage!,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: colors.error,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
             const Spacer(),
-            DWButton.primary(
-              label: l10n.authOtpVerifyCta,
+            DwButton(
+              text: l10n.authOtpVerifyCta,
               onPressed: isLoading ? null : onVerify,
-              isLoading: isLoading,
+              fullWidth: true,
+              variant: DwButtonVariant.primary,
+              leadingIcon: isLoading
+                  ? SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: colors.onPrimary,
+                      ),
+                    )
+                  : null,
+              enabled: !isLoading,
             ),
           ],
         ),

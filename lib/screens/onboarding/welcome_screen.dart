@@ -4,7 +4,7 @@
 /// Purpose: First screen in the basic onboarding flow
 /// Last updated: 2025-11-28
 
-import 'package:design_system_shims/design_system_shims.dart';
+import 'package:design_system_components/design_system_components.dart';
 import 'package:flutter/material.dart';
 
 import 'package:delivery_ways_clean/l10n/generated/app_localizations.dart';
@@ -16,11 +16,15 @@ class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({
     super.key,
     this.onComplete,
+    this.onPrimaryAction,
+    this.onSecondaryAction,
   });
 
   /// Optional callback when onboarding is completed.
   /// Passed through constructor chain from OnboardingRootScreen.
   final VoidCallback? onComplete;
+  final VoidCallback? onPrimaryAction;
+  final VoidCallback? onSecondaryAction;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +38,7 @@ class WelcomeScreen extends StatelessWidget {
       showBottomNav: false,
       safeArea: true,
       body: Padding(
-        padding: const EdgeInsets.all(DWSpacing.lg),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -70,15 +74,19 @@ class WelcomeScreen extends StatelessWidget {
 
             const Spacer(),
 
-            // Get Started button
-            DWButton.primary(
-              label: l10n?.onboardingWelcomeGetStartedCta ?? 'Get started',
-              onPressed: () {
-                // Call onComplete to advance to next screen in PageView
-                onComplete?.call();
-              },
+            DwButton(
+              text: l10n?.onboardingWelcomeGetStartedCta ?? 'Get started',
+              onPressed: onPrimaryAction ?? onComplete,
+              fullWidth: true,
+              variant: DwButtonVariant.primary,
             ),
-            const SizedBox(height: DWSpacing.md),
+            const SizedBox(height: 12),
+            DwButton(
+              text: l10n?.authPhoneLoginTitle ?? 'Sign in',
+              onPressed: onSecondaryAction,
+              fullWidth: true,
+              variant: DwButtonVariant.secondary,
+            ),
           ],
         ),
       ),
